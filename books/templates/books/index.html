@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/books.css' %}">
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3 align-items-center">
+      <div class="col-8 col-md-10">
+        <h2>List of Books</h2>
+      </div>
+      <div class="col-4 col-md-2 text-end">
+        <!-- mobile hamburger -->
+        <button id="category-toggle" class="btn btn-outline-secondary category-hamburger" aria-controls="books-sidebar-mobile" aria-expanded="false">
+          ☰ <span class="sr-only">Toggle categories</span>
+        </button>
+      </div>
+    </div>
+    <hr />
+    <p class="card-text">
+      <form method="GET">
+        <div class="row">
+          <div class="col-auto">
+            <div class="input-group col-auto">
+              <div class="input-group-text">Search</div>
+              <input type="text" class="form-control" name="search">
+            </div>
+          </div>
+          <div class="col-auto">
+            <button class="btn bg-dark text-white" type="submit">Search</button>
+          </div>
+        </div>
+      </form>
+    </p>
+
+    <div class="books-layout">
+
+      <!-- Sidebar (desktop) -->
+      <aside id="books-sidebar" class="sidebar d-none d-md-block">
+        <div class="card p-2">
+          <div class="sidebar-header">
+            <h5 class="m-0">Categories</h5>
+            <button id="sidebar-collapse" class="btn btn-sm btn-outline-secondary" aria-pressed="false" title="Collapse categories">⇤</button>
+          </div>
+          <ul class="list-group list-group-flush">
+            {% for c in template_data.categories %}
+            <li class="list-group-item d-flex justify-content-between align-items-center {% if template_data.category and template_data.category.slug == c.slug %}active{% endif %}">
+              {% if user.is_authenticated %}
+              <a class="cat-label" href="{% url 'books.category' slug=c.slug %}">{{ c.name }}</a>
+              {% else %}
+              <a class="cat-label" href="{% url 'accounts.login' %}?next={% url 'books.category' slug=c.slug %}">{{ c.name }}</a>
+              {% endif %}
+              <span class="badge bg-secondary">{{ c.books.count }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Sidebar (mobile overlay) -->
+      <aside id="books-sidebar-mobile" class="sidebar mobile d-md-none" aria-hidden="true">
+        <div class="card p-2">
+          <div class="sidebar-header">
+            <h5 class="m-0">Categories</h5>
+            <button id="sidebar-close-mobile" class="btn btn-sm btn-outline-secondary" aria-label="Close">✕</button>
+          </div>
+          <ul class="list-group list-group-flush">
+            {% for c in template_data.categories %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              {% if user.is_authenticated %}
+              <a href="{% url 'books.category' slug=c.slug %}">{{ c.name }}</a>
+              {% else %}
+              <a href="{% url 'accounts.login' %}?next={% url 'books.category' slug=c.slug %}">{{ c.name }}</a>
+              {% endif %}
+              <span class="badge bg-secondary">{{ c.books.count }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </aside>
+
+      <div id="sidebar-overlay" class="sidebar-overlay d-md-none" aria-hidden="true"></div>
+
+      <!-- Main content -->
+      <main class="main">
+        <div class="row">
+          {% for book in template_data.books %}
+          <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
+            <article class="p-2 card align-items-center pt-3 book-card" tabindex="0">
+              {% if book.cover_image %}
+              <img src="{{ book.cover_image.url }}" class="card-img-top rounded img-card-200" alt="Cover image for {{ book.name }}">
+              {% endif %}
+              <div class="card-body text-center">
+                <a href="{% url 'books.show' id=book.id %}" class="btn bg-dark text-white" title="View {{ book.name }}">
+                  {{ book.name }}
+                </a>
+              </div>
+            </article>
+          </div>
+          {% endfor %}
+        </div>
+      </main>
+
+    </div>
+  </div>
+</div>
+<script src="{% static 'js/books.js' %}" defer></script>
+{% endblock content %}

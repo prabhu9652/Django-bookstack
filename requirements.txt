@@ -1,0 +1,5 @@
+Django>=6.0,<7
+Pillow
+gunicorn
+whitenoise
+psycopg2-binary

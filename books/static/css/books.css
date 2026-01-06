@@ -1,0 +1,47 @@
+/* Books page responsive layout and lightweight animations */
+/* Sidebar */
+.books-layout{display:flex; gap:1rem;}
+.books-layout .sidebar{width:250px; flex:0 0 250px; transition:width .25s ease, transform .25s ease;}
+.books-layout .sidebar.collapsed{width:64px}
+.books-layout .sidebar .cat-label{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+
+/* Mobile behavior: overlay sidebar */
+.books-layout .sidebar.mobile{position:fixed; top:0; left:0; bottom:0; z-index:1050; background:#fff; transform:translateX(-110%); box-shadow:0 2px 8px rgba(0,0,0,.15); width:260px;}
+.books-layout .sidebar.mobile.open{transform:translateX(0)}
+.books-layout .sidebar .sidebar-header{display:flex; justify-content:space-between; align-items:center; padding:0.75rem 0.5rem}
+.books-layout .sidebar .list-group-item a{display:block; color:inherit; text-decoration:none}
+
+/* Main content adapts */
+.books-layout .main{flex:1}
+
+/* Book card: hover zoom + subtle shadow */
+.book-card{transition:transform .25s ease, box-shadow .25s ease; will-change:transform;}
+.book-card img{transition:transform .25s ease;}
+.book-card:hover{transform:scale(1.03); box-shadow:0 8px 20px rgba(0,0,0,0.12)}
+.book-card:focus-within{outline:2px solid rgba(100,150,255,0.25)}
+
+/* Responsive grid adjustments */
+@media (max-width: 991px){
+  .books-layout{flex-direction:column}
+  .books-layout .sidebar{position:relative; width:100%; flex:0 0 auto}
+  .books-layout .sidebar.collapsed{width:100%}
+  .books-layout .sidebar .badge{display:none}
+  .books-layout .main{width:100%}
+}
+
+@media (max-width: 767px){
+  /* show hamburger */
+  .category-hamburger{display:inline-block}
+  .books-layout .sidebar{display:none}
+  .books-layout .sidebar.mobile{display:block}
+}
+
+/* Small helpers */
+.category-hamburger{display:none; margin-left:8px}
+.sidebar-overlay{position:fixed; inset:0; background:rgba(0,0,0,0.35); z-index:1040; opacity:0; transition:opacity .2s ease; pointer-events:none}
+.sidebar-overlay.open{opacity:1; pointer-events:auto}
+
+
+
+/* Accessibility helpers */
+a .sr-only{position:absolute; width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
