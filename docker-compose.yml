@@ -3,10 +3,6 @@ services:
   web:
     build: .
     command: ["gunicorn", "booksstore.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "2"]
-    volumes:
-      - ./:/app:rw
-      - staticfiles:/app/staticfiles
-      - media:/app/media
     ports:
       - "8000:8000"
     environment:
@@ -14,7 +10,3 @@ services:
       - SECRET_KEY=dev-secret
       - ALLOWED_HOSTS=127.0.0.1,localhost
     depends_on: []
-
-volumes:
-  staticfiles:
-  media:
