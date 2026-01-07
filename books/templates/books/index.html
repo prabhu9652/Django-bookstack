@@ -33,9 +33,15 @@
     animation: fadeInUp 0.6s ease-out forwards;
   }
 
-  .book-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+  .book-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease;
+  }
+
+  .book-card-link:hover {
+    transform: translateY(-5px);
   }
 
   .book-card img {
@@ -243,18 +249,18 @@
       <div class="row">
         {% for book in template_data.books %}
         <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
-          <article class="p-2 card align-items-center pt-3 book-card" tabindex="0" style="animation-delay: {{ forloop.counter0|add:1 }}00ms;">
-            {% if book.cover_image %}
-            <img src="{{ book.cover_image.url }}" class="card-img-top rounded img-card-200" alt="Cover image for {{ book.name }}" loading="lazy">
-            {% else %}
-            <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" class="card-img-top rounded img-card-200" alt="Book Cover" loading="lazy">
-            {% endif %}
-            <div class="card-body text-center">
-              <a href="{% url 'books.show' id=book.id %}" class="btn text-white" title="View {{ book.name }}">
-                {{ book.name }}
-              </a>
-            </div>
-          </article>
+          <a href="{% url 'books.show' id=book.id %}" class="book-card-link">
+            <article class="p-2 card align-items-center pt-3 book-card" tabindex="0" style="animation-delay: {{ forloop.counter0|add:1 }}00ms;">
+              {% if book.cover_image %}
+              <img src="{{ book.cover_image.url }}" class="card-img-top rounded img-card-200" alt="Cover image for {{ book.name }}" loading="lazy">
+              {% else %}
+              <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" class="card-img-top rounded img-card-200" alt="Book Cover" loading="lazy">
+              {% endif %}
+              <div class="card-body text-center">
+                <h5 class="card-title">{{ book.name }}</h5>
+              </div>
+            </article>
+          </a>
         </div>
         {% endfor %}
       </div>
