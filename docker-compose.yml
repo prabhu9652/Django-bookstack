@@ -8,5 +8,5 @@ services:
     environment:
       - DEBUG=1
       - SECRET_KEY=dev-secret
-      - ALLOWED_HOSTS=127.0.0.1,localhost
+      - ALLOWED_HOSTS=127.0.0.1,localhost,68.183.84.101
     depends_on: []
