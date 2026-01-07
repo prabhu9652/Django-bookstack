@@ -3,6 +3,7 @@ from .models import Book, Review, Category
 from django.contrib.auth.decorators import login_required
 from django.http import FileResponse, Http404
 from django.views.decorators.clickjacking import xframe_options_sameorigin
+from django.core.paginator import Paginator
 import os
 
 
@@ -57,12 +58,17 @@ def index(request):
     else:
         books = Book.objects.all()
 
+    paginator = Paginator(books, 10)  # Show 10 books per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     categories = Category.objects.all()
 
     template_data = {}
     template_data['title'] = 'Books'
-    template_data['books'] = books
+    template_data['books'] = page_obj
     template_data['categories'] = categories
+    template_data['search_term'] = search_term
     return render(request, 'books/index.html', {'template_data': template_data})
 
 
@@ -71,9 +77,13 @@ def category(request, slug):
     cat = get_object_or_404(Category, slug=slug)
     books = cat.books.all()
 
+    paginator = Paginator(books, 10)  # Show 10 books per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     template_data = {}
     template_data['title'] = f"Category: {cat.name}"
-    template_data['books'] = books
+    template_data['books'] = page_obj
     template_data['category'] = cat
     template_data['categories'] = Category.objects.all()
     return render(request, 'books/index.html', {'template_data': template_data})

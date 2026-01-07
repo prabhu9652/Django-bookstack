@@ -87,7 +87,7 @@
           <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
             <article class="p-2 card align-items-center pt-3 book-card" tabindex="0">
               {% if book.cover_image %}
-              <img src="{{ book.cover_image.url }}" class="card-img-top rounded img-card-200" alt="Cover image for {{ book.name }}">
+              <img src="{{ book.cover_image.url }}" class="card-img-top rounded img-card-200" alt="Cover image for {{ book.name }}" loading="lazy">
               {% endif %}
               <div class="card-body text-center">
                 <a href="{% url 'books.show' id=book.id %}" class="btn bg-dark text-white" title="View {{ book.name }}">
@@ -98,6 +98,32 @@
           </div>
           {% endfor %}
         </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Book pagination" class="mt-4">
+          <ul class="pagination justify-content-center">
+            {% if template_data.books.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="{% if template_data.category %}{% url 'books.category' slug=template_data.category.slug %}{% else %}{% url 'books.index' %}{% endif %}?{% if template_data.search_term %}search={{ template_data.search_term }}&{% endif %}page={{ template_data.books.previous_page_number }}">Previous</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+              <span class="page-link">Previous</span>
+            </li>
+            {% endif %}
+
+            {% if template_data.books.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="{% if template_data.category %}{% url 'books.category' slug=template_data.category.slug %}{% else %}{% url 'books.index' %}{% endif %}?{% if template_data.search_term %}search={{ template_data.search_term }}&{% endif %}page={{ template_data.books.next_page_number }}">Next</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+              <span class="page-link">Next</span>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+
       </main>
 
     </div>
