@@ -1,133 +1,320 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/books.css' %}">
-<div class="p-3">
+<style>
+  /* Enhanced styles for modern books page */
+  .books-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 4rem 0;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .books-heading {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .books-subheading {
+    font-size: 1.25rem;
+    opacity: 0.9;
+  }
+
+  .book-card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .book-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease;
+  }
+
+  .book-card-link:hover {
+    transform: translateY(-5px);
+  }
+
+  .book-card img {
+    transition: transform 0.3s ease;
+  }
+
+  .book-card:hover img {
+    transform: scale(1.05);
+  }
+
+  .book-card .btn {
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    border: none;
+    transition: all 0.3s ease;
+  }
+
+  .book-card .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+    background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .sidebar .card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 1.5rem;
+  }
+
+  .sidebar .list-group-item {
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .sidebar .list-group-item:hover {
+    background-color: rgba(102, 126, 234, 0.1);
+  }
+
+  .sidebar .list-group-item.active {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+  }
+
+  .pagination .page-link {
+    color: #667eea;
+    border-color: #667eea;
+    transition: all 0.3s ease;
+  }
+
+  .pagination .page-link:hover {
+    background-color: #667eea;
+    border-color: #667eea;
+    color: white;
+  }
+
+  .pagination .page-item.active .page-link {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border-color: #667eea;
+  }
+
+  .search-form .btn {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border: none;
+    transition: all 0.3s ease;
+  }
+
+  .search-form .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+  }
+
+  .books-layout {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1rem;
+  }
+
+  .sidebar {
+    width: 250px;
+    flex-shrink: 0;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .main {
+    flex: 1;
+  }
+
+  @media (max-width: 767px) {
+    .books-layout {
+      flex-direction: column;
+    }
+    .sidebar {
+      width: 100%;
+      max-height: none;
+    }
+  }
+
+  .fade-in-section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .fade-in-section.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .sidebar .list-group-item a {
+    color: black !important;
+    text-decoration: none;
+  }
+
+  .sidebar .list-group-item.active {
+    background: none;
+    color: inherit;
+  }
+
+  .sidebar .list-group-item.active a {
+    color: black !important;
+  }
+</style>
+
+<section class="books-hero">
   <div class="container">
-    <div class="row mt-3 align-items-center">
-      <div class="col-8 col-md-10">
-        <h2>List of Books</h2>
-      </div>
-      <div class="col-4 col-md-2 text-end">
-        <!-- mobile hamburger -->
-        <button id="category-toggle" class="btn btn-outline-secondary category-hamburger" aria-controls="books-sidebar-mobile" aria-expanded="false">
-          ☰ <span class="sr-only">Toggle categories</span>
-        </button>
-      </div>
-    </div>
-    <hr />
-    <p class="card-text">
-      <form method="GET">
-        <div class="row">
-          <div class="col-auto">
-            <div class="input-group col-auto">
-              <div class="input-group-text">Search</div>
-              <input type="text" class="form-control" name="search">
-            </div>
-          </div>
-          <div class="col-auto">
-            <button class="btn bg-dark text-white" type="submit">Search</button>
-          </div>
-        </div>
-      </form>
-    </p>
+    <h1 class="books-heading">Explore Our Book Collection</h1>
+    <p class="books-subheading">Discover a world of knowledge with our curated selection of technical books.</p>
+  </div>
+</section>
 
-    <div class="books-layout">
-
-      <!-- Sidebar (desktop) -->
-      <aside id="books-sidebar" class="sidebar d-none d-md-block">
-        <div class="card p-2">
-          <div class="sidebar-header">
-            <h5 class="m-0">Categories</h5>
-            <button id="sidebar-collapse" class="btn btn-sm btn-outline-secondary" aria-pressed="false" title="Collapse categories">⇤</button>
-          </div>
-          <ul class="list-group list-group-flush">
-            {% for c in template_data.categories %}
-            <li class="list-group-item d-flex justify-content-between align-items-center {% if template_data.category and template_data.category.slug == c.slug %}active{% endif %}">
-              {% if user.is_authenticated %}
-              <a class="cat-label" href="{% url 'books.category' slug=c.slug %}">{{ c.name }}</a>
-              {% else %}
-              <a class="cat-label" href="{% url 'accounts.login' %}?next={% url 'books.category' slug=c.slug %}">{{ c.name }}</a>
-              {% endif %}
-              <span class="badge bg-secondary">{{ c.books.count }}</span>
-            </li>
-            {% endfor %}
-          </ul>
-        </div>
-      </aside>
-
-      <!-- Sidebar (mobile overlay) -->
-      <aside id="books-sidebar-mobile" class="sidebar mobile d-md-none" aria-hidden="true">
-        <div class="card p-2">
-          <div class="sidebar-header">
-            <h5 class="m-0">Categories</h5>
-            <button id="sidebar-close-mobile" class="btn btn-sm btn-outline-secondary" aria-label="Close">✕</button>
-          </div>
-          <ul class="list-group list-group-flush">
-            {% for c in template_data.categories %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              {% if user.is_authenticated %}
-              <a href="{% url 'books.category' slug=c.slug %}">{{ c.name }}</a>
-              {% else %}
-              <a href="{% url 'accounts.login' %}?next={% url 'books.category' slug=c.slug %}">{{ c.name }}</a>
-              {% endif %}
-              <span class="badge bg-secondary">{{ c.books.count }}</span>
-            </li>
-            {% endfor %}
-          </ul>
-        </div>
-      </aside>
-
-      <div id="sidebar-overlay" class="sidebar-overlay d-md-none" aria-hidden="true"></div>
-
-      <!-- Main content -->
-      <main class="main">
-        <div class="row">
-          {% for book in template_data.books %}
-          <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
-            <article class="p-2 card align-items-center pt-3 book-card" tabindex="0">
-              {% if book.cover_image %}
-              <img src="{{ book.cover_image.url }}" class="card-img-top rounded img-card-200" alt="Cover image for {{ book.name }}" loading="lazy">
-              {% endif %}
-              <div class="card-body text-center">
-                <a href="{% url 'books.show' id=book.id %}" class="btn bg-dark text-white" title="View {{ book.name }}">
-                  {{ book.name }}
-                </a>
-              </div>
-            </article>
-          </div>
-          {% endfor %}
-        </div>
-
-        <!-- Pagination -->
-        <nav aria-label="Book pagination" class="mt-4">
-          <ul class="pagination justify-content-center">
-            {% if template_data.books.has_previous %}
-            <li class="page-item">
-              <a class="page-link" href="{% if template_data.category %}{% url 'books.category' slug=template_data.category.slug %}{% else %}{% url 'books.index' %}{% endif %}?{% if template_data.search_term %}search={{ template_data.search_term }}&{% endif %}page={{ template_data.books.previous_page_number }}">Previous</a>
-            </li>
-            {% else %}
-            <li class="page-item disabled">
-              <span class="page-link">Previous</span>
-            </li>
-            {% endif %}
-
-            {% if template_data.books.has_next %}
-            <li class="page-item">
-              <a class="page-link" href="{% if template_data.category %}{% url 'books.category' slug=template_data.category.slug %}{% else %}{% url 'books.index' %}{% endif %}?{% if template_data.search_term %}search={{ template_data.search_term }}&{% endif %}page={{ template_data.books.next_page_number }}">Next</a>
-            </li>
-            {% else %}
-            <li class="page-item disabled">
-              <span class="page-link">Next</span>
-            </li>
-            {% endif %}
-          </ul>
-        </nav>
-
-      </main>
-
+<div class="container">
+  <div class="row mt-3 align-items-center">
+    <div class="col-12">
+      <h2 class="text-muted">Browse Books</h2>
     </div>
   </div>
+  <hr />
+  <div class="search-form mb-4">
+    <form method="GET">
+      <div class="row">
+        <div class="col-auto">
+          <div class="input-group col-auto">
+            <div class="input-group-text">Search</div>
+            <input type="text" class="form-control" name="search" value="{{ template_data.search_term }}">
+          </div>
+        </div>
+        <div class="col-auto">
+          <button class="btn text-white" type="submit">Search</button>
+        </div>
+      </div>
+    </form>
+    {% if template_data.category %}
+    <div class="mt-2">
+      <a href="{% url 'books.index' %}" class="btn btn-outline-secondary">← Back to All Books</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="books-layout">
+
+    <!-- Sidebar (desktop) -->
+    <aside id="books-sidebar" class="sidebar">
+      <div class="card p-2">
+        <div class="sidebar-header">
+          <h5 class="m-0">Categories</h5>
+        </div>
+        <ul class="list-group list-group-flush">
+          {% for c in template_data.categories %}
+          <li class="list-group-item d-flex justify-content-between align-items-center {% if template_data.category and template_data.category == c %}active{% endif %}">
+            {% if user.is_authenticated %}
+            <a class="cat-label" href="{% url 'books.category' slug=c.slug %}">{{ c.name }}</a>
+            {% else %}
+            <a class="cat-label" href="{% url 'accounts.login' %}?next={% url 'books.category' slug=c.slug %}">{{ c.name }}</a>
+            {% endif %}
+            <span class="badge bg-secondary">{{ c.books.count }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main fade-in-section">
+      <div class="row">
+        {% for book in template_data.books %}
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
+          <a href="{% url 'books.show' id=book.id %}" class="book-card-link">
+            <article class="p-2 card align-items-center pt-3 book-card" tabindex="0" style="animation-delay: {{ forloop.counter0|add:1 }}00ms;">
+              {% if book.cover_image %}
+              <img src="{{ book.cover_image.url }}" class="card-img-top rounded img-card-200" alt="Cover image for {{ book.name }}" loading="lazy">
+              {% else %}
+              <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" class="card-img-top rounded img-card-200" alt="Book Cover" loading="lazy">
+              {% endif %}
+              <div class="card-body text-center">
+                <h5 class="card-title">{{ book.name }}</h5>
+              </div>
+            </article>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      <nav aria-label="Book pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+          {% if template_data.books.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="{% if template_data.category %}{% url 'books.category' slug=template_data.category.slug %}{% else %}{% url 'books.index' %}{% endif %}?{% if template_data.search_term %}search={{ template_data.search_term }}&{% endif %}page={{ template_data.books.previous_page_number }}">Previous</a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">Previous</span>
+          </li>
+          {% endif %}
+
+          {% for num in template_data.books.paginator.page_range %}
+          <li class="page-item {% if template_data.books.number == num %}active{% endif %}">
+            {% if template_data.books.number == num %}
+            <span class="page-link">{{ num }}</span>
+            {% else %}
+            <a class="page-link" href="{% if template_data.category %}{% url 'books.category' slug=template_data.category.slug %}{% else %}{% url 'books.index' %}{% endif %}?{% if template_data.search_term %}search={{ template_data.search_term }}&{% endif %}page={{ num }}">{{ num }}</a>
+            {% endif %}
+          </li>
+          {% endfor %}
+
+          {% if template_data.books.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="{% if template_data.category %}{% url 'books.category' slug=template_data.category.slug %}{% else %}{% url 'books.index' %}{% endif %}?{% if template_data.search_term %}search={{ template_data.search_term }}&{% endif %}page={{ template_data.books.next_page_number }}">Next</a>
+            </li>
+          {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">Next</span>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+
+    </main>
+
+  </div>
 </div>
-<script src="{% static 'js/books.js' %}" defer></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const animatedElements = document.querySelectorAll('.fade-in-section, .book-card');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.1
+  });
+
+  animatedElements.forEach(element => {
+    observer.observe(element);
+  });
+});
+</script>
 {% endblock content %}

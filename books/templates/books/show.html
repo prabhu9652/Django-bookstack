@@ -1,86 +1,217 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
-<div class="p-3">
+<style>
+  .book-detail-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem 0;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .book-detail-heading {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .book-detail-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .book-detail-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+
+  .book-detail-card .card-body {
+    padding: 1.5rem;
+  }
+
+  .book-detail-card h2 {
+    color: #2c3e50;
+    margin-bottom: 2rem;
+  }
+
+  .book-info {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .book-info p {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .btn-book {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border: none;
+    padding: 10px 20px;
+    font-weight: 600;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    color: white;
+    margin: 0.25rem;
+  }
+
+  .btn-book:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    background: linear-gradient(45deg, #764ba2, #667eea);
+  }
+
+  .btn-outline-book {
+    border: 2px solid #667eea;
+    color: #667eea;
+    background: transparent;
+    padding: 10px 20px;
+    font-weight: 600;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    margin: 0.25rem;
+  }
+
+  .btn-outline-book:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  }
+
+  .review-card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+  }
+
+  .review-card .card-body {
+    padding: 1rem;
+  }
+
+  .form-control {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    transition: border-color 0.3s ease;
+  }
+
+  .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  }
+
+  .book-image {
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .book-detail-heading {
+      font-size: 2rem;
+    }
+    .book-detail-card .card-body {
+      padding: 2rem;
+    }
+    .book-info {
+      padding: 1.5rem;
+    }
+  }
+</style>
+
+<section class="book-detail-hero">
   <div class="container">
-    <div class="row mt-3">
-      <div class="col-md-6 mx-auto mb-3">
-        <h2>{{ template_data.book.name }}</h2>
-        <hr />
-        <p><b>Description:</b> {{ template_data.book.description }}</p>
-        <p><b>Price:</b> ${{ template_data.book.price }}</p>
+    <h1 class="book-detail-heading">{{ template_data.book.name }}</h1>
+    <p class="mb-0">Discover the details and reviews for this technical book.</p>
+  </div>
+</section>
 
-        {% if template_data.book.pdf %}
-        <p>
-          {% if user.is_authenticated %}
-            <a href="{% url 'books.view' id=template_data.book.id %}" class="btn btn-outline-primary d-none d-md-inline" target="_blank">Open preview in new tab</a>
-            <a href="{% url 'books.download' id=template_data.book.id %}" class="btn btn-primary">Download PDF</a>
-          {% else %}
-            <a href="{% url 'accounts.login' %}?next={% url 'books.show' id=template_data.book.id %}" class="btn btn-outline-primary">Preview (login)</a>
-            <a href="{% url 'accounts.login' %}?next={% url 'books.show' id=template_data.book.id %}" class="btn btn-outline-secondary d-none d-md-inline">Open preview in new tab (login)</a>
-            <a href="{% url 'accounts.login' %}?next={% url 'books.show' id=template_data.book.id %}" class="btn btn-primary">Download (login)</a>
-          {% endif %}
-        </p>
-        {% endif %}
+<div class="book-detail-container">
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="book-detail-card card">
+        <div class="card-body">
+          <div class="book-info">
+            <p><strong>Description:</strong> {{ template_data.book.description }}</p>
+            <p><strong>Price:</strong> ${{ template_data.book.price }}</p>
+          </div>
 
-        <h2>Reviews</h2>
-        <hr />
-        <ul class="list-group">
-          {% for review in template_data.reviews %}
-          <li class="list-group-item pb-3 pt-3">
-            <h5 class="card-title">
-              Review by {{ review.user.username }}
-            </h5>
-            <h6 class="card-subtitle mb-2 text-muted">
-              {{ review.date }}
-            </h6>
-            <p class="card-text">{{ review.comment }}</p>
-            {% if user.is_authenticated and user == review.user %}
-            <a class="btn btn-primary"
-              href="{% url 'books.edit_review' id=template_data.book.id review_id=review.id %}">
-              Edit
-            </a>
-            <a class="btn btn-danger"
-              href="{% url 'books.delete_review' id=template_data.book.id review_id=review.id %}">
-              Delete
-            </a>
+          {% if template_data.book.pdf %}
+          <div class="text-center">
+            {% if user.is_authenticated %}
+              <a href="{% url 'books.view' id=template_data.book.id %}" class="btn btn-outline-book" target="_blank">Open Preview</a>
+              <a href="{% url 'books.download' id=template_data.book.id %}" class="btn btn-book" download>Download PDF</a>
+            {% else %}
+              <a href="{% url 'accounts.login' %}?next={% url 'books.show' id=template_data.book.id %}" class="btn btn-outline-book">Preview (Login)</a>
+              <a href="{% url 'accounts.login' %}?next={% url 'books.show' id=template_data.book.id %}" class="btn btn-book">Download (Login)</a>
             {% endif %}
-          </li>
-          {% endfor %}
-        </ul>
+          </div>
+          {% endif %}
 
-        {% if user.is_authenticated %}
-        <div class="container mt-4">
-          <div class="row justify-content-center">
-            <div class="col-12">
-              <div class="card shadow p-3 mb-4 rounded">
-                <div class="card-body">
-                  <b class="text-start">Create a review</b><br /><br />
-                  <form method="POST" action="{% url 'books.create_review' id=template_data.book.id %}">
-                    {% csrf_token %}
-                    <p>
-                      <label for="comment">Comment:</label>
-                      <textarea name="comment" required class="form-control" id="comment"></textarea>
-                    </p>
-
-                    <div class="text-center">
-                      <button type="submit" class="btn bg-dark text-white">
-                        Add Review
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
+          <div class="review-section">
+            <h3>Reviews</h3>
+            {% for review in template_data.reviews %}
+          <div class="review-card card">
+            <div class="card-body">
+              <h5 class="card-title">
+                Review by {{ review.user.username }}
+              </h5>
+              <h6 class="card-subtitle mb-2 text-muted">
+                {{ review.date }}
+              </h6>
+              <p class="card-text">{{ review.comment }}</p>
+              {% if user.is_authenticated and user == review.user %}
+              <a class="btn btn-outline-book btn-sm"
+                href="{% url 'books.edit_review' id=template_data.book.id review_id=review.id %}">
+                Edit
+              </a>
+              <a class="btn btn-danger btn-sm"
+                href="{% url 'books.delete_review' id=template_data.book.id review_id=review.id %}">
+                Delete
+              </a>
+              {% endif %}
             </div>
           </div>
+          {% endfor %}
+          </div>
+
+          {% if user.is_authenticated %}
+          <div class="review-card card mt-4">
+            <div class="card-body">
+              <h4>Create a Review</h4>
+              <form method="POST" action="{% url 'books.create_review' id=template_data.book.id %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label for="comment" class="form-label">Comment:</label>
+                  <textarea name="comment" required class="form-control" id="comment"></textarea>
+                </div>
+                <div class="text-center">
+                  <button type="submit" class="btn btn-book">
+                    Add Review
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+          {% endif %}
         </div>
-        {% endif %}
       </div>
-      <div class="col-md-6 mx-auto mb-3 text-center">
-        {% if template_data.book.cover_image %}
-        <img src="{{ template_data.book.cover_image.url }}" class="rounded img-card-400" />
-        {% endif %}
-      </div>
+    </div>
+    <div class="col-lg-4">
+      {% if template_data.book.cover_image %}
+      <img src="{{ template_data.book.cover_image.url }}" class="book-image" alt="{{ template_data.book.name }}" />
+      {% else %}
+      <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="book-image" alt="Book Cover" />
+      {% endif %}
     </div>
   </div>
 </div>

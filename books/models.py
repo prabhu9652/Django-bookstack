@@ -7,6 +7,7 @@ class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=100, unique=True)
     description = models.TextField(blank=True, default='')
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subcategories')
 
     class Meta:
         verbose_name_plural = 'Categories'
@@ -18,6 +19,12 @@ class Category(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+    @property
+    def total_books(self):
+        if self.subcategories.exists():
+            return self.books.count() + sum(sub.books.count() for sub in self.subcategories.all())
+        return self.books.count()
 
 
 class Book(models.Model):

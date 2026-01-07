@@ -1,37 +1,114 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="p-3 mt-4">
+<style>
+  .login-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 4rem 0;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .login-heading {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .login-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+
+  .login-card .card-body {
+    padding: 3rem;
+  }
+
+  .login-card h2 {
+    color: #2c3e50;
+    margin-bottom: 2rem;
+  }
+
+  .form-control {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    transition: border-color 0.3s ease;
+  }
+
+  .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  }
+
+  .btn-login {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border: none;
+    padding: 12px 30px;
+    font-weight: 600;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    color: white;
+  }
+
+  .btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    background: linear-gradient(45deg, #764ba2, #667eea);
+  }
+
+  .alert {
+    border-radius: 10px;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .login-heading {
+      font-size: 2rem;
+    }
+    .login-card .card-body {
+      padding: 2rem;
+    }
+  }
+</style>
+
+<section class="login-hero">
   <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <div class="card shadow p-3 mb-4 rounded">
-          <div class="card-body">
-            <h2>Login</h2>
-            <hr />
-            {% if template_data.error %}
-            <div class="alert alert-danger" role="alert">
-              {{ template_data.error }}
-            </div>
-            {% endif %}
-            <form method="POST">
-              {% csrf_token %}
-              <p>
-                <label for="username">Username</label>
-                <input id="username" type="text" name="username" required
-                  autocomplete="username" class="form-control">
-              </p>
-              <p>
-                <label for="password">Password</label>
-                <input id="password" type="password" name="password" required
-                  autocomplete="current-password" class="form-control">
-              </p>
-              <div class="text-center">
-                <button type="submit" class="btn bg-dark text-white">
-                  Login
-                </button>
-              </div>
-            </form>
+    <h1 class="login-heading">Welcome Back</h1>
+    <p class="mb-0">Sign in to access your account and explore our book collection.</p>
+  </div>
+</section>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card login-card">
+        <div class="card-body">
+          <h2 class="text-center">Login</h2>
+          {% if template_data.error %}
+          <div class="alert alert-danger" role="alert">
+            {{ template_data.error }}
           </div>
+          {% endif %}
+          <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input id="username" type="text" name="username" required
+                autocomplete="username" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input id="password" type="password" name="password" required
+                autocomplete="current-password" class="form-control">
+            </div>
+            <div class="text-center">
+              <button type="submit" class="btn btn-login">
+                Login
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
