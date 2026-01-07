@@ -1,18 +1,156 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
-<header class="masthead bg-index text-white text-center py-4">
-  <div class="container d-flex align-items-center flex-column pt-2">
-    <h2>Books Store</h2>
-    <p>Your Ticket to Great Reading!</p>
+<style>
+  .book-card {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+
+  .book-card.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .section-heading {
+    margin-bottom: 1rem;
+  }
+
+  .section-subheading {
+    margin-bottom: 4rem;
+  }
+
+  .page-section {
+    padding: 6rem 0;
+  }
+
+  .masthead {
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+  }
+
+  .masthead .masthead-heading {
+    font-size: 3.25rem;
+    line-height: 3.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .masthead .masthead-subheading {
+    font-size: 1.25rem;
+  }
+</style>
+
+<header class="masthead bg-index text-white text-center">
+  <div class="container d-flex align-items-center flex-column">
+    <h1 class="masthead-heading text-uppercase mb-0">Welcome to TechBookHub</h1>
+    <p class="masthead-subheading font-weight-light mb-0">Your Gateway to the World of DevOps, Development, and Cloud</p>
+    <a href="{% url 'books.index' %}" class="btn btn-primary btn-lg mt-4">View All Books</a>
   </div>
 </header>
-<div class="p-3">
+
+<section class="page-section" id="about">
   <div class="container">
-    <div class="row mt-3">
-      <div class="col mx-auto text-center mb-3">
-        <h4>Welcome to the best book store!!</h4>
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <h2 class="section-heading text-uppercase">What is TechBookHub?</h2>
+        <p class="lead text-muted">techbookhub.shop is a curated online library for technical professionals. We provide a vast collection of books on DevOps, software development, cloud computing, databases, and more. Our mission is to provide the resources you need to stay ahead in the fast-paced world of technology.</p>
       </div>
     </div>
   </div>
-</div>
+</section>
+
+<section class="page-section bg-light" id="featured-books">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <h2 class="section-heading text-uppercase">Featured Books</h2>
+        <h3 class="section-subheading text-muted">Check out our latest additions.</h3>
+      </div>
+    </div>
+    <div class="row text-center">
+      {% for book in template_data.books %}
+      <div class="col-md-4 book-card">
+        <div class="card h-100 shadow-sm">
+          <a href="{% url 'books.show' book.id %}">
+            {% if book.cover_image %}
+              <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.name }}" style="height: 300px; object-fit: cover;">
+            {% else %}
+              <img src="https://via.placeholder.com/300x300.png?text=No+Image" class="card-img-top" alt="No Image" style="height: 300px; object-fit: cover;">
+            {% endif %}
+          </a>
+          <div class="card-body">
+            <h5 class="card-title">{{ book.name }}</h5>
+            <p class="card-text">${{ book.price }}</p>
+            <a href="{% url 'books.show' book.id %}" class="btn btn-primary">View Details</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="row">
+        <div class="col-lg-12 text-center mt-5">
+            <a href="{% url 'books.index' %}" class="btn btn-primary btn-xl text-uppercase">View All Books</a>
+        </div>
+    </div>
+  </div>
+</section>
+
+<section class="page-section" id="why-us">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h2 class="section-heading text-uppercase">Why Choose TechBookHub?</h2>
+            </div>
+        </div>
+        <div class="row text-center">
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-book-open fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">Curated Content</h4>
+                <p class="text-muted">We offer a carefully selected collection of books from top authors and publishers to ensure you get the most relevant and up-to-date information.</p>
+            </div>
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-laptop-code fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">Focus on Technology</h4>
+                <p class="text-muted">Our library is dedicated to technical topics, including DevOps, Cloud Computing, Software Development, and Databases.</p>
+            </div>
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-users fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">Community Driven</h4>
+                <p class="text-muted">techbookhub.shop is built for the community. We welcome feedback and suggestions to continuously improve our library.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const bookCards = document.querySelectorAll('.book-card');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.1
+  });
+
+  bookCards.forEach(card => {
+    observer.observe(card);
+  });
+});
+</script>
 {% endblock content %}
