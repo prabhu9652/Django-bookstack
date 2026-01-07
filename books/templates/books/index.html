@@ -143,6 +143,16 @@
     flex: 1;
   }
 
+  @media (max-width: 767px) {
+    .books-layout {
+      flex-direction: column;
+    }
+    .sidebar {
+      width: 100%;
+      max-height: none;
+    }
+  }
+
   .fade-in-section {
     opacity: 0;
     transform: translateY(20px);
@@ -152,6 +162,20 @@
   .fade-in-section.is-visible {
     opacity: 1;
     transform: translateY(0);
+  }
+
+  .sidebar .list-group-item a {
+    color: black !important;
+    text-decoration: none;
+  }
+
+  .sidebar .list-group-item.active {
+    background: none;
+    color: inherit;
+  }
+
+  .sidebar .list-group-item.active a {
+    color: black !important;
   }
 </style>
 
@@ -164,14 +188,8 @@
 
 <div class="container">
   <div class="row mt-3 align-items-center">
-    <div class="col-8 col-md-10">
+    <div class="col-12">
       <h2 class="text-muted">Browse Books</h2>
-    </div>
-    <div class="col-4 col-md-2 text-end">
-      <!-- mobile hamburger -->
-      <button id="category-toggle" class="btn btn-outline-secondary category-hamburger" aria-controls="books-sidebar-mobile" aria-expanded="false">
-        ☰ <span class="sr-only">Toggle categories</span>
-      </button>
     </div>
   </div>
   <hr />
@@ -199,11 +217,10 @@
   <div class="books-layout">
 
     <!-- Sidebar (desktop) -->
-    <aside id="books-sidebar" class="sidebar d-none d-md-block">
+    <aside id="books-sidebar" class="sidebar">
       <div class="card p-2">
         <div class="sidebar-header">
           <h5 class="m-0">Categories</h5>
-          <button id="sidebar-collapse" class="btn btn-sm btn-outline-secondary" aria-pressed="false" title="Collapse categories">⇤</button>
         </div>
         <ul class="list-group list-group-flush">
           {% for c in template_data.categories %}
@@ -219,30 +236,6 @@
         </ul>
       </div>
     </aside>
-
-    <!-- Sidebar (mobile overlay) -->
-    <aside id="books-sidebar-mobile" class="sidebar mobile d-md-none" aria-hidden="true">
-      <div class="card p-2" style="border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
-        <div class="sidebar-header">
-          <h5 class="m-0">Categories</h5>
-          <button id="sidebar-close-mobile" class="btn btn-sm btn-outline-secondary" aria-label="Close">✕</button>
-        </div>
-        <ul class="list-group list-group-flush">
-          {% for c in template_data.categories %}
-          <li class="list-group-item d-flex justify-content-between align-items-center {% if template_data.category and template_data.category == c %}active{% endif %}">
-            {% if user.is_authenticated %}
-            <a href="{% url 'books.category' slug=c.slug %}">{{ c.name }}</a>
-            {% else %}
-            <a href="{% url 'accounts.login' %}?next={% url 'books.category' slug=c.slug %}">{{ c.name }}</a>
-            {% endif %}
-            <span class="badge bg-secondary">{{ c.books.count }}</span>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
-    </aside>
-
-    <div id="sidebar-overlay" class="sidebar-overlay d-md-none" aria-hidden="true"></div>
 
     <!-- Main content -->
     <main class="main fade-in-section">
