@@ -3,6 +3,7 @@ services:
   web:
     build: .
     command: ["gunicorn", "booksstore.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "2"]
+    container_name: "booksstore"
     ports:
       - "8000:8000"
     environment:
