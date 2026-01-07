@@ -3,10 +3,137 @@
 
 {% block content %}
 <style>
+  /* Enhanced styles for modern landing page */
+  .masthead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .masthead::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80') no-repeat center center;
+    background-size: cover;
+    opacity: 0.1;
+    z-index: 1;
+  }
+
+  .masthead .container {
+    position: relative;
+    z-index: 2;
+  }
+
+  .masthead-heading {
+    font-size: 3.25rem;
+    line-height: 3.25rem;
+    margin-bottom: 2rem;
+    animation: fadeInUp 1s ease-out;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .masthead-subheading {
+    font-size: 1.25rem;
+    animation: fadeInUp 1.2s ease-out;
+    color: #f8f9fa;
+  }
+
+  .btn-primary {
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    border: none;
+    padding: 12px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    animation: fadeInUp 1.4s ease-out;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .page-section {
+    padding: 6rem 0;
+  }
+
+  .section-heading {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+    position: relative;
+  }
+
+  .section-heading::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    margin: 1rem auto;
+    border-radius: 2px;
+  }
+
+  .section-subheading {
+    margin-bottom: 4rem;
+    color: #7f8c8d;
+  }
+
+  .feature-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    transition: transform 0.3s ease;
+  }
+
+  .feature-icon:hover {
+    transform: scale(1.1);
+  }
+
+  .feature-icon {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .feature-icon i {
+    color: white;
+    font-size: 2rem;
+  }
+
   .book-card {
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
   }
 
   .book-card.is-visible {
@@ -14,59 +141,115 @@
     transform: translateY(0);
   }
 
-  .section-heading {
-    margin-bottom: 1rem;
+  .book-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
   }
 
-  .section-subheading {
-    margin-bottom: 4rem;
+  .card-img-top {
+    transition: transform 0.3s ease;
   }
 
-  .page-section {
-    padding: 6rem 0;
+  .book-card:hover .card-img-top {
+    transform: scale(1.05);
   }
 
-  .masthead {
-    padding-top: 8rem;
-    padding-bottom: 8rem;
+  .btn-xl {
+    padding: 15px 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 50px;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    border: none;
+    transition: all 0.3s ease;
   }
 
-  .masthead .masthead-heading {
-    font-size: 3.25rem;
-    line-height: 3.25rem;
-    margin-bottom: 2rem;
+  .btn-xl:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
+    background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
   }
 
-  .masthead .masthead-subheading {
-    font-size: 1.25rem;
+  /* Scroll animations */
+  .fade-in-section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .fade-in-section.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .slide-in-left {
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .slide-in-left.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .slide-in-right {
+    opacity: 0;
+    transform: translateX(50px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .slide-in-right.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .masthead-heading {
+      font-size: 2.5rem;
+      line-height: 2.5rem;
+    }
+
+    .masthead-subheading {
+      font-size: 1rem;
+    }
+
+    .page-section {
+      padding: 4rem 0;
+    }
   }
 </style>
 
-<header class="masthead bg-index text-white text-center">
+<header class="masthead text-white text-center">
   <div class="container d-flex align-items-center flex-column">
     <h1 class="masthead-heading text-uppercase mb-0">Welcome to TechBookHub</h1>
     <p class="masthead-subheading font-weight-light mb-0">Your Gateway to the World of DevOps, Development, and Cloud</p>
-    <a href="{% url 'books.index' %}" class="btn btn-primary btn-lg mt-4">View All Books</a>
+    <a href="{% url 'books.index' %}" class="btn btn-primary btn-lg mt-4">Explore Our Library</a>
   </div>
 </header>
 
-<section class="page-section" id="about">
+<section class="page-section fade-in-section" id="about">
   <div class="container">
-    <div class="row">
-      <div class="col-lg-12 text-center">
+    <div class="row align-items-center">
+      <div class="col-lg-6 slide-in-left">
         <h2 class="section-heading text-uppercase">What is TechBookHub?</h2>
         <p class="lead text-muted">techbookhub.shop is a curated online library for technical professionals. We provide a vast collection of books on DevOps, software development, cloud computing, databases, and more. Our mission is to provide the resources you need to stay ahead in the fast-paced world of technology.</p>
+        <a href="{% url 'books.index' %}" class="btn btn-primary">Browse Books</a>
+      </div>
+      <div class="col-lg-6 slide-in-right text-center">
+        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Person Reading a Book" class="img-fluid rounded shadow" style="max-height: 400px;">
       </div>
     </div>
   </div>
 </section>
 
-<section class="page-section bg-light" id="featured-books">
+<section class="page-section bg-light fade-in-section" id="featured-books">
   <div class="container">
     <div class="row">
       <div class="col-lg-12 text-center">
         <h2 class="section-heading text-uppercase">Featured Books</h2>
-        <h3 class="section-subheading text-muted">Check out our latest additions.</h3>
+        <h3 class="section-subheading text-muted">Check out our latest additions to expand your knowledge.</h3>
       </div>
     </div>
     <div class="row text-center">
@@ -77,12 +260,12 @@
             {% if book.cover_image %}
               <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.name }}" style="height: 300px; object-fit: cover;">
             {% else %}
-              <img src="https://via.placeholder.com/300x300.png?text=No+Image" class="card-img-top" alt="No Image" style="height: 300px; object-fit: cover;">
+              <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" class="card-img-top" alt="Book Cover" style="height: 300px; object-fit: cover;">
             {% endif %}
           </a>
           <div class="card-body">
             <h5 class="card-title">{{ book.name }}</h5>
-            <p class="card-text">${{ book.price }}</p>
+            <p class="card-text text-primary font-weight-bold">${{ book.price }}</p>
             <a href="{% url 'books.show' book.id %}" class="btn btn-primary">View Details</a>
           </div>
         </div>
@@ -91,7 +274,7 @@
     </div>
     <div class="row">
         <div class="col-lg-12 text-center mt-5">
-            <a href="{% url 'books.index' %}" class="btn btn-primary btn-xl text-uppercase">View All Books</a>
+            <a href="{% url 'books.index' %}" class="btn btn-xl text-uppercase">View All Books</a>
         </div>
     </div>
   </div>
@@ -135,7 +318,7 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  const bookCards = document.querySelectorAll('.book-card');
+  const animatedElements = document.querySelectorAll('.fade-in-section, .slide-in-left, .slide-in-right, .book-card');
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -148,8 +331,8 @@ document.addEventListener("DOMContentLoaded", function() {
     threshold: 0.1
   });
 
-  bookCards.forEach(card => {
-    observer.observe(card);
+  animatedElements.forEach(element => {
+    observer.observe(element);
   });
 });
 </script>

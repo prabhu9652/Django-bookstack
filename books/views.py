@@ -4,7 +4,11 @@ from django.contrib.auth.decorators import login_required
 from django.http import FileResponse, Http404
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 from django.core.paginator import Paginator
+from django.db.models import Prefetch
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @login_required
@@ -58,11 +62,11 @@ def index(request):
     else:
         books = Book.objects.all()
 
-    paginator = Paginator(books, 10)  # Show 10 books per page
+    paginator = Paginator(books, 8)  # Show 8 books per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    categories = Category.objects.all()
+    categories = Category.objects.filter(parent=None)
 
     template_data = {}
     template_data['title'] = 'Books'
@@ -77,7 +81,7 @@ def category(request, slug):
     cat = get_object_or_404(Category, slug=slug)
     books = cat.books.all()
 
-    paginator = Paginator(books, 10)  # Show 10 books per page
+    paginator = Paginator(books, 8)  # Show 8 books per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -85,49 +89,60 @@ def category(request, slug):
     template_data['title'] = f"Category: {cat.name}"
     template_data['books'] = page_obj
     template_data['category'] = cat
-    template_data['categories'] = Category.objects.all()
+    template_data['categories'] = Category.objects.filter(parent=None)
     return render(request, 'books/index.html', {'template_data': template_data})
 
 def show(request, id):
-    book = Book.objects.get(id=id)
-    reviews = Review.objects.filter(book=book)
+    try:
+        book = get_object_or_404(Book, id=id)
+        reviews = Review.objects.filter(book=book)
 
-    template_data = {}
-    template_data['title'] = book.name
-    template_data['book'] = book
-    template_data['reviews'] = reviews
-    return render(request, 'books/show.html', {'template_data': template_data})
+        template_data = {}
+        template_data['title'] = book.name
+        template_data['book'] = book
+        template_data['reviews'] = reviews
+        return render(request, 'books/show.html', {'template_data': template_data})
+    except Exception as e:
+        logger.error(f"Error loading book {id}: {str(e)}")
+        raise Http404("Book not found")
 
 @login_required
 def create_review(request, id):
-    if request.method == 'POST' and request.POST['comment'] != '':
-        book = Book.objects.get(id=id)
-        review = Review()
-        review.comment = request.POST['comment']
-        review.book = book
-        review.user = request.user
-        review.save()
-        return redirect('books.show', id=id)
-    else:
+    try:
+        book = get_object_or_404(Book, id=id)
+        if request.method == 'POST' and request.POST['comment'] != '':
+            review = Review()
+            review.comment = request.POST['comment']
+            review.book = book
+            review.user = request.user
+            review.save()
+            return redirect('books.show', id=id)
+        else:
+            return redirect('books.show', id=id)
+    except Exception as e:
+        logger.error(f"Error creating review for book {id}: {str(e)}")
         return redirect('books.show', id=id)
 
 @login_required
 def edit_review(request, id, review_id):
-    review = get_object_or_404(Review, id=review_id)
-    if request.user != review.user:
-        return redirect('books.show', id=id)
+    try:
+        review = get_object_or_404(Review, id=review_id)
+        if request.user != review.user:
+            return redirect('books.show', id=id)
 
-    if request.method == 'GET':
-        template_data = {}
-        template_data['title'] = 'Edit Review'
-        template_data['review'] = review
-        return render(request, 'books/edit_review.html', {'template_data': template_data})
-    elif request.method == 'POST' and request.POST['comment'] != '':
-        review = Review.objects.get(id=review_id)
-        review.comment = request.POST['comment']
-        review.save()
-        return redirect('books.show', id=id)
-    else:
+        if request.method == 'GET':
+            template_data = {}
+            template_data['title'] = 'Edit Review'
+            template_data['review'] = review
+            return render(request, 'books/edit_review.html', {'template_data': template_data})
+        elif request.method == 'POST' and request.POST['comment'] != '':
+            review.comment = request.POST['comment']
+            review.save()
+            return redirect('books.show', id=id)
+        else:
+            return redirect('books.show', id=id)
+    except Exception as e:
+        logger.error(f"Error editing review {review_id} for book {id}: {str(e)}")
         return redirect('books.show', id=id)
 
 @login_required
