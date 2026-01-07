@@ -30,6 +30,9 @@ DEBUG = os.getenv('DEBUG', '1') in ('1', 'true', 'True')
 # ALLOWED_HOSTS can be a comma-separated list in env
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,testserver').split(',')
 
+CSRF_TRUSTED_ORIGINS = ['https://' + host for host in ALLOWED_HOSTS if host not in ['testserver']]
+
+
 
 # Application definition
 
