@@ -94,7 +94,7 @@
   }
 
   .sidebar .list-group-item.active {
-    background: linear-gradient(45deg, #667eea, #764ba2);
+    background: #f28b82;
     color: white;
   }
 
@@ -169,13 +169,8 @@
     text-decoration: none;
   }
 
-  .sidebar .list-group-item.active {
-    background: none;
-    color: inherit;
-  }
-
   .sidebar .list-group-item.active a {
-    color: black !important;
+    color: white !important;
   }
 </style>
 
@@ -209,7 +204,7 @@
     </form>
     {% if template_data.category %}
     <div class="mt-2">
-      <a href="{% url 'books.index' %}" class="btn btn-outline-secondary">← Back to All Books</a>
+      <a href="{% url 'books.index' %}" class="btn btn-outline-secondary" style="color: black;">← Back to All Books</a>
     </div>
     {% endif %}
   </div>
@@ -242,7 +237,7 @@
       <div class="row">
         {% for book in template_data.books %}
         <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
-          <a href="{% url 'books.show' id=book.id %}" class="book-card-link">
+          <a href="{% url 'books.show' id=book.id %}{% if template_data.category %}?category={{ template_data.category.slug }}{% endif %}" class="book-card-link">
             <article class="p-2 card align-items-center pt-3 book-card" tabindex="0" style="animation-delay: {{ forloop.counter0|add:1 }}00ms;">
               {% if book.cover_image %}
               <img src="{{ book.cover_image.url }}" class="card-img-top rounded img-card-200" alt="Cover image for {{ book.name }}" loading="lazy">
