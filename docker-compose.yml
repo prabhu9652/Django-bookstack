@@ -1,13 +1,20 @@
-version: '3.8'
+version: "3.9"
+
 services:
   web:
     build: .
-    command: ["gunicorn", "booksstore.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "2"]
-    container_name: "booksstore"
+    container_name: booksstore_web
+    restart: always
     ports:
       - "8000:8000"
-    environment:
-      - DEBUG=1
-      - SECRET_KEY=dev-secret
-      - ALLOWED_HOSTS=127.0.0.1,localhost,68.183.84.101,techbookhub.shop
-    depends_on: []
+    env_file:
+      - .env
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - sqlite_volume:/app/db
+
+volumes:
+  static_volume:
+  media_volume:
+  sqlite_volume:
