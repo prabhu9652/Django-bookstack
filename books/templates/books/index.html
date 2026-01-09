@@ -1,330 +1,122 @@
 {% extends 'base.html' %}
-{% block content %}
 {% load static %}
-<style>
-  /* Enhanced styles for modern books page */
-  .books-hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 4rem 0;
-    color: #fff;
-    text-align: center;
-    margin-bottom: 2rem;
-  }
 
-  .books-heading {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-  }
-
-  .books-subheading {
-    font-size: 1.25rem;
-    opacity: 0.9;
-  }
-
-  .book-card {
-    border: none;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.6s ease-out forwards;
-  }
-
-  .book-card-link {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-    transition: transform 0.3s ease;
-  }
-
-  .book-card-link:hover {
-    transform: translateY(-5px);
-  }
-
-  .book-card img {
-    transition: transform 0.3s ease;
-  }
-
-  .book-card:hover img {
-    transform: scale(1.05);
-  }
-
-  .book-card .btn {
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-    border: none;
-    transition: all 0.3s ease;
-  }
-
-  .book-card .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
-    background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .sidebar .card {
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 1.5rem;
-  }
-
-  .sidebar .list-group-item {
-    border: none;
-    transition: background-color 0.3s ease;
-  }
-
-  .sidebar .list-group-item:hover {
-    background-color: rgba(102, 126, 234, 0.1);
-  }
-
-  .sidebar .list-group-item.active {
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    color: white;
-  }
-
-  .pagination .page-link {
-    color: #667eea;
-    border-color: #667eea;
-    transition: all 0.3s ease;
-  }
-
-  .pagination .page-link:hover {
-    background-color: #667eea;
-    border-color: #667eea;
-    color: white;
-  }
-
-  .pagination .page-item.active .page-link {
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    border-color: #667eea;
-  }
-
-  .pagination-prev-next .page-link {
-    min-width: 80px;
-    text-align: center;
-  }
-
-  .search-form .btn {
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    border: none;
-    transition: all 0.3s ease;
-  }
-
-  .search-form .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-  }
-
-  .books-layout {
-    display: flex;
-    gap: 2rem;
-    margin-top: 1rem;
-  }
-
-  .sidebar {
-    width: 250px;
-    flex-shrink: 0;
-    max-height: 70vh;
-    overflow-y: auto;
-  }
-
-  .main {
-    flex: 1;
-  }
-
-  @media (max-width: 767px) {
-    .books-layout {
-      flex-direction: column;
-    }
-    .sidebar {
-      width: 100%;
-      max-height: none;
-    }
-  }
-
-  .fade-in-section {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-  }
-
-  .fade-in-section.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .sidebar .list-group-item a {
-    color: black !important;
-    text-decoration: none;
-  }
-
-  .sidebar .list-group-item.active a {
-    color: white !important;
-  }
-</style>
-
-<section class="books-hero">
-  <div class="container">
-    <h1 class="books-heading">Explore Our Book Collection</h1>
-    <p class="books-subheading">Discover a world of knowledge with our curated selection of technical books.</p>
-  </div>
-</section>
-
+{% block content %}
 <div class="container">
-  <div class="row mt-3 align-items-center">
-    <div class="col-12">
-      <h2 class="text-muted">Browse Books</h2>
+  <!-- Page Header -->
+  <div class="section">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1>Books Library</h1>
+        <p style="color: var(--text-secondary);">
+          {% if template_data.category %}
+            Category: {{ template_data.category.name }}
+          {% else %}
+            Browse our collection of technical books
+          {% endif %}
+        </p>
+      </div>
+      
+      <!-- Search -->
+      <div style="max-width: 300px;">
+        <form method="GET" class="flex gap-2">
+          <input type="text" name="search" class="form-control" placeholder="Search books..." 
+                 value="{{ template_data.search_term|default:'' }}">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+      </div>
     </div>
   </div>
-  <hr />
-  <div class="search-form mb-4">
-    <form method="GET">
-      <div class="row">
-        <div class="col-auto">
-          <div class="input-group col-auto">
-            <div class="input-group-text">Search</div>
-            <input type="text" class="form-control" name="search" value="{{ template_data.search_term }}">
-          </div>
-        </div>
-        <div class="col-auto">
-          <button class="btn text-white" type="submit">Search</button>
-        </div>
-      </div>
-    </form>
-    {% if template_data.category %}
-    <div class="mt-2">
-      <a href="{% url 'books.index' %}" class="btn btn-outline-secondary" style="color: black;">← Back to All Books</a>
-    </div>
-    {% endif %}
-  </div>
 
-  <div class="books-layout">
-
-    <!-- Sidebar (desktop) -->
-    <aside id="books-sidebar" class="sidebar">
-      <div class="card p-2">
-        <div class="sidebar-header">
-          <h5 class="m-0">Categories</h5>
-        </div>
-        <ul class="list-group list-group-flush">
-          {% for c in template_data.categories %}
-          <li class="list-group-item d-flex justify-content-between align-items-center {% if template_data.category and template_data.category == c %}active{% endif %}">
-            {% if user.is_authenticated %}
-            <a class="cat-label" href="{% url 'books.category' slug=c.slug %}">{{ c.name }}</a>
-            {% else %}
-            <a class="cat-label" href="{% url 'accounts.login' %}?next={% url 'books.category' slug=c.slug %}">{{ c.name }}</a>
-            {% endif %}
-            <span class="badge bg-secondary">{{ c.books.count }}</span>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
-    </aside>
-
-    <!-- Main content -->
-    <main class="main fade-in-section">
-      <div class="row">
-        {% for book in template_data.books %}
-        <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
-          <a href="{% url 'books.show' id=book.id %}{% if template_data.category %}?category={{ template_data.category.slug }}{% endif %}" class="book-card-link">
-            <article class="p-2 card align-items-center pt-3 book-card" tabindex="0" style="animation-delay: {{ forloop.counter0|add:1 }}00ms;">
-              {% if book.cover_image %}
-              <img src="{{ book.cover_image.url }}" class="card-img-top rounded img-card-200" alt="Cover image for {{ book.name }}" loading="lazy">
-              {% else %}
-              <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" class="card-img-top rounded img-card-200" alt="Book Cover" loading="lazy">
-              {% endif %}
-              <div class="card-body text-center">
-                <h5 class="card-title">{{ book.name }}</h5>
-              </div>
-            </article>
+  <!-- Category Navigation -->
+  {% if template_data.categories %}
+  <div class="category-nav">
+    <div class="container">
+      <div class="category-list">
+        <a href="{% url 'books.index' %}" class="category-item {% if not template_data.category %}active{% endif %}">
+          All Books
+        </a>
+        {% for category in template_data.categories %}
+          <a href="{% url 'books.category' category.slug %}" 
+             class="category-item {% if template_data.category.id == category.id %}active{% endif %}">
+            {{ category.name }}
           </a>
-        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Books Grid -->
+  <div class="section">
+    {% if template_data.books %}
+      <div class="grid grid-4">
+        {% for book in template_data.books %}
+          <div class="book-card" data-book-url="{% url 'books.show' book.id %}">
+            <div class="book-cover">
+              {% if book.cover %}
+                <img src="{{ book.cover.url }}" alt="{{ book.name }}">
+              {% else %}
+                <i class="fas fa-book"></i>
+              {% endif %}
+            </div>
+            <div class="book-info">
+              <h4 class="book-title">{{ book.name }}</h4>
+              <p class="book-author">{{ book.author|default:"Unknown Author" }}</p>
+              {% if book.category %}
+                <span class="book-category">{{ book.category.name }}</span>
+              {% endif %}
+            </div>
+          </div>
         {% endfor %}
       </div>
 
       <!-- Pagination -->
-      <nav aria-label="Book pagination" class="mt-4">
-        <ul class="pagination justify-content-center">
+      {% if template_data.books.has_other_pages %}
+        <div class="flex justify-center mt-8 gap-2">
           {% if template_data.books.has_previous %}
-          <li class="page-item pagination-prev-next">
-            <a class="page-link" href="?page={{ template_data.books.previous_page_number }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}{% if template_data.category %}&category={{ template_data.category.slug }}{% endif %}">Previous</a>
-          </li>
-          {% else %}
-          <li class="page-item disabled pagination-prev-next">
-            <span class="page-link">Previous</span>
-          </li>
+            <a href="?page={{ template_data.books.previous_page_number }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}" 
+               class="btn btn-secondary">
+              <i class="fas fa-chevron-left"></i>
+              Previous
+            </a>
           {% endif %}
-
-          {% with page_obj=template_data.books %}
-          {% with paginator=page_obj.paginator %}
-          {% with current_page=page_obj.number num_pages=paginator.num_pages %}
-          {% for i in paginator.page_range %}
-            {% if i == 1 or i == num_pages or i >= current_page|add:"-2" and i <= current_page|add:"2" %}
-              {% if i == page_obj.number %}
-                <li class="page-item active"><span class="page-link">{{ i }}</span></li>
-              {% else %}
-                <li class="page-item"><a class="page-link" href="?page={{ i }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}{% if template_data.category %}&category={{ template_data.category.slug }}{% endif %}">{{ i }}</a></li>
-              {% endif %}
-            {% elif forloop.counter == 2 and current_page > 4 %}
-              <li class="page-item disabled"><span class="page-link">...</span></li>
-            {% elif forloop.revcounter0 == 1 and current_page < num_pages|add:"-3" %}
-              <li class="page-item disabled"><span class="page-link">...</span></li>
-            {% endif %}
-          {% endfor %}
-          {% endwith %}
-          {% endwith %}
-          {% endwith %}
-
+          
+          <span class="flex items-center" style="padding: 0 var(--space-4); color: var(--text-secondary);">
+            Page {{ template_data.books.number }} of {{ template_data.books.paginator.num_pages }}
+          </span>
+          
           {% if template_data.books.has_next %}
-          <li class="page-item pagination-prev-next">
-            <a class="page-link" href="?page={{ template_data.books.next_page_number }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}{% if template_data.category %}&category={{ template_data.category.slug }}{% endif %}">Next</a>
-            </li>
-          {% else %}
-          <li class="page-item disabled pagination-prev-next">
-            <span class="page-link">Next</span>
-          </li>
+            <a href="?page={{ template_data.books.next_page_number }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}" 
+               class="btn btn-secondary">
+              Next
+              <i class="fas fa-chevron-right"></i>
+            </a>
           {% endif %}
-        </ul>
-      </nav>
-
-    </main>
-
+        </div>
+      {% endif %}
+    {% else %}
+      <!-- Empty State -->
+      <div class="text-center" style="padding: var(--space-16) 0;">
+        <i class="fas fa-book-open" style="font-size: 4rem; color: var(--text-muted); margin-bottom: var(--space-4);"></i>
+        <h3 style="color: var(--text-secondary); margin-bottom: var(--space-2);">No books found</h3>
+        <p style="color: var(--text-tertiary);">
+          {% if template_data.search_term %}
+            No books match your search "{{ template_data.search_term }}". Try a different search term.
+          {% else %}
+            No books available in this category yet.
+          {% endif %}
+        </p>
+        {% if template_data.search_term %}
+          <a href="{% url 'books.index' %}" class="btn btn-secondary mt-4">
+            <i class="fas fa-arrow-left"></i>
+            View All Books
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
   </div>
 </div>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const animatedElements = document.querySelectorAll('.fade-in-section, .book-card');
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, {
-    threshold: 0.1
-  });
-
-  animatedElements.forEach(element => {
-    observer.observe(element);
-  });
-});
-</script>
 {% endblock content %}

@@ -58,9 +58,9 @@ def view_pdf(request, id):
 def index(request):
     search_term = request.GET.get('search')
     if search_term:
-        books = Book.objects.filter(name__icontains=search_term)
+        books = Book.objects.filter(name__icontains=search_term).order_by('name')
     else:
-        books = Book.objects.all()
+        books = Book.objects.all().order_by('name')
 
     paginator = Paginator(books, 8)  # Show 8 books per page
     page_number = request.GET.get('page')
@@ -79,7 +79,7 @@ def index(request):
 @login_required
 def category(request, slug):
     cat = get_object_or_404(Category, slug=slug)
-    books = cat.books.all()
+    books = cat.books.all().order_by('name')
 
     paginator = Paginator(books, 8)  # Show 8 books per page
     page_number = request.GET.get('page')
