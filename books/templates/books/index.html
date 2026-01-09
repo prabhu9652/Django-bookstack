@@ -1,330 +1,256 @@
 {% extends 'base.html' %}
-{% block content %}
 {% load static %}
-<style>
-  /* Enhanced styles for modern books page */
-  .books-hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 4rem 0;
-    color: #fff;
-    text-align: center;
-    margin-bottom: 2rem;
-  }
 
-  .books-heading {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-  }
-
-  .books-subheading {
-    font-size: 1.25rem;
-    opacity: 0.9;
-  }
-
-  .book-card {
-    border: none;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.6s ease-out forwards;
-  }
-
-  .book-card-link {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-    transition: transform 0.3s ease;
-  }
-
-  .book-card-link:hover {
-    transform: translateY(-5px);
-  }
-
-  .book-card img {
-    transition: transform 0.3s ease;
-  }
-
-  .book-card:hover img {
-    transform: scale(1.05);
-  }
-
-  .book-card .btn {
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-    border: none;
-    transition: all 0.3s ease;
-  }
-
-  .book-card .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
-    background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .sidebar .card {
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 1.5rem;
-  }
-
-  .sidebar .list-group-item {
-    border: none;
-    transition: background-color 0.3s ease;
-  }
-
-  .sidebar .list-group-item:hover {
-    background-color: rgba(102, 126, 234, 0.1);
-  }
-
-  .sidebar .list-group-item.active {
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    color: white;
-  }
-
-  .pagination .page-link {
-    color: #667eea;
-    border-color: #667eea;
-    transition: all 0.3s ease;
-  }
-
-  .pagination .page-link:hover {
-    background-color: #667eea;
-    border-color: #667eea;
-    color: white;
-  }
-
-  .pagination .page-item.active .page-link {
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    border-color: #667eea;
-  }
-
-  .pagination-prev-next .page-link {
-    min-width: 80px;
-    text-align: center;
-  }
-
-  .search-form .btn {
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    border: none;
-    transition: all 0.3s ease;
-  }
-
-  .search-form .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-  }
-
-  .books-layout {
-    display: flex;
-    gap: 2rem;
-    margin-top: 1rem;
-  }
-
-  .sidebar {
-    width: 250px;
-    flex-shrink: 0;
-    max-height: 70vh;
-    overflow-y: auto;
-  }
-
-  .main {
-    flex: 1;
-  }
-
-  @media (max-width: 767px) {
-    .books-layout {
-      flex-direction: column;
-    }
-    .sidebar {
-      width: 100%;
-      max-height: none;
-    }
-  }
-
-  .fade-in-section {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-  }
-
-  .fade-in-section.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .sidebar .list-group-item a {
-    color: black !important;
-    text-decoration: none;
-  }
-
-  .sidebar .list-group-item.active a {
-    color: white !important;
-  }
-</style>
-
-<section class="books-hero">
-  <div class="container">
-    <h1 class="books-heading">Explore Our Book Collection</h1>
-    <p class="books-subheading">Discover a world of knowledge with our curated selection of technical books.</p>
-  </div>
-</section>
+{% block content %}
+<!-- Hidden CSRF token for AJAX requests -->
+{% csrf_token %}
 
 <div class="container">
-  <div class="row mt-3 align-items-center">
-    <div class="col-12">
-      <h2 class="text-muted">Browse Books</h2>
-    </div>
-  </div>
-  <hr />
-  <div class="search-form mb-4">
-    <form method="GET">
-      <div class="row">
-        <div class="col-auto">
-          <div class="input-group col-auto">
-            <div class="input-group-text">Search</div>
-            <input type="text" class="form-control" name="search" value="{{ template_data.search_term }}">
-          </div>
+  <!-- Page Header -->
+  <div class="tech-header-section">
+    <div class="tech-header">
+      <div class="tech-header-content">
+        <div class="tech-icon-group">
+          <i class="fab fa-docker tech-icon"></i>
+          <i class="fas fa-cloud tech-icon"></i>
+          <i class="fas fa-database tech-icon"></i>
+          <i class="fas fa-chart-line tech-icon"></i>
         </div>
-        <div class="col-auto">
-          <button class="btn text-white" type="submit">Search</button>
+        <h1 class="tech-title">Technical Library</h1>
+        <p class="tech-subtitle">
+          {% if template_data.category %}
+            {{ template_data.category.name }} • Professional technical books and resources
+          {% else %}
+            DevOps, Cloud Computing, Data Science, ML & Software Development
+          {% endif %}
+        </p>
+      </div>
+      <div class="tech-header-actions" style="margin-left: auto !important; display: flex !important; align-items: center !important;">
+        <!-- Search -->
+        <div class="tech-search">
+          <form method="GET" class="search-form">
+            <div class="search-input-group">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" name="search" class="search-input" placeholder="Search technical books..." 
+                     value="{{ template_data.search_term|default:'' }}">
+              <button type="submit" class="search-btn">
+                <i class="fas fa-arrow-right"></i>
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-    </form>
-    {% if template_data.category %}
-    <div class="mt-2">
-      <a href="{% url 'books.index' %}" class="btn btn-outline-secondary" style="color: black;">← Back to All Books</a>
     </div>
-    {% endif %}
   </div>
 
-  <div class="books-layout">
+  <!-- Category Navigation -->
+  {% if template_data.categories %}
+  <div class="tech-category-nav">
+    <div class="category-scroll">
+      <a href="{% url 'books.index' %}" class="tech-category-item {% if not template_data.category %}active{% endif %}">
+        <i class="fas fa-th-large"></i>
+        <span>All Books</span>
+      </a>
+      {% for category in template_data.categories %}
+        <a href="{% url 'books.category' category.slug %}" 
+           class="tech-category-item {% if template_data.category.id == category.id %}active{% endif %}">
+          {% if 'devops' in category.name|lower or 'ops' in category.name|lower %}
+            <i class="fas fa-cogs"></i>
+          {% elif 'cloud' in category.name|lower %}
+            <i class="fas fa-cloud"></i>
+          {% elif 'data' in category.name|lower %}
+            <i class="fas fa-chart-bar"></i>
+          {% elif 'machine' in category.name|lower or 'ml' in category.name|lower or 'ai' in category.name|lower %}
+            <i class="fas fa-robot"></i>
+          {% elif 'software' in category.name|lower or 'development' in category.name|lower or 'programming' in category.name|lower %}
+            <i class="fas fa-code"></i>
+          {% elif 'database' in category.name|lower or 'sql' in category.name|lower %}
+            <i class="fas fa-database"></i>
+          {% elif 'observability' in category.name|lower or 'monitoring' in category.name|lower %}
+            <i class="fas fa-chart-line"></i>
+          {% else %}
+            <i class="fas fa-book"></i>
+          {% endif %}
+          <span>{{ category.name }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
 
-    <!-- Sidebar (desktop) -->
-    <aside id="books-sidebar" class="sidebar">
-      <div class="card p-2">
-        <div class="sidebar-header">
-          <h5 class="m-0">Categories</h5>
-        </div>
-        <ul class="list-group list-group-flush">
-          {% for c in template_data.categories %}
-          <li class="list-group-item d-flex justify-content-between align-items-center {% if template_data.category and template_data.category == c %}active{% endif %}">
-            {% if user.is_authenticated %}
-            <a class="cat-label" href="{% url 'books.category' slug=c.slug %}">{{ c.name }}</a>
-            {% else %}
-            <a class="cat-label" href="{% url 'accounts.login' %}?next={% url 'books.category' slug=c.slug %}">{{ c.name }}</a>
-            {% endif %}
-            <span class="badge bg-secondary">{{ c.books.count }}</span>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
-    </aside>
-
-    <!-- Main content -->
-    <main class="main fade-in-section">
-      <div class="row">
+  <!-- Books Grid -->
+  <div class="tech-books-section">
+    {% if template_data.books %}
+      <div class="tech-books-grid">
         {% for book in template_data.books %}
-        <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
-          <a href="{% url 'books.show' id=book.id %}{% if template_data.category %}?category={{ template_data.category.slug }}{% endif %}" class="book-card-link">
-            <article class="p-2 card align-items-center pt-3 book-card" tabindex="0" style="animation-delay: {{ forloop.counter0|add:1 }}00ms;">
-              {% if book.cover_image %}
-              <img src="{{ book.cover_image.url }}" class="card-img-top rounded img-card-200" alt="Cover image for {{ book.name }}" loading="lazy">
+          <div class="tech-book-card" data-book-url="{% url 'books.show' book.id %}">
+            <div class="tech-book-cover">
+              {% if book.cover %}
+                <img src="{{ book.cover.url }}" alt="{{ book.name }}" loading="lazy">
               {% else %}
-              <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" class="card-img-top rounded img-card-200" alt="Book Cover" loading="lazy">
+                <div class="tech-book-placeholder">
+                  <i class="fas fa-file-code"></i>
+                  <div class="placeholder-text">Technical Book</div>
+                </div>
               {% endif %}
-              <div class="card-body text-center">
-                <h5 class="card-title">{{ book.name }}</h5>
+            </div>
+            
+            <div class="tech-book-info">
+              <div class="tech-book-content">
+                <h4 class="tech-book-title">{{ book.name }}</h4>
+                <p class="tech-book-author">{{ book.author|default:"Technical Author" }}</p>
+                
+                <div class="tech-book-meta">
+                  {% if book.category %}
+                    <span class="tech-category-badge">
+                      {% if 'devops' in book.category.name|lower %}
+                        <i class="fas fa-cogs"></i>
+                      {% elif 'cloud' in book.category.name|lower %}
+                        <i class="fas fa-cloud"></i>
+                      {% elif 'data' in book.category.name|lower %}
+                        <i class="fas fa-chart-bar"></i>
+                      {% elif 'machine' in book.category.name|lower %}
+                        <i class="fas fa-robot"></i>
+                      {% elif 'software' in book.category.name|lower %}
+                        <i class="fas fa-code"></i>
+                      {% elif 'database' in book.category.name|lower %}
+                        <i class="fas fa-database"></i>
+                      {% else %}
+                        <i class="fas fa-book"></i>
+                      {% endif %}
+                      {{ book.category.name }}
+                    </span>
+                  {% endif %}
+                </div>
               </div>
-            </article>
-          </a>
-        </div>
+              
+              <!-- Library Action Button -->
+              {% if user.is_authenticated %}
+                <div class="tech-book-actions">
+                  {% if book.id in template_data.user_library_book_ids %}
+                    <button class="btn btn-danger btn-sm remove-from-library" data-book-id="{{ book.id }}">
+                      <i class="fas fa-bookmark-slash"></i>
+                      Remove
+                    </button>
+                  {% else %}
+                    <button class="btn btn-primary btn-sm add-to-library" data-book-id="{{ book.id }}">
+                      <i class="fas fa-bookmark"></i>
+                      Add to Library
+                    </button>
+                  {% endif %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
         {% endfor %}
       </div>
 
       <!-- Pagination -->
-      <nav aria-label="Book pagination" class="mt-4">
-        <ul class="pagination justify-content-center">
+      {% if template_data.books.has_other_pages %}
+        <div class="tech-pagination">
           {% if template_data.books.has_previous %}
-          <li class="page-item pagination-prev-next">
-            <a class="page-link" href="?page={{ template_data.books.previous_page_number }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}{% if template_data.category %}&category={{ template_data.category.slug }}{% endif %}">Previous</a>
-          </li>
-          {% else %}
-          <li class="page-item disabled pagination-prev-next">
-            <span class="page-link">Previous</span>
-          </li>
+            <a href="?page={{ template_data.books.previous_page_number }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}" 
+               class="pagination-btn">
+              <i class="fas fa-chevron-left"></i>
+              Previous
+            </a>
           {% endif %}
-
-          {% with page_obj=template_data.books %}
-          {% with paginator=page_obj.paginator %}
-          {% with current_page=page_obj.number num_pages=paginator.num_pages %}
-          {% for i in paginator.page_range %}
-            {% if i == 1 or i == num_pages or i >= current_page|add:"-2" and i <= current_page|add:"2" %}
-              {% if i == page_obj.number %}
-                <li class="page-item active"><span class="page-link">{{ i }}</span></li>
-              {% else %}
-                <li class="page-item"><a class="page-link" href="?page={{ i }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}{% if template_data.category %}&category={{ template_data.category.slug }}{% endif %}">{{ i }}</a></li>
-              {% endif %}
-            {% elif forloop.counter == 2 and current_page > 4 %}
-              <li class="page-item disabled"><span class="page-link">...</span></li>
-            {% elif forloop.revcounter0 == 1 and current_page < num_pages|add:"-3" %}
-              <li class="page-item disabled"><span class="page-link">...</span></li>
-            {% endif %}
-          {% endfor %}
-          {% endwith %}
-          {% endwith %}
-          {% endwith %}
-
+          
+          <span class="pagination-info">
+            Page {{ template_data.books.number }} of {{ template_data.books.paginator.num_pages }}
+          </span>
+          
           {% if template_data.books.has_next %}
-          <li class="page-item pagination-prev-next">
-            <a class="page-link" href="?page={{ template_data.books.next_page_number }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}{% if template_data.category %}&category={{ template_data.category.slug }}{% endif %}">Next</a>
-            </li>
-          {% else %}
-          <li class="page-item disabled pagination-prev-next">
-            <span class="page-link">Next</span>
-          </li>
+            <a href="?page={{ template_data.books.next_page_number }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}" 
+               class="pagination-btn">
+              Next
+              <i class="fas fa-chevron-right"></i>
+            </a>
           {% endif %}
-        </ul>
-      </nav>
-
-    </main>
-
+        </div>
+      {% endif %}
+    {% else %}
+      <!-- Empty State -->
+      <div class="tech-empty-state">
+        <div class="empty-icon">
+          <i class="fas fa-search"></i>
+        </div>
+        <h3>No Technical Books Found</h3>
+        <p>
+          {% if template_data.search_term %}
+            No books match your search "{{ template_data.search_term }}". Try different keywords or browse categories.
+          {% else %}
+            No books available in this category yet. Check back for new technical resources.
+          {% endif %}
+        </p>
+        {% if template_data.search_term %}
+          <a href="{% url 'books.index' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            View All Books
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
   </div>
 </div>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const animatedElements = document.querySelectorAll('.fade-in-section, .book-card');
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
+<script>
+// Books page specific functionality
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Books page loaded');
+  
+  // The LibraryManager handles all add/remove functionality
+  // This script only handles books-specific UI interactions
+  
+  const bookCards = document.querySelectorAll('.tech-book-card[data-book-url]');
+  
+  bookCards.forEach(card => {
+    card.addEventListener('click', function(e) {
+      // Don't navigate if clicking on action buttons
+      if (e.target.closest('.tech-book-actions') || e.target.closest('.btn')) {
+        return;
+      }
+      
+      const url = this.dataset.bookUrl;
+      if (url) {
+        window.location.href = url;
       }
     });
-  }, {
-    threshold: 0.1
+    
+    // Add keyboard support
+    card.setAttribute('tabindex', '0');
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.click();
+      }
+    });
   });
-
-  animatedElements.forEach(element => {
-    observer.observe(element);
-  });
+  
+  // Enhanced search functionality
+  const searchInput = document.querySelector('.search-input');
+  const searchForm = document.querySelector('.search-form');
+  
+  if (searchInput && searchForm) {
+    // Auto-focus search on '/' key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        searchInput.focus();
+      }
+    });
+    
+    // Clear search on Escape
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        this.value = '';
+        this.blur();
+      }
+    });
+  }
 });
+
+// All library management functions are now handled by the shared LibraryManager
+// No need for duplicate function definitions
 </script>
 {% endblock content %}

@@ -2,280 +2,229 @@
 {% load static %}
 
 {% block content %}
-<style>
-  /* Enhanced styles for modern about page */
-  .about-hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding-top: 8rem;
-    padding-bottom: 8rem;
-    position: relative;
-    overflow: hidden;
-    color: #fff;
-    text-align: center;
-  }
-
-  .about-hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80') no-repeat center center;
-    background-size: cover;
-    opacity: 0.1;
-    z-index: 1;
-  }
-
-  .about-hero .container {
-    position: relative;
-    z-index: 2;
-  }
-
-  .about-heading {
-    font-size: 3.25rem;
-    line-height: 3.25rem;
-    margin-bottom: 2rem;
-    animation: fadeInUp 1s ease-out;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-  }
-
-  .about-subheading {
-    font-size: 1.25rem;
-    animation: fadeInUp 1.2s ease-out;
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .page-section {
-    padding: 6rem 0;
-  }
-
-  .section-heading {
-    margin-bottom: 1rem;
-    color: #2c3e50;
-    position: relative;
-  }
-
-  .section-heading::after {
-    content: '';
-    display: block;
-    width: 60px;
-    height: 4px;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-    margin: 1rem auto;
-    border-radius: 2px;
-  }
-
-  .section-subheading {
-    margin-bottom: 4rem;
-    color: #7f8c8d;
-  }
-
-  .value-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    transition: transform 0.3s ease;
-  }
-
-  .value-icon:hover {
-    transform: scale(1.1);
-  }
-
-  .value-icon i {
-    color: white;
-    font-size: 2rem;
-  }
-
-  /* Scroll animations */
-  .fade-in-section {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-  }
-
-  .fade-in-section.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .slide-in-left {
-    opacity: 0;
-    transform: translateX(-50px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-  }
-
-  .slide-in-left.is-visible {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  .slide-in-right {
-    opacity: 0;
-    transform: translateX(50px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-  }
-
-  .slide-in-right.is-visible {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .about-heading {
-      font-size: 2.5rem;
-      line-height: 2.5rem;
-    }
-
-    .about-subheading {
-      font-size: 1rem;
-    }
-
-    .page-section {
-      padding: 4rem 0;
-    }
-  }
-</style>
-
-<header class="about-hero text-white text-center">
-  <div class="container d-flex align-items-center flex-column">
-    <h1 class="about-heading mb-0">About TechBookHub</h1>
-    <p class="about-subheading font-weight-light mb-0">Discover our story, mission, and commitment to providing the best technical resources.</p>
-  </div>
-</header>
-
-<section class="page-section fade-in-section" id="our-story">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-lg-6 slide-in-left">
-        <h2 class="section-heading text-uppercase">Our Story</h2>
-        <p class="lead text-muted">At TechBookHub, we believe that knowledge is the key to innovation. Founded with a passion for technology and learning, we've built a comprehensive digital library dedicated to DevOps, software development, cloud computing, and more. Our platform makes it easy to discover, download, and enjoy high-quality technical books in PDF format.</p>
-        <p class="lead text-muted">Whether you're a seasoned professional or just starting your tech journey, TechBookHub is your trusted companion for continuous learning and professional growth.</p>
+<div class="container about-page">
+  <!-- Technical About Header -->
+  <div class="text-center about-header">
+    <div class="tech-icon-group" style="justify-content: center; margin-bottom: var(--space-6);">
+      <div class="tech-icon">
+        <i class="fas fa-server"></i>
       </div>
-      <div class="col-lg-6 slide-in-right text-center">
-        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Person Reading a Book" class="img-fluid rounded shadow" style="max-height: 400px;">
+      <div class="tech-icon">
+        <i class="fas fa-cloud"></i>
+      </div>
+      <div class="tech-icon">
+        <i class="fas fa-database"></i>
+      </div>
+      <div class="tech-icon">
+        <i class="fas fa-code"></i>
       </div>
     </div>
+    <h1 class="tech-title">About TechBookHub</h1>
+    <p class="tech-subtitle">
+      The premier platform for technical professionals to discover, organize, and access 
+      cutting-edge books on DevOps, Cloud Computing, Data Science, Machine Learning, and more.
+    </p>
   </div>
-</section>
 
-<section class="page-section bg-light fade-in-section" id="mission-vision">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12 text-center">
-        <h2 class="section-heading text-uppercase">Mission & Vision</h2>
-        <h3 class="section-subheading text-muted">Driving innovation through accessible knowledge.</h3>
-      </div>
-    </div>
-    <div class="row text-center">
-      <div class="col-md-6">
-        <div class="card h-100 border-0 shadow-sm">
-          <div class="card-body">
-            <h4 class="card-title text-primary">Our Mission</h4>
-            <p class="card-text">To democratize access to technical knowledge by providing a curated, user-friendly platform where professionals can easily find and acquire the resources they need to excel in their careers.</p>
-          </div>
+  <div class="section-divider"></div>
+
+  <!-- Mission & Vision -->
+  <div class="about-section about-mission">
+    <div class="grid grid-2">
+      <div class="about-card mission-card">
+        <div class="about-card-icon">
+          <i class="fas fa-rocket"></i>
+        </div>
+        <div class="about-card-content">
+          <h3>Our Mission</h3>
+          <p>To accelerate technical learning by providing engineers, developers, and IT professionals 
+             with instant access to the most relevant and up-to-date technical literature.</p>
         </div>
       </div>
-      <div class="col-md-6">
-        <div class="card h-100 border-0 shadow-sm">
-          <div class="card-body">
-            <h4 class="card-title text-primary">Our Vision</h4>
-            <p class="card-text">To become the world's leading digital library for technical professionals, fostering a community of lifelong learners who drive technological advancement and innovation.</p>
-          </div>
+      
+      <div class="about-card vision-card">
+        <div class="about-card-icon">
+          <i class="fas fa-lightbulb"></i>
+        </div>
+        <div class="about-card-content">
+          <h3>Our Vision</h3>
+          <p>To become the go-to technical knowledge hub where professionals stay ahead of 
+             rapidly evolving technologies through curated, high-quality technical content.</p>
         </div>
       </div>
     </div>
   </div>
-</section>
 
-<section class="page-section" id="our-values">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12 text-center">
-        <h2 class="section-heading text-uppercase">Our Values</h2>
-        <h3 class="section-subheading text-muted">The principles that guide everything we do.</h3>
+  <div class="section-divider"></div>
+
+  <!-- Technical Focus Areas -->
+  <div class="about-section about-values">
+    <h2 class="section-title">Technical Focus Areas</h2>
+    <div class="grid grid-3">
+      <div class="value-card">
+        <div class="value-icon">
+          <i class="fas fa-cogs"></i>
+        </div>
+        <h4>DevOps & Infrastructure</h4>
+        <p>Comprehensive resources on CI/CD, containerization, orchestration, and infrastructure as code.</p>
       </div>
-    </div>
-    <div class="row text-center">
-      <div class="col-md-4">
-        <span class="value-icon">
-          <i class="fas fa-book-open"></i>
-        </span>
-        <h4 class="my-3">Quality Content</h4>
-        <p class="text-muted">We carefully select and curate books from trusted authors and publishers to ensure you receive accurate, up-to-date information.</p>
+      
+      <div class="value-card">
+        <div class="value-icon">
+          <i class="fas fa-cloud"></i>
+        </div>
+        <h4>Cloud Computing</h4>
+        <p>In-depth coverage of AWS, Azure, GCP, and cloud-native architectures and best practices.</p>
       </div>
-      <div class="col-md-4">
-        <span class="value-icon">
-          <i class="fas fa-users"></i>
-        </span>
-        <h4 class="my-3">Community Focus</h4>
-        <p class="text-muted">We're committed to building a supportive community of learners, sharing knowledge and experiences to help everyone grow.</p>
+      
+      <div class="value-card">
+        <div class="value-icon">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <h4>Data Science & ML</h4>
+        <p>Advanced materials on machine learning, data engineering, analytics, and AI implementations.</p>
       </div>
-      <div class="col-md-4">
-        <span class="value-icon">
-          <i class="fas fa-infinity"></i>
-        </span>
-        <h4 class="my-3">Continuous Innovation</h4>
-        <p class="text-muted">We constantly evolve our platform and offerings to meet the changing needs of the tech industry and our users.</p>
+      
+      <div class="value-card">
+        <div class="value-icon">
+          <i class="fas fa-code"></i>
+        </div>
+        <h4>Software Development</h4>
+        <p>Modern development practices, architecture patterns, and programming language deep-dives.</p>
+      </div>
+      
+      <div class="value-card">
+        <div class="value-icon">
+          <i class="fas fa-eye"></i>
+        </div>
+        <h4>Observability</h4>
+        <p>Monitoring, logging, tracing, and performance optimization for distributed systems.</p>
+      </div>
+      
+      <div class="value-card">
+        <div class="value-icon">
+          <i class="fas fa-database"></i>
+        </div>
+        <h4>Database Systems</h4>
+        <p>Relational, NoSQL, distributed databases, and data architecture design patterns.</p>
       </div>
     </div>
   </div>
-</section>
 
-<section class="page-section bg-light fade-in-section" id="highlights">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-lg-6 slide-in-left text-center">
-        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Students Studying" class="img-fluid rounded shadow" style="max-height: 400px;">
+  <div class="section-divider"></div>
+
+  <!-- Platform Features -->
+  <div class="about-section about-features">
+    <h2 class="section-title">Platform Features</h2>
+    <div class="grid grid-2">
+      <div class="feature-list">
+        <h3 class="feature-list-title">For Technical Professionals</h3>
+        <ul class="feature-items">
+          <li class="feature-item">
+            <i class="fas fa-search"></i>
+            <span>Advanced technical book search and filtering</span>
+          </li>
+          <li class="feature-item">
+            <i class="fas fa-bookmark"></i>
+            <span>Personal technical library organization</span>
+          </li>
+          <li class="feature-item">
+            <i class="fas fa-tags"></i>
+            <span>Category-based browsing by technology stack</span>
+          </li>
+          <li class="feature-item">
+            <i class="fas fa-file-pdf"></i>
+            <span>Instant PDF access for technical references</span>
+          </li>
+          <li class="feature-item">
+            <i class="fas fa-mobile-alt"></i>
+            <span>Cross-device synchronization</span>
+          </li>
+        </ul>
       </div>
-      <div class="col-lg-6 slide-in-right">
-        <h2 class="section-heading text-uppercase">Why Choose Us?</h2>
-        <ul class="list-unstyled">
-          <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> Extensive collection of technical books across multiple domains</li>
-          <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> Easy-to-use platform with powerful search and recommendation features</li>
-          <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> High-quality PDF downloads compatible with all devices</li>
-          <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> Regular updates with the latest publications and trends</li>
-          <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> Dedicated support for our community of learners</li>
+      
+      <div class="feature-list">
+        <h3 class="feature-list-title">For Engineering Teams</h3>
+        <ul class="feature-items">
+          <li class="feature-item">
+            <i class="fas fa-users"></i>
+            <span>Team library sharing and collaboration</span>
+          </li>
+          <li class="feature-item">
+            <i class="fas fa-shield-alt"></i>
+            <span>Enterprise-grade security and access control</span>
+          </li>
+          <li class="feature-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Usage analytics and learning insights</span>
+          </li>
+          <li class="feature-item">
+            <i class="fas fa-sync"></i>
+            <span>API integration with development workflows</span>
+          </li>
+          <li class="feature-item">
+            <i class="fas fa-server"></i>
+            <span>Scalable infrastructure for large teams</span>
+          </li>
         </ul>
       </div>
     </div>
   </div>
-</section>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const animatedElements = document.querySelectorAll('.fade-in-section, .slide-in-left, .slide-in-right');
+  <div class="section-divider"></div>
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, {
-    threshold: 0.1
-  });
+  <!-- Technology Stack -->
+  <div class="about-section about-tech">
+    <div class="tech-card">
+      <h3 class="tech-title">Built with Production-Grade Technology</h3>
+      <p class="tech-description">
+        TechBookHub is engineered using battle-tested technologies that ensure reliability, 
+        performance, and scalability for technical teams worldwide.
+      </p>
+      <div class="tech-grid">
+        <div class="tech-item">
+          <i class="fab fa-python"></i>
+          <span>Python & Django</span>
+        </div>
+        <div class="tech-item">
+          <i class="fas fa-database"></i>
+          <span>PostgreSQL</span>
+        </div>
+        <div class="tech-item">
+          <i class="fab fa-docker"></i>
+          <span>Containerized Deployment</span>
+        </div>
+        <div class="tech-item">
+          <i class="fas fa-cloud"></i>
+          <span>Cloud Native Architecture</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  animatedElements.forEach(element => {
-    observer.observe(element);
-  });
-});
-</script>
+  <!-- Call to Action -->
+  <div class="about-section about-cta">
+    <div class="cta-card">
+      <div class="cta-content">
+        <h3 class="cta-title">Accelerate Your Technical Learning</h3>
+        <p class="cta-description">
+          Join thousands of engineers, developers, and technical professionals who rely on 
+          TechBookHub to stay current with rapidly evolving technologies.
+        </p>
+        <div class="cta-actions">
+          {% if not user.is_authenticated %}
+            <a href="{% url 'accounts.signup' %}" class="btn btn-primary">
+              <i class="fas fa-rocket"></i>
+              Start Learning
+            </a>
+          {% endif %}
+          <a href="{% url 'books.index' %}" class="btn btn-secondary">
+            <i class="fas fa-book"></i>
+            Explore Technical Books
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}

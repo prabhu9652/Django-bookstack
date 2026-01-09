@@ -58,38 +58,62 @@ def view_pdf(request, id):
 def index(request):
     search_term = request.GET.get('search')
     if search_term:
-        books = Book.objects.filter(name__icontains=search_term)
+        books = Book.objects.filter(name__icontains=search_term).order_by('name')
     else:
-        books = Book.objects.all()
+        books = Book.objects.all().order_by('name')
 
     paginator = Paginator(books, 8)  # Show 8 books per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    categories = Category.objects.filter(parent=None)
+    categories = Category.objects.filter(parent=None).order_by('name')
+
+    # Get user's library books if authenticated
+    user_library_book_ids = []
+    if request.user.is_authenticated:
+        try:
+            from library.models import UserLibrary
+            user_library_book_ids = list(
+                UserLibrary.objects.filter(user=request.user).values_list('book_id', flat=True)
+            )
+        except ImportError:
+            pass
 
     template_data = {}
     template_data['title'] = 'Books'
     template_data['books'] = page_obj
     template_data['categories'] = categories
     template_data['search_term'] = search_term
+    template_data['user_library_book_ids'] = user_library_book_ids
     return render(request, 'books/index.html', {'template_data': template_data})
 
 
 @login_required
 def category(request, slug):
     cat = get_object_or_404(Category, slug=slug)
-    books = cat.books.all()
+    books = cat.books.all().order_by('name')
 
     paginator = Paginator(books, 8)  # Show 8 books per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    # Get user's library books if authenticated
+    user_library_book_ids = []
+    if request.user.is_authenticated:
+        try:
+            from library.models import UserLibrary
+            user_library_book_ids = list(
+                UserLibrary.objects.filter(user=request.user).values_list('book_id', flat=True)
+            )
+        except ImportError:
+            pass
+
     template_data = {}
     template_data['title'] = f"Category: {cat.name}"
     template_data['books'] = page_obj
     template_data['category'] = cat
-    template_data['categories'] = Category.objects.filter(parent=None)
+    template_data['categories'] = Category.objects.filter(parent=None).order_by('name')
+    template_data['user_library_book_ids'] = user_library_book_ids
     return render(request, 'books/index.html', {'template_data': template_data})
 
 def show(request, id):
@@ -105,11 +129,22 @@ def show(request, id):
             except Category.DoesNotExist:
                 pass
 
+        # Check if book is in user's library
+        is_in_library = False
+        if request.user.is_authenticated:
+            try:
+                from library.models import UserLibrary
+                is_in_library = UserLibrary.objects.filter(user=request.user, book=book).exists()
+            except ImportError:
+                # Library app not available
+                pass
+
         template_data = {}
         template_data['title'] = book.name
         template_data['book'] = book
         template_data['reviews'] = reviews
         template_data['category'] = category
+        template_data['is_in_library'] = is_in_library
         return render(request, 'books/show.html', {'template_data': template_data})
     except Exception as e:
         logger.error(f"Error loading book {id}: {str(e)}")
