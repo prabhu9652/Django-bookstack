@@ -97,10 +97,19 @@ def show(request, id):
         book = get_object_or_404(Book, id=id)
         reviews = Review.objects.filter(book=book)
 
+        category_slug = request.GET.get('category')
+        category = None
+        if category_slug:
+            try:
+                category = Category.objects.get(slug=category_slug)
+            except Category.DoesNotExist:
+                pass
+
         template_data = {}
         template_data['title'] = book.name
         template_data['book'] = book
         template_data['reviews'] = reviews
+        template_data['category'] = category
         return render(request, 'books/show.html', {'template_data': template_data})
     except Exception as e:
         logger.error(f"Error loading book {id}: {str(e)}")

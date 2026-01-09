@@ -1,36 +1,58 @@
-# Use official Python slim image
-FROM python:3.14-slim
+# =========================
+# Stage 1: Builder
+# =========================
+FROM python:3.12-slim AS builder
 
-# System deps required for Pillow and building wheels
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libjpeg-dev \
     zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Set workdir
+WORKDIR /build
+
+COPY requirements.txt .
+
+RUN pip install --upgrade pip && \
+    pip wheel --no-cache-dir -r requirements.txt -w /wheels
+
+
+# =========================
+# Stage 2: Runtime
+# =========================
+FROM python:3.12-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libjpeg62-turbo \
+    zlib1g \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# Environment
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Copy requirements (generated below) and install
-COPY requirements.txt /app/requirements.txt
-RUN pip install --upgrade pip && pip install -r /app/requirements.txt
+# Copy only wheels
+COPY --from=builder /wheels /wheels
 
-# Copy project
-COPY . /app/
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir /wheels/*.whl && \
+    rm -rf /wheels
 
-# Create static and media dirs
-RUN mkdir -p /app/staticfiles /app/media
+# Copy application code
+COPY . .
 
-# Make entrypoint executable
-COPY ./entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+RUN mkdir -p /app/staticfiles /app/media /app/db
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 EXPOSE 8000
 
-# Use entrypoint to run migrations/collectstatic then start gunicorn
-ENTRYPOINT ["/app/entrypoint.sh"]
-CMD ["gunicorn", "booksstore.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
+ENTRYPOINT ["/entrypoint.sh"]
+
+CMD ["gunicorn", "booksstore.wsgi:application", \
+     "--bind=0.0.0.0:8000", \
+     "--workers=9", \
+     "--threads=2", \
+     "--timeout=120"]
