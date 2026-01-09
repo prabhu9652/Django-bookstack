@@ -41,9 +41,6 @@ RUN pip install --upgrade pip && \
 
 # Copy application code
 COPY . .
-
-RUN mkdir -p /app/staticfiles /app/media /app/db
-
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
