@@ -2,110 +2,255 @@
 {% load static %}
 
 {% block content %}
-<div class="container">
-  <!-- Hero Section -->
-  <div class="section text-center">
-    <h1 class="mb-4">Digital Library Platform</h1>
-    <p class="mb-6" style="color: var(--text-secondary); font-size: var(--font-size-lg); max-width: 600px; margin: 0 auto;">
-      Access thousands of technical books and resources. 
-      Built for professionals who value simplicity and performance.
-    </p>
-    <div class="flex justify-center gap-4">
-      <a href="{% url 'books.index' %}" class="btn btn-primary btn-lg">
-        <i class="fas fa-book"></i>
-        Browse Books
-      </a>
-      {% if not user.is_authenticated %}
-        <a href="{% url 'accounts.signup' %}" class="btn btn-secondary btn-lg">
-          <i class="fas fa-user-plus"></i>
-          Get Started
-        </a>
-      {% endif %}
-    </div>
-  </div>
-
-  <!-- Features Section -->
-  <div class="section">
-    <div class="grid grid-3">
-      <div class="card text-center">
-        <div class="card-body">
-          <i class="fas fa-search" style="font-size: var(--font-size-2xl); color: var(--accent-primary); margin-bottom: var(--space-4);"></i>
-          <h3 class="mb-3">Easy Discovery</h3>
-          <p>Find books quickly with our clean, category-based navigation system.</p>
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">TechBookHub</h1>
+        <p class="hero-subtitle">
+          Professional technical books for developers and engineers. Access cutting-edge resources 
+          in DevOps, Cloud Computing, Data Science, Machine Learning, and Software Development.
+        </p>
+        <div class="hero-actions">
+          <a href="{% url 'books.index' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-code"></i>
+            Browse Technical Books
+          </a>
+          {% if not user.is_authenticated %}
+            <a href="{% url 'accounts.signup' %}" class="btn btn-secondary btn-lg">
+              <i class="fas fa-user-plus"></i>
+              Get Started
+            </a>
+          {% endif %}
         </div>
       </div>
-      
-      <div class="card text-center">
-        <div class="card-body">
-          <i class="fas fa-download" style="font-size: var(--font-size-2xl); color: var(--accent-primary); margin-bottom: var(--space-4);"></i>
-          <h3 class="mb-3">Instant Access</h3>
-          <p>Download or read books directly in your browser with our optimized PDF viewer.</p>
-        </div>
-      </div>
-      
-      <div class="card text-center">
-        <div class="card-body">
-          <i class="fas fa-bookmark" style="font-size: var(--font-size-2xl); color: var(--accent-primary); margin-bottom: var(--space-4);"></i>
-          <h3 class="mb-3">Personal Library</h3>
-          <p>Organize your favorite books in your personal library with category folders.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Recent Books Section -->
-  {% if template_data.recent_books %}
-  <div class="section">
-    <h2 class="mb-6">Recently Added Books</h2>
-    <div class="grid grid-4">
-      {% for book in template_data.recent_books %}
-        <div class="book-card" data-book-url="{% url 'books.show' book.id %}">
-          <div class="book-cover">
-            {% if book.cover %}
-              <img src="{{ book.cover.url }}" alt="{{ book.name }}">
-            {% else %}
-              <i class="fas fa-book"></i>
-            {% endif %}
+      <div class="hero-graphic">
+        <div class="floating-books">
+          <div class="book-icon book-1">
+            <i class="fab fa-docker"></i>
           </div>
-          <div class="book-info">
-            <h4 class="book-title">{{ book.name }}</h4>
-            <p class="book-author">{{ book.author|default:"Unknown Author" }}</p>
-            {% if book.category %}
-              <span class="book-category">{{ book.category.name }}</span>
-            {% endif %}
+          <div class="book-icon book-2">
+            <i class="fas fa-cloud"></i>
           </div>
-        </div>
-      {% endfor %}
-    </div>
-    <div class="text-center mt-6">
-      <a href="{% url 'books.index' %}" class="btn btn-secondary">
-        View All Books
-        <i class="fas fa-arrow-right"></i>
-      </a>
-    </div>
-  </div>
-  {% endif %}
-
-  <!-- Stats Section -->
-  <div class="section">
-    <div class="card">
-      <div class="card-body">
-        <div class="grid grid-3 text-center">
-          <div>
-            <h3 style="color: var(--accent-primary);">{{ template_data.total_books|default:"1000+" }}</h3>
-            <p>Books Available</p>
-          </div>
-          <div>
-            <h3 style="color: var(--accent-primary);">{{ template_data.total_categories|default:"50+" }}</h3>
-            <p>Categories</p>
-          </div>
-          <div>
-            <h3 style="color: var(--accent-primary);">{{ template_data.total_users|default:"5000+" }}</h3>
-            <p>Active Users</p>
+          <div class="book-icon book-3">
+            <i class="fas fa-database"></i>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<div class="container">
+  <!-- Features Section -->
+  <div class="section">
+    <h2 class="text-center mb-8">Why Choose TechBookHub</h2>
+    <div class="grid grid-3">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-code"></i>
+        </div>
+        <h3 class="feature-title">Technical Excellence</h3>
+        <p class="feature-description">
+          Curated collection of professional technical books covering DevOps, 
+          Cloud Computing, Data Science, and Software Development.
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-rocket"></i>
+        </div>
+        <h3 class="feature-title">Latest Technologies</h3>
+        <p class="feature-description">
+          Stay current with the latest tools, frameworks, and best practices 
+          in modern software engineering and infrastructure.
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <h3 class="feature-title">Developer Community</h3>
+        <p class="feature-description">
+          Join thousands of developers and engineers building their technical 
+          knowledge with our comprehensive library platform.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Recent Books Section -->
+  {% if template_data.recent_books %}
+  <div class="section">
+    <div class="flex items-center justify-between mb-8">
+      <h2>Latest Technical Books</h2>
+      <a href="{% url 'books.index' %}" class="btn btn-ghost">
+        View All Books
+        <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+    
+    <div class="tech-books-grid">
+      {% for book in template_data.recent_books %}
+        <div class="tech-book-card" data-book-url="{% url 'books.show' book.id %}">
+          <div class="tech-book-cover">
+            {% if book.cover %}
+              <img src="{{ book.cover.url }}" alt="{{ book.name }}" loading="lazy">
+            {% else %}
+              <div class="tech-book-placeholder">
+                <i class="fas fa-file-code"></i>
+                <div class="placeholder-text">Technical Book</div>
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="tech-book-info">
+            <div class="tech-book-content">
+              <h4 class="tech-book-title">{{ book.name }}</h4>
+              <p class="tech-book-author">{{ book.author|default:"Technical Author" }}</p>
+              
+              <div class="tech-book-meta">
+                {% if book.category %}
+                  <span class="tech-category-badge">
+                    {% if 'devops' in book.category.name|lower %}
+                      <i class="fas fa-cogs"></i>
+                    {% elif 'cloud' in book.category.name|lower %}
+                      <i class="fas fa-cloud"></i>
+                    {% elif 'data' in book.category.name|lower %}
+                      <i class="fas fa-chart-bar"></i>
+                    {% elif 'machine' in book.category.name|lower %}
+                      <i class="fas fa-robot"></i>
+                    {% elif 'software' in book.category.name|lower %}
+                      <i class="fas fa-code"></i>
+                    {% elif 'database' in book.category.name|lower %}
+                      <i class="fas fa-database"></i>
+                    {% else %}
+                      <i class="fas fa-book"></i>
+                    {% endif %}
+                    {{ book.category.name }}
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+  {% endif %}
+
+  <!-- Technical Categories Section -->
+  <div class="section">
+    <h2 class="text-center mb-8">Technical Categories</h2>
+    <div class="tech-grid">
+      <div class="tech-item">
+        <i class="fas fa-cogs"></i>
+        <span>DevOps & Infrastructure</span>
+      </div>
+      <div class="tech-item">
+        <i class="fas fa-cloud"></i>
+        <span>Cloud Computing</span>
+      </div>
+      <div class="tech-item">
+        <i class="fas fa-chart-line"></i>
+        <span>Data Science & Analytics</span>
+      </div>
+      <div class="tech-item">
+        <i class="fas fa-robot"></i>
+        <span>Machine Learning & AI</span>
+      </div>
+      <div class="tech-item">
+        <i class="fas fa-code"></i>
+        <span>Software Development</span>
+      </div>
+      <div class="tech-item">
+        <i class="fas fa-database"></i>
+        <span>Database Systems</span>
+      </div>
+      <div class="tech-item">
+        <i class="fas fa-chart-bar"></i>
+        <span>Observability & Monitoring</span>
+      </div>
+      <div class="tech-item">
+        <i class="fas fa-shield-alt"></i>
+        <span>Security & Compliance</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Section -->
+  <div class="section">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">{{ template_data.total_books|default:"500+" }}</div>
+        <div class="stat-label">Technical Books</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ template_data.total_categories|default:"8+" }}</div>
+        <div class="stat-label">Tech Categories</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ template_data.total_users|default:"2000+" }}</div>
+        <div class="stat-label">Developers & Engineers</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Call to Action -->
+  {% if not user.is_authenticated %}
+  <div class="section">
+    <div class="cta-card">
+      <div class="cta-content">
+        <h3 class="cta-title">Join the Developer Community</h3>
+        <p class="cta-description">
+          Access professional technical books and stay ahead in your engineering career. 
+          Join thousands of developers building their expertise with TechBookHub.
+        </p>
+        <div class="cta-actions">
+          <a href="{% url 'accounts.signup' %}" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i>
+            Create Account
+          </a>
+          <a href="{% url 'accounts.login' %}" class="btn btn-secondary">
+            <i class="fas fa-sign-in-alt"></i>
+            Sign In
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+// Add click handlers for book cards
+document.addEventListener('DOMContentLoaded', function() {
+  const bookCards = document.querySelectorAll('.tech-book-card[data-book-url]');
+  
+  bookCards.forEach(card => {
+    card.addEventListener('click', function() {
+      const url = this.dataset.bookUrl;
+      if (url) {
+        window.location.href = url;
+      }
+    });
+    
+    // Add keyboard support
+    card.setAttribute('tabindex', '0');
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.click();
+      }
+    });
+  });
+});
+</script>
 {% endblock content %}

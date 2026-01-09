@@ -2,50 +2,124 @@
 {% load static %}
 
 {% block content %}
-<div class="container">
-  <div class="section">
-    <div style="max-width: 400px; margin: 0 auto;">
-      <div class="card">
-        <div class="card-header text-center">
-          <h2>Sign In</h2>
-          <p style="color: var(--text-secondary); margin: 0;">Access your digital library</p>
+<div class="auth-page">
+  <!-- Floating Graphics -->
+  <div class="auth-floating-graphics">
+    <div class="auth-float-icon auth-float-1">
+      <i class="fas fa-code"></i>
+    </div>
+    <div class="auth-float-icon auth-float-2">
+      <i class="fas fa-server"></i>
+    </div>
+    <div class="auth-float-icon auth-float-3">
+      <i class="fas fa-database"></i>
+    </div>
+  </div>
+
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-icon">
+          <i class="fas fa-sign-in-alt"></i>
         </div>
+        <h1 class="auth-title">Sign In to TechBookHub</h1>
+        <p class="auth-subtitle">Access your technical library</p>
+      </div>
+
+      <form method="POST" class="auth-form">
+        {% csrf_token %}
         
-        <div class="card-body">
-          <form method="POST">
-            {% csrf_token %}
-            
-            {% if request.GET.next %}
-              <input type="hidden" name="next" value="{{ request.GET.next }}">
-            {% endif %}
-            
-            <div class="form-group">
-              <label for="username" class="form-label">Username</label>
-              <input type="text" name="username" id="username" class="form-control" 
-                     placeholder="Enter your username" required>
-            </div>
-            
-            <div class="form-group">
-              <label for="password" class="form-label">Password</label>
-              <input type="password" name="password" id="password" class="form-control" 
-                     placeholder="Enter your password" required>
-            </div>
-            
-            <button type="submit" class="btn btn-primary w-full">
-              <i class="fas fa-sign-in-alt"></i>
-              Sign In
-            </button>
-          </form>
-        </div>
+        {% if request.GET.next %}
+          <input type="hidden" name="next" value="{{ request.GET.next }}">
+        {% endif %}
         
-        <div class="card-footer text-center">
-          <p style="color: var(--text-secondary); margin: 0;">
-            Don't have an account? 
-            <a href="{% url 'accounts.signup' %}">Sign up here</a>
-          </p>
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" name="username" id="username" class="form-control" 
+                 placeholder="Enter your username" required>
         </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" name="password" id="password" class="form-control" 
+                 placeholder="Enter your password" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-sign-in-alt"></i>
+          Sign In
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Don't have an account?</p>
+        <a href="{% url 'accounts.signup' %}">Create an account</a>
       </div>
     </div>
   </div>
 </div>
+
+<style>
+/* Floating Graphics for Auth Pages */
+.auth-floating-graphics {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.auth-float-icon {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-primary);
+  font-size: 1.5rem;
+  opacity: 0.3;
+  animation: authFloatGentle 6s ease-in-out infinite;
+}
+
+.auth-float-1 {
+  top: 15%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.auth-float-2 {
+  top: 60%;
+  right: 15%;
+  animation-delay: 2s;
+}
+
+.auth-float-3 {
+  bottom: 20%;
+  left: 20%;
+  animation-delay: 4s;
+}
+
+@keyframes authFloatGentle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-15px) rotate(5deg);
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 768px) {
+  .auth-floating-graphics {
+    display: none;
+  }
+}
+</style>
 {% endblock content %}

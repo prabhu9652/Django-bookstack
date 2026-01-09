@@ -4,7 +4,10 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ template_data.title|default:"Digital Library" }}</title>
+    <title>{{ template_data.title|default:"TechBookHub - Technical Books for Developers" }}</title>
+    
+    <!-- CSRF Token for AJAX requests -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
     
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,10 +17,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
     <!-- Minimal Enterprise CSS -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/minimal-enterprise.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/minimal-enterprise.css' %}?v=20260109">
+    
+    <!-- Shared Library Management -->
+    <script src="{% static 'js/library-manager.js' %}" defer></script>>
     
     <!-- Meta tags -->
-    <meta name="description" content="Lightweight enterprise digital library platform">
+    <meta name="description" content="TechBookHub - Professional technical books for DevOps, Cloud Computing, Data Science, Machine Learning, and Software Development">
     <meta name="robots" content="index, follow">
     
     <!-- Security headers -->
@@ -31,42 +37,43 @@
   <body>
     <!-- Minimal Navigation -->
     <nav class="navbar">
-      <div class="container">
-        <div class="navbar-content">
-          <!-- Brand -->
-          <a href="{% url 'home.index' %}" class="navbar-brand">
-            <i class="fas fa-book"></i>
-            Digital Library
-          </a>
-          
-          <!-- Navigation -->
-          <ul class="navbar-nav">
-            <li><a href="{% url 'home.index' %}" class="nav-link">Home</a></li>
-            <li><a href="{% url 'books.index' %}" class="nav-link">Books</a></li>
-            {% if user.is_authenticated %}
-              <li><a href="{% url 'library.index' %}" class="nav-link">My Library</a></li>
-            {% endif %}
-            <li><a href="{% url 'home.about' %}" class="nav-link">About</a></li>
-            
-            {% if user.is_authenticated %}
-              <li><a href="{% url 'accounts.logout' %}" class="btn btn-ghost btn-sm">Sign Out</a></li>
-            {% else %}
-              <li><a href="{% url 'accounts.login' %}" class="btn btn-ghost btn-sm">Sign In</a></li>
-              <li><a href="{% url 'accounts.signup' %}" class="btn btn-primary btn-sm">Sign Up</a></li>
-            {% endif %}
-          </ul>
+      <div class="navbar-content">
+        <!-- Brand -->
+        <a href="{% url 'home.index' %}" class="navbar-brand">
+          <i class="fas fa-code"></i>
+          TechBookHub
+        </a>
+        
+        <!-- Navigation -->
+        <ul class="navbar-nav">
+          <li><a href="{% url 'home.index' %}" class="nav-link">Home</a></li>
+          <li><a href="{% url 'books.index' %}" class="nav-link">Books</a></li>
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'library.index' %}" class="nav-link">My Library</a></li>
+          {% endif %}
+          <li><a href="{% url 'home.about' %}" class="nav-link">About</a></li>
+        </ul>
+        
+        <!-- Auth Actions -->
+        <div class="navbar-auth">
+          {% if user.is_authenticated %}
+            <a href="{% url 'accounts.logout' %}" class="btn btn-ghost btn-sm">Sign Out</a>
+          {% else %}
+            <a href="{% url 'accounts.login' %}" class="btn btn-ghost btn-sm">Sign In</a>
+            <a href="{% url 'accounts.signup' %}" class="btn btn-primary btn-sm">Sign Up</a>
+          {% endif %}
         </div>
       </div>
     </nav>
 
     <!-- Main Content -->
-    <main style="padding-top: 60px;">
+    <main style="padding-top: 64px;">
       <!-- Messages -->
       {% if messages %}
-        <div class="container" style="padding-top: 20px;">
+        <div class="container" style="padding-top: var(--space-4);">
           {% for message in messages %}
-            <div class="card" style="margin-bottom: 16px; border-color: {% if message.tags == 'success' %}var(--success){% elif message.tags == 'error' %}var(--error){% else %}var(--border-primary){% endif %};">
-              <div class="card-body" style="padding: 12px 16px;">
+            <div class="card" style="margin-bottom: var(--space-3); border-color: {% if message.tags == 'success' %}var(--success){% elif message.tags == 'error' %}var(--error){% else %}var(--border-primary){% endif %};">
+              <div class="card-body" style="padding: var(--space-3) var(--space-4);">
                 <div class="flex items-center gap-3">
                   {% if message.tags == 'success' %}
                     <i class="fas fa-check-circle" style="color: var(--success);"></i>
@@ -88,11 +95,11 @@
     </main>
 
     <!-- Minimal Footer -->
-    <footer style="background-color: var(--bg-secondary); border-top: 1px solid var(--border-primary); margin-top: 64px;">
+    <footer style="background-color: var(--bg-secondary); border-top: 1px solid var(--border-primary); margin-top: var(--space-4);">
       <div class="container">
-        <div style="padding: 32px 0; text-align: center;">
+        <div style="padding: var(--space-4) 0; text-align: center;">
           <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">
-            &copy; 2024 Digital Library Platform. Built for enterprise use.
+            &copy; 2024 TechBookHub. Built for developers and engineers.
           </p>
         </div>
       </div>

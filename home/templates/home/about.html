@@ -2,176 +2,225 @@
 {% load static %}
 
 {% block content %}
-<div class="container">
-  <!-- About Header -->
-  <div class="section text-center">
-    <h1 class="mb-4">About Digital Library</h1>
-    <p style="color: var(--text-secondary); font-size: var(--font-size-lg); max-width: 600px; margin: 0 auto;">
-      A lightweight, enterprise-grade digital library platform designed for professionals 
-      who value simplicity, performance, and reliability.
+<div class="container about-page">
+  <!-- Technical About Header -->
+  <div class="text-center about-header">
+    <div class="tech-icon-group" style="justify-content: center; margin-bottom: var(--space-6);">
+      <div class="tech-icon">
+        <i class="fas fa-server"></i>
+      </div>
+      <div class="tech-icon">
+        <i class="fas fa-cloud"></i>
+      </div>
+      <div class="tech-icon">
+        <i class="fas fa-database"></i>
+      </div>
+      <div class="tech-icon">
+        <i class="fas fa-code"></i>
+      </div>
+    </div>
+    <h1 class="tech-title">About TechBookHub</h1>
+    <p class="tech-subtitle">
+      The premier platform for technical professionals to discover, organize, and access 
+      cutting-edge books on DevOps, Cloud Computing, Data Science, Machine Learning, and more.
     </p>
   </div>
 
+  <div class="section-divider"></div>
+
   <!-- Mission & Vision -->
-  <div class="section">
+  <div class="about-section about-mission">
     <div class="grid grid-2">
-      <div class="card">
-        <div class="card-body text-center">
-          <i class="fas fa-target" style="font-size: var(--font-size-2xl); color: var(--accent-primary); margin-bottom: var(--space-4);"></i>
-          <h3 class="mb-3">Our Mission</h3>
-          <p>To provide a clean, fast, and reliable platform for accessing technical books and documentation. 
-             We focus on essential features that matter most to professionals.</p>
+      <div class="about-card mission-card">
+        <div class="about-card-icon">
+          <i class="fas fa-rocket"></i>
+        </div>
+        <div class="about-card-content">
+          <h3>Our Mission</h3>
+          <p>To accelerate technical learning by providing engineers, developers, and IT professionals 
+             with instant access to the most relevant and up-to-date technical literature.</p>
         </div>
       </div>
       
-      <div class="card">
-        <div class="card-body text-center">
-          <i class="fas fa-eye" style="font-size: var(--font-size-2xl); color: var(--accent-primary); margin-bottom: var(--space-4);"></i>
-          <h3 class="mb-3">Our Vision</h3>
-          <p>To become the preferred digital library platform for organizations that prioritize 
-             performance, security, and user experience over unnecessary complexity.</p>
+      <div class="about-card vision-card">
+        <div class="about-card-icon">
+          <i class="fas fa-lightbulb"></i>
+        </div>
+        <div class="about-card-content">
+          <h3>Our Vision</h3>
+          <p>To become the go-to technical knowledge hub where professionals stay ahead of 
+             rapidly evolving technologies through curated, high-quality technical content.</p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Core Values -->
-  <div class="section">
-    <h2 class="text-center mb-6">Core Values</h2>
+  <div class="section-divider"></div>
+
+  <!-- Technical Focus Areas -->
+  <div class="about-section about-values">
+    <h2 class="section-title">Technical Focus Areas</h2>
     <div class="grid grid-3">
-      <div class="card text-center">
-        <div class="card-body">
-          <i class="fas fa-tachometer-alt" style="font-size: var(--font-size-xl); color: var(--accent-primary); margin-bottom: var(--space-3);"></i>
-          <h4 class="mb-3">Performance First</h4>
-          <p>Every feature is designed with performance in mind. Fast loading, minimal resources, maximum efficiency.</p>
+      <div class="value-card">
+        <div class="value-icon">
+          <i class="fas fa-cogs"></i>
         </div>
+        <h4>DevOps & Infrastructure</h4>
+        <p>Comprehensive resources on CI/CD, containerization, orchestration, and infrastructure as code.</p>
       </div>
       
-      <div class="card text-center">
-        <div class="card-body">
-          <i class="fas fa-shield-alt" style="font-size: var(--font-size-xl); color: var(--accent-primary); margin-bottom: var(--space-3);"></i>
-          <h4 class="mb-3">Security & Privacy</h4>
-          <p>Enterprise-grade security with user privacy protection. Your data is secure and never shared.</p>
+      <div class="value-card">
+        <div class="value-icon">
+          <i class="fas fa-cloud"></i>
         </div>
+        <h4>Cloud Computing</h4>
+        <p>In-depth coverage of AWS, Azure, GCP, and cloud-native architectures and best practices.</p>
       </div>
       
-      <div class="card text-center">
-        <div class="card-body">
-          <i class="fas fa-cog" style="font-size: var(--font-size-xl); color: var(--accent-primary); margin-bottom: var(--space-3);"></i>
-          <h4 class="mb-3">Simplicity</h4>
-          <p>Clean, intuitive interface without unnecessary complexity. Focus on what matters most.</p>
+      <div class="value-card">
+        <div class="value-icon">
+          <i class="fas fa-chart-bar"></i>
         </div>
+        <h4>Data Science & ML</h4>
+        <p>Advanced materials on machine learning, data engineering, analytics, and AI implementations.</p>
+      </div>
+      
+      <div class="value-card">
+        <div class="value-icon">
+          <i class="fas fa-code"></i>
+        </div>
+        <h4>Software Development</h4>
+        <p>Modern development practices, architecture patterns, and programming language deep-dives.</p>
+      </div>
+      
+      <div class="value-card">
+        <div class="value-icon">
+          <i class="fas fa-eye"></i>
+        </div>
+        <h4>Observability</h4>
+        <p>Monitoring, logging, tracing, and performance optimization for distributed systems.</p>
+      </div>
+      
+      <div class="value-card">
+        <div class="value-icon">
+          <i class="fas fa-database"></i>
+        </div>
+        <h4>Database Systems</h4>
+        <p>Relational, NoSQL, distributed databases, and data architecture design patterns.</p>
       </div>
     </div>
   </div>
 
-  <!-- Features -->
-  <div class="section">
-    <h2 class="text-center mb-6">Platform Features</h2>
+  <div class="section-divider"></div>
+
+  <!-- Platform Features -->
+  <div class="about-section about-features">
+    <h2 class="section-title">Platform Features</h2>
     <div class="grid grid-2">
-      <div>
-        <h3 class="mb-4">For Users</h3>
-        <ul style="list-style: none; padding: 0;">
-          <li style="margin-bottom: var(--space-3); display: flex; align-items: center;">
-            <i class="fas fa-check" style="color: var(--accent-primary); margin-right: var(--space-3);"></i>
-            <span>Fast book search and discovery</span>
+      <div class="feature-list">
+        <h3 class="feature-list-title">For Technical Professionals</h3>
+        <ul class="feature-items">
+          <li class="feature-item">
+            <i class="fas fa-search"></i>
+            <span>Advanced technical book search and filtering</span>
           </li>
-          <li style="margin-bottom: var(--space-3); display: flex; align-items: center;">
-            <i class="fas fa-check" style="color: var(--accent-primary); margin-right: var(--space-3);"></i>
-            <span>Personal library organization</span>
+          <li class="feature-item">
+            <i class="fas fa-bookmark"></i>
+            <span>Personal technical library organization</span>
           </li>
-          <li style="margin-bottom: var(--space-3); display: flex; align-items: center;">
-            <i class="fas fa-check" style="color: var(--accent-primary); margin-right: var(--space-3);"></i>
-            <span>Clean PDF viewer</span>
+          <li class="feature-item">
+            <i class="fas fa-tags"></i>
+            <span>Category-based browsing by technology stack</span>
           </li>
-          <li style="margin-bottom: var(--space-3); display: flex; align-items: center;">
-            <i class="fas fa-check" style="color: var(--accent-primary); margin-right: var(--space-3);"></i>
-            <span>Category-based browsing</span>
+          <li class="feature-item">
+            <i class="fas fa-file-pdf"></i>
+            <span>Instant PDF access for technical references</span>
           </li>
-          <li style="margin-bottom: var(--space-3); display: flex; align-items: center;">
-            <i class="fas fa-check" style="color: var(--accent-primary); margin-right: var(--space-3);"></i>
-            <span>Responsive design</span>
+          <li class="feature-item">
+            <i class="fas fa-mobile-alt"></i>
+            <span>Cross-device synchronization</span>
           </li>
         </ul>
       </div>
       
-      <div>
-        <h3 class="mb-4">For Organizations</h3>
-        <ul style="list-style: none; padding: 0;">
-          <li style="margin-bottom: var(--space-3); display: flex; align-items: center;">
-            <i class="fas fa-check" style="color: var(--accent-primary); margin-right: var(--space-3);"></i>
-            <span>Scalable architecture</span>
+      <div class="feature-list">
+        <h3 class="feature-list-title">For Engineering Teams</h3>
+        <ul class="feature-items">
+          <li class="feature-item">
+            <i class="fas fa-users"></i>
+            <span>Team library sharing and collaboration</span>
           </li>
-          <li style="margin-bottom: var(--space-3); display: flex; align-items: center;">
-            <i class="fas fa-check" style="color: var(--accent-primary); margin-right: var(--space-3);"></i>
-            <span>User management system</span>
+          <li class="feature-item">
+            <i class="fas fa-shield-alt"></i>
+            <span>Enterprise-grade security and access control</span>
           </li>
-          <li style="margin-bottom: var(--space-3); display: flex; align-items: center;">
-            <i class="fas fa-check" style="color: var(--accent-primary); margin-right: var(--space-3);"></i>
-            <span>Secure file handling</span>
+          <li class="feature-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Usage analytics and learning insights</span>
           </li>
-          <li style="margin-bottom: var(--space-3); display: flex; align-items: center;">
-            <i class="fas fa-check" style="color: var(--accent-primary); margin-right: var(--space-3);"></i>
-            <span>Minimal resource usage</span>
+          <li class="feature-item">
+            <i class="fas fa-sync"></i>
+            <span>API integration with development workflows</span>
           </li>
-          <li style="margin-bottom: var(--space-3); display: flex; align-items: center;">
-            <i class="fas fa-check" style="color: var(--accent-primary); margin-right: var(--space-3);"></i>
-            <span>Easy deployment</span>
+          <li class="feature-item">
+            <i class="fas fa-server"></i>
+            <span>Scalable infrastructure for large teams</span>
           </li>
         </ul>
       </div>
     </div>
   </div>
+
+  <div class="section-divider"></div>
 
   <!-- Technology Stack -->
-  <div class="section">
-    <div class="card">
-      <div class="card-body text-center">
-        <h3 class="mb-4">Built with Modern Technology</h3>
-        <p style="color: var(--text-secondary); margin-bottom: var(--space-6);">
-          Our platform is built using proven technologies that prioritize performance, 
-          security, and maintainability.
-        </p>
-        <div class="grid grid-4">
-          <div>
-            <i class="fab fa-python" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
-            <p style="margin-top: var(--space-2); font-size: var(--font-size-sm);">Python & Django</p>
-          </div>
-          <div>
-            <i class="fas fa-database" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
-            <p style="margin-top: var(--space-2); font-size: var(--font-size-sm);">PostgreSQL</p>
-          </div>
-          <div>
-            <i class="fab fa-html5" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
-            <p style="margin-top: var(--space-2); font-size: var(--font-size-sm);">Modern Web Standards</p>
-          </div>
-          <div>
-            <i class="fas fa-cloud" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
-            <p style="margin-top: var(--space-2); font-size: var(--font-size-sm);">Cloud Ready</p>
-          </div>
+  <div class="about-section about-tech">
+    <div class="tech-card">
+      <h3 class="tech-title">Built with Production-Grade Technology</h3>
+      <p class="tech-description">
+        TechBookHub is engineered using battle-tested technologies that ensure reliability, 
+        performance, and scalability for technical teams worldwide.
+      </p>
+      <div class="tech-grid">
+        <div class="tech-item">
+          <i class="fab fa-python"></i>
+          <span>Python & Django</span>
+        </div>
+        <div class="tech-item">
+          <i class="fas fa-database"></i>
+          <span>PostgreSQL</span>
+        </div>
+        <div class="tech-item">
+          <i class="fab fa-docker"></i>
+          <span>Containerized Deployment</span>
+        </div>
+        <div class="tech-item">
+          <i class="fas fa-cloud"></i>
+          <span>Cloud Native Architecture</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Contact -->
-  <div class="section">
-    <div class="card">
-      <div class="card-body text-center">
-        <h3 class="mb-4">Get Started</h3>
-        <p style="color: var(--text-secondary); margin-bottom: var(--space-6);">
-          Ready to experience a cleaner, faster way to manage your digital library?
+  <!-- Call to Action -->
+  <div class="about-section about-cta">
+    <div class="cta-card">
+      <div class="cta-content">
+        <h3 class="cta-title">Accelerate Your Technical Learning</h3>
+        <p class="cta-description">
+          Join thousands of engineers, developers, and technical professionals who rely on 
+          TechBookHub to stay current with rapidly evolving technologies.
         </p>
-        <div class="flex justify-center gap-4">
+        <div class="cta-actions">
           {% if not user.is_authenticated %}
             <a href="{% url 'accounts.signup' %}" class="btn btn-primary">
-              <i class="fas fa-user-plus"></i>
-              Sign Up
+              <i class="fas fa-rocket"></i>
+              Start Learning
             </a>
           {% endif %}
           <a href="{% url 'books.index' %}" class="btn btn-secondary">
             <i class="fas fa-book"></i>
-            Browse Library
+            Explore Technical Books
           </a>
         </div>
       </div>

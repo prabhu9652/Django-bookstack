@@ -32,12 +32,28 @@ class Book(models.Model):
     name = models.CharField(max_length=255)
     price = models.IntegerField()
     description = models.TextField()
+    author = models.CharField(max_length=255, blank=True, default='')
     cover_image = models.ImageField(upload_to='book_images/', null=True, blank=True)
     pdf = models.FileField(upload_to='book_pdfs/', null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='books')
 
     def __str__(self):
         return str(self.id) + ' - ' + self.name
+    
+    @property
+    def cover(self):
+        """Alias for cover_image to maintain template compatibility"""
+        return self.cover_image
+    
+    @property
+    def has_pdf(self):
+        """Check if book has a PDF file"""
+        return bool(self.pdf and self.pdf.name)
+    
+    @property
+    def has_cover(self):
+        """Check if book has a cover image"""
+        return bool(self.cover_image and self.cover_image.name)
 
 
 class Review(models.Model):
