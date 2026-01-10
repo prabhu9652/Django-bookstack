@@ -9,8 +9,24 @@
   <!-- Book Header -->
   <div class="book-header">
     <div class="book-cover-large">
-      {% if template_data.book.cover %}
-        <img src="{{ template_data.book.cover.url }}" alt="{{ template_data.book.name }}">
+      {% if template_data.book.cover and template_data.book.cover.url %}
+        <img src="{{ template_data.book.cover.url }}" 
+             alt="{{ template_data.book.name }}" 
+             loading="lazy"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="book-cover-large-placeholder" style="display: none;">
+          <i class="fas fa-file-code"></i>
+          <div class="placeholder-text">Technical Book</div>
+        </div>
+      {% elif template_data.book.cover_image and template_data.book.cover_image.url %}
+        <img src="{{ template_data.book.cover_image.url }}" 
+             alt="{{ template_data.book.name }}" 
+             loading="lazy"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="book-cover-large-placeholder" style="display: none;">
+          <i class="fas fa-file-code"></i>
+          <div class="placeholder-text">Technical Book</div>
+        </div>
       {% else %}
         <div class="book-cover-large-placeholder">
           <i class="fas fa-file-code"></i>
@@ -253,6 +269,42 @@
 // Book detail page specific functionality
 document.addEventListener('DOMContentLoaded', function() {
   console.log('Book detail page loaded');
+  
+  // Enhanced image loading for book cover
+  const bookCoverImg = document.querySelector('.book-cover-large img');
+  if (bookCoverImg) {
+    console.log('Book cover image found:', bookCoverImg.src);
+    
+    // Add loading class initially
+    bookCoverImg.classList.add('loading');
+    
+    // Handle successful image load
+    bookCoverImg.addEventListener('load', function() {
+      console.log('Book cover image loaded successfully');
+      this.classList.remove('loading');
+      this.style.opacity = '1';
+    });
+    
+    // Handle image load error
+    bookCoverImg.addEventListener('error', function() {
+      console.warn('Book cover image failed to load:', this.src);
+      this.style.display = 'none';
+      const placeholder = this.nextElementSibling;
+      if (placeholder && placeholder.classList.contains('book-cover-large-placeholder')) {
+        placeholder.style.display = 'flex';
+        console.log('Showing placeholder for failed image');
+      }
+    });
+    
+    // Check if image is already loaded (cached)
+    if (bookCoverImg.complete) {
+      console.log('Book cover image already loaded (cached)');
+      bookCoverImg.classList.remove('loading');
+      bookCoverImg.style.opacity = '1';
+    }
+  } else {
+    console.log('No book cover image found on page');
+  }
   
   // The LibraryManager handles all add/remove functionality
   // No additional JavaScript needed for this page

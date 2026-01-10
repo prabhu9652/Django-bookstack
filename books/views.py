@@ -118,8 +118,9 @@ def category(request, slug):
 
 def show(request, id):
     try:
-        book = get_object_or_404(Book, id=id)
-        reviews = Review.objects.filter(book=book)
+        # Use select_related to optimize database queries
+        book = get_object_or_404(Book.objects.select_related('category'), id=id)
+        reviews = Review.objects.filter(book=book).select_related('user')
 
         category_slug = request.GET.get('category')
         category = None
@@ -138,6 +139,13 @@ def show(request, id):
             except ImportError:
                 # Library app not available
                 pass
+
+        # Debug logging for image issues
+        logger.info(f"Book {id} cover field: {book.cover_image}")
+        if book.cover_image:
+            logger.info(f"Book {id} cover URL: {book.cover_image.url}")
+        else:
+            logger.info(f"Book {id} has no cover image")
 
         template_data = {}
         template_data['title'] = book.name
