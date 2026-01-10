@@ -5,30 +5,30 @@
 <!-- Hidden CSRF token for AJAX requests -->
 {% csrf_token %}
 
-<div class="container">
-  <!-- Technical Library Header -->
-  <div class="tech-header">
-    <div class="tech-header-content">
-      <div class="tech-icon-group">
-        <div class="tech-icon">
-          <i class="fas fa-server"></i>
-        </div>
-        <div class="tech-icon">
-          <i class="fas fa-database"></i>
-        </div>
-        <div class="tech-icon">
-          <i class="fas fa-code"></i>
-        </div>
-        <div class="tech-icon">
-          <i class="fas fa-chart-line"></i>
-        </div>
+<div class="container" style="padding: var(--space-8) 0;">
+  <!-- Modern Header Section -->
+  <div class="text-center mb-12 animate-slide-down">
+    <div class="d-flex justify-content-center gap-3 mb-4" style="opacity: 0.8;">
+      <div class="animate-pulse animate-stagger-1">
+        <i class="fas fa-server" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
       </div>
-      <h1 class="tech-title">My Technical Library</h1>
-      <p class="tech-subtitle">
-        {{ template_data.total_books }} technical book{{ template_data.total_books|pluralize }} in your personal collection
-      </p>
+      <div class="animate-pulse animate-stagger-2">
+        <i class="fas fa-database" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
+      </div>
+      <div class="animate-pulse animate-stagger-3">
+        <i class="fas fa-code" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
+      </div>
+      <div class="animate-pulse animate-stagger-4">
+        <i class="fas fa-chart-line" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
+      </div>
     </div>
-    <div class="tech-header-actions" style="margin-left: auto !important; display: flex !important; align-items: center !important;">
+    
+    <h1 class="mb-4">My Technical Library</h1>
+    <p class="text-secondary mb-6">
+      {{ template_data.total_books }} technical book{{ template_data.total_books|pluralize }} in your personal collection
+    </p>
+    
+    <div class="d-flex justify-content-center gap-3">
       <a href="{% url 'books.index' %}" class="btn btn-primary">
         <i class="fas fa-plus"></i>
         Add Technical Books
@@ -36,18 +36,18 @@
     </div>
   </div>
 
-  <!-- Technical Category Navigation -->
-  <div class="tech-category-nav">
+  <!-- Modern Category Navigation -->
+  <div class="category-navigation mb-10">
     <div class="category-scroll">
       <a href="{% url 'library.index' %}" 
-         class="tech-category-item {% if not template_data.current_category %}active{% endif %}">
+         class="category-chip {% if not template_data.current_category %}active{% endif %}">
         <i class="fas fa-th-large"></i>
         <span>All Books ({{ template_data.total_books }})</span>
       </a>
       
       {% for category in template_data.categories %}
         <a href="{% url 'library.index' %}?category={{ category.slug }}" 
-           class="tech-category-item {% if template_data.current_category == category.slug %}active{% endif %}">
+           class="category-chip {% if template_data.current_category == category.slug %}active{% endif %}">
           {% if category.slug == 'devops' %}
             <i class="fas fa-cogs"></i>
           {% elif category.slug == 'cloud-computing' %}
@@ -71,7 +71,7 @@
       
       {% if template_data.uncategorized_count > 0 %}
         <a href="{% url 'library.index' %}?category=uncategorized" 
-           class="tech-category-item {% if template_data.current_category == 'uncategorized' %}active{% endif %}">
+           class="category-chip {% if template_data.current_category == 'uncategorized' %}active{% endif %}">
           <i class="fas fa-question-circle"></i>
           <span>Uncategorized ({{ template_data.uncategorized_count }})</span>
         </a>
@@ -79,68 +79,67 @@
     </div>
   </div>
 
-  <!-- Technical Books Grid -->
-  <div class="tech-books-section">
+  <!-- Modern Books Grid -->
+  <div class="books-section">
     {% if template_data.library_books %}
-      <div class="tech-books-grid">
+      <div class="books-grid">
         {% for library_item in template_data.library_books %}
-          <div class="tech-book-card library-book" data-category="{{ library_item.book.category.slug|default:'uncategorized' }}" data-book-id="{{ library_item.book.id }}">
-            <!-- Remove Button -->
-            <button type="button" 
-                    class="library-remove-btn" 
-                    data-book-id="{{ library_item.book.id }}" 
-                    title="Remove from library"
-                    aria-label="Remove {{ library_item.book.name }} from library">
-              <i class="fas fa-times" aria-hidden="true"></i>
-            </button>
+          <div class="book-card library-book-card animate-slide-up animate-stagger-{{ forloop.counter0|add:1 }}" 
+               data-category="{{ library_item.book.category.slug|default:'uncategorized' }}" 
+               data-book-id="{{ library_item.book.id }}">
             
-            <div class="tech-book-cover">
+            <!-- Book Cover -->
+            <div class="book-cover">
               {% if library_item.book.cover %}
                 <img src="{{ library_item.book.cover.url }}" alt="{{ library_item.book.name }}" loading="lazy">
               {% else %}
-                <div class="tech-book-placeholder">
+                <div class="book-cover-placeholder">
                   <i class="fas fa-file-pdf"></i>
-                  <div class="placeholder-text">Technical Book</div>
+                  <span>Technical Book</span>
                 </div>
               {% endif %}
             </div>
             
-            <div class="tech-book-info">
-              <div class="tech-book-meta">
-                {% if library_item.book.category %}
-                  <span class="tech-category-badge">
-                    {% if library_item.book.category.slug == 'devops' %}
-                      <i class="fas fa-cogs"></i>
-                    {% elif library_item.book.category.slug == 'cloud-computing' %}
-                      <i class="fas fa-cloud"></i>
-                    {% elif library_item.book.category.slug == 'data-science' %}
-                      <i class="fas fa-chart-bar"></i>
-                    {% elif library_item.book.category.slug == 'machine-learning' %}
-                      <i class="fas fa-brain"></i>
-                    {% elif library_item.book.category.slug == 'software-development' %}
-                      <i class="fas fa-code"></i>
-                    {% elif library_item.book.category.slug == 'observability' %}
-                      <i class="fas fa-eye"></i>
-                    {% elif library_item.book.category.slug == 'databases' %}
-                      <i class="fas fa-database"></i>
-                    {% else %}
-                      <i class="fas fa-folder"></i>
-                    {% endif %}
-                    {{ library_item.book.category.name }}
-                  </span>
-                {% endif %}
-              </div>
+            <!-- Book Info -->
+            <div class="book-info">
+              <!-- Category Badge -->
+              {% if library_item.book.category %}
+                <div class="book-category">
+                  {% if library_item.book.category.slug == 'devops' %}
+                    <i class="fas fa-cogs"></i>
+                  {% elif library_item.book.category.slug == 'cloud-computing' %}
+                    <i class="fas fa-cloud"></i>
+                  {% elif library_item.book.category.slug == 'data-science' %}
+                    <i class="fas fa-chart-bar"></i>
+                  {% elif library_item.book.category.slug == 'machine-learning' %}
+                    <i class="fas fa-brain"></i>
+                  {% elif library_item.book.category.slug == 'software-development' %}
+                    <i class="fas fa-code"></i>
+                  {% elif library_item.book.category.slug == 'observability' %}
+                    <i class="fas fa-eye"></i>
+                  {% elif library_item.book.category.slug == 'databases' %}
+                    <i class="fas fa-database"></i>
+                  {% else %}
+                    <i class="fas fa-folder"></i>
+                  {% endif %}
+                  {{ library_item.book.category.name }}
+                </div>
+              {% endif %}
               
-              <h3 class="tech-book-title">
-                <a href="{% url 'books.show' library_item.book.id %}" style="color: inherit; text-decoration: none;">
+              <!-- Book Title -->
+              <h3 class="book-title">
+                <a href="{% url 'books.show' library_item.book.id %}">
                   {{ library_item.book.name }}
                 </a>
               </h3>
               
-              <p class="tech-book-author">{{ library_item.book.author|default:"Technical Author" }}</p>
+              <!-- Author -->
+              <p class="book-author">
+                {{ library_item.book.author|default:"Technical Author" }}
+              </p>
               
-              <!-- Book Actions -->
-              <div class="tech-book-actions">
+              <!-- Action Buttons -->
+              <div class="book-actions">
                 <a href="{% url 'books.show' library_item.book.id %}" class="btn btn-primary btn-sm">
                   <i class="fas fa-eye"></i>
                   View Details
@@ -151,9 +150,14 @@
                     Read PDF
                   </a>
                 {% endif %}
+                <button type="button" class="btn btn-sm library-remove-btn" data-book-id="{{ library_item.book.id }}" title="Remove from library">
+                  <i class="fas fa-trash"></i>
+                  Delete
+                </button>
               </div>
               
-              <div class="tech-added-date">
+              <!-- Added Date -->
+              <div class="added-date">
                 <i class="fas fa-calendar-plus"></i>
                 Added {{ library_item.added_date|date:"M d, Y" }}
               </div>
@@ -162,8 +166,8 @@
         {% endfor %}
       </div>
     {% else %}
-      <!-- Empty Technical Library State -->
-      <div class="tech-empty-state">
+      <!-- Modern Empty State -->
+      <div class="empty-state">
         <div class="empty-icon">
           <i class="fas fa-server"></i>
         </div>
@@ -184,36 +188,134 @@
   </div>
 </div>
 
+<style>
+/* Library Page Specific Styles */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .books-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
+    gap: var(--space-4) !important;
+  }
+  
+  .category-scroll {
+    padding-bottom: var(--space-4) !important;
+  }
+  
+  .book-actions {
+    flex-direction: column !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .books-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .header-icon-group {
+    display: none !important;
+  }
+  
+  .header-actions {
+    flex-direction: column !important;
+  }
+}
+</style>
+
 <script>
-// Library page specific functionality
+// Enhanced Library page functionality
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('My Library page loaded');
-  
-  // The LibraryManager handles all add/remove functionality
-  // This script only handles library-specific UI interactions
-  
-  // Handle book card navigation (prevent when clicking remove buttons)
-  const bookCards = document.querySelectorAll('.tech-book-card');
+  // Enhanced book card interactions
+  const bookCards = document.querySelectorAll('.book-card');
   bookCards.forEach(card => {
     card.addEventListener('click', function(e) {
-      // Don't navigate if clicking on remove button
-      if (e.target.closest('.library-remove-btn')) {
+      // Don't navigate if clicking on remove button or action buttons
+      if (e.target.closest('.library-remove-btn') || e.target.closest('.book-actions')) {
         return;
       }
       
       // Navigate to book detail page
-      const bookLink = this.querySelector('.tech-book-title a');
+      const bookLink = this.querySelector('.book-title a');
       if (bookLink) {
         window.location.href = bookLink.href;
       }
     });
     
-    // Add keyboard support
+    // Keyboard support
     card.setAttribute('tabindex', '0');
     card.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         this.click();
+      }
+    });
+  });
+  
+  // Delete/Remove book functionality
+  const removeButtons = document.querySelectorAll('.library-remove-btn');
+  removeButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const bookId = this.dataset.bookId;
+      const bookCard = this.closest('.book-card');
+      const bookTitle = bookCard.querySelector('.book-title a').textContent.trim();
+      
+      // Confirm deletion
+      if (confirm(`Remove "${bookTitle}" from your library?`)) {
+        // Disable button during request
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Removing...';
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        // Make AJAX request to remove book
+        fetch('/library/remove/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+          },
+          body: JSON.stringify({
+            book_id: bookId
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Animate card removal
+            bookCard.style.transform = 'scale(0.8)';
+            bookCard.style.opacity = '0';
+            
+            setTimeout(() => {
+              bookCard.remove();
+              
+              // Check if this was the last book and show empty state
+              const remainingBooks = document.querySelectorAll('.book-card');
+              if (remainingBooks.length === 0) {
+                location.reload(); // Reload to show empty state
+              }
+            }, 300);
+          } else {
+            alert('Error removing book: ' + data.message);
+            // Re-enable button
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-trash"></i> Delete';
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error removing book from library');
+          // Re-enable button
+          this.disabled = false;
+          this.innerHTML = '<i class="fas fa-trash"></i> Delete';
+        });
       }
     });
   });

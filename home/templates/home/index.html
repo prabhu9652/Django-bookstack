@@ -2,309 +2,271 @@
 {% load static %}
 
 {% block content %}
-<!-- Hero Section -->
-<div class="hero-section">
-  <div class="container">
-    <div class="hero-content">
-      <div class="hero-text">
-        <h1 class="hero-title">TechBookHub</h1>
-        <p class="hero-subtitle">
-          Professional technical books for developers and engineers. Access cutting-edge resources 
-          in DevOps, Cloud Computing, Data Science, Machine Learning, and Software Development.
+<div class="container" style="padding: var(--space-8) 0;">
+  <!-- Header -->
+  <div class="animate-slide-down" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-12);">
+    <div>
+      <h1 class="d-flex align-items-center gap-3 mb-2">
+        <div style="width: 56px; height: 56px; background-color: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
+          <i class="fas fa-terminal" style="color: var(--accent-primary); font-size: var(--font-size-xl);"></i>
+        </div>
+        Engineering Platform
+      </h1>
+      <p class="text-secondary">
+        Professional resources for developers and engineers. Books, career tools, and technical roadmaps.
+      </p>
+    </div>
+    <div class="d-flex gap-3">
+      {% if user.is_authenticated %}
+        <a href="{% url 'books.index' %}" class="btn btn-primary animate-slide-right animate-stagger-1">
+          <i class="fas fa-book"></i>
+          Browse Books
+        </a>
+      {% else %}
+        <a href="{% url 'books.index' %}" class="btn btn-primary animate-slide-right animate-stagger-1">
+          <i class="fas fa-book"></i>
+          Browse Books
+        </a>
+        <a href="{% url 'accounts.signup' %}" class="btn btn-secondary animate-slide-right animate-stagger-2">
+          <i class="fas fa-user-plus"></i>
+          Get Started
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Core Features Section -->
+  <div class="animate-slide-left animate-stagger-2 mb-12">
+    <div class="d-flex align-items-center justify-content-between mb-6">
+      <h2 class="d-flex align-items-center">
+        <div class="feature-icon mr-4">
+          <i class="fas fa-layer-group"></i>
+        </div>
+        Platform Features
+      </h2>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-6);">
+      <!-- Books & Knowledge Hub -->
+      <a href="{% url 'books.index' %}" class="feature-card animate-slide-up animate-stagger-1">
+        <div class="feature-icon">
+          <i class="fas fa-book"></i>
+        </div>
+        <h3 class="mb-3">Books & Knowledge Hub</h3>
+        <p class="text-secondary mb-4">
+          Professional technical books covering DevOps, Cloud Computing, Data Science, and Software Development.
         </p>
-        <div class="hero-actions">
-          <a href="{% url 'books.index' %}" class="btn btn-primary btn-lg">
-            <i class="fas fa-code"></i>
-            Browse Technical Books
-          </a>
-          {% if not user.is_authenticated %}
-            <a href="{% url 'accounts.signup' %}" class="btn btn-secondary btn-lg">
-              <i class="fas fa-user-plus"></i>
-              Get Started
-            </a>
+        <div class="d-flex align-items-center gap-3">
+          <div class="meta-item">
+            <i class="fas fa-book-open"></i>
+            <span>{{ template_data.total_books|default:"500+" }} Books</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- My Library -->
+      {% if user.is_authenticated %}
+        <a href="{% url 'library.index' %}" class="feature-card animate-slide-up animate-stagger-2">
+      {% else %}
+        <div class="feature-card animate-slide-up animate-stagger-2">
+      {% endif %}
+        <div class="feature-icon">
+          <i class="fas fa-bookmark"></i>
+        </div>
+        <h3 class="mb-3">My Library</h3>
+        <p class="text-secondary mb-4">
+          Personal collection of saved books and reading progress. Organize your technical learning journey.
+        </p>
+        <div class="d-flex align-items-center gap-3">
+          {% if user.is_authenticated %}
+            <div class="document-status">
+              <i class="fas fa-check-circle"></i>
+              Available
+            </div>
+          {% else %}
+            <div class="meta-item">
+              <i class="fas fa-lock"></i>
+              <span>Sign in required</span>
+            </div>
           {% endif %}
         </div>
-      </div>
-      <div class="hero-graphic">
-        <div class="floating-books">
-          <div class="book-icon book-1">
-            <i class="fab fa-docker"></i>
+      {% if user.is_authenticated %}
+        </a>
+      {% else %}
+        </div>
+      {% endif %}
+
+      <!-- Resume Builder -->
+      <a href="{% url 'resume_builder:home' %}" class="feature-card animate-slide-up animate-stagger-3">
+        <div class="feature-icon">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <h3 class="mb-3">Resume Builder</h3>
+        <p class="text-secondary mb-4">
+          Professional resume and cover letter builder with enterprise-grade templates for technical roles.
+        </p>
+        <div class="d-flex gap-2" style="flex-wrap: wrap;">
+          <div class="meta-item">
+            <i class="fas fa-check"></i>
+            <span>ATS-Friendly</span>
           </div>
-          <div class="book-icon book-2">
-            <i class="fas fa-cloud"></i>
-          </div>
-          <div class="book-icon book-3">
-            <i class="fas fa-database"></i>
+          <div class="meta-item">
+            <i class="fas fa-check"></i>
+            <span>Live Preview</span>
           </div>
         </div>
-      </div>
+      </a>
+
+      <!-- Career Roadmaps -->
+      <a href="{% url 'roadmap:home' %}" class="feature-card animate-slide-up animate-stagger-4">
+        <div class="feature-icon">
+          <i class="fas fa-route"></i>
+        </div>
+        <h3 class="mb-3">Career Roadmaps</h3>
+        <p class="text-secondary mb-4">
+          Structured learning paths from DevOps to Full-Stack Development to Data Science & Machine Learning.
+        </p>
+        <div class="d-flex gap-2" style="flex-wrap: wrap;">
+          <div class="meta-item">
+            <i class="fas fa-cogs"></i>
+            <span>DevOps</span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-code"></i>
+            <span>Full-Stack</span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-chart-line"></i>
+            <span>DSML</span>
+          </div>
+        </div>
+      </a>
     </div>
   </div>
-</div>
-
-<div class="container">
-  <!-- Features Section -->
-  <div class="section">
-    <h2 class="text-center mb-8">Why Choose TechBookHub</h2>
-    <div class="grid grid-3">
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-code"></i>
-        </div>
-        <h3 class="feature-title">Technical Excellence</h3>
-        <p class="feature-description">
-          Curated collection of professional technical books covering DevOps, 
-          Cloud Computing, Data Science, and Software Development.
-        </p>
-      </div>
-      
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-rocket"></i>
-        </div>
-        <h3 class="feature-title">Latest Technologies</h3>
-        <p class="feature-description">
-          Stay current with the latest tools, frameworks, and best practices 
-          in modern software engineering and infrastructure.
-        </p>
-      </div>
-      
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-users"></i>
-        </div>
-        <h3 class="feature-title">Developer Community</h3>
-        <p class="feature-description">
-          Join thousands of developers and engineers building their technical 
-          knowledge with our comprehensive library platform.
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <div class="section-divider"></div>
-
-  <!-- Resume Builder Section -->
-  <div class="section">
-    <div class="resume-builder-section">
-      <div class="resume-builder-content">
-        <div class="resume-builder-text">
-          <h2>Professional Resume & Cover Letter Builder</h2>
-          <p class="resume-builder-description">
-            Create stunning, ATS-friendly resumes and compelling cover letters with our 
-            enterprise-grade templates. Perfect for tech professionals and developers.
-          </p>
-          <div class="resume-builder-features">
-            <div class="feature-item">
-              <i class="fas fa-check-circle"></i>
-              <span>Professional Templates</span>
-            </div>
-            <div class="feature-item">
-              <i class="fas fa-check-circle"></i>
-              <span>Real-time Preview</span>
-            </div>
-            <div class="feature-item">
-              <i class="fas fa-check-circle"></i>
-              <span>ATS-Friendly Format</span>
-            </div>
-            <div class="feature-item">
-              <i class="fas fa-check-circle"></i>
-              <span>PDF Export</span>
-            </div>
-          </div>
-          <div class="resume-builder-actions">
-            {% if user.is_authenticated %}
-              <a href="{% url 'resume_builder:dashboard' %}" class="btn btn-primary btn-lg">
-                <i class="fas fa-tachometer-alt"></i>
-                My Documents
-              </a>
-              <a href="{% url 'resume_builder:resume_templates' %}" class="btn btn-secondary btn-lg">
-                <i class="fas fa-plus"></i>
-                Create Resume
-              </a>
-            {% else %}
-              <a href="{% url 'resume_builder:home' %}" class="btn btn-primary btn-lg">
-                <i class="fas fa-file-alt"></i>
-                Learn More
-              </a>
-              <a href="{% url 'accounts.signup' %}" class="btn btn-secondary btn-lg">
-                <i class="fas fa-user-plus"></i>
-                Get Started
-              </a>
-            {% endif %}
-          </div>
-        </div>
-        <div class="resume-builder-visual">
-          <div class="resume-preview-mockup">
-            <div class="mockup-header">
-              <div class="mockup-dots">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
-              <div class="mockup-title">Resume Builder</div>
-            </div>
-            <div class="mockup-content">
-              <div class="mockup-line long"></div>
-              <div class="mockup-line medium"></div>
-              <div class="mockup-line short"></div>
-              <div class="mockup-section">
-                <div class="mockup-line medium"></div>
-                <div class="mockup-line long"></div>
-                <div class="mockup-line short"></div>
-              </div>
-              <div class="mockup-section">
-                <div class="mockup-line short"></div>
-                <div class="mockup-line medium"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section-divider"></div>
 
   <!-- Recent Books Section -->
   {% if template_data.recent_books %}
-  <div class="section">
-    <div class="flex items-center justify-between mb-8">
-      <h2>Latest Technical Books</h2>
+  <div class="animate-slide-right animate-stagger-3">
+    <div class="d-flex align-items-center justify-content-between mb-6">
+      <h2 class="d-flex align-items-center">
+        <div class="feature-icon mr-4">
+          <i class="fas fa-book-open"></i>
+        </div>
+        Latest Technical Books
+      </h2>
       <a href="{% url 'books.index' %}" class="btn btn-ghost">
         View All Books
         <i class="fas fa-arrow-right"></i>
       </a>
     </div>
     
-    <div class="tech-books-grid">
+    <div class="books-grid mb-4">
       {% for book in template_data.recent_books %}
-        <div class="tech-book-card" data-book-url="{% url 'books.show' book.id %}">
-          <div class="tech-book-cover">
+        <a href="{% url 'books.show' book.id %}" class="book-card animate-slide-up animate-stagger-{{ forloop.counter }}">
+          <!-- Book Cover -->
+          <div class="book-cover">
             {% if book.cover %}
               <img src="{{ book.cover.url }}" alt="{{ book.name }}" loading="lazy">
             {% else %}
-              <div class="tech-book-placeholder">
+              <div class="book-cover-placeholder">
                 <i class="fas fa-file-code"></i>
-                <div class="placeholder-text">Technical Book</div>
+                <span>Technical Book</span>
               </div>
             {% endif %}
           </div>
           
-          <div class="tech-book-info">
-            <div class="tech-book-content">
-              <h4 class="tech-book-title">{{ book.name }}</h4>
-              <p class="tech-book-author">{{ book.author|default:"Technical Author" }}</p>
+          <!-- Book Info -->
+          <div class="book-info">
+            <div>
+              <h4 class="book-title">{{ book.name }}</h4>
+              <p class="book-author">{{ book.author|default:"Technical Author" }}</p>
               
-              <div class="tech-book-meta">
-                {% if book.category %}
-                  <span class="tech-category-badge">
-                    {% if 'devops' in book.category.name|lower %}
-                      <i class="fas fa-cogs"></i>
-                    {% elif 'cloud' in book.category.name|lower %}
-                      <i class="fas fa-cloud"></i>
-                    {% elif 'data' in book.category.name|lower %}
-                      <i class="fas fa-chart-bar"></i>
-                    {% elif 'machine' in book.category.name|lower %}
-                      <i class="fas fa-robot"></i>
-                    {% elif 'software' in book.category.name|lower %}
-                      <i class="fas fa-code"></i>
-                    {% elif 'database' in book.category.name|lower %}
-                      <i class="fas fa-database"></i>
-                    {% else %}
-                      <i class="fas fa-book"></i>
-                    {% endif %}
-                    {{ book.category.name }}
-                  </span>
-                {% endif %}
-              </div>
+              {% if book.category %}
+                <div class="book-category">
+                  {% if 'devops' in book.category.name|lower %}
+                    <i class="fas fa-cogs"></i>
+                  {% elif 'cloud' in book.category.name|lower %}
+                    <i class="fas fa-cloud"></i>
+                  {% elif 'data' in book.category.name|lower %}
+                    <i class="fas fa-chart-bar"></i>
+                  {% elif 'machine' in book.category.name|lower %}
+                    <i class="fas fa-robot"></i>
+                  {% elif 'software' in book.category.name|lower %}
+                    <i class="fas fa-code"></i>
+                  {% elif 'database' in book.category.name|lower %}
+                    <i class="fas fa-database"></i>
+                  {% else %}
+                    <i class="fas fa-book"></i>
+                  {% endif %}
+                  <span>{{ book.category.name }}</span>
+                </div>
+              {% endif %}
             </div>
           </div>
-        </div>
+        </a>
       {% endfor %}
     </div>
   </div>
-
-  <div class="section-divider"></div>
   {% endif %}
 
-  <!-- Technical Categories Section -->
-  <div class="section">
-    <h2 class="text-center mb-8">Technical Categories</h2>
-    <div class="tech-grid">
-      <div class="tech-item">
-        <i class="fas fa-cogs"></i>
-        <span>DevOps & Infrastructure</span>
-      </div>
-      <div class="tech-item">
-        <i class="fas fa-cloud"></i>
-        <span>Cloud Computing</span>
-      </div>
-      <div class="tech-item">
-        <i class="fas fa-chart-line"></i>
-        <span>Data Science & Analytics</span>
-      </div>
-      <div class="tech-item">
-        <i class="fas fa-robot"></i>
-        <span>Machine Learning & AI</span>
-      </div>
-      <div class="tech-item">
-        <i class="fas fa-code"></i>
-        <span>Software Development</span>
-      </div>
-      <div class="tech-item">
-        <i class="fas fa-database"></i>
-        <span>Database Systems</span>
-      </div>
-      <div class="tech-item">
-        <i class="fas fa-chart-bar"></i>
-        <span>Observability & Monitoring</span>
-      </div>
-      <div class="tech-item">
-        <i class="fas fa-shield-alt"></i>
-        <span>Security & Compliance</span>
-      </div>
+  <!-- Platform Stats Section -->
+  <div class="animate-slide-left animate-stagger-4">
+    <div class="text-center mb-6">
+      <h2 class="d-flex align-items-center justify-content-center">
+        <div class="feature-icon mr-4">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        Platform Overview
+      </h2>
     </div>
-  </div>
-
-  <!-- Stats Section -->
-  <div class="section">
+    
     <div class="stats-grid">
-      <div class="stat-card">
+      <div class="stat-card animate-slide-up animate-stagger-1">
+        <div class="feature-icon mb-3">
+          <i class="fas fa-book"></i>
+        </div>
         <div class="stat-number">{{ template_data.total_books|default:"500+" }}</div>
         <div class="stat-label">Technical Books</div>
       </div>
-      <div class="stat-card">
+      
+      <div class="stat-card animate-slide-up animate-stagger-2">
+        <div class="feature-icon mb-3">
+          <i class="fas fa-layer-group"></i>
+        </div>
         <div class="stat-number">{{ template_data.total_categories|default:"8+" }}</div>
         <div class="stat-label">Tech Categories</div>
       </div>
-      <div class="stat-card">
+      
+      <div class="stat-card animate-slide-up animate-stagger-3">
+        <div class="feature-icon mb-3">
+          <i class="fas fa-users"></i>
+        </div>
         <div class="stat-number">{{ template_data.total_users|default:"2000+" }}</div>
-        <div class="stat-label">Developers & Engineers</div>
+        <div class="stat-label">Engineers & Developers</div>
       </div>
     </div>
   </div>
 
   <!-- Call to Action -->
   {% if not user.is_authenticated %}
-  <div class="section">
-    <div class="cta-card">
-      <div class="cta-content">
-        <h3 class="cta-title">Join the Developer Community</h3>
-        <p class="cta-description">
-          Access professional technical books and stay ahead in your engineering career. 
-          Join thousands of developers building their expertise with TechBookHub.
-        </p>
-        <div class="cta-actions">
-          <a href="{% url 'accounts.signup' %}" class="btn btn-primary">
-            <i class="fas fa-user-plus"></i>
-            Create Account
-          </a>
-          <a href="{% url 'accounts.login' %}" class="btn btn-secondary">
-            <i class="fas fa-sign-in-alt"></i>
-            Sign In
-          </a>
-        </div>
+  <div class="text-center mt-16">
+    <div class="card" style="max-width: 600px; margin: 0 auto; padding: var(--space-12);">
+      <div class="empty-icon mb-6 animate-pulse">
+        <i class="fas fa-rocket"></i>
+      </div>
+      <h3 class="mb-4">Join the Engineering Platform</h3>
+      <p class="text-secondary mb-8">
+        Access professional technical resources, build your resume, and advance your engineering career with our comprehensive platform.
+      </p>
+      <div class="d-flex gap-3 justify-content-center" style="flex-wrap: wrap;">
+        <a href="{% url 'accounts.signup' %}" class="btn btn-primary btn-lg">
+          <i class="fas fa-user-plus"></i>
+          Create Account
+        </a>
+        <a href="{% url 'accounts.login' %}" class="btn btn-secondary btn-lg">
+          <i class="fas fa-sign-in-alt"></i>
+          Sign In
+        </a>
       </div>
     </div>
   </div>
@@ -312,26 +274,46 @@
 </div>
 
 <script>
-// Add click handlers for book cards
+// Enhanced Home page functionality
 document.addEventListener('DOMContentLoaded', function() {
-  const bookCards = document.querySelectorAll('.tech-book-card[data-book-url]');
+  // Animate elements on scroll
+  const animateElements = document.querySelectorAll('[class*="animate-"]');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
+      }
+    });
+  }, { threshold: 0.1 });
   
-  bookCards.forEach(card => {
-    card.addEventListener('click', function() {
-      const url = this.dataset.bookUrl;
-      if (url) {
-        window.location.href = url;
+  animateElements.forEach(el => {
+    observer.observe(el);
+  });
+  
+  // Enhanced card interactions
+  const cards = document.querySelectorAll('.feature-card, .book-card, .stat-card');
+  cards.forEach(card => {
+    card.addEventListener('click', function(e) {
+      if (e.target.closest('.btn') || e.target.closest('button')) {
+        return;
+      }
+      
+      const link = this.getAttribute('href');
+      if (link) {
+        window.location.href = link;
       }
     });
     
-    // Add keyboard support
-    card.setAttribute('tabindex', '0');
-    card.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        this.click();
-      }
-    });
+    // Keyboard support
+    if (card.getAttribute('href')) {
+      card.setAttribute('tabindex', '0');
+      card.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.click();
+        }
+      });
+    }
   });
 });
 </script>

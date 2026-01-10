@@ -5,9 +5,10 @@
 <!-- Hidden CSRF token for AJAX requests -->
 {% csrf_token %}
 
-<div class="container book-detail">
+<div class="container book-detail p-8">
   <!-- Book Header -->
-  <div class="book-header">
+  <div class="book-header animate-slide-up">
+    <!-- Book Cover -->
     <div class="book-cover-large">
       {% if template_data.book.cover and template_data.book.cover.url %}
         <img src="{{ template_data.book.cover.url }}" 
@@ -35,55 +36,105 @@
       {% endif %}
     </div>
     
+    <!-- Book Meta Information -->
     <div class="book-meta-detail">
-      <h1 class="book-title-large">{{ template_data.book.name }}</h1>
-      <p class="book-author-large">{{ template_data.book.author|default:"Technical Author" }}</p>
+      <div class="book-title-section">
+        <h1 class="book-title-large mb-3">
+          {{ template_data.book.name }}
+        </h1>
+        <p class="book-author-large mb-5">
+          {{ template_data.book.author|default:"Technical Author" }}
+        </p>
+      </div>
       
-      <div class="book-actions">
+      <!-- Action Buttons -->
+      <div class="book-actions d-flex gap-3 mb-5 flex-wrap">
         {% if user.is_authenticated %}
-          {% if template_data.is_in_library %}
-            <button class="btn btn-danger remove-from-library" data-book-id="{{ template_data.book.id }}">
-              <i class="fas fa-bookmark-slash"></i>
-              Remove from Library
-            </button>
+          {% if access_context.has_content_access %}
+            {% if template_data.is_in_library %}
+              <button class="btn btn-secondary remove-from-library d-flex align-items-center gap-2" data-book-id="{{ template_data.book.id }}">
+                <i class="fas fa-bookmark-slash"></i>
+                Remove from Library
+              </button>
+            {% else %}
+              <button class="btn btn-primary add-to-library d-flex align-items-center gap-2" data-book-id="{{ template_data.book.id }}">
+                <i class="fas fa-bookmark"></i>
+                Add to Library
+              </button>
+            {% endif %}
+            {% if template_data.book.pdf %}
+              <a href="{% url 'books.view' template_data.book.id %}" class="btn btn-secondary d-flex align-items-center gap-2" target="_blank">
+                <i class="fas fa-external-link-alt"></i>
+                Read PDF
+              </a>
+              <a href="{% url 'books.download' template_data.book.id %}" class="btn btn-ghost d-flex align-items-center gap-2">
+                <i class="fas fa-download"></i>
+                Download
+              </a>
+            {% endif %}
           {% else %}
-            <button class="btn btn-primary add-to-library" data-book-id="{{ template_data.book.id }}">
-              <i class="fas fa-bookmark"></i>
-              Add to Library
-            </button>
-          {% endif %}
-          {% if template_data.book.pdf %}
-            <a href="{% url 'books.view' template_data.book.id %}" class="btn btn-secondary" target="_blank">
-              <i class="fas fa-external-link-alt"></i>
-              Read PDF
-            </a>
-            <a href="{% url 'books.download' template_data.book.id %}" class="btn btn-secondary">
-              <i class="fas fa-download"></i>
-              Download
-            </a>
+            <!-- Access Required State -->
+            <div class="access-message">
+              <h3>
+                <i class="fas fa-lock"></i>
+                Access Approval Required
+              </h3>
+              <p>You need admin approval to access library features and PDF content.</p>
+              {% if access_context.can_request_access %}
+                <div class="mt-3">
+                  <a href="{% url 'accounts.access_status' %}" class="btn-request-access" onclick="this.innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> Loading...'; this.style.pointerEvents='none';">
+                    <i class="fas fa-key"></i>
+                    Request Access
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+            
+            <!-- Disabled Action Buttons -->
+            <div class="disabled-actions-group d-flex gap-3 flex-wrap">
+              <button class="btn btn-secondary d-flex align-items-center gap-2" disabled title="Access approval required">
+                <i class="fas fa-lock"></i>
+                Library Access Required
+              </button>
+              {% if template_data.book.pdf %}
+                <button class="btn btn-secondary d-flex align-items-center gap-2" disabled title="Access approval required">
+                  <i class="fas fa-lock"></i>
+                  PDF Access Required
+                </button>
+                <button class="btn btn-ghost d-flex align-items-center gap-2" disabled title="Access approval required">
+                  <i class="fas fa-lock"></i>
+                  Download Requires Access
+                </button>
+              {% endif %}
+            </div>
           {% endif %}
         {% else %}
-          <a href="{% url 'accounts.login' %}?next={{ request.path }}" class="btn btn-primary">
+          <a href="{% url 'accounts.login' %}?next={{ request.path }}" class="btn btn-primary d-flex align-items-center gap-2">
             <i class="fas fa-sign-in-alt"></i>
             Sign In to Access
           </a>
         {% endif %}
       </div>
       
+      <!-- Book Description -->
       {% if template_data.book.description %}
-        <div class="book-description">
-          <p>{{ template_data.book.description }}</p>
+        <div class="book-description mb-5">
+          <h3 class="mb-3 d-flex align-items-center gap-2">
+            <i class="fas fa-info-circle"></i>
+            About This Book
+          </h3>
+          <p class="text-secondary">{{ template_data.book.description }}</p>
         </div>
       {% endif %}
       
-      <!-- Book Metadata -->
+      <!-- Book Metadata Grid -->
       <div class="book-metadata-grid">
         {% if template_data.book.category %}
           <div class="metadata-item">
             <div class="metadata-label">Category</div>
             <div class="metadata-value">
               <a href="{% url 'books.category' template_data.book.category.slug %}" 
-                 style="color: var(--accent-primary); display: flex; align-items: center; gap: var(--space-2);">
+                 class="d-flex align-items-center gap-2">
                 {% if 'devops' in template_data.book.category.name|lower %}
                   <i class="fas fa-cogs"></i>
                 {% elif 'cloud' in template_data.book.category.name|lower %}
@@ -109,9 +160,9 @@
         
         {% if template_data.book.pdf %}
           <div class="metadata-item">
-            <div class="metadata-label">Format</div>
+            <div class="metadata-label" style="font-size: var(--font-size-xs); color: var(--text-tertiary); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: var(--space-2);">Format</div>
             <div class="metadata-value">
-              <span style="color: var(--accent-primary); display: flex; align-items: center; gap: var(--space-2);">
+              <span style="color: var(--accent-primary); display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-sm); font-weight: 600;">
                 <i class="fas fa-file-pdf"></i> PDF Document
               </span>
             </div>
@@ -119,19 +170,25 @@
         {% endif %}
         
         <div class="metadata-item">
-          <div class="metadata-label">Target Audience</div>
-          <div class="metadata-value">Developers & Engineers</div>
+          <div class="metadata-label" style="font-size: var(--font-size-xs); color: var(--text-tertiary); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: var(--space-2);">Target Audience</div>
+          <div class="metadata-value" style="font-size: var(--font-size-sm); color: var(--text-secondary); font-weight: 600;">Developers & Engineers</div>
         </div>
         
         <div class="metadata-item">
-          <div class="metadata-label">Access Level</div>
+          <div class="metadata-label" style="font-size: var(--font-size-xs); color: var(--text-tertiary); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: var(--space-2);">Access Level</div>
           <div class="metadata-value">
             {% if user.is_authenticated %}
-              <span style="color: var(--success); display: flex; align-items: center; gap: var(--space-2);">
-                <i class="fas fa-check-circle"></i> Full Access
-              </span>
+              {% if access_context.has_content_access %}
+                <span style="color: var(--success); display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-sm); font-weight: 600;">
+                  <i class="fas fa-check-circle"></i> Full Access
+                </span>
+              {% else %}
+                <span style="color: var(--warning); display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-sm); font-weight: 600;">
+                  <i class="fas fa-clock"></i> Approval Required
+                </span>
+              {% endif %}
             {% else %}
-              <span style="color: var(--warning); display: flex; align-items: center; gap: var(--space-2);">
+              <span style="color: var(--warning); display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-sm); font-weight: 600;">
                 <i class="fas fa-lock"></i> Sign In Required
               </span>
             {% endif %}
@@ -140,9 +197,9 @@
         
         {% if template_data.is_in_library %}
           <div class="metadata-item library-status-item">
-            <div class="metadata-label">Library Status</div>
+            <div class="metadata-label" style="font-size: var(--font-size-xs); color: var(--text-tertiary); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: var(--space-2);">Library Status</div>
             <div class="metadata-value">
-              <span style="color: var(--success); display: flex; align-items: center; gap: var(--space-2);">
+              <span style="color: var(--success); display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-sm); font-weight: 600;">
                 <i class="fas fa-bookmark"></i> In Your Library
               </span>
             </div>
@@ -152,74 +209,83 @@
     </div>
   </div>
 
-  <div class="section-divider"></div>
-
   <!-- Reviews Section -->
-  <div class="section">
-    <h2 class="mb-6">Technical Reviews</h2>
+  <div class="reviews-section" style="animation: slideInUp 0.6s ease-out 0.2s both;">
+    <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-6);">
+      <h2 style="font-size: var(--font-size-2xl); font-weight: 600; color: var(--text-primary); display: flex; align-items: center;">
+        <div class="section-icon" style="width: 48px; height: 48px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-right: var(--space-4);">
+          <i class="fas fa-comments" style="color: var(--accent-primary); font-size: var(--font-size-lg);"></i>
+        </div>
+        Technical Reviews
+      </h2>
+    </div>
     
     {% if template_data.reviews %}
       <div class="reviews-list" style="margin-bottom: var(--space-8);">
         {% for review in template_data.reviews %}
-          <div class="card mb-4">
-            <div class="card-body">
-              <div class="flex items-center justify-between mb-3">
-                <div>
-                  <h5 style="margin-bottom: var(--space-1); display: flex; align-items: center; gap: var(--space-2);">
-                    <i class="fas fa-user-circle" style="color: var(--accent-primary);"></i>
-                    {{ review.user.username }}
-                  </h5>
-                  <p style="color: var(--text-tertiary); font-size: var(--font-size-sm); margin: 0;">
-                    {{ review.date|date:"M d, Y" }}
-                  </p>
-                </div>
-                {% if user.is_authenticated and user == review.user %}
-                  <div class="flex gap-2">
-                    <a href="{% url 'books.edit_review' template_data.book.id review.id %}" 
-                       class="btn btn-ghost btn-sm">
-                      <i class="fas fa-edit"></i>
-                      Edit
-                    </a>
-                    <a href="{% url 'books.delete_review' template_data.book.id review.id %}" 
-                       class="btn btn-ghost btn-sm" 
-                       onclick="return confirm('Delete this review?')">
-                      <i class="fas fa-trash"></i>
-                      Delete
-                    </a>
-                  </div>
-                {% endif %}
+          <div class="review-card" style="background: var(--bg-surface); border: 1px solid var(--border-primary); border-radius: var(--radius-lg); padding: var(--space-5); margin-bottom: var(--space-4); transition: all var(--transition-smooth);">
+            <div class="review-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-3);">
+              <div class="reviewer-info">
+                <h5 style="margin-bottom: var(--space-1); display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-base); font-weight: 600; color: var(--text-primary);">
+                  <i class="fas fa-user-circle" style="color: var(--accent-primary);"></i>
+                  {{ review.user.username }}
+                </h5>
+                <p style="color: var(--text-tertiary); font-size: var(--font-size-sm); margin: 0;">
+                  {{ review.date|date:"M d, Y" }}
+                </p>
               </div>
-              <p style="color: var(--text-secondary);">{{ review.comment }}</p>
+              {% if user.is_authenticated and user == review.user %}
+                <div class="review-actions" style="display: flex; gap: var(--space-2);">
+                  <a href="{% url 'books.edit_review' template_data.book.id review.id %}" 
+                     class="btn btn-ghost btn-sm" style="display: flex; align-items: center; gap: var(--space-1);">
+                    <i class="fas fa-edit"></i>
+                    Edit
+                  </a>
+                  <a href="{% url 'books.delete_review' template_data.book.id review.id %}" 
+                     class="btn btn-ghost btn-sm" 
+                     onclick="return confirm('Delete this review?')" style="display: flex; align-items: center; gap: var(--space-1); color: var(--error);">
+                    <i class="fas fa-trash"></i>
+                    Delete
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+            <div class="review-content">
+              <p style="color: var(--text-secondary); line-height: 1.6;">{{ review.comment }}</p>
             </div>
           </div>
         {% endfor %}
       </div>
     {% else %}
-      <div class="text-center" style="padding: var(--space-8) 0; margin-bottom: var(--space-8);">
-        <i class="fas fa-comments" style="font-size: 2rem; color: var(--text-muted); margin-bottom: var(--space-3);"></i>
-        <p style="color: var(--text-tertiary);">No technical reviews yet. Be the first to review this book!</p>
+      <div class="empty-reviews" style="text-align: center; padding: var(--space-12) var(--space-4); background: var(--bg-surface); border: 1px solid var(--border-primary); border-radius: var(--radius-lg); margin-bottom: var(--space-8);">
+        <div class="empty-icon" style="width: 80px; height: 80px; background: var(--accent-subtle); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4);">
+          <i class="fas fa-comments" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
+        </div>
+        <h3 style="font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">No Reviews Yet</h3>
+        <p style="color: var(--text-tertiary);">Be the first to review this technical book!</p>
       </div>
     {% endif %}
 
     <!-- Add Review Form -->
-    {% if user.is_authenticated %}
-      <div class="card">
-        <div class="card-header">
-          <h4 style="display: flex; align-items: center; gap: var(--space-2);">
+    {% if user.is_authenticated and access_context.has_content_access %}
+      <div class="add-review-card" style="background: var(--bg-surface); border: 1px solid var(--border-primary); border-radius: var(--radius-lg); overflow: hidden;">
+        <div class="card-header" style="padding: var(--space-5); border-bottom: 1px solid var(--border-primary); background: var(--bg-secondary);">
+          <h4 style="display: flex; align-items: center; gap: var(--space-2); margin: 0; font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary);">
             <i class="fas fa-star" style="color: var(--accent-primary);"></i>
             Write a Technical Review
           </h4>
         </div>
-        <div class="card-body">
+        <div class="card-body" style="padding: var(--space-5);">
           <form method="POST" action="{% url 'books.create_review' template_data.book.id %}">
             {% csrf_token %}
-            <div class="form-group">
-              <label for="comment" class="form-label">Your Technical Review</label>
+            <div class="form-group" style="margin-bottom: var(--space-5);">
+              <label for="comment" class="form-label" style="display: block; font-size: var(--font-size-sm); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">Your Technical Review</label>
               <textarea name="comment" id="comment" class="form-control" rows="4" 
-                        placeholder="Share your technical insights about this book - content quality, practical examples, technical depth..." required></textarea>
+                        placeholder="Share your technical insights about this book - content quality, practical examples, technical depth..." 
+                        required style="width: 100%; padding: var(--space-4); font-size: var(--font-size-sm); color: var(--text-primary); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); transition: all var(--transition-fast); resize: vertical; min-height: 120px;"></textarea>
             </div>
-            <div class="text-right">
-              <button type="submit" class="btn btn-primary">
+            <div class="form-actions" style="text-align: right;">
+              <button type="submit" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: var(--space-2);">
                 <i class="fas fa-paper-plane"></i>
                 Submit Review
               </button>
@@ -227,43 +293,146 @@
           </form>
         </div>
       </div>
-    {% else %}
-      <div class="card">
-        <div class="card-body text-center">
-          <p style="color: var(--text-secondary); margin-bottom: var(--space-4);">
-            Sign in to write a technical review for this book.
-          </p>
-          <a href="{% url 'accounts.login' %}?next={{ request.path }}" class="btn btn-primary">
-            <i class="fas fa-sign-in-alt"></i>
-            Sign In
-          </a>
+    {% elif user.is_authenticated and not access_context.has_content_access %}
+      <div class="access-required-prompt" style="background: var(--bg-surface); border: 1px solid var(--border-primary); border-radius: var(--radius-lg); padding: var(--space-8); text-align: center;">
+        <div class="access-icon" style="width: 60px; height: 60px; background: var(--accent-subtle); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4);">
+          <i class="fas fa-lock" style="font-size: var(--font-size-lg); color: var(--accent-primary);"></i>
         </div>
+        <h3 style="font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">Access Required for Reviews</h3>
+        <p style="color: var(--text-secondary); margin-bottom: var(--space-4);">
+          You need admin approval to write technical reviews.
+        </p>
+        {% if access_context.can_request_access %}
+          <a href="{% url 'accounts.access_status' %}" class="btn-request-access" onclick="this.innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> Loading...'; this.style.pointerEvents='none';">
+            <i class="fas fa-key"></i>
+            Request Access
+          </a>
+        {% else %}
+          <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">
+            Access status: {{ access_context.access_status_display }}
+          </p>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="signin-prompt" style="background: var(--bg-surface); border: 1px solid var(--border-primary); border-radius: var(--radius-lg); padding: var(--space-8); text-align: center;">
+        <div class="signin-icon" style="width: 60px; height: 60px; background: var(--accent-subtle); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4);">
+          <i class="fas fa-sign-in-alt" style="font-size: var(--font-size-lg); color: var(--accent-primary);"></i>
+        </div>
+        <h3 style="font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">Share Your Technical Insights</h3>
+        <p style="color: var(--text-secondary); margin-bottom: var(--space-4);">
+          Sign in to write a technical review for this book.
+        </p>
+        <a href="{% url 'accounts.login' %}?next={{ request.path }}" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: var(--space-2);">
+          <i class="fas fa-sign-in-alt"></i>
+          Sign In
+        </a>
       </div>
     {% endif %}
   </div>
 
-  <!-- Navigation -->
-  <div class="section">
-    <div class="flex justify-between">
+  <!-- Navigation Section -->
+  <div class="navigation-section" style="margin-top: var(--space-12); animation: slideInUp 0.6s ease-out 0.4s both;">
+    <div class="nav-actions" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-4);">
       {% if template_data.category %}
-        <a href="{% url 'books.category' template_data.category.slug %}" class="btn btn-secondary">
+        <a href="{% url 'books.category' template_data.category.slug %}" class="btn btn-secondary" style="display: flex; align-items: center; gap: var(--space-2);">
           <i class="fas fa-arrow-left"></i>
           Back to {{ template_data.category.name }}
         </a>
       {% else %}
-        <a href="{% url 'books.index' %}" class="btn btn-secondary">
+        <a href="{% url 'books.index' %}" class="btn btn-secondary" style="display: flex; align-items: center; gap: var(--space-2);">
           <i class="fas fa-arrow-left"></i>
           Back to Technical Library
         </a>
       {% endif %}
       
-      <a href="{% url 'books.index' %}" class="btn btn-ghost">
+      <a href="{% url 'books.index' %}" class="btn btn-ghost" style="display: flex; align-items: center; gap: var(--space-2);">
         <i class="fas fa-th"></i>
         Browse All Technical Books
       </a>
     </div>
   </div>
 </div>
+
+<style>
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.book-cover-large:hover img {
+  transform: scale(1.02);
+}
+
+.review-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-secondary);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .book-header {
+    grid-template-columns: 280px 1fr !important;
+    gap: var(--space-8) !important;
+  }
+  
+  .book-cover-large {
+    width: 280px !important;
+    height: 380px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .book-header {
+    grid-template-columns: 1fr !important;
+    text-align: center !important;
+    gap: var(--space-6) !important;
+  }
+  
+  .book-cover-large {
+    width: 240px !important;
+    height: 320px !important;
+    margin: 0 auto !important;
+  }
+  
+  .book-actions {
+    justify-content: center !important;
+  }
+  
+  .book-metadata-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .nav-actions {
+    flex-direction: column !important;
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .book-actions {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  
+  .book-actions .btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+</style>
 
 <script>
 // Book detail page specific functionality
@@ -309,6 +478,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // The LibraryManager handles all add/remove functionality
   // No additional JavaScript needed for this page
 });
+
 // Helper functions
 function getCsrfToken() {
   // First try to get from form
@@ -379,7 +549,15 @@ function showNotification(message, type) {
   setTimeout(() => {
     if (notification.parentNode) {
       notification.style.opacity = '0';
-});
+      notification.style.transform = 'translateX(100%)';
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 300);
+    }
+  }, 3000);
+}
 
 // All library management functions are now handled by the shared LibraryManager
 </script>

@@ -72,27 +72,31 @@
 
 <script>
 function selectTemplate(templateId, templateName) {
-  // Add visual feedback
+  // Add clean visual feedback - no heavy shadows
   document.querySelectorAll('.template-card').forEach(card => {
     card.style.transform = 'scale(1)';
-    card.style.boxShadow = '';
+    card.style.borderColor = 'var(--border-primary)';
+    card.style.background = 'var(--bg-surface)';
   });
   
   event.currentTarget.style.transform = 'scale(1.02)';
-  event.currentTarget.style.boxShadow = '0 8px 32px var(--accent-glow)';
+  event.currentTarget.style.borderColor = 'var(--accent-primary)';
+  event.currentTarget.style.background = 'var(--bg-elevated)';
 }
 
-// Add hover effects
+// Add clean hover effects - no heavy shadows
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.template-card').forEach(card => {
     card.addEventListener('mouseenter', function() {
       this.style.transform = 'translateY(-4px)';
-      this.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.3)';
+      this.style.borderColor = 'var(--accent-primary)';
+      this.style.background = 'var(--bg-elevated)';
     });
     
     card.addEventListener('mouseleave', function() {
       this.style.transform = 'translateY(0)';
-      this.style.boxShadow = '';
+      this.style.borderColor = 'var(--border-primary)';
+      this.style.background = 'var(--bg-surface)';
     });
   });
 });

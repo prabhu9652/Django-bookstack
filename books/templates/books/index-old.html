@@ -1,0 +1,349 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hidden CSRF token for AJAX requests -->
+{% csrf_token %}
+
+<div class="container" style="padding: var(--space-8) 0;">
+  <!-- Modern Header Section -->
+  <div class="text-center mb-12 animate-slide-down">
+    <div class="d-flex justify-content-center gap-3 mb-4" style="opacity: 0.8;">
+      <div class="animate-pulse" style="animation-delay: 0s;">
+        <i class="fab fa-docker" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
+      </div>
+      <div class="animate-pulse" style="animation-delay: 0.5s;">
+        <i class="fas fa-cloud" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
+      </div>
+      <div class="animate-pulse" style="animation-delay: 1s;">
+        <i class="fas fa-database" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
+      </div>
+      <div class="animate-pulse" style="animation-delay: 1.5s;">
+        <i class="fas fa-chart-line" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
+      </div>
+    </div>
+    
+    <h1 class="mb-4">Technical Library</h1>
+    <p class="text-secondary" style="max-width: 600px; margin: 0 auto;">
+      {% if template_data.category %}
+        {{ template_data.category.name }} • Professional technical books and resources for engineers
+      {% else %}
+        DevOps, Cloud Computing, Data Science, ML & Software Development resources
+      {% endif %}
+    </p>
+  </div>
+
+  <!-- Enhanced Search Section -->
+  <div class="search-section animate-element" style="margin-bottom: var(--space-10);">
+    <div class="search-container" style="max-width: 500px; margin: 0 auto; position: relative;">
+      <form method="GET" class="search-form">
+        <div class="search-input-wrapper" style="position: relative; background: var(--bg-surface); border: 1px solid var(--border-primary); border-radius: var(--radius-xl); padding: var(--space-2) var(--space-4); display: flex; align-items: center; gap: var(--space-3); transition: all var(--transition-smooth);">
+          <i class="fas fa-search" style="color: var(--text-muted); font-size: var(--font-size-sm);"></i>
+          <input type="text" name="search" class="search-input" placeholder="Search technical books... (Press / to focus)" 
+                 value="{{ template_data.search_term|default:'' }}"
+                 style="flex: 1; background: transparent; border: none; outline: none; color: var(--text-primary); font-size: var(--font-size-sm);">
+          <button type="submit" class="search-submit" style="background: var(--accent-primary); color: white; border: none; border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); cursor: pointer; transition: all var(--transition-fast);">
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modern Category Navigation -->
+  {% if template_data.categories %}
+  <div class="category-navigation animate-element" style="margin-bottom: var(--space-10);">
+    <div class="category-scroll" style="display: flex; gap: var(--space-3); overflow-x: auto; padding: var(--space-2) 0; scrollbar-width: none; -ms-overflow-style: none;">
+      <a href="{% url 'books.index' %}" class="category-chip {% if not template_data.category %}active{% endif %}" 
+         style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-4); background: {% if not template_data.category %}var(--accent-primary){% else %}var(--bg-surface){% endif %}; color: {% if not template_data.category %}white{% else %}var(--text-secondary){% endif %}; border: 1px solid {% if not template_data.category %}var(--accent-primary){% else %}var(--border-primary){% endif %}; border-radius: var(--radius-full); text-decoration: none; font-size: var(--font-size-sm); font-weight: 500; white-space: nowrap; transition: all var(--transition-fast);">
+        <i class="fas fa-th-large"></i>
+        <span>All Books</span>
+      </a>
+      {% for category in template_data.categories %}
+        <a href="{% url 'books.category' category.slug %}" 
+           class="category-chip {% if template_data.category.id == category.id %}active{% endif %}"
+           style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-4); background: {% if template_data.category.id == category.id %}var(--accent-primary){% else %}var(--bg-surface){% endif %}; color: {% if template_data.category.id == category.id %}white{% else %}var(--text-secondary){% endif %}; border: 1px solid {% if template_data.category.id == category.id %}var(--accent-primary){% else %}var(--border-primary){% endif %}; border-radius: var(--radius-full); text-decoration: none; font-size: var(--font-size-sm); font-weight: 500; white-space: nowrap; transition: all var(--transition-fast);">
+          {% if 'devops' in category.name|lower or 'ops' in category.name|lower %}
+            <i class="fas fa-cogs"></i>
+          {% elif 'cloud' in category.name|lower %}
+            <i class="fas fa-cloud"></i>
+          {% elif 'data' in category.name|lower %}
+            <i class="fas fa-chart-bar"></i>
+          {% elif 'machine' in category.name|lower or 'ml' in category.name|lower or 'ai' in category.name|lower %}
+            <i class="fas fa-robot"></i>
+          {% elif 'software' in category.name|lower or 'development' in category.name|lower or 'programming' in category.name|lower %}
+            <i class="fas fa-code"></i>
+          {% elif 'database' in category.name|lower or 'sql' in category.name|lower %}
+            <i class="fas fa-database"></i>
+          {% elif 'observability' in category.name|lower or 'monitoring' in category.name|lower %}
+            <i class="fas fa-chart-line"></i>
+          {% else %}
+            <i class="fas fa-book"></i>
+          {% endif %}
+          <span>{{ category.name }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Modern Books Grid -->
+  <div class="books-section">
+    {% if template_data.books %}
+      <div class="books-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-6);">
+        {% for book in template_data.books %}
+          <div class="book-card animate-element" data-book-url="{% url 'books.show' book.id %}" 
+               style="background: var(--bg-surface); border: 1px solid var(--border-primary); border-radius: var(--radius-xl); overflow: hidden; cursor: pointer; transition: all var(--transition-smooth); position: relative; animation-delay: {{ forloop.counter0|floatformat:1|add:'0.1' }}s;">
+            
+            <!-- Book Cover -->
+            <div class="book-cover" style="width: 100%; height: 200px; background: var(--bg-elevated); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
+              {% if book.cover %}
+                <img src="{{ book.cover.url }}" alt="{{ book.name }}" loading="lazy"
+                     style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; transition: transform var(--transition-smooth);">
+              {% else %}
+                <div class="book-placeholder" style="display: flex; flex-direction: column; align-items: center; gap: var(--space-2); color: var(--text-muted);">
+                  <i class="fas fa-file-code" style="font-size: var(--font-size-3xl);"></i>
+                  <span style="font-size: var(--font-size-xs);">Technical Book</span>
+                </div>
+              {% endif %}
+            </div>
+            
+            <!-- Book Info -->
+            <div class="book-info" style="padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); height: 180px;">
+              <div style="flex: 1;">
+                <h4 class="book-title" style="font-size: var(--font-size-base); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                  {{ book.name }}
+                </h4>
+                <p class="book-author" style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-3);">
+                  {{ book.author|default:"Technical Author" }}
+                </p>
+                
+                {% if book.category %}
+                  <div class="book-category" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-1) var(--space-3); background: var(--accent-subtle); color: var(--accent-primary); border-radius: var(--radius-full); font-size: var(--font-size-xs); font-weight: 600;">
+                    {% if 'devops' in book.category.name|lower %}
+                      <i class="fas fa-cogs"></i>
+                    {% elif 'cloud' in book.category.name|lower %}
+                      <i class="fas fa-cloud"></i>
+                    {% elif 'data' in book.category.name|lower %}
+                      <i class="fas fa-chart-bar"></i>
+                    {% elif 'machine' in book.category.name|lower %}
+                      <i class="fas fa-robot"></i>
+                    {% elif 'software' in book.category.name|lower %}
+                      <i class="fas fa-code"></i>
+                    {% elif 'database' in book.category.name|lower %}
+                      <i class="fas fa-database"></i>
+                    {% else %}
+                      <i class="fas fa-book"></i>
+                    {% endif %}
+                    {{ book.category.name }}
+                  </div>
+                {% endif %}
+              </div>
+              
+              <!-- Action Button -->
+              {% if user.is_authenticated %}
+                <div class="book-actions" style="margin-top: auto;">
+                  {% if book.id in template_data.user_library_book_ids %}
+                    <button class="btn btn-secondary btn-sm remove-from-library" data-book-id="{{ book.id }}"
+                            style="width: 100%; display: flex; align-items: center; justify-content: center; gap: var(--space-2);">
+                      <i class="fas fa-check"></i>
+                      In Library
+                    </button>
+                  {% else %}
+                    <button class="btn btn-primary btn-sm add-to-library" data-book-id="{{ book.id }}"
+                            style="width: 100%; display: flex; align-items: center; justify-content: center; gap: var(--space-2);">
+                      <i class="fas fa-bookmark"></i>
+                      Add to Library
+                    </button>
+                  {% endif %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Modern Pagination -->
+      {% if template_data.books.has_other_pages %}
+        <div class="pagination-section" style="margin-top: var(--space-12); display: flex; align-items: center; justify-content: center; gap: var(--space-4);">
+          {% if template_data.books.has_previous %}
+            <a href="?page={{ template_data.books.previous_page_number }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}" 
+               class="btn btn-secondary">
+              <i class="fas fa-chevron-left"></i>
+              Previous
+            </a>
+          {% endif %}
+          
+          <span class="pagination-info" style="color: var(--text-secondary); font-size: var(--font-size-sm);">
+            Page {{ template_data.books.number }} of {{ template_data.books.paginator.num_pages }}
+          </span>
+          
+          {% if template_data.books.has_next %}
+            <a href="?page={{ template_data.books.next_page_number }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}" 
+               class="btn btn-secondary">
+              Next
+              <i class="fas fa-chevron-right"></i>
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% else %}
+      <!-- Modern Empty State -->
+      <div class="empty-state" style="text-align: center; padding: var(--space-16) var(--space-4);">
+        <div class="empty-icon" style="width: 80px; height: 80px; background: var(--accent-subtle); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-6);">
+          <i class="fas fa-search" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
+        </div>
+        <h3 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">
+          No Technical Books Found
+        </h3>
+        <p style="color: var(--text-secondary); margin-bottom: var(--space-6); max-width: 400px; margin-left: auto; margin-right: auto;">
+          {% if template_data.search_term %}
+            No books match your search "{{ template_data.search_term }}". Try different keywords or browse categories.
+          {% else %}
+            No books available in this category yet. Check back for new technical resources.
+          {% endif %}
+        </p>
+        {% if template_data.search_term %}
+          <a href="{% url 'books.index' %}" class="btn btn-primary">
+            <i class="fas fa-arrow-left"></i>
+            View All Books
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+/* Books Page Specific Styles */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.search-input-wrapper:focus-within {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.search-submit:hover {
+  background: var(--accent-hover);
+  transform: translateX(2px);
+}
+
+.category-chip:hover {
+  background: var(--accent-primary) !important;
+  color: white !important;
+  border-color: var(--accent-primary) !important;
+  transform: translateY(-2px);
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent-primary);
+}
+
+.book-card:hover .book-cover img {
+  transform: scale(1.05);
+}
+
+.animate-element {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: slideInUp 0.6s ease-out forwards;
+}
+
+@keyframes slideInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .books-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
+    gap: var(--space-4) !important;
+  }
+  
+  .book-card .book-info {
+    height: 160px !important;
+  }
+  
+  .category-scroll {
+    padding-bottom: var(--space-4) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .books-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .header-icon-group {
+    display: none !important;
+  }
+}
+</style>
+
+<script>
+// Enhanced Books page functionality
+document.addEventListener('DOMContentLoaded', function() {
+  // Animate elements on scroll
+  const animateElements = document.querySelectorAll('.animate-element');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
+      }
+    });
+  }, { threshold: 0.1 });
+  
+  animateElements.forEach(el => {
+    observer.observe(el);
+  });
+  
+  // Enhanced book card interactions
+  const bookCards = document.querySelectorAll('.book-card[data-book-url]');
+  bookCards.forEach(card => {
+    card.addEventListener('click', function(e) {
+      if (e.target.closest('.book-actions') || e.target.closest('.btn')) {
+        return;
+      }
+      window.location.href = this.dataset.bookUrl;
+    });
+    
+    // Keyboard support
+    card.setAttribute('tabindex', '0');
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.click();
+      }
+    });
+  });
+  
+  // Enhanced search functionality
+  const searchInput = document.querySelector('.search-input');
+  if (searchInput) {
+    // Focus search on '/' key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        searchInput.focus();
+      }
+    });
+    
+    // Clear search on Escape
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        this.value = '';
+        this.blur();
+      }
+    });
+  }
+});
+</script>
+{% endblock content %}

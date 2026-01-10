@@ -1,15 +1,19 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+from django.views.decorators.vary import vary_on_headers
 from .models import RoadmapPath, RoadmapPhase, UserProgress
 
 
+@never_cache
+@vary_on_headers('User-Agent')
 def home(request):
     """
     Roadmap home page with career transition explanation and interactive roadmap cards
     """
     # Get all active roadmap paths ordered by their sequence
-    roadmap_paths = RoadmapPath.objects.filter(is_active=True).order_by('order')
+    roadmap_paths = RoadmapPath.objects.filter(is_active=True).order_by('order').prefetch_related('highlights')
     
     # Get user progress if authenticated
     user_progress = {}
@@ -36,17 +40,20 @@ def home(request):
     context = {
         'roadmap_paths': roadmap_paths,
         'user_progress': user_progress,
+        'page_type': 'roadmap_home',  # For state isolation
     }
     
     return render(request, 'roadmap/home.html', context)
 
 
+@never_cache
+@vary_on_headers('User-Agent')
 def path_detail(request, slug):
     """
-    Individual roadmap path detail page
+    Individual roadmap path detail page with proper state isolation
     """
     roadmap_path = get_object_or_404(RoadmapPath, slug=slug, is_active=True)
-    phases = roadmap_path.phases.filter(is_active=True).prefetch_related('skills')
+    phases = roadmap_path.phases.filter(is_active=True).prefetch_related('skills').order_by('order')
     
     # Get user progress for this path if authenticated
     user_progress = {}
@@ -64,6 +71,8 @@ def path_detail(request, slug):
         'roadmap_path': roadmap_path,
         'phases': phases,
         'user_progress': user_progress,
+        'page_type': 'roadmap_detail',  # For state isolation
+        'path_slug': slug,  # Explicit path identifier
     }
     
     return render(request, 'roadmap/path_detail.html', context)

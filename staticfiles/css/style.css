@@ -4,9 +4,7 @@
   background-size: 100% auto;
 }
 
-.navbar a.nav-link {
-  color: #FFFEF6 !important;
-}
+/* Navbar styles removed - handled by minimal-enterprise.css */
 
 .bg-dark {
   background-color: #2E2E2E !important;

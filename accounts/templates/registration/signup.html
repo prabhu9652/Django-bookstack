@@ -1,0 +1,447 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Enterprise-Grade Sign Up Page -->
+<div class="auth-page-container">
+  <div class="auth-background-pattern"></div>
+  
+  <div class="auth-content-wrapper">
+    <!-- Left Side - Branding & Process -->
+    <div class="auth-branding-section">
+      <div class="branding-content">
+        <div class="brand-logo animate-fade-in-up">
+          <div class="logo-icon">
+            <i class="fas fa-rocket"></i>
+          </div>
+          <h2>Join TechBookHub</h2>
+        </div>
+        
+        <div class="brand-tagline animate-fade-in-up delay-200">
+          <h3>Start Your Technical Journey</h3>
+          <p>Get access to premium technical content trusted by thousands of developers and engineers worldwide.</p>
+        </div>
+        
+        <div class="signup-process animate-fade-in-up delay-400">
+          <h4>How it works:</h4>
+          <div class="process-steps">
+            <div class="process-step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h5>Create Account</h5>
+                <p>Sign up with your credentials</p>
+              </div>
+            </div>
+            
+            <div class="process-step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h5>Request Access</h5>
+                <p>Submit an access request for content</p>
+              </div>
+            </div>
+            
+            <div class="process-step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h5>Get Approved</h5>
+                <p>Admin reviews and approves your request</p>
+              </div>
+            </div>
+            
+            <div class="process-step">
+              <div class="step-number">4</div>
+              <div class="step-content">
+                <h5>Access Content</h5>
+                <p>Enjoy full access to technical resources</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="trust-indicators animate-fade-in-up delay-600">
+          <div class="trust-item">
+            <i class="fas fa-shield-check"></i>
+            <span>Secure & Private</span>
+          </div>
+          <div class="trust-item">
+            <i class="fas fa-users"></i>
+            <span>Trusted by 10K+ Users</span>
+          </div>
+          <div class="trust-item">
+            <i class="fas fa-clock"></i>
+            <span>Quick Approval Process</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right Side - Sign Up Form -->
+    <div class="auth-form-section">
+      <div class="auth-form-container animate-slide-in-right">
+        <div class="auth-form-header">
+          <h1 class="auth-title">Create Your Account</h1>
+          <p class="auth-subtitle">Join thousands of technical professionals</p>
+        </div>
+        
+        <!-- Error Messages -->
+        {% if form.errors %}
+          <div class="alert alert-error animate-shake">
+            <div class="alert-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="alert-content">
+              {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                  <div class="error-item">
+                    {% if field == '__all__' %}
+                      {{ error }}
+                    {% else %}
+                      {{ field|title }}: {{ error }}
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+        
+        <form method="post" class="auth-form" id="signupForm">
+          {% csrf_token %}
+          
+          <div class="form-group">
+            <label for="{{ form.username.id_for_label }}" class="form-label">
+              <i class="fas fa-user"></i>
+              Username
+            </label>
+            <div class="input-wrapper">
+              {{ form.username }}
+              <div class="input-focus-border"></div>
+              <div class="input-validation-icon"></div>
+            </div>
+            {% if form.username.help_text %}
+              <div class="form-help">{{ form.username.help_text }}</div>
+            {% endif %}
+          </div>
+          
+          <div class="form-group">
+            <label for="{{ form.password1.id_for_label }}" class="form-label">
+              <i class="fas fa-lock"></i>
+              Password
+            </label>
+            <div class="input-wrapper">
+              {{ form.password1 }}
+              <div class="input-focus-border"></div>
+              <button type="button" class="password-toggle" id="password1Toggle">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <div class="password-strength" id="passwordStrength">
+              <div class="strength-bar">
+                <div class="strength-fill"></div>
+              </div>
+              <div class="strength-text">Password strength</div>
+            </div>
+            {% if form.password1.help_text %}
+              <div class="form-help">{{ form.password1.help_text }}</div>
+            {% endif %}
+          </div>
+          
+          <div class="form-group">
+            <label for="{{ form.password2.id_for_label }}" class="form-label">
+              <i class="fas fa-lock"></i>
+              Confirm Password
+            </label>
+            <div class="input-wrapper">
+              {{ form.password2 }}
+              <div class="input-focus-border"></div>
+              <button type="button" class="password-toggle" id="password2Toggle">
+                <i class="fas fa-eye"></i>
+              </button>
+              <div class="input-validation-icon" id="password2Validation"></div>
+            </div>
+          </div>
+          
+          <!-- Access Information Card -->
+          <div class="access-info-card">
+            <div class="info-header">
+              <i class="fas fa-info-circle"></i>
+              <span>What happens after signup?</span>
+            </div>
+            <div class="info-content">
+              <p>After creating your account, you'll need to request access to technical content. This approval process ensures our premium resources are available to legitimate users.</p>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn-auth-primary" id="signUpBtn">
+            <span class="btn-text">
+              <i class="fas fa-rocket"></i>
+              Create Account
+            </span>
+            <div class="btn-loading">
+              <div class="loading-spinner"></div>
+              Creating Account...
+            </div>
+          </button>
+          
+          <div class="auth-divider">
+            <span>Already have an account?</span>
+          </div>
+          
+          <a href="{% url 'accounts.login' %}" class="btn-auth-secondary">
+            <i class="fas fa-sign-in-alt"></i>
+            Sign In Instead
+          </a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.auth-section {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: var(--space-4);
+}
+
+.auth-form {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-lg);
+}
+
+.auth-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--accent-subtle);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.auth-icon i {
+  font-size: var(--font-size-2xl);
+  color: var(--accent-primary);
+}
+
+.auth-title {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.auth-subtitle {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.form-errors {
+  background: var(--error-subtle);
+  border: 1px solid var(--error);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--error);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-2);
+}
+
+.error-message:last-child {
+  margin-bottom: 0;
+}
+
+.form-group .form-control {
+  width: 100%;
+}
+
+.access-info {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 0;
+  overflow: hidden;
+}
+
+.info-card {
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-4);
+}
+
+.info-icon {
+  width: 50px;
+  height: 50px;
+  background: var(--info-subtle);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.info-icon i {
+  font-size: var(--font-size-lg);
+  color: var(--info);
+}
+
+.info-content h4 {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.info-content p {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-3);
+}
+
+.info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-2);
+}
+
+.info-list li:before {
+  content: '✓';
+  color: var(--success);
+  font-weight: bold;
+}
+
+.auth-link {
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-link:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+.features-preview {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-4);
+}
+
+.feature-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  text-align: center;
+  transition: all var(--transition-normal);
+}
+
+.feature-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-primary);
+}
+
+.feature-icon {
+  width: 60px;
+  height: 60px;
+  background: var(--accent-subtle);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-3);
+}
+
+.feature-icon i {
+  font-size: var(--font-size-xl);
+  color: var(--accent-primary);
+}
+
+.feature-item h4 {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.feature-item p {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .auth-section {
+    padding: var(--space-2);
+  }
+  
+  .auth-form {
+    padding: var(--space-6);
+  }
+  
+  .info-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Add form validation feedback
+  const form = document.querySelector('.signup-form');
+  const inputs = form.querySelectorAll('input');
+  
+  inputs.forEach(input => {
+    input.addEventListener('blur', function() {
+      if (this.value.trim() === '') {
+        this.classList.add('error');
+      } else {
+        this.classList.remove('error');
+      }
+    });
+    
+    input.addEventListener('input', function() {
+      this.classList.remove('error');
+    });
+  });
+  
+  // Password strength indicator (optional enhancement)
+  const password1 = document.getElementById('id_password1');
+  if (password1) {
+    password1.addEventListener('input', function() {
+      // Add password strength validation if needed
+    });
+  }
+});
+</script>
+{% endblock %}

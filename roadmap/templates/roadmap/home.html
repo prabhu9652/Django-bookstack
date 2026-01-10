@@ -3,198 +3,383 @@
 {% load roadmap_extras %}
 
 {% block content %}
-<!-- Hero Section with Home Page Theme -->
-<div class="hero-section">
-  <div class="container">
-    <div class="hero-content">
-      <div class="hero-text">
-        <h1 class="hero-title">Engineering Career Roadmaps</h1>
-        <p class="hero-subtitle">
-          Navigate your transformation from DevOps to Full-Stack Development to Data Science & Machine Learning. 
-          Build the skills that define the future of engineering.
-        </p>
-        <div class="hero-actions">
-          {% if user.is_authenticated %}
-            <a href="#roadmap-cards" class="btn btn-primary btn-lg">
-              <i class="fas fa-route"></i>
-              Explore Roadmaps
-            </a>
-          {% else %}
-            <a href="{% url 'accounts.signup' %}" class="btn btn-primary btn-lg">
-              <i class="fas fa-user-plus"></i>
-              Start Your Journey
-            </a>
-          {% endif %}
+<div class="container p-8">
+  <!-- Clean Header -->
+  <div class="roadmap-header d-flex justify-content-between align-items-center mb-12 animate-slide-down">
+    <div class="header-content">
+      <h1 class="d-flex align-items-center gap-3 mb-2">
+        <div class="header-icon">
+          <i class="fas fa-route"></i>
         </div>
-      </div>
-      <div class="hero-graphic">
-        <div class="floating-books">
-          <div class="book-icon book-1">
-            <i class="fas fa-cogs"></i>
-          </div>
-          <div class="book-icon book-2">
-            <i class="fas fa-code"></i>
-          </div>
-          <div class="book-icon book-3">
-            <i class="fas fa-chart-line"></i>
-          </div>
-        </div>
-      </div>
+        Engineering Career Roadmaps
+      </h1>
+      <p class="text-secondary">
+        Navigate your transformation from DevOps to Full-Stack Development to Data Science & Machine Learning
+      </p>
     </div>
-  </div>
-</div>
-
-<div class="container">
-  <!-- Why Career Transition Matters Section -->
-  <div class="section">
-    <h2 class="section-title">Why Career Transition Matters</h2>
-    
-    <div class="transition-explanation">
-      <div class="transition-card">
-        <div class="transition-content">
-          <div class="transition-icon">
-            <i class="fas fa-industry"></i>
-          </div>
-          <div class="transition-text">
-            <h3>The Evolution of DevOps</h3>
-            <p>
-              Traditional DevOps roles are rapidly evolving. Infrastructure automation is becoming embedded 
-              in development platforms, while CI/CD pipelines are increasingly AI-driven. Modern DevOps 
-              engineers must understand both development workflows and data-driven decision making.
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="transition-card">
-        <div class="transition-content">
-          <div class="transition-icon">
-            <i class="fas fa-rocket"></i>
-          </div>
-          <div class="transition-text">
-            <h3>Platform-Driven Development</h3>
-            <p>
-              Applications today ship with AI/ML features as standard. Full-stack developers need platform 
-              thinking, infrastructure awareness, and data pipeline understanding. The line between 
-              development, operations, and data science continues to blur.
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="transition-card">
-        <div class="transition-content">
-          <div class="transition-icon">
-            <i class="fas fa-brain"></i>
-          </div>
-          <div class="transition-text">
-            <h3>AI-First Engineering</h3>
-            <p>
-              Every engineering role now requires understanding of data flows, model deployment, and 
-              AI-powered automation. The progression from DevOps → Development → DSML represents 
-              the natural evolution of modern engineering careers.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section-divider"></div>
-
-  <!-- Roadmap Cards Section -->
-  <div class="section" id="roadmap-cards">
-    <h2 class="section-title">Choose Your Engineering Path</h2>
-    
-    <div class="roadmap-cards-grid">
-      {% for path in roadmap_paths %}
-        <a href="{% url 'roadmap:path_detail' path.slug %}" class="roadmap-card" data-path-slug="{{ path.slug }}">
-          <div class="roadmap-card-header">
-            <div class="roadmap-icon">
-              <i class="{{ path.icon_class }}"></i>
-            </div>
-            <h3 class="roadmap-title">{{ path.name }}</h3>
-            <p class="roadmap-subtitle">{{ path.subtitle }}</p>
-          </div>
-          
-          <div class="roadmap-card-body">
-            <p class="roadmap-description">{{ path.description }}</p>
-            
-            <div class="roadmap-meta">
-              <div class="roadmap-difficulty">
-                <i class="fas fa-signal"></i>
-                <span>{{ path.get_difficulty_display }}</span>
-              </div>
-              <div class="roadmap-duration">
-                <i class="fas fa-clock"></i>
-                <span>{{ path.estimated_duration }}</span>
-              </div>
-            </div>
-            
-            {% if path.highlights.all %}
-              <div class="roadmap-highlights">
-                {% for highlight in path.highlights.all %}
-                  <div class="highlight-item">
-                    <i class="{{ highlight.icon_class }}"></i>
-                    <span>{{ highlight.title }}</span>
-                  </div>
-                {% endfor %}
-              </div>
-            {% endif %}
-            
-            {% if user.is_authenticated %}
-              {% with progress=user_progress|lookup:path.slug %}
-                {% if progress.total_skills %}
-                  <div class="roadmap-progress">
-                    <div class="progress-bar">
-                      <div class="progress-fill" style="width: {% widthratio progress.completed_skills progress.total_skills 100 %}%"></div>
-                    </div>
-                    <div class="progress-text">
-                      {{ progress.completed_skills }}/{{ progress.total_skills }} skills completed
-                    </div>
-                  </div>
-                {% endif %}
-              {% endwith %}
-            {% endif %}
-          </div>
-          
-          <div class="roadmap-card-footer">
-            <div class="roadmap-card-cta">
-              <i class="fas fa-arrow-right"></i>
-              <span>Explore Roadmap</span>
-            </div>
-          </div>
+    <div class="header-actions d-flex gap-3">
+      {% if user.is_authenticated %}
+        <a href="#roadmap-cards" class="btn btn-primary animate-slide-right">
+          <i class="fas fa-compass"></i>
+          Explore Paths
         </a>
-      {% endfor %}
+      {% else %}
+        <a href="{% url 'accounts.signup' %}" class="btn btn-primary animate-slide-right">
+          <i class="fas fa-user-plus"></i>
+          Start Journey
+        </a>
+        <a href="{% url 'accounts.login' %}" class="btn btn-secondary animate-slide-right">
+          <i class="fas fa-sign-in-alt"></i>
+          Sign In
+        </a>
+      {% endif %}
     </div>
+  </div>
+
+  <!-- Roadmap Paths Section -->
+  <div class="roadmap-section animate-slide-right">
+    <div class="resume-header mb-8">
+      <h2 class="d-flex align-items-center">
+        <div class="section-icon">
+          <i class="fas fa-map"></i>
+        </div>
+        Choose Your Engineering Path
+      </h2>
+      {% if roadmap_paths %}
+        <span class="document-count">
+          {{ roadmap_paths|length }} path{{ roadmap_paths|length|pluralize }}
+        </span>
+      {% endif %}
+    </div>
+    
+    {% if roadmap_paths %}
+      <div class="roadmap-paths-grid">
+        {% for path in roadmap_paths %}
+          <a href="{% url 'roadmap:path_detail' path.slug %}" class="roadmap-path-card animate-slide-up animate-stagger-{{ forloop.counter0|add:1 }}" data-path-slug="{{ path.slug }}" data-path-id="{{ path.id }}">
+            
+            <div class="path-content">
+              <!-- Path Header -->
+              <div class="path-header d-flex justify-content-between align-items-start mb-5">
+                <div class="path-info">
+                  <div class="path-icon mb-4">
+                    <i class="{{ path.icon_class }}"></i>
+                  </div>
+                  <h3 class="path-title mb-3">
+                    {{ path.name }}
+                  </h3>
+                  <p class="path-subtitle mb-4">
+                    {{ path.subtitle }}
+                  </p>
+                </div>
+                
+                <!-- Status Badge -->
+                <div class="path-status">
+                  <i class="fas fa-check-circle"></i>
+                  Available
+                </div>
+              </div>
+              
+              <!-- Path Description -->
+              <p class="path-description mb-5">
+                {{ path.description }}
+              </p>
+              
+              <!-- Path Meta -->
+              <div class="path-meta mb-5">
+                <div class="meta-item">
+                  <i class="fas fa-signal"></i>
+                  <span>{{ path.get_difficulty_display }}</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fas fa-clock"></i>
+                  <span>{{ path.estimated_duration }}</span>
+                </div>
+              </div>
+              
+              {% if path.highlights.all %}
+                <div class="path-highlights mb-5">
+                  {% for highlight in path.highlights.all %}
+                    <div class="highlight-item mb-3">
+                      <i class="{{ highlight.icon_class }}"></i>
+                      <span>{{ highlight.title }}</span>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+              
+              {% if user.is_authenticated %}
+                {% with progress=user_progress|lookup:path.slug %}
+                  {% if progress.total_skills %}
+                    <div class="path-progress mb-4">
+                      <div class="progress-header d-flex justify-content-between align-items-center mb-2">
+                        <span class="progress-label">Progress</span>
+                        <span class="progress-count">{{ progress.completed_skills }}/{{ progress.total_skills }}</span>
+                      </div>
+                      <div class="progress-bar">
+                        <div class="progress-fill" style="width: {% widthratio progress.completed_skills progress.total_skills 100 %}%;"></div>
+                      </div>
+                    </div>
+                  {% endif %}
+                {% endwith %}
+              {% endif %}
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon animate-pulse">
+          <i class="fas fa-route"></i>
+        </div>
+        <h3>No roadmaps available</h3>
+        <p>Engineering roadmaps are being prepared. Check back soon for comprehensive career paths.</p>
+      </div>
+    {% endif %}
   </div>
 
   <!-- Call to Action -->
   {% if not user.is_authenticated %}
-  <div class="section">
+  <div class="roadmap-section animate-slide-up">
     <div class="cta-card">
-      <div class="cta-content">
-        <h3 class="cta-title">Ready to Transform Your Engineering Career?</h3>
-        <p class="cta-description">
-          Join thousands of engineers building expertise across DevOps, Development, and Data Science. 
-          Track your progress, access curated resources, and advance your technical career.
-        </p>
-        <div class="cta-actions">
-          <a href="{% url 'accounts.signup' %}" class="btn btn-primary">
-            <i class="fas fa-user-plus"></i>
-            Create Account
-          </a>
-          <a href="{% url 'accounts.login' %}" class="btn btn-secondary">
-            <i class="fas fa-sign-in-alt"></i>
-            Sign In
-          </a>
-        </div>
+      <div class="cta-icon animate-pulse">
+        <i class="fas fa-rocket"></i>
+      </div>
+      <h3>Ready to Transform Your Engineering Career?</h3>
+      <p>Join thousands of engineers building expertise across DevOps, Development, and Data Science. 
+        Track your progress and advance your technical career.</p>
+      <div class="d-flex gap-4 justify-content-center flex-wrap">
+        <a href="{% url 'accounts.signup' %}" class="btn btn-primary btn-lg">
+          <i class="fas fa-user-plus"></i>
+          Create Account
+        </a>
+        <a href="{% url 'accounts.login' %}" class="btn btn-secondary btn-lg">
+          <i class="fas fa-sign-in-alt"></i>
+          Sign In
+        </a>
       </div>
     </div>
   </div>
   {% endif %}
 </div>
 
-<!-- Load Roadmap JavaScript -->
-<script src="{% static 'js/roadmap.js' %}"></script>
-{% endblock content %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Enhanced card hover effects with enterprise-grade animations
+  function setupCardEffects() {
+    const cards = document.querySelectorAll('.roadmap-path-card');
+    
+    cards.forEach(card => {
+      const overlay = card.querySelector('.card-overlay');
+      const icon = card.querySelector('.path-icon');
+      
+      card.addEventListener('mouseenter', () => {
+        card.style.transform = 'translateY(-8px) scale(1.02)';
+        card.style.borderColor = 'var(--accent-primary)';
+        card.style.boxShadow = 'var(--shadow-lg), var(--glow-subtle)';
+        if (overlay) overlay.style.opacity = '0.1';
+        if (icon) {
+          icon.style.background = 'var(--accent-primary)';
+          icon.style.transform = 'scale(1.1)';
+          const iconElement = icon.querySelector('i');
+          if (iconElement) iconElement.style.color = 'white';
+        }
+      });
+      
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'translateY(0) scale(1)';
+        card.style.borderColor = 'var(--border-primary)';
+        card.style.boxShadow = 'none';
+        if (overlay) overlay.style.opacity = '0';
+        if (icon) {
+          icon.style.background = 'var(--accent-subtle)';
+          icon.style.transform = 'scale(1)';
+          const iconElement = icon.querySelector('i');
+          if (iconElement) iconElement.style.color = 'var(--accent-primary)';
+        }
+      });
+      
+      // Add click feedback
+      card.addEventListener('click', () => {
+        card.style.transform = 'translateY(-4px) scale(1.01)';
+        setTimeout(() => {
+          card.style.transform = 'translateY(-8px) scale(1.02)';
+        }, 100);
+      });
+    });
+  }
+  
+  // Progressive disclosure for path highlights
+  function setupProgressiveDisclosure() {
+    const pathCards = document.querySelectorAll('.roadmap-path-card');
+    
+    pathCards.forEach(card => {
+      const highlights = card.querySelector('.path-highlights');
+      if (highlights) {
+        const items = highlights.querySelectorAll('.highlight-item');
+        
+        // Initially show only first 3 highlights
+        items.forEach((item, index) => {
+          if (index >= 3) {
+            item.style.display = 'none';
+          }
+        });
+        
+        // Show all on hover
+        card.addEventListener('mouseenter', () => {
+          items.forEach(item => {
+            item.style.display = 'flex';
+            item.style.animation = 'slideUp 0.3s ease-out';
+          });
+        });
+        
+        card.addEventListener('mouseleave', () => {
+          items.forEach((item, index) => {
+            if (index >= 3) {
+              setTimeout(() => {
+                item.style.display = 'none';
+              }, 200);
+            }
+          });
+        });
+      }
+    });
+  }
+  
+  // Initialize all functionality
+  setupCardEffects();
+  setupProgressiveDisclosure();
+});
+</script>
+
+<style>
+/* Roadmap Page Styles */
+.roadmap-paths-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: var(--space-8);
+}
+
+.path-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--accent-subtle);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-normal);
+}
+
+.path-icon i {
+  color: var(--accent-primary);
+  font-size: var(--font-size-xl);
+}
+
+.path-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--success-subtle);
+  color: var(--success);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.path-description {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: var(--font-size-sm);
+}
+
+.highlight-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.highlight-item i {
+  color: var(--accent-primary);
+  width: 16px;
+  text-align: center;
+}
+
+.progress-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  font-weight: 600;
+}
+
+.progress-count {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.cta-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  padding: var(--space-16);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-icon {
+  width: 100px;
+  height: 100px;
+  background: var(--accent-subtle);
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-8) auto;
+}
+
+.cta-icon i {
+  font-size: var(--font-size-4xl);
+  color: var(--accent-primary);
+}
+
+/* Enhanced responsive design */
+@media (max-width: 768px) {
+  .roadmap-paths-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .roadmap-header {
+    flex-direction: column !important;
+    gap: var(--space-4) !important;
+    text-align: center !important;
+  }
+  
+  .resume-header {
+    flex-direction: column !important;
+    gap: var(--space-3) !important;
+    text-align: center !important;
+  }
+  
+  .path-meta {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .cta-card {
+    padding: var(--space-12) !important;
+  }
+  
+  .header-actions {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  
+  .header-actions .btn {
+    width: 100% !important;
+  }
+}
+</style>
+{% endblock %}

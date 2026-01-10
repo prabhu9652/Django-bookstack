@@ -2,26 +2,26 @@
 {% load static %}
 
 {% block content %}
-<!-- Resume Builder Enhanced Styles -->
-<link rel="stylesheet" type="text/css" href="{% static 'css/resume-builder-enhancements.css' %}?v=20260110">
-<div class="container" style="padding: var(--space-8) 0;">
-  <!-- Header -->
-  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-8); animation: slideInDown 0.6s ease-out;">
-    <div>
-      <h1 style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-2);">
-        <i class="fas fa-folder-open" style="color: var(--accent-primary); margin-right: var(--space-3);"></i>
+<div class="container p-8">
+  <!-- Clean Header -->
+  <div class="dashboard-header d-flex justify-content-between align-items-center mb-12 animate-slide-down">
+    <div class="header-content">
+      <h1 class="d-flex align-items-center gap-3 mb-2">
+        <div class="header-icon">
+          <i class="fas fa-folder-open"></i>
+        </div>
         My Documents
       </h1>
-      <p style="color: var(--text-secondary);">
-        Manage your resumes and cover letters
+      <p class="text-secondary">
+        Manage your professional resumes and cover letters
       </p>
     </div>
-    <div style="display: flex; gap: var(--space-3);">
-      <a href="{% url 'resume_builder:resume_templates' %}" class="btn btn-primary" style="animation: slideInRight 0.6s ease-out 0.2s both;">
+    <div class="header-actions d-flex gap-3">
+      <a href="{% url 'resume_builder:resume_templates' %}" class="btn btn-primary animate-slide-right">
         <i class="fas fa-plus"></i>
         New Resume
       </a>
-      <a href="{% url 'resume_builder:cover_letter_templates' %}" class="btn btn-secondary" style="animation: slideInRight 0.6s ease-out 0.3s both;">
+      <a href="{% url 'resume_builder:cover_letter_templates' %}" class="btn btn-secondary animate-slide-right">
         <i class="fas fa-plus"></i>
         New Cover Letter
       </a>
@@ -29,239 +29,196 @@
   </div>
 
   <!-- Resumes Section -->
-  <div class="documents-section" style="margin-bottom: var(--space-12); animation: slideInLeft 0.6s ease-out 0.4s both;">
-    <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-6);">
-      <h2 style="font-size: var(--font-size-2xl); font-weight: 600; color: var(--text-primary); display: flex; align-items: center;">
-        <div class="section-icon" style="width: 48px; height: 48px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-right: var(--space-4);">
-          <i class="fas fa-file-alt" style="color: var(--accent-primary); font-size: var(--font-size-lg);"></i>
+  <div class="documents-section mb-16 animate-slide-left">
+    <div class="resume-header mb-8">
+      <h2 class="d-flex align-items-center">
+        <div class="section-icon">
+          <i class="fas fa-file-alt"></i>
         </div>
         Resumes
       </h2>
       {% if resumes %}
-        <span class="document-count" style="background: var(--accent-subtle); color: var(--accent-primary); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); font-size: var(--font-size-sm); font-weight: 600;">
+        <span class="document-count">
           {{ resumes|length }} document{{ resumes|length|pluralize }}
         </span>
       {% endif %}
     </div>
     
     {% if resumes %}
-      <div class="documents-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-6);">
+      <div class="documents-grid">
         {% for resume in resumes %}
-          <div class="document-card resume-card" data-document-id="{{ resume.id }}" data-document-type="resume" style="background: var(--bg-surface); border: 1px solid var(--border-primary); border-radius: var(--radius-xl); padding: var(--space-6); transition: all var(--transition-smooth); position: relative; overflow: hidden; animation: slideUp 0.4s ease-out {{ forloop.counter0|add:1|floatformat:1 }}s both;">
-            <!-- Hover gradient overlay -->
-            <div class="card-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--accent-glow) 0%, transparent 50%); opacity: 0; transition: opacity var(--transition-smooth); pointer-events: none;"></div>
+          <div class="document-card resume-card animate-slide-up animate-stagger-{{ forloop.counter0|add:1 }}" data-document-id="{{ resume.id }}" data-document-type="resume">
             
-            <div class="document-header" style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-4); position: relative; z-index: 2;">
-              <div class="document-info" style="flex: 1;">
-                <h3 class="document-title" style="font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2); line-height: 1.3;">
-                  {{ resume.title }}
-                </h3>
-                <div class="document-meta" style="display: flex; flex-direction: column; gap: var(--space-1);">
-                  <p style="color: var(--text-secondary); font-size: var(--font-size-sm); display: flex; align-items: center; gap: var(--space-2);">
-                    <i class="fas fa-palette" style="color: var(--accent-primary); font-size: var(--font-size-xs);"></i>
-                    {{ resume.template.name }}
-                  </p>
-                  <p style="color: var(--text-tertiary); font-size: var(--font-size-xs); display: flex; align-items: center; gap: var(--space-2);">
-                    <i class="fas fa-clock" style="color: var(--text-muted);"></i>
-                    Updated {{ resume.updated_at|date:"M d, Y" }}
-                  </p>
+            <div class="document-content">
+              <!-- Document Header -->
+              <div class="document-header d-flex justify-content-between align-items-start mb-5">
+                <div class="document-info">
+                  <h3 class="document-title">
+                    {{ resume.title }}
+                  </h3>
+                  <div class="document-meta d-flex flex-column gap-2">
+                    <div class="meta-item d-flex align-items-center gap-2">
+                      <i class="fas fa-palette"></i>
+                      <span>{{ resume.template.name }}</span>
+                    </div>
+                    <div class="meta-item d-flex align-items-center gap-2">
+                      <i class="fas fa-clock"></i>
+                      <span>Updated {{ resume.updated_at|date:"M d, Y" }}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Status Badge -->
+                <div class="document-status">
+                  <i class="fas fa-check-circle"></i>
+                  Ready
                 </div>
               </div>
               
-              <!-- Actions Dropdown -->
-              <div class="document-actions dropdown" style="position: relative;">
-                <button class="actions-toggle btn btn-ghost btn-sm" data-dropdown="resume-{{ resume.id }}" style="padding: var(--space-2); border-radius: var(--radius-md); opacity: 0.7; transition: all var(--transition-fast);">
-                  <i class="fas fa-ellipsis-v"></i>
-                </button>
-                <div class="dropdown-menu document-dropdown" id="resume-{{ resume.id }}-dropdown" style="position: absolute; top: 100%; right: 0; background: var(--bg-elevated); border: 1px solid var(--border-secondary); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); min-width: 180px; padding: var(--space-2); opacity: 0; visibility: hidden; transform: translateY(-10px) scale(0.95); transition: all var(--transition-fast); z-index: 1100; margin-top: var(--space-2);">
-                  <a href="{% url 'resume_builder:edit_resume' resume.id %}" class="dropdown-item" style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); color: var(--text-secondary); font-size: var(--font-size-sm); font-weight: 500; border-radius: var(--radius-md); transition: all var(--transition-fast); text-decoration: none;">
-                    <i class="fas fa-edit" style="color: var(--accent-primary); width: 16px; text-align: center;"></i>
-                    Edit Resume
-                  </a>
-                  <a href="{% url 'resume_builder:preview_resume' resume.id %}" class="dropdown-item" style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); color: var(--text-secondary); font-size: var(--font-size-sm); font-weight: 500; border-radius: var(--radius-md); transition: all var(--transition-fast); text-decoration: none;">
-                    <i class="fas fa-eye" style="color: var(--accent-primary); width: 16px; text-align: center;"></i>
-                    Preview
-                  </a>
-                  <a href="{% url 'resume_builder:download_resume' resume.id %}" class="dropdown-item" style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); color: var(--text-secondary); font-size: var(--font-size-sm); font-weight: 500; border-radius: var(--radius-md); transition: all var(--transition-fast); text-decoration: none;">
-                    <i class="fas fa-download" style="color: var(--accent-primary); width: 16px; text-align: center;"></i>
-                    Download
-                  </a>
-                  <div class="dropdown-divider" style="height: 1px; background: var(--border-primary); margin: var(--space-2) 0;"></div>
-                  <button type="button" class="dropdown-item delete-document-btn" data-document-id="{{ resume.id }}" data-document-type="resume" data-document-title="{{ resume.title }}" style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); color: var(--error); font-size: var(--font-size-sm); font-weight: 500; border-radius: var(--radius-md); transition: all var(--transition-fast); background: none; border: none; cursor: pointer; width: 100%;">
-                    <i class="fas fa-trash" style="width: 16px; text-align: center;"></i>
-                    Delete Resume
-                  </button>
-                </div>
+              <!-- Action Buttons -->
+              <div class="document-actions">
+                <a href="{% url 'resume_builder:edit_resume' resume.id %}" class="btn btn-primary">
+                  <i class="fas fa-edit"></i>
+                  Edit
+                </a>
+                <a href="{% url 'resume_builder:preview_resume' resume.id %}" class="btn btn-secondary">
+                  <i class="fas fa-eye"></i>
+                  Preview
+                </a>
               </div>
-            </div>
-            
-            <!-- Quick Actions -->
-            <div class="document-quick-actions" style="display: flex; gap: var(--space-2); position: relative; z-index: 2;">
-              <a href="{% url 'resume_builder:edit_resume' resume.id %}" class="btn btn-primary btn-sm" style="flex: 1; justify-content: center;">
-                <i class="fas fa-edit"></i> Edit
-              </a>
-              <a href="{% url 'resume_builder:preview_resume' resume.id %}" class="btn btn-ghost btn-sm" style="padding: var(--space-2) var(--space-3);">
-                <i class="fas fa-eye"></i>
-              </a>
-              <a href="{% url 'resume_builder:download_resume' resume.id %}" class="btn btn-ghost btn-sm" style="padding: var(--space-2) var(--space-3);">
-                <i class="fas fa-download"></i>
-              </a>
+              
+              <!-- Secondary Actions -->
+              <div class="secondary-actions d-flex justify-content-between align-items-center">
+                <a href="{% url 'resume_builder:download_resume' resume.id %}" class="secondary-btn">
+                  <i class="fas fa-download"></i>
+                  Download
+                </a>
+                <button type="button" class="secondary-btn delete-document-btn" data-document-id="{{ resume.id }}" data-document-type="resume" data-document-title="{{ resume.title }}">
+                  <i class="fas fa-trash"></i>
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         {% endfor %}
       </div>
     {% else %}
-      <div class="empty-state" style="background: var(--bg-surface); border: 1px solid var(--border-primary); border-radius: var(--radius-xl); padding: var(--space-12); text-align: center; position: relative; overflow: hidden;">
-        <div class="empty-state-bg" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at center, var(--accent-glow-subtle) 0%, transparent 70%); opacity: 0.5;"></div>
-        <div style="position: relative; z-index: 2;">
-          <div class="empty-icon" style="width: 100px; height: 100px; background: var(--accent-subtle); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-6) auto; animation: pulse 2s ease-in-out infinite;">
-            <i class="fas fa-file-alt" style="font-size: var(--font-size-4xl); color: var(--accent-primary);"></i>
-          </div>
-          <h3 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">
-            No resumes yet
-          </h3>
-          <p style="color: var(--text-secondary); margin-bottom: var(--space-6); max-width: 400px; margin-left: auto; margin-right: auto; line-height: 1.6;">
-            Create your first professional resume to get started on your career journey.
-          </p>
-          <a href="{% url 'resume_builder:resume_templates' %}" class="btn btn-primary btn-lg">
-            <i class="fas fa-plus"></i>
-            Create Your First Resume
-          </a>
+      <div class="empty-state">
+        <div class="empty-icon animate-pulse">
+          <i class="fas fa-file-alt"></i>
         </div>
+        <h3>No resumes yet</h3>
+        <p>Create your first professional resume to get started on your career journey.</p>
+        <a href="{% url 'resume_builder:resume_templates' %}" class="btn btn-primary btn-lg">
+          <i class="fas fa-plus"></i>
+          Create Your First Resume
+        </a>
       </div>
     {% endif %}
   </div>
 
   <!-- Cover Letters Section -->
-  <div class="documents-section" style="animation: slideInRight 0.6s ease-out 0.6s both;">
-    <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-6);">
-      <h2 style="font-size: var(--font-size-2xl); font-weight: 600; color: var(--text-primary); display: flex; align-items: center;">
-        <div class="section-icon" style="width: 48px; height: 48px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-right: var(--space-4);">
-          <i class="fas fa-envelope" style="color: var(--accent-primary); font-size: var(--font-size-lg);"></i>
+  <div class="documents-section animate-slide-right">
+    <div class="resume-header mb-8">
+      <h2 class="d-flex align-items-center">
+        <div class="section-icon">
+          <i class="fas fa-envelope"></i>
         </div>
         Cover Letters
       </h2>
       {% if cover_letters %}
-        <span class="document-count" style="background: var(--accent-subtle); color: var(--accent-primary); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); font-size: var(--font-size-sm); font-weight: 600;">
+        <span class="document-count">
           {{ cover_letters|length }} document{{ cover_letters|length|pluralize }}
         </span>
       {% endif %}
     </div>
     
     {% if cover_letters %}
-      <div class="documents-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-6);">
+      <div class="documents-grid">
         {% for cover_letter in cover_letters %}
-          <div class="document-card cover-letter-card" data-document-id="{{ cover_letter.id }}" data-document-type="cover_letter" style="background: var(--bg-surface); border: 1px solid var(--border-primary); border-radius: var(--radius-xl); padding: var(--space-6); transition: all var(--transition-smooth); position: relative; overflow: hidden; animation: slideUp 0.4s ease-out {{ forloop.counter0|add:1|floatformat:1 }}s both;">
-            <!-- Hover gradient overlay -->
-            <div class="card-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--accent-glow) 0%, transparent 50%); opacity: 0; transition: opacity var(--transition-smooth); pointer-events: none;"></div>
+          <div class="document-card cover-letter-card animate-slide-up animate-stagger-{{ forloop.counter0|add:1 }}" data-document-id="{{ cover_letter.id }}" data-document-type="cover_letter">
             
-            <div class="document-header" style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-4); position: relative; z-index: 2;">
-              <div class="document-info" style="flex: 1;">
-                <h3 class="document-title" style="font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2); line-height: 1.3;">
+            <div class="document-header d-flex justify-content-between align-items-start mb-4">
+              <div class="document-info">
+                <h3 class="document-title">
                   {{ cover_letter.title }}
                 </h3>
-                <div class="document-meta" style="display: flex; flex-direction: column; gap: var(--space-1);">
-                  <p style="color: var(--text-secondary); font-size: var(--font-size-sm); display: flex; align-items: center; gap: var(--space-2);">
-                    <i class="fas fa-building" style="color: var(--accent-primary); font-size: var(--font-size-xs);"></i>
+                <div class="document-meta d-flex flex-column gap-1">
+                  <p class="d-flex align-items-center gap-2">
+                    <i class="fas fa-building"></i>
                     {{ cover_letter.company_name }}
                   </p>
-                  <p style="color: var(--text-secondary); font-size: var(--font-size-sm); display: flex; align-items: center; gap: var(--space-2);">
-                    <i class="fas fa-palette" style="color: var(--accent-primary); font-size: var(--font-size-xs);"></i>
+                  <p class="d-flex align-items-center gap-2">
+                    <i class="fas fa-palette"></i>
                     {{ cover_letter.template.name }}
                   </p>
-                  <p style="color: var(--text-tertiary); font-size: var(--font-size-xs); display: flex; align-items: center; gap: var(--space-2);">
-                    <i class="fas fa-clock" style="color: var(--text-muted);"></i>
+                  <p class="d-flex align-items-center gap-2">
+                    <i class="fas fa-clock"></i>
                     Updated {{ cover_letter.updated_at|date:"M d, Y" }}
                   </p>
                 </div>
               </div>
               
-              <!-- Actions Dropdown -->
-              <div class="document-actions dropdown" style="position: relative;">
-                <button class="actions-toggle btn btn-ghost btn-sm" data-dropdown="cover-letter-{{ cover_letter.id }}" style="padding: var(--space-2); border-radius: var(--radius-md); opacity: 0.7; transition: all var(--transition-fast);">
-                  <i class="fas fa-ellipsis-v"></i>
+              <!-- Direct Action Icons -->
+              <div class="document-actions-direct d-flex align-items-center gap-2">
+                <a href="{% url 'resume_builder:edit_cover_letter' cover_letter.id %}" class="action-icon edit-action" title="Edit Cover Letter">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <a href="{% url 'resume_builder:preview_cover_letter' cover_letter.id %}" class="action-icon view-action" title="Preview Cover Letter">
+                  <i class="fas fa-eye"></i>
+                </a>
+                <a href="{% url 'resume_builder:download_cover_letter' cover_letter.id %}" class="action-icon download-action" title="Download Cover Letter">
+                  <i class="fas fa-download"></i>
+                </a>
+                <button type="button" class="action-icon delete-action delete-document-btn" data-document-id="{{ cover_letter.id }}" data-document-type="cover_letter" data-document-title="{{ cover_letter.title }}" title="Delete Cover Letter">
+                  <i class="fas fa-trash"></i>
                 </button>
-                <div class="dropdown-menu document-dropdown" id="cover-letter-{{ cover_letter.id }}-dropdown" style="position: absolute; top: 100%; right: 0; background: var(--bg-elevated); border: 1px solid var(--border-secondary); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); min-width: 180px; padding: var(--space-2); opacity: 0; visibility: hidden; transform: translateY(-10px) scale(0.95); transition: all var(--transition-fast); z-index: 1100; margin-top: var(--space-2);">
-                  <a href="{% url 'resume_builder:edit_cover_letter' cover_letter.id %}" class="dropdown-item" style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); color: var(--text-secondary); font-size: var(--font-size-sm); font-weight: 500; border-radius: var(--radius-md); transition: all var(--transition-fast); text-decoration: none;">
-                    <i class="fas fa-edit" style="color: var(--accent-primary); width: 16px; text-align: center;"></i>
-                    Edit Cover Letter
-                  </a>
-                  <a href="{% url 'resume_builder:preview_cover_letter' cover_letter.id %}" class="dropdown-item" style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); color: var(--text-secondary); font-size: var(--font-size-sm); font-weight: 500; border-radius: var(--radius-md); transition: all var(--transition-fast); text-decoration: none;">
-                    <i class="fas fa-eye" style="color: var(--accent-primary); width: 16px; text-align: center;"></i>
-                    Preview
-                  </a>
-                  <a href="{% url 'resume_builder:download_cover_letter' cover_letter.id %}" class="dropdown-item" style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); color: var(--text-secondary); font-size: var(--font-size-sm); font-weight: 500; border-radius: var(--radius-md); transition: all var(--transition-fast); text-decoration: none;">
-                    <i class="fas fa-download" style="color: var(--accent-primary); width: 16px; text-align: center;"></i>
-                    Download
-                  </a>
-                  <div class="dropdown-divider" style="height: 1px; background: var(--border-primary); margin: var(--space-2) 0;"></div>
-                  <button type="button" class="dropdown-item delete-document-btn" data-document-id="{{ cover_letter.id }}" data-document-type="cover_letter" data-document-title="{{ cover_letter.title }}" style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); color: var(--error); font-size: var(--font-size-sm); font-weight: 500; border-radius: var(--radius-md); transition: all var(--transition-fast); background: none; border: none; cursor: pointer; width: 100%;">
-                    <i class="fas fa-trash" style="width: 16px; text-align: center;"></i>
-                    Delete Cover Letter
-                  </button>
-                </div>
               </div>
             </div>
             
-            <!-- Quick Actions -->
-            <div class="document-quick-actions" style="display: flex; gap: var(--space-2); position: relative; z-index: 2;">
-              <a href="{% url 'resume_builder:edit_cover_letter' cover_letter.id %}" class="btn btn-primary btn-sm" style="flex: 1; justify-content: center;">
-                <i class="fas fa-edit"></i> Edit
-              </a>
-              <a href="{% url 'resume_builder:preview_cover_letter' cover_letter.id %}" class="btn btn-ghost btn-sm" style="padding: var(--space-2) var(--space-3);">
-                <i class="fas fa-eye"></i>
-              </a>
-              <a href="{% url 'resume_builder:download_cover_letter' cover_letter.id %}" class="btn btn-ghost btn-sm" style="padding: var(--space-2) var(--space-3);">
-                <i class="fas fa-download"></i>
-              </a>
+            <!-- Document Status -->
+            <div class="document-status d-flex align-items-center gap-3">
+              <div class="status-indicator">
+                <i class="fas fa-check-circle"></i>
+                Ready
+              </div>
             </div>
           </div>
         {% endfor %}
       </div>
     {% else %}
-      <div class="empty-state" style="background: var(--bg-surface); border: 1px solid var(--border-primary); border-radius: var(--radius-xl); padding: var(--space-12); text-align: center; position: relative; overflow: hidden;">
-        <div class="empty-state-bg" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at center, var(--accent-glow-subtle) 0%, transparent 70%); opacity: 0.5;"></div>
-        <div style="position: relative; z-index: 2;">
-          <div class="empty-icon" style="width: 100px; height: 100px; background: var(--accent-subtle); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-6) auto; animation: pulse 2s ease-in-out infinite;">
-            <i class="fas fa-envelope" style="font-size: var(--font-size-4xl); color: var(--accent-primary);"></i>
-          </div>
-          <h3 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">
-            No cover letters yet
-          </h3>
-          <p style="color: var(--text-secondary); margin-bottom: var(--space-6); max-width: 400px; margin-left: auto; margin-right: auto; line-height: 1.6;">
-            Create your first cover letter to complement your resume and make a great impression.
-          </p>
-          <a href="{% url 'resume_builder:cover_letter_templates' %}" class="btn btn-primary btn-lg">
-            <i class="fas fa-plus"></i>
-            Create Your First Cover Letter
-          </a>
+      <div class="empty-state">
+        <div class="empty-icon animate-pulse">
+          <i class="fas fa-envelope"></i>
         </div>
+        <h3>No cover letters yet</h3>
+        <p>Create your first cover letter to complement your resume and make a great impression.</p>
+        <a href="{% url 'resume_builder:cover_letter_templates' %}" class="btn btn-primary btn-lg">
+          <i class="fas fa-plus"></i>
+          Create Your First Cover Letter
+        </a>
       </div>
     {% endif %}
   </div>
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div id="deleteModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px); z-index: 2000; opacity: 0; transition: opacity var(--transition-smooth);">
-  <div class="modal-content" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); background: var(--bg-elevated); border: 1px solid var(--border-secondary); border-radius: var(--radius-xl); padding: var(--space-8); max-width: 480px; width: 90%; box-shadow: var(--shadow-lg); transition: transform var(--transition-smooth);">
-    <div class="modal-header" style="text-align: center; margin-bottom: var(--space-6);">
-      <div class="modal-icon" style="width: 80px; height: 80px; background: rgba(239, 68, 68, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4);">
-        <i class="fas fa-exclamation-triangle" style="font-size: var(--font-size-3xl); color: var(--error);"></i>
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header text-center mb-6">
+      <div class="modal-icon">
+        <i class="fas fa-exclamation-triangle"></i>
       </div>
-      <h3 style="font-size: var(--font-size-xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-2);">
-        Delete Document
-      </h3>
-      <p id="deleteMessage" style="color: var(--text-secondary); line-height: 1.6;">
-        Are you sure you want to delete this document? This action cannot be undone.
-      </p>
+      <h3>Delete Document</h3>
+      <p id="deleteMessage">Are you sure you want to delete this document? This action cannot be undone.</p>
     </div>
     
-    <div class="modal-actions" style="display: flex; gap: var(--space-3); justify-content: center;">
+    <div class="modal-actions d-flex gap-3 justify-content-center">
       <button id="cancelDelete" class="btn btn-secondary">
         <i class="fas fa-times"></i>
         Cancel
       </button>
-      <button id="confirmDelete" class="btn btn-primary" style="background: var(--error); border-color: var(--error);">
+      <button id="confirmDelete" class="btn btn-danger">
         <i class="fas fa-trash"></i>
         Delete Document
       </button>
@@ -271,76 +228,20 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Enhanced dropdown functionality
-  function setupDropdowns() {
-    const dropdowns = document.querySelectorAll('.dropdown');
-    
-    dropdowns.forEach(dropdown => {
-      const toggle = dropdown.querySelector('[data-dropdown]');
-      const menu = dropdown.querySelector('.dropdown-menu');
-      
-      if (!toggle || !menu) return;
-      
-      // Click to toggle dropdown
-      toggle.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        // Close other dropdowns
-        dropdowns.forEach(other => {
-          if (other !== dropdown) {
-            const otherMenu = other.querySelector('.dropdown-menu');
-            if (otherMenu) {
-              otherMenu.style.opacity = '0';
-              otherMenu.style.visibility = 'hidden';
-              otherMenu.style.transform = 'translateY(-10px) scale(0.95)';
-            }
-          }
-        });
-        
-        // Toggle current dropdown
-        const isOpen = menu.style.opacity === '1';
-        if (isOpen) {
-          menu.style.opacity = '0';
-          menu.style.visibility = 'hidden';
-          menu.style.transform = 'translateY(-10px) scale(0.95)';
-        } else {
-          menu.style.opacity = '1';
-          menu.style.visibility = 'visible';
-          menu.style.transform = 'translateY(0) scale(1)';
-        }
-      });
-      
-      // Close dropdown when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!dropdown.contains(e.target)) {
-          menu.style.opacity = '0';
-          menu.style.visibility = 'hidden';
-          menu.style.transform = 'translateY(-10px) scale(0.95)';
-        }
-      });
-      
-      // Prevent dropdown menu clicks from closing the dropdown
-      menu.addEventListener('click', (e) => {
-        e.stopPropagation();
-      });
-    });
-  }
-  
-  // Enhanced card hover effects
+  // Enhanced card hover effects with direct actions
   function setupCardEffects() {
     const cards = document.querySelectorAll('.document-card');
     
     cards.forEach(card => {
       const overlay = card.querySelector('.card-overlay');
-      const actionsToggle = card.querySelector('.actions-toggle');
+      const actionsContainer = card.querySelector('.document-actions-direct');
       
       card.addEventListener('mouseenter', () => {
         card.style.transform = 'translateY(-8px) scale(1.02)';
         card.style.borderColor = 'var(--accent-primary)';
         card.style.boxShadow = 'var(--shadow-lg), var(--glow-subtle)';
         if (overlay) overlay.style.opacity = '0.1';
-        if (actionsToggle) actionsToggle.style.opacity = '1';
+        if (actionsContainer) actionsContainer.style.opacity = '1';
       });
       
       card.addEventListener('mouseleave', () => {
@@ -348,7 +249,60 @@ document.addEventListener('DOMContentLoaded', function() {
         card.style.borderColor = 'var(--border-primary)';
         card.style.boxShadow = 'none';
         if (overlay) overlay.style.opacity = '0';
-        if (actionsToggle) actionsToggle.style.opacity = '0.7';
+        if (actionsContainer) actionsContainer.style.opacity = '0.8';
+      });
+    });
+  }
+  
+  // Enhanced action icon hover effects
+  function setupActionIconEffects() {
+    const actionIcons = document.querySelectorAll('.action-icon');
+    
+    actionIcons.forEach(icon => {
+      icon.addEventListener('mouseenter', () => {
+        icon.style.transform = 'translateY(-2px) scale(1.1)';
+        icon.style.boxShadow = 'var(--shadow-md)';
+        
+        // Specific hover colors
+        if (icon.classList.contains('edit-action')) {
+          icon.style.background = 'var(--accent-subtle)';
+          icon.style.borderColor = 'var(--accent-primary)';
+        } else if (icon.classList.contains('view-action')) {
+          icon.style.background = 'var(--info-subtle)';
+          icon.style.borderColor = 'var(--info)';
+          icon.style.color = 'var(--info)';
+        } else if (icon.classList.contains('download-action')) {
+          icon.style.background = 'var(--success-subtle)';
+          icon.style.borderColor = 'var(--success)';
+          icon.style.color = 'var(--success)';
+        } else if (icon.classList.contains('delete-action')) {
+          icon.style.background = 'rgba(239, 68, 68, 0.1)';
+          icon.style.borderColor = 'var(--error)';
+        }
+      });
+      
+      icon.addEventListener('mouseleave', () => {
+        icon.style.transform = 'translateY(0) scale(1)';
+        icon.style.boxShadow = 'var(--shadow-sm)';
+        icon.style.background = 'var(--bg-elevated)';
+        icon.style.borderColor = 'var(--border-primary)';
+        
+        // Reset colors
+        if (icon.classList.contains('edit-action')) {
+          icon.style.color = 'var(--accent-primary)';
+        } else if (icon.classList.contains('view-action') || icon.classList.contains('download-action')) {
+          icon.style.color = 'var(--text-secondary)';
+        } else if (icon.classList.contains('delete-action')) {
+          icon.style.color = 'var(--error)';
+        }
+      });
+      
+      // Add click feedback
+      icon.addEventListener('click', () => {
+        icon.style.transform = 'translateY(0) scale(1.05)';
+        setTimeout(() => {
+          icon.style.transform = 'translateY(-2px) scale(1.1)';
+        }, 100);
       });
     });
   }
@@ -361,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmBtn = document.getElementById('confirmDelete');
     let currentDeleteData = null;
     
-    // Show modal
+    // Show modal with enhanced animation
     function showModal(documentData) {
       currentDeleteData = documentData;
       const docType = documentData.type === 'resume' ? 'resume' : 'cover letter';
@@ -374,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }, 10);
     }
     
-    // Hide modal
+    // Hide modal with animation
     function hideModal() {
       modal.style.opacity = '0';
       modal.querySelector('.modal-content').style.transform = 'translate(-50%, -50%) scale(0.9)';
@@ -384,15 +338,15 @@ document.addEventListener('DOMContentLoaded', function() {
       }, 300);
     }
     
-    // Delete document with animation
+    // Delete document with enhanced animation
     function deleteDocument(documentData) {
       const card = document.querySelector(`[data-document-id="${documentData.id}"][data-document-type="${documentData.type}"]`);
       
       if (card) {
-        // Animate card removal
-        card.style.transform = 'scale(0.8)';
+        // Enhanced removal animation
+        card.style.transform = 'scale(0.8) rotateX(90deg)';
         card.style.opacity = '0';
-        card.style.transition = 'all 0.3s ease-out';
+        card.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
         
         setTimeout(() => {
           // Create and submit form
@@ -415,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
           
           document.body.appendChild(form);
           form.submit();
-        }, 300);
+        }, 400);
       }
     }
     
@@ -458,80 +412,132 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   // Initialize all functionality
-  setupDropdowns();
   setupCardEffects();
+  setupActionIconEffects();
   setupDeleteFunctionality();
 });
 </script>
 
 <style>
-@keyframes slideInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Resume Builder Dashboard Styles */
+.header-icon {
+  width: 56px;
+  height: 56px;
+  background: var(--accent-subtle);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+.header-icon i {
+  color: var(--accent-primary);
+  font-size: var(--font-size-xl);
 }
 
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+.section-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--accent-subtle);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--space-4);
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.section-icon i {
+  color: var(--accent-primary);
+  font-size: var(--font-size-lg);
 }
 
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 var(--accent-glow);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 0 0 20px transparent;
-  }
+.document-count {
+  background: var(--accent-subtle);
+  color: var(--accent-primary);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
 }
 
-.dropdown-item:hover {
-  color: var(--text-primary) !important;
-  background: var(--accent-subtle) !important;
-  transform: translateX(2px);
+.documents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: var(--space-8);
 }
 
-.document-card {
+.action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.action-icon.edit-action {
+  color: var(--accent-primary);
+}
+
+.action-icon.view-action,
+.action-icon.download-action {
+  color: var(--text-secondary);
+}
+
+.action-icon.delete-action {
+  color: var(--error);
+  background: none;
+  border: none;
   cursor: pointer;
 }
 
-.document-card:hover .actions-toggle {
-  opacity: 1 !important;
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--success-subtle);
+  color: var(--success);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.secondary-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.secondary-btn.delete-document-btn {
+  color: var(--error);
+}
+
+.modal-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--error-subtle);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-4);
+}
+
+.modal-icon i {
+  font-size: var(--font-size-3xl);
+  color: var(--error);
 }
 
 /* Responsive adjustments */
@@ -546,7 +552,7 @@ document.addEventListener('DOMContentLoaded', function() {
     text-align: center !important;
   }
   
-  .section-header {
+  .resume-header {
     flex-direction: column !important;
     gap: var(--space-3) !important;
     text-align: center !important;
@@ -554,7 +560,7 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 @media (max-width: 480px) {
-  .document-quick-actions {
+  .document-actions {
     flex-direction: column !important;
   }
   
@@ -564,6 +570,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   .modal-actions {
+    flex-direction: column !important;
+  }
+}
+</style>
     flex-direction: column !important;
   }
 }

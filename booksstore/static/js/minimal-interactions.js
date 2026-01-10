@@ -18,17 +18,9 @@ class ProductUI {
 
   // Enhanced Navigation
   setupNavigation() {
-    // Set active navigation state
-    const currentPath = window.location.pathname;
-    const navLinks = document.querySelectorAll('.nav-link');
+    // Remove JavaScript-based active state logic - let Django handle it server-side
+    // The active state is already correctly set in the Django template
     
-    navLinks.forEach(link => {
-      const href = link.getAttribute('href');
-      if (href === currentPath || (currentPath !== '/' && href !== '/' && currentPath.startsWith(href))) {
-        link.classList.add('active');
-      }
-    });
-
     // Navbar scroll effect
     const navbar = document.querySelector('.navbar');
     if (navbar) {
@@ -41,65 +33,60 @@ class ProductUI {
       });
     }
 
-    // Dropdown functionality
-    this.setupDropdowns();
+    // Mobile menu functionality
+    this.setupMobileMenu();
 
-    // Mobile menu toggle (if needed)
-    const mobileToggle = document.querySelector('.mobile-toggle');
+    // No dropdown functionality needed - all nav items are regular links
+  }
+
+  // Mobile menu setup
+  setupMobileMenu() {
+    const mobileToggle = document.querySelector('.mobile-menu-toggle');
     const navMenu = document.querySelector('.navbar-nav');
     
     if (mobileToggle && navMenu) {
-      mobileToggle.addEventListener('click', () => {
-        navMenu.classList.toggle('show');
+      mobileToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        mobileToggle.classList.toggle('active');
+        navMenu.classList.toggle('mobile-menu-open');
+        
+        // Prevent body scroll when menu is open
+        if (navMenu.classList.contains('mobile-menu-open')) {
+          document.body.style.overflow = 'hidden';
+        } else {
+          document.body.style.overflow = '';
+        }
+      });
+      
+      // Close mobile menu when clicking on nav links - but don't prevent navigation
+      const navLinks = navMenu.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          // Only close mobile menu, don't prevent navigation
+          mobileToggle.classList.remove('active');
+          navMenu.classList.remove('mobile-menu-open');
+          document.body.style.overflow = '';
+        });
+      });
+      
+      // Close mobile menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!mobileToggle.contains(e.target) && !navMenu.contains(e.target)) {
+          mobileToggle.classList.remove('active');
+          navMenu.classList.remove('mobile-menu-open');
+          document.body.style.overflow = '';
+        }
+      });
+      
+      // Close mobile menu on escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navMenu.classList.contains('mobile-menu-open')) {
+          mobileToggle.classList.remove('active');
+          navMenu.classList.remove('mobile-menu-open');
+          document.body.style.overflow = '';
+        }
       });
     }
-  }
-
-  // Dropdown navigation setup
-  setupDropdowns() {
-    const dropdowns = document.querySelectorAll('.nav-dropdown');
-    
-    dropdowns.forEach(dropdown => {
-      const toggle = dropdown.querySelector('.dropdown-toggle');
-      const menu = dropdown.querySelector('.dropdown-menu');
-      
-      if (!toggle || !menu) return;
-      
-      // Click to toggle dropdown
-      toggle.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        // Close other dropdowns
-        dropdowns.forEach(other => {
-          if (other !== dropdown) {
-            other.classList.remove('active');
-          }
-        });
-        
-        // Toggle current dropdown
-        dropdown.classList.toggle('active');
-      });
-      
-      // Close dropdown when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!dropdown.contains(e.target)) {
-          dropdown.classList.remove('active');
-        }
-      });
-      
-      // Close dropdown when pressing Escape
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          dropdown.classList.remove('active');
-        }
-      });
-      
-      // Prevent dropdown menu clicks from closing the dropdown
-      menu.addEventListener('click', (e) => {
-        e.stopPropagation();
-      });
-    });
   }
 
   // Enhanced Library Features

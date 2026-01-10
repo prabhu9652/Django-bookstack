@@ -16,11 +16,20 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
-    <!-- Minimal Enterprise CSS -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/minimal-enterprise.css' %}?v=20260109">
+    <!-- Unified Dark Theme CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/dark-theme-unified.css' %}?v=20260111-darktheme">
+    
+    <!-- Component-specific enhancements -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/components-dark.css' %}?v=20260111-darktheme">
+    
+    <!-- Enterprise Authentication Styles -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/auth-enterprise.css' %}?v=20260111-enterprise">
     
     <!-- Shared Library Management -->
-    <script src="{% static 'js/library-manager.js' %}" defer></script>>
+    <script src="{% static 'js/library-manager.js' %}" defer></script>
+    
+    <!-- Enterprise Authentication JavaScript -->
+    <script src="{% static 'js/auth-enterprise.js' %}" defer></script>
     
     <!-- Meta tags -->
     <meta name="description" content="TechBookHub - Professional technical books for DevOps, Cloud Computing, Data Science, Machine Learning, and Software Development">
@@ -38,68 +47,67 @@
     <!-- Minimal Navigation -->
     <nav class="navbar">
       <div class="navbar-content">
-        <!-- Brand Icon Only -->
-        <a href="{% url 'home.index' %}" class="navbar-brand">
-          <i class="fas fa-code"></i>
-        </a>
-        
-        <!-- Navigation -->
+        <!-- Navigation Links -->
         <ul class="navbar-nav">
-          <li><a href="{% url 'home.index' %}" class="nav-link">Home</a></li>
-          <li><a href="{% url 'books.index' %}" class="nav-link">Books</a></li>
+          <li><a href="{% url 'home.index' %}" class="nav-link {% if request.resolver_match.url_name == 'home.index' %}active{% endif %}">Home</a></li>
+          <li><a href="{% url 'books.index' %}" class="nav-link {% if request.resolver_match.url_name and 'books' in request.resolver_match.url_name and not request.resolver_match.namespace %}active{% endif %}">Books</a></li>
           {% if user.is_authenticated %}
-            <li><a href="{% url 'library.index' %}" class="nav-link">My Library</a></li>
+            <li><a href="{% url 'library.index' %}" class="nav-link {% if request.resolver_match.url_name and 'library' in request.resolver_match.url_name and not request.resolver_match.namespace %}active{% endif %}">My Library</a></li>
           {% endif %}
           
+          <!-- Resume Builder -->
+          <li><a href="{% url 'resume_builder:home' %}" class="nav-link {% if request.resolver_match.namespace == 'resume_builder' %}active{% endif %}">Resume Builder</a></li>
+          
           <!-- Roadmap -->
-          <li><a href="{% url 'roadmap:home' %}" class="nav-link">Roadmap</a></li>
+          <li><a href="{% url 'roadmap:home' %}" class="nav-link {% if request.resolver_match.namespace == 'roadmap' %}active{% endif %}">Roadmap</a></li>
           
-          <!-- Resume Builder Dropdown -->
-          <li class="nav-dropdown">
-            <a href="#" class="nav-link dropdown-toggle" data-dropdown="resume">
-              Resume <i class="fas fa-chevron-down"></i>
-            </a>
-            <div class="dropdown-menu" id="resume-dropdown">
-              {% if user.is_authenticated %}
-                <a href="{% url 'resume_builder:dashboard' %}" class="dropdown-item">
-                  <i class="fas fa-tachometer-alt"></i>
-                  My Documents
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="{% url 'resume_builder:resume_templates' %}" class="dropdown-item">
-                  <i class="fas fa-file-alt"></i>
-                  Create Resume
-                </a>
-                <a href="{% url 'resume_builder:cover_letter_templates' %}" class="dropdown-item">
-                  <i class="fas fa-envelope"></i>
-                  Create Cover Letter
-                </a>
-              {% else %}
-                <a href="{% url 'resume_builder:home' %}" class="dropdown-item">
-                  <i class="fas fa-info-circle"></i>
-                  Learn More
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="{% url 'accounts.signup' %}" class="dropdown-item">
-                  <i class="fas fa-user-plus"></i>
-                  Sign Up to Get Started
-                </a>
-              {% endif %}
-            </div>
-          </li>
-          
-          <li><a href="{% url 'home.about' %}" class="nav-link">About</a></li>
+          <li><a href="{% url 'home.about' %}" class="nav-link {% if request.resolver_match.url_name == 'home.about' %}active{% endif %}">About</a></li>
         </ul>
         
         <!-- Auth Actions -->
         <div class="navbar-auth">
           {% if user.is_authenticated %}
-            <a href="{% url 'accounts.logout' %}" class="btn btn-ghost btn-sm">Sign Out</a>
+            <!-- Access Status Indicator -->
+            {% if access_context.is_superuser %}
+              <span class="access-status admin" title="Administrator">
+                <i class="fas fa-crown"></i> Admin
+              </span>
+            {% elif access_context.has_content_access %}
+              <span class="access-status approved" title="Access Approved">
+                <i class="fas fa-check-circle"></i> Approved
+              </span>
+            {% elif access_context.access_status and access_context.access_status.is_pending %}
+              <span class="access-status pending" title="Access Pending">
+                <i class="fas fa-clock"></i> Pending
+              </span>
+            {% elif access_context.access_status and access_context.access_status.is_rejected %}
+              <span class="access-status rejected" title="Access Rejected">
+                <i class="fas fa-times-circle"></i> Rejected
+              </span>
+            {% else %}
+              <span class="access-status unknown" title="Access Status Unknown">
+                <i class="fas fa-question-circle"></i> Unknown
+              </span>
+            {% endif %}
+            
+            <!-- Access Status Link -->
+            <a href="{% url 'accounts.access_status' %}" class="btn btn-ghost btn-sm {% if request.resolver_match.url_name == 'accounts.access_status' or request.resolver_match.url_name == 'accounts.request_access' or request.resolver_match.url_name == 'accounts.access_denied' %}active{% endif %}" onclick="this.innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> Loading...'; this.style.pointerEvents='none';">
+              <i class="fas fa-user-shield"></i> Access
+            </a>
+            
+            <a href="{% url 'accounts.logout' %}" class="btn btn-ghost btn-sm" onclick="this.innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> Signing Out...'; this.style.pointerEvents='none';">Sign Out</a>
           {% else %}
             <a href="{% url 'accounts.login' %}" class="btn btn-ghost btn-sm">Sign In</a>
             <a href="{% url 'accounts.signup' %}" class="btn btn-primary btn-sm">Sign Up</a>
           {% endif %}
         </div>
+        
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
       </div>
     </nav>
 
