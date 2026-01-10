@@ -38,10 +38,9 @@
     <!-- Minimal Navigation -->
     <nav class="navbar">
       <div class="navbar-content">
-        <!-- Brand -->
+        <!-- Brand Icon Only -->
         <a href="{% url 'home.index' %}" class="navbar-brand">
           <i class="fas fa-code"></i>
-          TechBookHub
         </a>
         
         <!-- Navigation -->
@@ -51,6 +50,44 @@
           {% if user.is_authenticated %}
             <li><a href="{% url 'library.index' %}" class="nav-link">My Library</a></li>
           {% endif %}
+          
+          <!-- Roadmap -->
+          <li><a href="{% url 'roadmap:home' %}" class="nav-link">Roadmap</a></li>
+          
+          <!-- Resume Builder Dropdown -->
+          <li class="nav-dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-dropdown="resume">
+              Resume <i class="fas fa-chevron-down"></i>
+            </a>
+            <div class="dropdown-menu" id="resume-dropdown">
+              {% if user.is_authenticated %}
+                <a href="{% url 'resume_builder:dashboard' %}" class="dropdown-item">
+                  <i class="fas fa-tachometer-alt"></i>
+                  My Documents
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="{% url 'resume_builder:resume_templates' %}" class="dropdown-item">
+                  <i class="fas fa-file-alt"></i>
+                  Create Resume
+                </a>
+                <a href="{% url 'resume_builder:cover_letter_templates' %}" class="dropdown-item">
+                  <i class="fas fa-envelope"></i>
+                  Create Cover Letter
+                </a>
+              {% else %}
+                <a href="{% url 'resume_builder:home' %}" class="dropdown-item">
+                  <i class="fas fa-info-circle"></i>
+                  Learn More
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="{% url 'accounts.signup' %}" class="dropdown-item">
+                  <i class="fas fa-user-plus"></i>
+                  Sign Up to Get Started
+                </a>
+              {% endif %}
+            </div>
+          </li>
+          
           <li><a href="{% url 'home.about' %}" class="nav-link">About</a></li>
         </ul>
         
@@ -67,7 +104,14 @@
     </nav>
 
     <!-- Main Content -->
-    <main style="padding-top: 64px;">
+    <main style="padding-top: 64px;" id="main-content">
+      <!-- Page Transition Overlay -->
+      <div id="page-transition-overlay" class="page-transition-overlay">
+        <div class="transition-spinner">
+          <i class="fas fa-spinner"></i>
+        </div>
+      </div>
+      
       <!-- Messages -->
       {% if messages %}
         <div class="container" style="padding-top: var(--space-4);">
@@ -90,8 +134,10 @@
         </div>
       {% endif %}
       
-      {% block content %}
-      {% endblock content %}
+      <div class="page-content" id="page-content">
+        {% block content %}
+        {% endblock content %}
+      </div>
     </main>
 
     <!-- Minimal Footer -->
@@ -107,6 +153,7 @@
 
     <!-- Scripts -->
     <script src="{% static 'js/minimal-interactions.js' %}"></script>
+    <script src="{% static 'js/page-transitions.js' %}"></script>
     
     {% block extra_js %}
     {% endblock extra_js %}

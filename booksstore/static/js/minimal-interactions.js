@@ -41,6 +41,9 @@ class ProductUI {
       });
     }
 
+    // Dropdown functionality
+    this.setupDropdowns();
+
     // Mobile menu toggle (if needed)
     const mobileToggle = document.querySelector('.mobile-toggle');
     const navMenu = document.querySelector('.navbar-nav');
@@ -50,6 +53,53 @@ class ProductUI {
         navMenu.classList.toggle('show');
       });
     }
+  }
+
+  // Dropdown navigation setup
+  setupDropdowns() {
+    const dropdowns = document.querySelectorAll('.nav-dropdown');
+    
+    dropdowns.forEach(dropdown => {
+      const toggle = dropdown.querySelector('.dropdown-toggle');
+      const menu = dropdown.querySelector('.dropdown-menu');
+      
+      if (!toggle || !menu) return;
+      
+      // Click to toggle dropdown
+      toggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Close other dropdowns
+        dropdowns.forEach(other => {
+          if (other !== dropdown) {
+            other.classList.remove('active');
+          }
+        });
+        
+        // Toggle current dropdown
+        dropdown.classList.toggle('active');
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target)) {
+          dropdown.classList.remove('active');
+        }
+      });
+      
+      // Close dropdown when pressing Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          dropdown.classList.remove('active');
+        }
+      });
+      
+      // Prevent dropdown menu clicks from closing the dropdown
+      menu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    });
   }
 
   // Enhanced Library Features

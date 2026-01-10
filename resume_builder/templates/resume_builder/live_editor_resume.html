@@ -1,0 +1,323 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Live Resume Editor CSS -->
+<link rel="stylesheet" type="text/css" href="{% static 'css/resume-builder-enhancements.css' %}?v=20260110">
+<link rel="stylesheet" type="text/css" href="{% static 'css/live-editor.css' %}?v=20260110">
+
+<div class="live-editor-container">
+  <!-- Header -->
+  <div class="editor-header">
+    <div class="header-content">
+      <div class="header-info">
+        <h1 class="editor-title">
+          <i class="fas fa-file-alt"></i>
+          Resume Builder
+        </h1>
+        <p class="editor-subtitle">{{ resume.title }} • {{ resume.template.name }}</p>
+      </div>
+      <div class="header-actions">
+        <button id="autoSaveToggle" class="btn btn-ghost btn-sm">
+          <i class="fas fa-save"></i>
+          <span id="autoSaveStatus">Auto-save: On</span>
+        </button>
+        <button id="saveResume" class="btn btn-secondary">
+          <i class="fas fa-save"></i>
+          Save
+        </button>
+        <a href="{% url 'resume_builder:download_resume' resume.id %}" class="btn btn-primary" target="_blank">
+          <i class="fas fa-download"></i>
+          Download
+        </a>
+        <a href="{% url 'resume_builder:dashboard' %}" class="btn btn-ghost">
+          <i class="fas fa-arrow-left"></i>
+          Back
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Split Layout Editor -->
+  <div class="editor-layout">
+    <!-- Left Panel - Editor -->
+    <div class="editor-panel">
+      <div class="panel-header">
+        <h2>
+          <i class="fas fa-edit"></i>
+          Edit Resume
+        </h2>
+        <div class="panel-controls">
+          <button class="btn btn-ghost btn-sm" id="collapseAllSections">
+            <i class="fas fa-compress-alt"></i>
+            Collapse All
+          </button>
+        </div>
+      </div>
+
+      <form id="resumeForm" class="editor-form">
+        {% csrf_token %}
+        
+        <!-- Personal Details Section -->
+        <div class="form-section" data-section="personal">
+          <div class="section-header">
+            <h3>
+              <i class="fas fa-user"></i>
+              Personal Details
+            </h3>
+            <button type="button" class="section-toggle">
+              <i class="fas fa-chevron-down"></i>
+            </button>
+          </div>
+          <div class="section-content">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="full_name">Full Name *</label>
+                <input type="text" id="full_name" name="full_name" value="{{ resume.full_name }}" required>
+              </div>
+              <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" value="{{ resume.email }}" required>
+              </div>
+              <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone" value="{{ resume.phone }}">
+              </div>
+              <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" value="{{ resume.location }}">
+              </div>
+              <div class="form-group">
+                <label for="website">Website</label>
+                <input type="url" id="website" name="website" value="{{ resume.website }}">
+              </div>
+              <div class="form-group">
+                <label for="linkedin">LinkedIn</label>
+                <input type="url" id="linkedin" name="linkedin" value="{{ resume.linkedin }}">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Professional Summary Section -->
+        <div class="form-section" data-section="summary">
+          <div class="section-header">
+            <h3>
+              <i class="fas fa-align-left"></i>
+              Professional Summary
+            </h3>
+            <button type="button" class="section-toggle">
+              <i class="fas fa-chevron-down"></i>
+            </button>
+          </div>
+          <div class="section-content">
+            <div class="form-group">
+              <label for="summary">Summary</label>
+              <textarea id="summary" name="summary" rows="4" placeholder="Write a compelling professional summary that highlights your key achievements and expertise...">{{ resume.summary }}</textarea>
+              <div class="field-hint">
+                <i class="fas fa-lightbulb"></i>
+                Tip: Focus on your most relevant skills and accomplishments for the target role.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skills Section -->
+        <div class="form-section" data-section="skills">
+          <div class="section-header">
+            <h3>
+              <i class="fas fa-cogs"></i>
+              Skills
+            </h3>
+            <button type="button" class="section-toggle">
+              <i class="fas fa-chevron-down"></i>
+            </button>
+          </div>
+          <div class="section-content">
+            <div class="skills-container">
+              <div class="skills-input-group">
+                <input type="text" id="skillInput" placeholder="Add a skill (e.g., Python, AWS, Docker)">
+                <button type="button" id="addSkill" class="btn btn-primary btn-sm">
+                  <i class="fas fa-plus"></i>
+                  Add
+                </button>
+              </div>
+              <div class="skills-list" id="skillsList">
+                {% for skill in resume.skills %}
+                  <div class="skill-tag">
+                    <span>{{ skill }}</span>
+                    <button type="button" class="remove-skill">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                {% endfor %}
+              </div>
+              <div class="field-hint">
+                <i class="fas fa-lightbulb"></i>
+                Add technical skills, programming languages, tools, and frameworks relevant to your field.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Experience Section -->
+        <div class="form-section" data-section="experience">
+          <div class="section-header">
+            <h3>
+              <i class="fas fa-briefcase"></i>
+              Work Experience
+            </h3>
+            <div class="section-actions">
+              <button type="button" id="addExperience" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus"></i>
+                Add Experience
+              </button>
+              <button type="button" class="section-toggle">
+                <i class="fas fa-chevron-down"></i>
+              </button>
+            </div>
+          </div>
+          <div class="section-content">
+            <div id="experienceContainer">
+              {% for exp in resume.experience %}
+                <div class="experience-item" data-index="{{ forloop.counter0 }}">
+                  <div class="item-header">
+                    <h4>Experience {{ forloop.counter }}</h4>
+                    <button type="button" class="remove-item">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label>Job Title *</label>
+                      <input type="text" name="exp_title" value="{{ exp.title }}" required>
+                    </div>
+                    <div class="form-group">
+                      <label>Company *</label>
+                      <input type="text" name="exp_company" value="{{ exp.company }}" required>
+                    </div>
+                    <div class="form-group">
+                      <label>Location</label>
+                      <input type="text" name="exp_location" value="{{ exp.location }}">
+                    </div>
+                    <div class="form-group">
+                      <label>Start Date</label>
+                      <input type="text" name="exp_start_date" value="{{ exp.start_date }}" placeholder="e.g., Jan 2023">
+                    </div>
+                    <div class="form-group">
+                      <label>End Date</label>
+                      <input type="text" name="exp_end_date" value="{{ exp.end_date }}" placeholder="e.g., Present">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="exp_description" rows="3" placeholder="Describe your key responsibilities and achievements...">{{ exp.description }}</textarea>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Education Section -->
+        <div class="form-section" data-section="education">
+          <div class="section-header">
+            <h3>
+              <i class="fas fa-graduation-cap"></i>
+              Education
+            </h3>
+            <div class="section-actions">
+              <button type="button" id="addEducation" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus"></i>
+                Add Education
+              </button>
+              <button type="button" class="section-toggle">
+                <i class="fas fa-chevron-down"></i>
+              </button>
+            </div>
+          </div>
+          <div class="section-content">
+            <div id="educationContainer">
+              {% for edu in resume.education %}
+                <div class="education-item" data-index="{{ forloop.counter0 }}">
+                  <div class="item-header">
+                    <h4>Education {{ forloop.counter }}</h4>
+                    <button type="button" class="remove-item">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label>Degree *</label>
+                      <input type="text" name="edu_degree" value="{{ edu.degree }}" required>
+                    </div>
+                    <div class="form-group">
+                      <label>School *</label>
+                      <input type="text" name="edu_school" value="{{ edu.school }}" required>
+                    </div>
+                    <div class="form-group">
+                      <label>Location</label>
+                      <input type="text" name="edu_location" value="{{ edu.location }}">
+                    </div>
+                    <div class="form-group">
+                      <label>Graduation Date</label>
+                      <input type="text" name="edu_graduation_date" value="{{ edu.graduation_date }}" placeholder="e.g., May 2023">
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Right Panel - Live Preview -->
+    <div class="preview-panel">
+      <div class="panel-header">
+        <h2>
+          <i class="fas fa-eye"></i>
+          Live Preview
+        </h2>
+        <div class="panel-controls">
+          <button class="btn btn-ghost btn-sm" id="zoomOut">
+            <i class="fas fa-search-minus"></i>
+          </button>
+          <span class="zoom-level">100%</span>
+          <button class="btn btn-ghost btn-sm" id="zoomIn">
+            <i class="fas fa-search-plus"></i>
+          </button>
+          <button class="btn btn-ghost btn-sm" id="fullscreenPreview">
+            <i class="fas fa-expand"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="preview-container">
+        <div class="preview-document" id="resumePreview">
+          <!-- Live preview will be rendered here -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Auto-save Status -->
+<div id="saveStatus" class="save-status">
+  <i class="fas fa-check-circle"></i>
+  <span>All changes saved</span>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const resumeEditor = new ResumeEditor({
+    resumeId: {{ resume.id }},
+    templateId: {{ resume.template.id }},
+    autoSave: true,
+    autoSaveInterval: 2000
+  });
+});
+</script>
+
+<script src="{% static 'js/live-editor.js' %}?v=20260110"></script>
+{% endblock %}

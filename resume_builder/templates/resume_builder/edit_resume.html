@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="padding: var(--space-8) 0;">
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-8);">
+    <div>
+      <h1 style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-2);">
+        Edit Resume
+      </h1>
+      <p style="color: var(--text-secondary);">
+        {{ resume.title }} • {{ resume.template.name }}
+      </p>
+    </div>
+    <div style="display: flex; gap: var(--space-3);">
+      <a href="{% url 'resume_builder:preview_resume' resume.id %}" class="btn btn-secondary">
+        <i class="fas fa-eye"></i>
+        Preview
+      </a>
+      <a href="{% url 'resume_builder:download_resume' resume.id %}" class="btn btn-primary">
+        <i class="fas fa-download"></i>
+        Download
+      </a>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="card" style="padding: var(--space-8);">
+    <form method="post" id="resumeForm">
+      {% csrf_token %}
+      
+      <!-- Basic Information -->
+      <div style="margin-bottom: var(--space-8);">
+        <h2 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-6); border-bottom: 2px solid var(--border-primary); padding-bottom: var(--space-2);">
+          <i class="fas fa-user" style="color: var(--accent-primary); margin-right: var(--space-2);"></i>
+          Personal Information
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-4);">
+          <div>
+            <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+              Resume Title
+            </label>
+            <input type="text" name="title" value="{{ resume.title }}" required
+                   style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+          </div>
+          
+          <div>
+            <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+              Full Name
+            </label>
+            <input type="text" name="full_name" value="{{ resume.full_name }}" required
+                   style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+          </div>
+          
+          <div>
+            <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+              Email
+            </label>
+            <input type="email" name="email" value="{{ resume.email }}" required
+                   style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+          </div>
+          
+          <div>
+            <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+              Phone
+            </label>
+            <input type="tel" name="phone" value="{{ resume.phone }}"
+                   style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+          </div>
+          
+          <div>
+            <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+              Location
+            </label>
+            <input type="text" name="location" value="{{ resume.location }}"
+                   style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+          </div>
+          
+          <div>
+            <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+              LinkedIn
+            </label>
+            <input type="url" name="linkedin" value="{{ resume.linkedin }}"
+                   style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div style="margin-bottom: var(--space-8);">
+        <h2 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-6); border-bottom: 2px solid var(--border-primary); padding-bottom: var(--space-2);">
+          <i class="fas fa-align-left" style="color: var(--accent-primary); margin-right: var(--space-2);"></i>
+          Professional Summary
+        </h2>
+        
+        <textarea name="summary" rows="4" placeholder="Write a compelling professional summary..."
+                  style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base); resize: vertical;">{{ resume.summary }}</textarea>
+      </div>
+
+      <!-- Experience -->
+      <div style="margin-bottom: var(--space-8);">
+        <h2 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-6); border-bottom: 2px solid var(--border-primary); padding-bottom: var(--space-2);">
+          <i class="fas fa-briefcase" style="color: var(--accent-primary); margin-right: var(--space-2);"></i>
+          Work Experience
+        </h2>
+        
+        <div id="experienceContainer">
+          {% for exp in resume.experience %}
+            <div class="experience-item" style="background: var(--bg-surface); padding: var(--space-6); border-radius: var(--radius-lg); margin-bottom: var(--space-4); border: 1px solid var(--border-primary);">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-4);">
+                <input type="text" placeholder="Job Title" value="{{ exp.title }}" data-field="title"
+                       style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+                <input type="text" placeholder="Company" value="{{ exp.company }}" data-field="company"
+                       style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+                <input type="text" placeholder="Location" value="{{ exp.location }}" data-field="location"
+                       style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+                <input type="text" placeholder="Start Date" value="{{ exp.start_date }}" data-field="start_date"
+                       style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+                <input type="text" placeholder="End Date" value="{{ exp.end_date }}" data-field="end_date"
+                       style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+              </div>
+              <textarea placeholder="Job description and achievements..." data-field="description" rows="3"
+                        style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); resize: vertical;">{{ exp.description }}</textarea>
+              <button type="button" onclick="removeExperience(this)" class="btn btn-ghost btn-sm" style="margin-top: var(--space-3);">
+                <i class="fas fa-trash"></i> Remove
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+        
+        <button type="button" onclick="addExperience()" class="btn btn-ghost">
+          <i class="fas fa-plus"></i> Add Experience
+        </button>
+      </div>
+
+      <!-- Education -->
+      <div style="margin-bottom: var(--space-8);">
+        <h2 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-6); border-bottom: 2px solid var(--border-primary); padding-bottom: var(--space-2);">
+          <i class="fas fa-graduation-cap" style="color: var(--accent-primary); margin-right: var(--space-2);"></i>
+          Education
+        </h2>
+        
+        <div id="educationContainer">
+          {% for edu in resume.education %}
+            <div class="education-item" style="background: var(--bg-surface); padding: var(--space-6); border-radius: var(--radius-lg); margin-bottom: var(--space-4); border: 1px solid var(--border-primary);">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4);">
+                <input type="text" placeholder="Degree" value="{{ edu.degree }}" data-field="degree"
+                       style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+                <input type="text" placeholder="School" value="{{ edu.school }}" data-field="school"
+                       style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+                <input type="text" placeholder="Location" value="{{ edu.location }}" data-field="location"
+                       style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+                <input type="text" placeholder="Graduation Date" value="{{ edu.graduation_date }}" data-field="graduation_date"
+                       style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+              </div>
+              <button type="button" onclick="removeEducation(this)" class="btn btn-ghost btn-sm" style="margin-top: var(--space-3);">
+                <i class="fas fa-trash"></i> Remove
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+        
+        <button type="button" onclick="addEducation()" class="btn btn-ghost">
+          <i class="fas fa-plus"></i> Add Education
+        </button>
+      </div>
+
+      <!-- Skills -->
+      <div style="margin-bottom: var(--space-8);">
+        <h2 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-6); border-bottom: 2px solid var(--border-primary); padding-bottom: var(--space-2);">
+          <i class="fas fa-cogs" style="color: var(--accent-primary); margin-right: var(--space-2);"></i>
+          Skills
+        </h2>
+        
+        <textarea name="skills" rows="3" placeholder="Enter your skills separated by commas..."
+                  style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base); resize: vertical;">{% for skill in resume.skills %}{{ skill }}{% if not forloop.last %}, {% endif %}{% endfor %}</textarea>
+      </div>
+
+      <!-- Actions -->
+      <div style="display: flex; gap: var(--space-4); justify-content: center; padding-top: var(--space-6); border-top: 1px solid var(--border-primary);">
+        <button type="submit" class="btn btn-primary btn-lg">
+          <i class="fas fa-save"></i>
+          Save Resume
+        </button>
+        <a href="{% url 'resume_builder:preview_resume' resume.id %}" class="btn btn-secondary btn-lg">
+          <i class="fas fa-eye"></i>
+          Preview
+        </a>
+        <a href="{% url 'resume_builder:dashboard' %}" class="btn btn-ghost btn-lg">
+          <i class="fas fa-arrow-left"></i>
+          Back to Dashboard
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function addExperience() {
+  const container = document.getElementById('experienceContainer');
+  const div = document.createElement('div');
+  div.className = 'experience-item';
+  div.style.cssText = 'background: var(--bg-surface); padding: var(--space-6); border-radius: var(--radius-lg); margin-bottom: var(--space-4); border: 1px solid var(--border-primary);';
+  div.innerHTML = `
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-4);">
+      <input type="text" placeholder="Job Title" data-field="title" style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+      <input type="text" placeholder="Company" data-field="company" style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+      <input type="text" placeholder="Location" data-field="location" style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+      <input type="text" placeholder="Start Date" data-field="start_date" style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+      <input type="text" placeholder="End Date" data-field="end_date" style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+    </div>
+    <textarea placeholder="Job description and achievements..." data-field="description" rows="3" style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); resize: vertical;"></textarea>
+    <button type="button" onclick="removeExperience(this)" class="btn btn-ghost btn-sm" style="margin-top: var(--space-3);"><i class="fas fa-trash"></i> Remove</button>
+  `;
+  container.appendChild(div);
+}
+
+function removeExperience(button) {
+  button.closest('.experience-item').remove();
+}
+
+function addEducation() {
+  const container = document.getElementById('educationContainer');
+  const div = document.createElement('div');
+  div.className = 'education-item';
+  div.style.cssText = 'background: var(--bg-surface); padding: var(--space-6); border-radius: var(--radius-lg); margin-bottom: var(--space-4); border: 1px solid var(--border-primary);';
+  div.innerHTML = `
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4);">
+      <input type="text" placeholder="Degree" data-field="degree" style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+      <input type="text" placeholder="School" data-field="school" style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+      <input type="text" placeholder="Location" data-field="location" style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+      <input type="text" placeholder="Graduation Date" data-field="graduation_date" style="padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+    </div>
+    <button type="button" onclick="removeEducation(this)" class="btn btn-ghost btn-sm" style="margin-top: var(--space-3);"><i class="fas fa-trash"></i> Remove</button>
+  `;
+  container.appendChild(div);
+}
+
+function removeEducation(button) {
+  button.closest('.education-item').remove();
+}
+
+// Handle form submission
+document.getElementById('resumeForm').addEventListener('submit', function(e) {
+  // Collect experience data
+  const experienceItems = document.querySelectorAll('.experience-item');
+  const experience = [];
+  experienceItems.forEach(item => {
+    const exp = {};
+    item.querySelectorAll('[data-field]').forEach(input => {
+      exp[input.dataset.field] = input.value;
+    });
+    if (exp.title || exp.company) {
+      experience.push(exp);
+    }
+  });
+  
+  // Collect education data
+  const educationItems = document.querySelectorAll('.education-item');
+  const education = [];
+  educationItems.forEach(item => {
+    const edu = {};
+    item.querySelectorAll('[data-field]').forEach(input => {
+      edu[input.dataset.field] = input.value;
+    });
+    if (edu.degree || edu.school) {
+      education.push(edu);
+    }
+  });
+  
+  // Add hidden inputs for JSON data
+  const form = this;
+  
+  // Remove existing hidden inputs
+  form.querySelectorAll('input[name="experience"], input[name="education"]').forEach(input => input.remove());
+  
+  // Add new hidden inputs
+  const expInput = document.createElement('input');
+  expInput.type = 'hidden';
+  expInput.name = 'experience';
+  expInput.value = JSON.stringify(experience);
+  form.appendChild(expInput);
+  
+  const eduInput = document.createElement('input');
+  eduInput.type = 'hidden';
+  eduInput.name = 'education';
+  eduInput.value = JSON.stringify(education);
+  form.appendChild(eduInput);
+  
+  // Process skills
+  const skillsTextarea = form.querySelector('[name="skills"]');
+  const skillsArray = skillsTextarea.value.split(',').map(s => s.trim()).filter(s => s);
+  const skillsInput = document.createElement('input');
+  skillsInput.type = 'hidden';
+  skillsInput.name = 'skills';
+  skillsInput.value = JSON.stringify(skillsArray);
+  form.appendChild(skillsInput);
+});
+</script>
+{% endblock %}

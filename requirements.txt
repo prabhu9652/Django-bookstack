@@ -1,5 +1,21 @@
-Django>=6.0,<7
-Pillow
-gunicorn
-whitenoise
-psycopg2-binary
+# Core Django Framework
+Django>=5.0,<6.0
+Pillow>=9.0.0
+
+# Production Server
+gunicorn>=20.1.0
+whitenoise>=6.0.0
+
+# Database
+psycopg2-binary>=2.9.0
+
+# Resume Builder Dependencies
+weasyprint>=60.0
+cffi>=1.15.0
+pydyf>=0.8.0
+cssselect2>=0.7.0
+tinycss2>=1.2.0
+fonttools>=4.38.0
+
+# Additional utilities for Resume Builder
+python-dateutil>=2.8.0

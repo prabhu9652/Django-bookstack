@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="padding: var(--space-8) 0;">
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-8);">
+    <div>
+      <h1 style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-2);">
+        Edit Cover Letter
+      </h1>
+      <p style="color: var(--text-secondary);">
+        {{ cover_letter.title }} • {{ cover_letter.template.name }}
+      </p>
+    </div>
+    <div style="display: flex; gap: var(--space-3);">
+      <a href="{% url 'resume_builder:preview_cover_letter' cover_letter.id %}" class="btn btn-secondary">
+        <i class="fas fa-eye"></i>
+        Preview
+      </a>
+      <a href="{% url 'resume_builder:download_cover_letter' cover_letter.id %}" class="btn btn-primary">
+        <i class="fas fa-download"></i>
+        Download
+      </a>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="card" style="padding: var(--space-8);">
+    <form method="post" id="coverLetterForm">
+      {% csrf_token %}
+      
+      <!-- Basic Information -->
+      <div style="margin-bottom: var(--space-8);">
+        <h2 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-6); border-bottom: 2px solid var(--border-primary); padding-bottom: var(--space-2);">
+          <i class="fas fa-user" style="color: var(--accent-primary); margin-right: var(--space-2);"></i>
+          Personal Information
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-4);">
+          <div>
+            <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+              Cover Letter Title
+            </label>
+            <input type="text" name="title" value="{{ cover_letter.title }}" required
+                   style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+          </div>
+          
+          <div>
+            <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+              Full Name
+            </label>
+            <input type="text" name="full_name" value="{{ cover_letter.full_name }}" required
+                   style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+          </div>
+          
+          <div>
+            <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+              Email
+            </label>
+            <input type="email" name="email" value="{{ cover_letter.email }}" required
+                   style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+          </div>
+          
+          <div>
+            <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+              Phone
+            </label>
+            <input type="tel" name="phone" value="{{ cover_letter.phone }}"
+                   style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+          </div>
+          
+          <div>
+            <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+              Location
+            </label>
+            <input type="text" name="location" value="{{ cover_letter.location }}"
+                   style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+          </div>
+        </div>
+      </div>
+
+      <!-- Company Information -->
+      <div style="margin-bottom: var(--space-8);">
+        <h2 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-6); border-bottom: 2px solid var(--border-primary); padding-bottom: var(--space-2);">
+          <i class="fas fa-building" style="color: var(--accent-primary); margin-right: var(--space-2);"></i>
+          Company Information
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-4);">
+          <div>
+            <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+              Company Name
+            </label>
+            <input type="text" name="company_name" value="{{ cover_letter.company_name }}" required
+                   style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+          </div>
+          
+          <div>
+            <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+              Position Title
+            </label>
+            <input type="text" name="position_title" value="{{ cover_letter.position_title }}" required
+                   style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+          </div>
+          
+          <div>
+            <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+              Hiring Manager (Optional)
+            </label>
+            <input type="text" name="hiring_manager" value="{{ cover_letter.hiring_manager }}"
+                   style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+          </div>
+        </div>
+      </div>
+
+      <!-- Cover Letter Content -->
+      <div style="margin-bottom: var(--space-8);">
+        <h2 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-6); border-bottom: 2px solid var(--border-primary); padding-bottom: var(--space-2);">
+          <i class="fas fa-edit" style="color: var(--accent-primary); margin-right: var(--space-2);"></i>
+          Cover Letter Content
+        </h2>
+        
+        <div style="margin-bottom: var(--space-4);">
+          <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+            Letter Content
+          </label>
+          <textarea name="content" rows="15" placeholder="Write your cover letter content here..." required
+                    style="width: 100%; padding: var(--space-4); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base); line-height: 1.6; resize: vertical; font-family: 'Georgia', serif;">{{ cover_letter.content }}</textarea>
+          <div style="margin-top: var(--space-2); color: var(--text-tertiary); font-size: var(--font-size-sm);">
+            <i class="fas fa-lightbulb"></i>
+            Tip: Use a professional tone and customize the content for each application. Include specific examples of your achievements and explain why you're interested in this particular role and company.
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display: flex; gap: var(--space-4); justify-content: center; padding-top: var(--space-6); border-top: 1px solid var(--border-primary);">
+        <button type="submit" class="btn btn-primary btn-lg">
+          <i class="fas fa-save"></i>
+          Save Cover Letter
+        </button>
+        <a href="{% url 'resume_builder:preview_cover_letter' cover_letter.id %}" class="btn btn-secondary btn-lg">
+          <i class="fas fa-eye"></i>
+          Preview
+        </a>
+        <a href="{% url 'resume_builder:dashboard' %}" class="btn btn-ghost btn-lg">
+          <i class="fas fa-arrow-left"></i>
+          Back to Dashboard
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// Auto-save functionality (optional)
+let saveTimeout;
+const form = document.getElementById('coverLetterForm');
+const inputs = form.querySelectorAll('input, textarea');
+
+inputs.forEach(input => {
+  input.addEventListener('input', function() {
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+      // Auto-save could be implemented here
+      console.log('Auto-save triggered');
+    }, 2000);
+  });
+});
+
+// Form submission handler
+form.addEventListener('submit', function(e) {
+  const submitBtn = form.querySelector('button[type="submit"]');
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  submitBtn.disabled = true;
+  
+  // Re-enable button after a delay (in case of errors)
+  setTimeout(() => {
+    submitBtn.innerHTML = '<i class="fas fa-save"></i> Save Cover Letter';
+    submitBtn.disabled = false;
+  }, 3000);
+});
+
+// Character count for content textarea
+const contentTextarea = document.querySelector('textarea[name="content"]');
+if (contentTextarea) {
+  const charCountDiv = document.createElement('div');
+  charCountDiv.style.cssText = 'margin-top: var(--space-2); color: var(--text-tertiary); font-size: var(--font-size-sm); text-align: right;';
+  contentTextarea.parentNode.appendChild(charCountDiv);
+  
+  function updateCharCount() {
+    const count = contentTextarea.value.length;
+    charCountDiv.textContent = `${count} characters`;
+    
+    if (count < 200) {
+      charCountDiv.style.color = 'var(--error)';
+    } else if (count > 2000) {
+      charCountDiv.style.color = 'var(--warning)';
+    } else {
+      charCountDiv.style.color = 'var(--text-tertiary)';
+    }
+  }
+  
+  contentTextarea.addEventListener('input', updateCharCount);
+  updateCharCount(); // Initial count
+}
+</script>
+{% endblock %}

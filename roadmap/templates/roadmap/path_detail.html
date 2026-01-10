@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load roadmap_extras %}
+
+{% block content %}
+{% csrf_token %}
+<div class="roadmap-detail-page">
+  <div class="container">
+    <!-- Breadcrumb Navigation -->
+    <div class="breadcrumb-nav animate-element" data-delay="0">
+      <a href="{% url 'roadmap:home' %}" class="breadcrumb-link">
+        <i class="fas fa-route"></i>
+        Roadmaps
+      </a>
+      <i class="fas fa-chevron-right"></i>
+      <span class="breadcrumb-current">{{ roadmap_path.name }}</span>
+    </div>
+
+    <!-- Path Header -->
+    <div class="path-header animate-element" data-delay="100">
+      <div class="path-header-content">
+        <div class="path-icon">
+          <i class="{{ roadmap_path.icon_class }}"></i>
+        </div>
+        <div class="path-info">
+          <h1 class="path-title">{{ roadmap_path.name }}</h1>
+          <p class="path-subtitle">{{ roadmap_path.subtitle }}</p>
+          <p class="path-description">{{ roadmap_path.description }}</p>
+          
+          <div class="path-meta">
+            <div class="meta-item">
+              <i class="fas fa-signal"></i>
+              <span>{{ roadmap_path.get_difficulty_display }}</span>
+            </div>
+            <div class="meta-item">
+              <i class="fas fa-clock"></i>
+              <span>{{ roadmap_path.estimated_duration }}</span>
+            </div>
+            <div class="meta-item">
+              <i class="fas fa-list"></i>
+              <span>{{ phases.count }} phases</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Overview (if authenticated) -->
+    {% if user.is_authenticated %}
+    <div class="progress-overview animate-element" data-delay="200">
+      <h3>Your Progress</h3>
+      <div class="progress-stats">
+        <!-- Progress stats will be calculated and displayed here -->
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Roadmap Phases -->
+    <div class="roadmap-phases">
+      {% for phase in phases %}
+        <div class="phase-card animate-element" data-phase-id="{{ phase.id }}" data-delay="{{ forloop.counter0|add:300 }}">
+          <div class="phase-header">
+            <div class="phase-number">{{ forloop.counter }}</div>
+            <div class="phase-info">
+              <h3 class="phase-title">{{ phase.name }}</h3>
+              <p class="phase-description">{{ phase.description }}</p>
+              <div class="phase-duration">
+                <i class="fas fa-clock"></i>
+                <span>{{ phase.duration }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="phase-skills">
+            {% for skill in phase.skills.all %}
+              <div class="skill-item {% if skill.id in user_progress %}skill-{{ user_progress|lookup:skill.id }}{% endif %}" 
+                   data-skill-id="{{ skill.id }}">
+                <div class="skill-content">
+                  <div class="skill-header">
+                    <h4 class="skill-name">
+                      {{ skill.name }}
+                      {% if skill.is_core %}
+                        <span class="core-badge">Core</span>
+                      {% else %}
+                        <span class="optional-badge">Optional</span>
+                      {% endif %}
+                    </h4>
+                    {% if user.is_authenticated %}
+                      <div class="skill-status">
+                        <button class="status-btn" data-status="not_started" title="Not Started">
+                          <i class="fas fa-circle"></i>
+                        </button>
+                        <button class="status-btn" data-status="in_progress" title="In Progress">
+                          <i class="fas fa-play-circle"></i>
+                        </button>
+                        <button class="status-btn" data-status="completed" title="Completed">
+                          <i class="fas fa-check-circle"></i>
+                        </button>
+                      </div>
+                    {% endif %}
+                  </div>
+                  {% if skill.description %}
+                    <p class="skill-description">{{ skill.description }}</p>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="path-actions animate-element" data-delay="{{ phases.count|add:500 }}">
+      <a href="{% url 'roadmap:home' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i>
+        Back to Roadmaps
+      </a>
+      {% if user.is_authenticated %}
+        <button class="btn btn-primary" id="reset-progress">
+          <i class="fas fa-redo"></i>
+          Reset Progress
+        </button>
+      {% else %}
+        <a href="{% url 'accounts.signup' %}" class="btn btn-primary">
+          <i class="fas fa-user-plus"></i>
+          Sign Up to Track Progress
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+// Progress tracking functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const skillItems = document.querySelectorAll('.skill-item');
+  
+  skillItems.forEach(item => {
+    const statusBtns = item.querySelectorAll('.status-btn');
+    const skillId = item.dataset.skillId;
+    
+    statusBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const status = this.dataset.status;
+        updateSkillProgress(skillId, status, item);
+      });
+    });
+  });
+  
+  function updateSkillProgress(skillId, status, skillItem) {
+    fetch(`/roadmap/api/skill/${skillId}/progress/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+      },
+      body: `status=${status}`
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Update UI to reflect new status
+        skillItem.className = `skill-item skill-${status}`;
+        
+        // Update status buttons
+        const statusBtns = skillItem.querySelectorAll('.status-btn');
+        statusBtns.forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.dataset.status === status) {
+            btn.classList.add('active');
+          }
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error updating progress:', error);
+    });
+  }
+});
+</script>
+{% endblock content %}

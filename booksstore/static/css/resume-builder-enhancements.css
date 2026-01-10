@@ -1,0 +1,516 @@
+/* ========================================
+   RESUME BUILDER ENHANCEMENTS
+   Modern UI with lightweight animations
+======================================== */
+
+/* ========================================
+   KEYFRAME ANIMATIONS
+======================================== */
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 var(--accent-glow);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 20px transparent;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ========================================
+   ENHANCED DOCUMENT CARDS
+======================================== */
+
+.document-card {
+  position: relative;
+  cursor: pointer;
+  will-change: transform;
+}
+
+.document-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-hover));
+  transform: scaleX(0);
+  transition: transform var(--transition-smooth);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.document-card:hover::before {
+  transform: scaleX(1);
+}
+
+.document-card .card-overlay {
+  border-radius: var(--radius-xl);
+}
+
+.document-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: var(--accent-primary);
+  box-shadow: 
+    var(--shadow-lg),
+    0 0 30px var(--accent-glow-subtle);
+}
+
+.document-card:hover .card-overlay {
+  opacity: 0.1;
+}
+
+.document-card:hover .actions-toggle {
+  opacity: 1 !important;
+  transform: scale(1.1);
+}
+
+/* ========================================
+   SECTION ICONS WITH ANIMATIONS
+======================================== */
+
+.section-icon {
+  position: relative;
+  overflow: hidden;
+}
+
+.section-icon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left var(--transition-smooth);
+}
+
+.section-icon:hover::before {
+  left: 100%;
+}
+
+/* ========================================
+   ENHANCED DROPDOWNS
+======================================== */
+
+.document-dropdown {
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-secondary);
+}
+
+.document-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  right: 16px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid var(--bg-elevated);
+}
+
+.dropdown-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.dropdown-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--accent-glow-subtle), transparent);
+  transition: left var(--transition-fast);
+}
+
+.dropdown-item:hover::before {
+  left: 100%;
+}
+
+.dropdown-item:hover {
+  color: var(--text-primary) !important;
+  background: var(--accent-subtle) !important;
+  transform: translateX(4px);
+}
+
+.dropdown-item.delete-document-btn:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: var(--error) !important;
+}
+
+/* ========================================
+   EMPTY STATE ENHANCEMENTS
+======================================== */
+
+.empty-state {
+  position: relative;
+  overflow: hidden;
+}
+
+.empty-state::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, var(--accent-glow-subtle) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, var(--accent-glow-subtle) 0%, transparent 50%);
+  opacity: 0.3;
+  animation: pulse 4s ease-in-out infinite;
+}
+
+.empty-icon {
+  position: relative;
+  overflow: hidden;
+}
+
+.empty-icon::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  animation: shimmer 2s infinite;
+}
+
+/* ========================================
+   MODAL ENHANCEMENTS
+======================================== */
+
+.modal {
+  backdrop-filter: blur(8px);
+}
+
+.modal-content {
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--error), #dc2626);
+}
+
+.modal-icon {
+  animation: bounceIn 0.6s ease-out 0.2s both;
+}
+
+.modal-actions .btn {
+  min-width: 120px;
+}
+
+/* ========================================
+   DOCUMENT COUNT BADGES
+======================================== */
+
+.document-count {
+  position: relative;
+  overflow: hidden;
+  animation: fadeInScale 0.4s ease-out;
+}
+
+.document-count::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left var(--transition-smooth);
+}
+
+.document-count:hover::before {
+  left: 100%;
+}
+
+/* ========================================
+   LOADING STATES
+======================================== */
+
+.document-card.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.document-card.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  border: 2px solid var(--accent-primary);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  z-index: 10;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========================================
+   ENHANCED BUTTONS
+======================================== */
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    var(--shadow-md),
+    0 0 20px var(--accent-glow-subtle);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-1px);
+}
+
+.btn-ghost:hover {
+  background: var(--bg-elevated);
+  transform: translateY(-1px);
+}
+
+/* ========================================
+   STAGGERED ANIMATIONS
+======================================== */
+
+.document-card:nth-child(1) { animation-delay: 0.1s; }
+.document-card:nth-child(2) { animation-delay: 0.2s; }
+.document-card:nth-child(3) { animation-delay: 0.3s; }
+.document-card:nth-child(4) { animation-delay: 0.4s; }
+.document-card:nth-child(5) { animation-delay: 0.5s; }
+.document-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* ========================================
+   RESPONSIVE ENHANCEMENTS
+======================================== */
+
+@media (max-width: 768px) {
+  .documents-grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-4) !important;
+  }
+  
+  .dashboard-header {
+    flex-direction: column !important;
+    gap: var(--space-4) !important;
+    text-align: center !important;
+  }
+  
+  .section-header {
+    flex-direction: column !important;
+    gap: var(--space-3) !important;
+    text-align: center !important;
+  }
+  
+  .document-card {
+    padding: var(--space-5) !important;
+  }
+  
+  .document-card:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+}
+
+@media (max-width: 480px) {
+  .document-quick-actions {
+    flex-direction: column !important;
+    gap: var(--space-2) !important;
+  }
+  
+  .modal-content {
+    width: 95% !important;
+    padding: var(--space-6) !important;
+  }
+  
+  .modal-actions {
+    flex-direction: column !important;
+    gap: var(--space-3) !important;
+  }
+  
+  .modal-actions .btn {
+    width: 100%;
+  }
+  
+  .document-dropdown {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translate(-50%, -50%) scale(0.95) !important;
+    min-width: 280px !important;
+    max-width: 90vw !important;
+  }
+  
+  .document-dropdown.show {
+    transform: translate(-50%, -50%) scale(1) !important;
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY ENHANCEMENTS
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .document-card:hover {
+    transform: none;
+  }
+  
+  .empty-icon::after {
+    display: none;
+  }
+  
+  .section-icon::before {
+    display: none;
+  }
+}
+
+/* Focus styles for keyboard navigation */
+.document-card:focus-visible,
+.dropdown-item:focus-visible,
+.delete-document-btn:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .document-card {
+    border-width: 2px;
+  }
+  
+  .document-card:hover {
+    border-width: 3px;
+  }
+  
+  .card-overlay {
+    display: none;
+  }
+}
+
+/* ========================================
+   PERFORMANCE OPTIMIZATIONS
+======================================== */
+
+.document-card,
+.dropdown-menu,
+.modal-content {
+  will-change: transform;
+}
+
+.document-card:not(:hover) {
+  will-change: auto;
+}
+
+/* GPU acceleration for smooth animations */
+.document-card,
+.card-overlay,
+.dropdown-menu,
+.modal {
+  transform: translateZ(0);
+}

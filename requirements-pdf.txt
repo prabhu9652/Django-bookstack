@@ -1,0 +1,23 @@
+# PDF Export Requirements for Resume Builder
+# These are optional dependencies for full PDF export functionality
+# Install with: pip install -r requirements-pdf.txt
+
+# Core PDF generation
+weasyprint>=60.0
+
+# WeasyPrint dependencies (may need system libraries)
+cffi>=1.15.0
+pydyf>=0.8.0
+cssselect2>=0.7.0
+tinycss2>=1.2.0
+fonttools[woff]>=4.38.0
+pyphen>=0.14.0
+
+# System library requirements (install via system package manager):
+# macOS: brew install pango
+# Ubuntu/Debian: sudo apt-get install libpango-1.0-0 libharfbuzz0b libpangoft2-1.0-0
+# CentOS/RHEL: sudo yum install pango harfbuzz
+
+# Alternative PDF libraries (if WeasyPrint doesn't work)
+# reportlab>=4.0.0
+# xhtml2pdf>=0.2.8

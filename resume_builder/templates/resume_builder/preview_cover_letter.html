@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="padding: var(--space-8) 0;">
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-8);">
+    <div>
+      <h1 style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-2);">
+        Cover Letter Preview
+      </h1>
+      <p style="color: var(--text-secondary);">
+        {{ cover_letter.title }}
+      </p>
+    </div>
+    <div style="display: flex; gap: var(--space-3);">
+      <a href="{% url 'resume_builder:edit_cover_letter' cover_letter.id %}" class="btn btn-secondary">
+        <i class="fas fa-edit"></i>
+        Edit
+      </a>
+      <a href="{% url 'resume_builder:download_cover_letter' cover_letter.id %}" class="btn btn-primary">
+        <i class="fas fa-download"></i>
+        Download
+      </a>
+    </div>
+  </div>
+
+  <!-- Preview -->
+  <div class="card" style="padding: var(--space-8); background: white; color: #000;">
+    <div style="max-width: 600px; margin: 0 auto; font-family: 'Arial', sans-serif; line-height: 1.6;">
+      <!-- Header -->
+      <div style="text-align: right; margin-bottom: 30px;">
+        <div style="font-weight: bold; font-size: 16px;">{{ cover_letter.full_name }}</div>
+        <div style="font-size: 14px;">{{ cover_letter.email }}</div>
+        {% if cover_letter.phone %}<div style="font-size: 14px;">{{ cover_letter.phone }}</div>{% endif %}
+        {% if cover_letter.location %}<div style="font-size: 14px;">{{ cover_letter.location }}</div>{% endif %}
+      </div>
+      
+      <!-- Date -->
+      <div style="margin-bottom: 30px;">
+        <div style="font-size: 14px;">{{ "now"|date:"F d, Y" }}</div>
+      </div>
+      
+      <!-- Company Info -->
+      <div style="margin-bottom: 30px;">
+        {% if cover_letter.hiring_manager %}
+        <div style="font-size: 14px; font-weight: bold;">{{ cover_letter.hiring_manager }}</div>
+        {% endif %}
+        <div style="font-size: 14px; font-weight: bold;">{{ cover_letter.company_name }}</div>
+      </div>
+      
+      <!-- Subject -->
+      <div style="margin-bottom: 20px;">
+        <strong>Re: {{ cover_letter.position_title }}</strong>
+      </div>
+      
+      <!-- Content -->
+      <div style="white-space: pre-line; margin-bottom: 30px; font-size: 14px; line-height: 1.6;">{{ cover_letter.content }}</div>
+      
+      <!-- Signature -->
+      <div style="font-size: 14px;">
+        <div>Sincerely,</div>
+        <div style="margin-top: 20px; font-weight: bold;">{{ cover_letter.full_name }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back Button -->
+  <div style="text-align: center; margin-top: var(--space-8);">
+    <a href="{% url 'resume_builder:edit_cover_letter' cover_letter.id %}" class="btn btn-ghost">
+      <i class="fas fa-arrow-left"></i>
+      Back to Editor
+    </a>
+  </div>
+</div>
+{% endblock %}
