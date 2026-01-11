@@ -124,7 +124,11 @@
             <!-- Book Cover -->
             <div class="book-cover">
               {% if book.cover %}
-                <img src="{{ book.cover.url }}" alt="{{ book.name }}" loading="lazy">
+                <img src="{{ book.cover.url }}" 
+                     alt="{{ book.name }}" 
+                     loading="lazy"
+                     decoding="async"
+                     fetchpriority="{% if forloop.counter <= 4 %}high{% else %}low{% endif %}">
               {% else %}
                 <div class="book-cover-placeholder">
                   <i class="fas fa-file-code"></i>

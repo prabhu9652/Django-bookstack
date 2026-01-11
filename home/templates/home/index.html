@@ -85,7 +85,11 @@
       <div class="book-card" data-book-url="{% url 'books.show' book.id %}">
         <div class="book-cover">
           {% if book.cover %}
-            <img src="{{ book.cover.url }}" alt="{{ book.name }}" loading="lazy">
+            <img src="{{ book.cover.url }}" 
+                 alt="{{ book.name }}" 
+                 loading="{% if forloop.counter <= 2 %}eager{% else %}lazy{% endif %}"
+                 decoding="async"
+                 fetchpriority="{% if forloop.counter <= 2 %}high{% else %}low{% endif %}">
           {% else %}
             <div class="book-cover-placeholder">
               <i class="fas fa-file-code"></i>

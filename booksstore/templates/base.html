@@ -12,6 +12,10 @@
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    
+    <!-- DNS prefetch for media files -->
+    <link rel="dns-prefetch" href="{{ request.scheme }}://{{ request.get_host }}">
     
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -25,8 +29,14 @@
     <!-- Enterprise Authentication Styles -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/auth-enterprise.css' %}?v=20260111-enterprise">
     
+    <!-- Image Optimization Styles -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/image-optimization.css' %}?v=20260111-imgopt">
+    
     <!-- Shared Library Management -->
     <script src="{% static 'js/library-manager.js' %}" defer></script>
+    
+    <!-- Image Loading Optimization -->
+    <script src="{% static 'js/image-loader.js' %}" defer></script>
     
     <!-- Enterprise Authentication JavaScript -->
     <script src="{% static 'js/auth-enterprise.js' %}" defer></script>
