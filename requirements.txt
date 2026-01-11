@@ -11,18 +11,31 @@ psycopg2-binary>=2.9.0
 
 # PDF Generation - WeasyPrint (Production-grade)
 weasyprint>=60.0
-# WeasyPrint dependencies (automatically installed)
-# - pydyf
-# - pyphen
-# - tinycss2
-# - cssselect2
-# - fonttools
-# - Pillow (already listed above)
 
 # Additional utilities
 python-dateutil>=2.8.0
 
-# Note: WeasyPrint may require system libraries on some platforms:
-# macOS: brew install pango libffi
-# Ubuntu/Debian: apt-get install libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
-# See: https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#installation
+# =============================================================================
+# IMPORTANT: WeasyPrint System Dependencies
+# =============================================================================
+# WeasyPrint requires system-level libraries that CANNOT be installed via pip.
+# These must be installed on the server/container OS.
+#
+# For Docker (Debian/Ubuntu-based images):
+#   apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 \
+#     libharfbuzz0b libfribidi0 libgdk-pixbuf2.0-0 libffi8 libcairo2 \
+#     libgirepository-1.0-1 gir1.2-pango-1.0 shared-mime-info \
+#     fonts-liberation fonts-dejavu-core
+#
+# For Ubuntu/Debian servers:
+#   sudo apt-get install libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 \
+#     libffi-dev shared-mime-info
+#
+# For macOS:
+#   brew install pango libffi cairo gdk-pixbuf
+#
+# For Alpine Linux:
+#   apk add pango cairo gdk-pixbuf font-noto
+#
+# See: https://doc.courtbouillon.org/weasyprint/stable/first_steps.html
+# =============================================================================
