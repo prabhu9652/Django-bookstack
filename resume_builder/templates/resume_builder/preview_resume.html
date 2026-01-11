@@ -7,7 +7,7 @@
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6); flex-wrap: wrap; gap: var(--space-4);">
     <div>
       <h1 style="font-size: var(--font-size-2xl); font-weight: 700; color: var(--text-primary);">Resume Preview</h1>
-      <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">{{ resume.title }}</p>
+      <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">{{ resume.title }} • Template: {{ resume.template.name }}</p>
     </div>
     <div style="display: flex; gap: var(--space-3);">
       <a href="{% url 'resume_builder:edit_resume' resume.id %}" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit</a>
@@ -18,6 +18,181 @@
 
   <!-- Resume Preview -->
   <div class="resume-preview-wrapper">
+    
+    {% if resume.template.slug == 'modern' %}
+    <!-- ==================== MODERN TEMPLATE ==================== -->
+    <div class="resume-paper resume-modern" id="resumeContent" style="--primary-color: {{ resume.primary_color|default:'#2d3748' }};">
+      <!-- HEADER - Dark, clean -->
+      <header class="modern-header">
+        <h1 class="modern-name">{{ resume.full_name }}</h1>
+        <p class="modern-role">{{ resume.role_title|default:resume.get_role_display }}</p>
+        <div class="modern-contact">
+          {% if resume.email %}<span>✉ {{ resume.email }}</span>{% endif %}
+          {% if resume.phone %}<span>✆ {{ resume.phone }}</span>{% endif %}
+          {% if resume.location or resume.address %}<span>⌂ {{ resume.location|default:resume.address }}</span>{% endif %}
+        </div>
+      </header>
+
+      <!-- TWO COLUMN - Main left, Sidebar right -->
+      <div class="modern-body">
+        <main class="modern-main">
+          {% if resume.summary %}
+          <section class="modern-section">
+            <h2 class="modern-section-title">Summary</h2>
+            <p class="modern-text">{{ resume.summary }}</p>
+          </section>
+          {% endif %}
+
+          {% if resume.education %}
+          <section class="modern-section">
+            <h2 class="modern-section-title">Education</h2>
+            {% for edu in resume.education %}
+              <div class="modern-edu">
+                <div class="modern-edu-header">
+                  <span class="modern-edu-degree">{{ edu.degree }}{% if edu.field %}, {{ edu.field }}{% endif %}</span>
+                  <span class="modern-edu-date">{{ edu.graduation_date }}</span>
+                </div>
+                <div class="modern-edu-school">{{ edu.school }}</div>
+              </div>
+            {% endfor %}
+          </section>
+          {% endif %}
+
+          {% if resume.experience %}
+          <section class="modern-section">
+            <h2 class="modern-section-title">Employment</h2>
+            {% for exp in resume.experience %}
+              <div class="modern-exp">
+                <div class="modern-exp-header">
+                  <span class="modern-exp-role">{{ exp.role }}</span>
+                  <span class="modern-exp-date">{{ exp.start_date }} - {{ exp.end_date }}</span>
+                </div>
+                <div class="modern-exp-company">{{ exp.company }}</div>
+                {% if exp.bullets %}
+                <ul class="modern-bullets">
+                  {% for bullet in exp.bullets %}<li>{{ bullet|safe }}</li>{% endfor %}
+                </ul>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </section>
+          {% endif %}
+        </main>
+
+        <aside class="modern-sidebar">
+          {% if resume.linkedin %}
+          <section class="modern-sidebar-section">
+            <h3 class="modern-sidebar-title">LinkedIn</h3>
+            <p class="modern-sidebar-text">{{ resume.linkedin }}</p>
+          </section>
+          {% endif %}
+
+          <section class="modern-sidebar-section">
+            <h3 class="modern-sidebar-title">Skills</h3>
+            <ul class="modern-skills">
+              {% for skill in resume.skills %}<li>{{ skill }}</li>{% endfor %}
+            </ul>
+          </section>
+          
+          {% if resume.languages %}
+          <section class="modern-sidebar-section">
+            <h3 class="modern-sidebar-title">Languages</h3>
+            <ul class="modern-skills">
+              {% for lang in resume.languages %}<li>{{ lang }}</li>{% endfor %}
+            </ul>
+          </section>
+          {% endif %}
+        </aside>
+      </div>
+    </div>
+
+    {% elif resume.template.slug == 'executive' %}
+    <!-- ==================== EXECUTIVE TEMPLATE ==================== -->
+    <div class="resume-paper resume-executive" id="resumeContent" style="--primary-color: {{ resume.primary_color|default:'#81c9c5' }};">
+      <!-- HEADER - Bold name, stacked contact -->
+      <header class="exec-header">
+        <h1 class="exec-name">{{ resume.full_name|upper }}</h1>
+        <p class="exec-role">{{ resume.role_title|default:resume.get_role_display }}</p>
+        <div class="exec-contact">
+          {% if resume.email %}<div>✉ {{ resume.email }}</div>{% endif %}
+          {% if resume.phone %}<div>✆ {{ resume.phone }}</div>{% endif %}
+          {% if resume.location or resume.address %}<div>⌂ {{ resume.location|default:resume.address }}</div>{% endif %}
+          {% if resume.linkedin %}<div>in {{ resume.linkedin }}</div>{% endif %}
+        </div>
+      </header>
+
+      <!-- TWO COLUMN - Sidebar left with accent bars -->
+      <div class="exec-body">
+        <aside class="exec-sidebar">
+          <section class="exec-sidebar-section">
+            <h3 class="exec-sidebar-heading">SKILLS</h3>
+            <ul class="exec-skills">
+              {% for skill in resume.skills %}
+                <li><span class="exec-bar"></span>{{ skill }}</li>
+              {% endfor %}
+            </ul>
+          </section>
+          
+          {% if resume.languages %}
+          <section class="exec-sidebar-section">
+            <h3 class="exec-sidebar-heading">LANGUAGES</h3>
+            <ul class="exec-skills">
+              {% for lang in resume.languages %}
+                <li><span class="exec-bar"></span>{{ lang }}</li>
+              {% endfor %}
+            </ul>
+          </section>
+          {% endif %}
+        </aside>
+
+        <main class="exec-main">
+          {% if resume.summary %}
+          <section class="exec-section">
+            <h2 class="exec-section-heading"><span class="exec-badge">SUMMARY</span></h2>
+            <p class="exec-text">{{ resume.summary }}</p>
+          </section>
+          {% endif %}
+
+          {% if resume.education %}
+          <section class="exec-section">
+            <h2 class="exec-section-heading"><span class="exec-badge">EDUCATION</span></h2>
+            {% for edu in resume.education %}
+              <div class="exec-edu">
+                <div class="exec-edu-header">
+                  <span class="exec-edu-degree">{{ edu.degree }}{% if edu.field %}, {{ edu.field }}{% endif %}</span>
+                  <span class="exec-edu-date">{{ edu.graduation_date }}</span>
+                </div>
+                <div class="exec-edu-school">{{ edu.school }}</div>
+              </div>
+            {% endfor %}
+          </section>
+          {% endif %}
+
+          {% if resume.experience %}
+          <section class="exec-section">
+            <h2 class="exec-section-heading"><span class="exec-badge">EMPLOYMENT</span></h2>
+            {% for exp in resume.experience %}
+              <div class="exec-exp">
+                <div class="exec-exp-header">
+                  <span class="exec-exp-role">{{ exp.role }}</span>
+                  <span class="exec-exp-date">{{ exp.start_date }} - {{ exp.end_date }}</span>
+                </div>
+                <div class="exec-exp-company">{{ exp.company }}</div>
+                {% if exp.bullets %}
+                <ul class="exec-bullets">
+                  {% for bullet in exp.bullets %}<li>{{ bullet|safe }}</li>{% endfor %}
+                </ul>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </section>
+          {% endif %}
+        </main>
+      </div>
+    </div>
+
+    {% else %}
+    <!-- ==================== PROFESSIONAL TEMPLATE (Default) ==================== -->
     <div class="resume-paper" id="resumeContent" style="--primary-color: {{ resume.primary_color|default:'#4a9d9a' }};">
       
       <!-- HEADER with Photo -->
@@ -116,6 +291,7 @@
         </main>
       </div>
     </div>
+    {% endif %}
   </div>
 
   <div style="text-align: center; margin-top: var(--space-6);">
@@ -277,11 +453,380 @@
   .resume-body { flex-direction: column; }
   .resume-sidebar { width: 100%; border-right: none; border-bottom: 1px solid #e5e7eb; }
 }
+
+/* ==================== MODERN TEMPLATE STYLES ==================== */
+.resume-modern .modern-header {
+  background: var(--primary-color);
+  color: #fff;
+  padding: 28px 36px;
+}
+
+.resume-modern .modern-name {
+  font-size: 26pt;
+  font-weight: 400;
+  margin: 0 0 4px 0;
+  color: #fff;
+}
+
+.resume-modern .modern-role {
+  font-size: 12pt;
+  font-weight: 300;
+  margin: 0 0 12px 0;
+  color: rgba(255,255,255,0.85);
+}
+
+.resume-modern .modern-contact {
+  display: flex;
+  gap: 20px;
+  font-size: 9pt;
+  color: rgba(255,255,255,0.8);
+}
+
+.resume-modern .modern-body {
+  display: flex;
+  min-height: calc(297mm - 120px);
+}
+
+.resume-modern .modern-main {
+  flex: 1;
+  padding: 24px 28px;
+  border-right: 1px solid #e5e7eb;
+}
+
+.resume-modern .modern-section {
+  margin-bottom: 24px;
+}
+
+.resume-modern .modern-section-title {
+  font-size: 14pt;
+  font-weight: 400;
+  color: #333;
+  margin: 0 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.resume-modern .modern-text {
+  font-size: 10pt;
+  color: #444;
+  line-height: 1.6;
+  text-align: justify;
+  margin: 0;
+}
+
+.resume-modern .modern-edu {
+  margin-bottom: 12px;
+}
+
+.resume-modern .modern-edu-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.resume-modern .modern-edu-degree {
+  font-weight: 600;
+  font-size: 10.5pt;
+  color: #333;
+}
+
+.resume-modern .modern-edu-date {
+  font-size: 9pt;
+  color: #666;
+}
+
+.resume-modern .modern-edu-school {
+  font-size: 9.5pt;
+  color: var(--primary-color);
+}
+
+.resume-modern .modern-exp {
+  margin-bottom: 18px;
+}
+
+.resume-modern .modern-exp-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.resume-modern .modern-exp-role {
+  font-weight: 600;
+  font-size: 10.5pt;
+  color: #333;
+}
+
+.resume-modern .modern-exp-date {
+  font-size: 9pt;
+  color: #666;
+}
+
+.resume-modern .modern-exp-company {
+  font-size: 9.5pt;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+}
+
+.resume-modern .modern-bullets {
+  margin: 0;
+  padding-left: 16px;
+  list-style-type: disc;
+}
+
+.resume-modern .modern-bullets li {
+  font-size: 9.5pt;
+  color: #444;
+  margin-bottom: 5px;
+  line-height: 1.5;
+}
+
+.resume-modern .modern-sidebar {
+  width: 180px;
+  background: #f8f9fa;
+  padding: 24px 18px;
+}
+
+.resume-modern .modern-sidebar-section {
+  margin-bottom: 20px;
+}
+
+.resume-modern .modern-sidebar-title {
+  font-size: 11pt;
+  font-weight: 400;
+  color: var(--primary-color);
+  margin: 0 0 10px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.resume-modern .modern-sidebar-text {
+  font-size: 9pt;
+  color: #666;
+  margin: 0;
+  word-break: break-all;
+}
+
+.resume-modern .modern-skills {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.resume-modern .modern-skills li {
+  font-size: 9.5pt;
+  color: #444;
+  padding: 6px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.resume-modern .modern-skills li:last-child {
+  border-bottom: none;
+}
+
+/* ==================== EXECUTIVE TEMPLATE STYLES ==================== */
+.resume-executive .exec-header {
+  background: var(--primary-color);
+  color: #fff;
+  padding: 28px 36px;
+}
+
+.resume-executive .exec-name {
+  font-size: 30pt;
+  font-weight: 700;
+  letter-spacing: 3px;
+  margin: 0 0 4px 0;
+  color: #fff;
+}
+
+.resume-executive .exec-role {
+  font-size: 12pt;
+  font-weight: 400;
+  margin: 0 0 14px 0;
+  color: #fff;
+}
+
+.resume-executive .exec-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 9pt;
+  color: rgba(255,255,255,0.9);
+}
+
+.resume-executive .exec-body {
+  display: flex;
+  min-height: calc(297mm - 140px);
+}
+
+.resume-executive .exec-sidebar {
+  width: 180px;
+  background: #f5f5f5;
+  padding: 24px 18px;
+}
+
+.resume-executive .exec-sidebar-section {
+  margin-bottom: 20px;
+}
+
+.resume-executive .exec-sidebar-heading {
+  font-size: 10pt;
+  font-weight: 700;
+  color: #333;
+  letter-spacing: 1px;
+  margin: 0 0 14px 0;
+}
+
+.resume-executive .exec-skills {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.resume-executive .exec-skills li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 9.5pt;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.resume-executive .exec-bar {
+  width: 8px;
+  height: 8px;
+  background: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.resume-executive .exec-main {
+  flex: 1;
+  padding: 24px 28px;
+}
+
+.resume-executive .exec-section {
+  margin-bottom: 24px;
+}
+
+.resume-executive .exec-section-heading {
+  font-size: 11pt;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+}
+
+.resume-executive .exec-badge {
+  background: var(--primary-color);
+  color: #fff;
+  padding: 4px 12px;
+  letter-spacing: 1px;
+}
+
+.resume-executive .exec-text {
+  font-size: 10pt;
+  color: #333;
+  line-height: 1.55;
+  text-align: justify;
+  margin: 0;
+}
+
+.resume-executive .exec-edu {
+  margin-bottom: 12px;
+}
+
+.resume-executive .exec-edu-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.resume-executive .exec-edu-degree {
+  font-weight: 600;
+  font-size: 10.5pt;
+  color: #333;
+}
+
+.resume-executive .exec-edu-date {
+  font-size: 9pt;
+  color: #666;
+}
+
+.resume-executive .exec-edu-school {
+  font-size: 9.5pt;
+  color: var(--primary-color);
+}
+
+.resume-executive .exec-exp {
+  margin-bottom: 18px;
+}
+
+.resume-executive .exec-exp-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.resume-executive .exec-exp-role {
+  font-weight: 700;
+  font-size: 10.5pt;
+  color: #333;
+}
+
+.resume-executive .exec-exp-date {
+  font-size: 9pt;
+  color: #555;
+}
+
+.resume-executive .exec-exp-company {
+  font-size: 9.5pt;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.resume-executive .exec-bullets {
+  margin: 0;
+  padding-left: 16px;
+  list-style-type: disc;
+}
+
+.resume-executive .exec-bullets li {
+  font-size: 9.5pt;
+  color: #333;
+  margin-bottom: 6px;
+  line-height: 1.5;
+  text-align: justify;
+}
+
+/* Responsive for Modern & Executive */
+@media (max-width: 900px) {
+  .resume-modern .modern-body,
+  .resume-executive .exec-body {
+    flex-direction: column;
+  }
+  
+  .resume-modern .modern-main,
+  .resume-executive .exec-main {
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .resume-modern .modern-sidebar,
+  .resume-executive .exec-sidebar {
+    width: 100%;
+  }
+  
+  .resume-modern .modern-name {
+    font-size: 22pt;
+  }
+  
+  .resume-executive .exec-name {
+    font-size: 24pt;
+    letter-spacing: 1px;
+  }
+}
 </style>
 
 <script>
 // Convert **text** to <strong>text</strong> for bold formatting
-document.querySelectorAll('.exp-bullets li').forEach(li => {
+document.querySelectorAll('.exp-bullets li, .modern-bullets li, .exec-bullets li').forEach(li => {
   li.innerHTML = li.innerHTML.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 });
 </script>

@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/roadmap/migrations/0005_add_external_url_to_journey_skill.py
+# hypothesis_version: 6.150.0
+
+[500, 'Journey Tool', 'Journey Tools', 'JourneySkillProgress', 'display_order', 'external_url', 'journeyskill', 'ordering', 'roadmap', 'roadmap_path', 'verbose_name', 'verbose_name_plural']

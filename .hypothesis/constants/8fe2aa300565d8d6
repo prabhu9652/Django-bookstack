@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/resume_builder/migrations/0003_add_profile_photo_and_color.py
+# hypothesis_version: 6.150.0
+
+['#4a9d9a', 'Full address', 'Header/accent color', 'address', 'primary_color', 'profile_photo', 'resume', 'resume_builder', 'resume_photos/', 'resumetemplate', 'skills']

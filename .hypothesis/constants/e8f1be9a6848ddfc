@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/books/migrations/0004_alter_book_cover_image.py
+# hypothesis_version: 6.150.0
+
+['book', 'book_images/', 'cover_image', 'movies']

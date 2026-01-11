@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/resume_builder/migrations/0001_initial.py
+# hypothesis_version: 6.150.0
+
+[100, 200, 254, '-updated_at', 'CoverLetter', 'CoverLetterTemplate', 'Creative', 'Formal', 'Friendly', 'ID', 'Minimal', 'Modern', 'My Cover Letter', 'My Resume', 'Professional', 'Resume', 'ResumeTemplate', 'category', 'company_name', 'content', 'cover_letters', 'created_at', 'creative', 'css_styles', 'description', 'education', 'email', 'experience', 'formal', 'friendly', 'full_name', 'hiring_manager', 'html_template', 'id', 'is_active', 'linkedin', 'location', 'minimal', 'modern', 'name', 'ordering', 'phone', 'position_title', 'professional', 'resumes', 'skills', 'slug', 'summary', 'template', 'title', 'tone', 'updated_at', 'user', 'website']

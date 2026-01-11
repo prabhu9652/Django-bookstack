@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/books/migrations/0007_book_author_category_parent.py
+# hypothesis_version: 6.150.0
+
+[255, 'author', 'book', 'category', 'movies', 'movies.category', 'parent', 'subcategories']

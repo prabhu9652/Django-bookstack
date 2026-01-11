@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/books/migrations/0002_review.py
+# hypothesis_version: 6.150.0
+
+[255, '0001_initial', 'Review', 'comment', 'date', 'id', 'movie', 'movies', 'movies.movie', 'user']

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import RoadmapPath, RoadmapPhase, RoadmapSkill, UserProgress, RoadmapHighlight
+from .models import RoadmapPath, RoadmapPhase, RoadmapSkill, UserProgress, RoadmapHighlight, JourneySkill
 
 
 class RoadmapHighlightInline(admin.TabularInline):
@@ -18,6 +18,14 @@ class RoadmapPhaseInline(admin.StackedInline):
     model = RoadmapPhase
     extra = 0
     fields = ('name', 'description', 'duration', 'order', 'is_active')
+
+
+class JourneySkillInline(admin.TabularInline):
+    """Inline for managing Journey Tools within RoadmapPath admin"""
+    model = JourneySkill
+    extra = 1
+    fields = ('name', 'icon_class', 'external_url', 'display_order', 'is_active')
+    ordering = ('display_order',)
 
 
 @admin.register(RoadmapPath)
@@ -40,7 +48,7 @@ class RoadmapPathAdmin(admin.ModelAdmin):
         }),
     )
     
-    inlines = [RoadmapHighlightInline, RoadmapPhaseInline]
+    inlines = [RoadmapHighlightInline, JourneySkillInline, RoadmapPhaseInline]
 
 
 @admin.register(RoadmapPhase)
@@ -77,3 +85,26 @@ class RoadmapHighlightAdmin(admin.ModelAdmin):
     list_filter = ('roadmap_path',)
     search_fields = ('title',)
     ordering = ('roadmap_path', 'order')
+
+
+@admin.register(JourneySkill)
+class JourneySkillAdmin(admin.ModelAdmin):
+    """Admin for managing Journey Tools (Start Your Journey section)"""
+    list_display = ('name', 'roadmap_path', 'icon_class', 'external_url', 'display_order', 'is_active')
+    list_filter = ('roadmap_path', 'is_active')
+    search_fields = ('name', 'external_url')
+    list_editable = ('display_order', 'is_active')
+    ordering = ('roadmap_path', 'display_order')
+    
+    fieldsets = (
+        ('Tool Information', {
+            'fields': ('roadmap_path', 'name', 'icon_class')
+        }),
+        ('External Resource', {
+            'fields': ('external_url',),
+            'description': 'Link to official documentation or learning resource'
+        }),
+        ('Display Settings', {
+            'fields': ('display_order', 'is_active')
+        }),
+    )

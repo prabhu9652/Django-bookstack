@@ -26,6 +26,14 @@ class ResumeTemplate(models.Model):
     # Color scheme
     primary_color = models.CharField(max_length=7, default='#4a9d9a', help_text='Primary color hex code')
     
+    # Template preview image
+    preview_image = models.ImageField(
+        upload_to='template_previews/',
+        blank=True,
+        null=True,
+        help_text='High-quality preview image of the template (recommended: 850x1100px)'
+    )
+    
     class Meta:
         ordering = ['category', 'name']
     

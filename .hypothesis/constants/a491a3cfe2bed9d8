@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/roadmap/tests.py
+# hypothesis_version: 6.150.0
+
+[100, 200, 404, 1000, '1 month', '12 months', '2 weeks', '3 months', '6 months', 'Content-Type', 'Docker', 'Empty Path', 'For property testing', 'Foundation', 'Foundation phase', 'Inactive Skill', 'JavaScript', 'Kubernetes', 'No skills', 'Phase 1', 'Python', 'Test Description', 'Test DevOps Path', 'Test Full Stack Path', 'Test Path', 'Test Phase', 'Test Skill', 'Test Subtitle', 'Test phase', 'application/json', 'beginner', 'display_order', 'empty-path', 'fab fa-docker', 'fab fa-js-square', 'fab fa-python', 'fas fa-check', 'fas fa-code', 'fas fa-dharmachakra', 'fas fa-flask', 'fas fa-question', 'fas fa-server', 'fas fa-test', 'fas fa-times', 'intermediate', 'journey_skills', 'name', 'non-existent', 'phases', 'roadmap:home', 'roadmap:path_detail', 'skills', 'slug', 'test-devops', 'test-fullstack', 'test-path']

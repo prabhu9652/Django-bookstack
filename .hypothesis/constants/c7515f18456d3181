@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/library/urls.py
+# hypothesis_version: 6.150.0
+
+['add/', 'debug/', 'library.add', 'library.debug', 'library.index', 'library.remove', 'remove/']

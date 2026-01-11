@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/resume_builder/admin.py
+# hypothesis_version: 6.150.0
+
+['Appearance', 'Preview Image', 'Template Content', 'category', 'classes', 'collapse', 'company_name', 'created_at', 'css_styles', 'description', 'fields', 'full_name', 'has_preview', 'html_template', 'is_active', 'name', 'position_title', 'preview_image', 'primary_color', 'slug', 'template', 'title', 'tone', 'updated_at', 'user', 'user__username']

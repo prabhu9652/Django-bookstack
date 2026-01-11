@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/books/migrations/0005_category_book_category.py
+# hypothesis_version: 6.150.0
+
+[100, 'Categories', 'Category', 'ID', 'book', 'books', 'category', 'description', 'id', 'movies', 'movies.category', 'name', 'slug', 'verbose_name_plural']

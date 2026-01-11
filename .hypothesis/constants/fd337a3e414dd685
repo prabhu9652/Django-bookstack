@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/accounts/views.py
+# hypothesis_version: 6.150.0
+
+[500, 'HTTP_USER_AGENT', 'POST', 'X-Requested-With', 'XMLHttpRequest', 'access_context', 'access_status', 'accounts.login', 'approved', 'approved_by', 'approved_users', 'error', 'form', 'home.index', 'message', 'password1', 'pending', 'pending_requests', 'pending_users', 'performed_by', 'reason', 'recent_logs', 'recent_requests', 'rejected', 'rejected_users', 'requested', 'success', 'user', 'username']

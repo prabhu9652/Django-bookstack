@@ -137,3 +137,39 @@ class RoadmapHighlight(models.Model):
     
     def __str__(self):
         return f"{self.roadmap_path.name} - {self.title}"
+
+
+class JourneySkill(models.Model):
+    """
+    Represents tools displayed in the 'Start Your Journey' section.
+    Each tool links to an external learning resource.
+    Managed entirely from Admin Panel - no progress tracking.
+    """
+    roadmap_path = models.ForeignKey(
+        RoadmapPath, 
+        on_delete=models.CASCADE, 
+        related_name='journey_skills'
+    )
+    name = models.CharField(max_length=100)
+    icon_class = models.CharField(
+        max_length=100, 
+        default='fas fa-code',
+        help_text='Font Awesome icon class (e.g., fab fa-aws, fab fa-docker)'
+    )
+    external_url = models.URLField(
+        max_length=500,
+        blank=True,
+        help_text='External URL to official documentation or learning resource'
+    )
+    display_order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['roadmap_path', 'display_order']
+        verbose_name = 'Journey Tool'
+        verbose_name_plural = 'Journey Tools'
+    
+    def __str__(self):
+        return f"{self.roadmap_path.name} - {self.name}"

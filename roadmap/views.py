@@ -3,7 +3,8 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.views.decorators.vary import vary_on_headers
-from .models import RoadmapPath, RoadmapPhase, UserProgress
+from django.utils import timezone
+from .models import RoadmapPath, RoadmapPhase, UserProgress, JourneySkill
 
 
 @never_cache
@@ -81,6 +82,12 @@ def path_detail(request, slug):
     
     remaining_count = total_skills - completed_count - in_progress_count
     
+    # Get journey tools for "Start Your Journey" section (external links only)
+    journey_skills = JourneySkill.objects.filter(
+        roadmap_path=roadmap_path,
+        is_active=True
+    ).order_by('display_order')
+    
     context = {
         'roadmap_path': roadmap_path,
         'phases': phases,
@@ -89,6 +96,7 @@ def path_detail(request, slug):
         'completed_count': completed_count,
         'in_progress_count': in_progress_count,
         'remaining_count': remaining_count,
+        'journey_skills': journey_skills,  # Dynamic tools for Start Your Journey
         'page_type': 'roadmap_detail',  # For state isolation
         'path_slug': slug,  # Explicit path identifier
     }

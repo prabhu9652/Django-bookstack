@@ -7,7 +7,7 @@
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6); flex-wrap: wrap; gap: var(--space-4);">
     <div>
       <h1 style="font-size: var(--font-size-2xl); font-weight: 700; color: var(--text-primary);">Cover Letter Preview</h1>
-      <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">{{ cover_letter.title }}</p>
+      <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">{{ cover_letter.title }} • Template: <strong style="color: var(--accent-primary);">{{ cover_letter.template.name }}</strong></p>
     </div>
     <div style="display: flex; gap: var(--space-3);">
       <a href="{% url 'resume_builder:edit_cover_letter' cover_letter.id %}" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit</a>
@@ -18,72 +18,139 @@
 
   <!-- Cover Letter Preview -->
   <div class="letter-preview-wrapper">
-    <div class="letter-paper" style="--primary-color: {{ cover_letter.primary_color|default:'#4a9d9a' }};">
-      
-      <!-- Header with colored bar -->
-      <header class="letter-header">
-        <div class="header-bar"></div>
-        <div class="header-content">
-          <h1 class="sender-name">{{ cover_letter.full_name }}</h1>
-          <div class="sender-contact">
-            {% if cover_letter.email %}<span>{{ cover_letter.email }}</span>{% endif %}
-            {% if cover_letter.phone %}<span>{{ cover_letter.phone }}</span>{% endif %}
-            {% if cover_letter.linkedin %}<span>{{ cover_letter.linkedin }}</span>{% endif %}
-          </div>
-          {% if cover_letter.address %}
-          <div class="sender-address">{{ cover_letter.address }}</div>
-          {% endif %}
+    
+    {% if cover_letter.template.slug == 'modern' %}
+    <!-- ==================== MODERN TEMPLATE ==================== -->
+    <div class="letter-paper letter-modern" style="--primary-color: {{ cover_letter.primary_color|default:'#2d3748' }};">
+      <header class="modern-letter-header">
+        <h1 class="modern-sender-name">{{ cover_letter.full_name }}</h1>
+        <div class="modern-sender-contact">
+          {% if cover_letter.email %}<span>{{ cover_letter.email }}</span>{% endif %}
+          {% if cover_letter.phone %}<span>{{ cover_letter.phone }}</span>{% endif %}
+          {% if cover_letter.linkedin %}<span>{{ cover_letter.linkedin }}</span>{% endif %}
+        </div>
+        {% if cover_letter.address %}
+        <div class="modern-sender-address">{{ cover_letter.address }}</div>
+        {% endif %}
+      </header>
+
+      <div class="modern-letter-body">
+        <div class="modern-date">{{ "now"|date:"F d, Y" }}</div>
+        
+        <div class="modern-recipient">
+          {% if cover_letter.hiring_manager %}<div class="modern-recipient-name">{{ cover_letter.hiring_manager }}</div>{% endif %}
+          <div class="modern-company-name">{{ cover_letter.company_name }}</div>
+          {% if cover_letter.company_address %}<div class="modern-company-address">{{ cover_letter.company_address }}</div>{% endif %}
+        </div>
+
+        <div class="modern-subject">
+          <strong>Re: Application for {{ cover_letter.position_title }}</strong>
+        </div>
+
+        <div class="modern-salutation">
+          Dear {% if cover_letter.hiring_manager %}{{ cover_letter.hiring_manager }}{% else %}Hiring Manager{% endif %},
+        </div>
+
+        <div class="modern-content">
+          {% if cover_letter.opening_paragraph %}<p>{{ cover_letter.opening_paragraph }}</p>{% endif %}
+          {% if cover_letter.body_paragraph %}<p>{{ cover_letter.body_paragraph|linebreaks }}</p>{% endif %}
+          {% if cover_letter.closing_paragraph %}<p>{{ cover_letter.closing_paragraph }}</p>{% endif %}
+        </div>
+
+        <div class="modern-closing">
+          <p>Sincerely,</p>
+          <div class="modern-signature">{{ cover_letter.full_name }}</div>
+        </div>
+      </div>
+    </div>
+
+    {% elif cover_letter.template.slug == 'creative' %}
+    <!-- ==================== CREATIVE TEMPLATE ==================== -->
+    <div class="letter-paper letter-creative" style="--primary-color: {{ cover_letter.primary_color|default:'#4a9d9a' }};">
+      <header class="creative-letter-header">
+        <h1 class="creative-sender-name">{{ cover_letter.full_name }}</h1>
+        <div class="creative-sender-contact">
+          {% if cover_letter.email %}<span>{{ cover_letter.email }}</span>{% endif %}
+          {% if cover_letter.phone %}<span>{{ cover_letter.phone }}</span>{% endif %}
+          {% if cover_letter.linkedin %}<span>{{ cover_letter.linkedin }}</span>{% endif %}
         </div>
       </header>
 
-      <!-- Date -->
-      <div class="letter-date">
-        {{ "now"|date:"F d, Y" }}
-      </div>
-
-      <!-- Recipient -->
-      <div class="recipient-info">
-        {% if cover_letter.hiring_manager %}<div class="recipient-name">{{ cover_letter.hiring_manager }}</div>{% endif %}
-        <div class="company-name">{{ cover_letter.company_name }}</div>
-        {% if cover_letter.company_address %}<div class="company-address">{{ cover_letter.company_address }}</div>{% endif %}
-      </div>
-
-      <!-- Subject -->
-      <div class="letter-subject">
-        <strong>Re: Application for {{ cover_letter.position_title }}</strong>
-      </div>
-
-      <!-- Salutation -->
-      <div class="letter-salutation">
-        Dear {% if cover_letter.hiring_manager %}{{ cover_letter.hiring_manager }}{% else %}Hiring Manager{% endif %},
-      </div>
-
-      <!-- Body -->
-      <div class="letter-body">
-        {% if cover_letter.opening_paragraph %}
-        <p>{{ cover_letter.opening_paragraph }}</p>
-        {% endif %}
+      <div class="creative-letter-body">
+        <div class="creative-date">{{ "now"|date:"F d, Y" }}</div>
         
-        {% if cover_letter.body_paragraph %}
-        <p>{{ cover_letter.body_paragraph|linebreaks }}</p>
-        {% endif %}
-        
-        {% if cover_letter.closing_paragraph %}
-        <p>{{ cover_letter.closing_paragraph }}</p>
-        {% endif %}
-        
-        {% if cover_letter.content and not cover_letter.opening_paragraph %}
-        <div style="white-space: pre-line;">{{ cover_letter.content }}</div>
-        {% endif %}
-      </div>
+        <div class="creative-recipient">
+          {% if cover_letter.hiring_manager %}<div class="creative-recipient-name">{{ cover_letter.hiring_manager }}</div>{% endif %}
+          <div class="creative-company-name">{{ cover_letter.company_name }}</div>
+          {% if cover_letter.company_address %}<div class="creative-company-address">{{ cover_letter.company_address }}</div>{% endif %}
+        </div>
 
-      <!-- Closing -->
-      <div class="letter-closing">
-        <p>Sincerely,</p>
-        <div class="signature">{{ cover_letter.full_name }}</div>
-      </div>
+        <div class="creative-subject">
+          <strong>Re: Application for {{ cover_letter.position_title }}</strong>
+        </div>
 
+        <div class="creative-salutation">
+          Dear {% if cover_letter.hiring_manager %}{{ cover_letter.hiring_manager }}{% else %}Hiring Manager{% endif %},
+        </div>
+
+        <div class="creative-content">
+          {% if cover_letter.opening_paragraph %}<p>{{ cover_letter.opening_paragraph }}</p>{% endif %}
+          {% if cover_letter.body_paragraph %}<p>{{ cover_letter.body_paragraph|linebreaks }}</p>{% endif %}
+          {% if cover_letter.closing_paragraph %}<p>{{ cover_letter.closing_paragraph }}</p>{% endif %}
+        </div>
+
+        <div class="creative-closing">
+          <p>Sincerely,</p>
+          <div class="creative-signature">{{ cover_letter.full_name }}</div>
+        </div>
+      </div>
     </div>
+
+    {% else %}
+    <!-- ==================== CLASSIC TEMPLATE (Default) ==================== -->
+    <div class="letter-paper letter-classic" style="--primary-color: {{ cover_letter.primary_color|default:'#1a1a1a' }};">
+      <header class="classic-letter-header">
+        <h1 class="classic-sender-name">{{ cover_letter.full_name }}</h1>
+        <div class="classic-sender-contact">
+          {% if cover_letter.email %}<span>{{ cover_letter.email }}</span>{% endif %}
+          {% if cover_letter.phone %}<span>{{ cover_letter.phone }}</span>{% endif %}
+          {% if cover_letter.linkedin %}<span>{{ cover_letter.linkedin }}</span>{% endif %}
+        </div>
+        {% if cover_letter.address %}
+        <div class="classic-sender-address">{{ cover_letter.address }}</div>
+        {% endif %}
+      </header>
+
+      <div class="classic-letter-body">
+        <div class="classic-date">{{ "now"|date:"F d, Y" }}</div>
+        
+        <div class="classic-recipient">
+          {% if cover_letter.hiring_manager %}<div class="classic-recipient-name">{{ cover_letter.hiring_manager }}</div>{% endif %}
+          <div class="classic-company-name">{{ cover_letter.company_name }}</div>
+          {% if cover_letter.company_address %}<div class="classic-company-address">{{ cover_letter.company_address }}</div>{% endif %}
+        </div>
+
+        <div class="classic-subject">
+          <strong>Re: Application for {{ cover_letter.position_title }}</strong>
+        </div>
+
+        <div class="classic-salutation">
+          Dear {% if cover_letter.hiring_manager %}{{ cover_letter.hiring_manager }}{% else %}Hiring Manager{% endif %},
+        </div>
+
+        <div class="classic-content">
+          {% if cover_letter.opening_paragraph %}<p>{{ cover_letter.opening_paragraph }}</p>{% endif %}
+          {% if cover_letter.body_paragraph %}<p>{{ cover_letter.body_paragraph|linebreaks }}</p>{% endif %}
+          {% if cover_letter.closing_paragraph %}<p>{{ cover_letter.closing_paragraph }}</p>{% endif %}
+        </div>
+
+        <div class="classic-closing">
+          <p>Sincerely,</p>
+          <div class="classic-signature">{{ cover_letter.full_name }}</div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
   </div>
 
   <div style="text-align: center; margin-top: var(--space-6);">
@@ -101,80 +168,197 @@
   width: 210mm; min-height: 297mm; background: #fff; color: #1a1a1a;
   font-family: 'Georgia', 'Times New Roman', serif; font-size: 11pt;
   line-height: 1.6; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-  padding: 0;
 }
 
-.letter-header {
-  position: relative;
-}
-
-.header-bar {
-  height: 8px; background: var(--primary-color);
-}
-
-.header-content {
-  padding: 30px 50px 20px;
+/* ==================== CLASSIC TEMPLATE ==================== */
+.letter-classic .classic-letter-header {
+  padding: 40px 50px 20px;
   border-bottom: 1px solid #e5e7eb;
 }
 
-.sender-name {
-  font-size: 24pt; font-weight: 700; color: var(--primary-color);
+.letter-classic .classic-sender-name {
+  font-size: 22pt; font-weight: 400; color: #1a1a1a;
+  margin: 0 0 8px 0; font-family: 'Georgia', serif;
+  letter-spacing: 0.5px;
+}
+
+.letter-classic .classic-sender-contact {
+  display: flex; flex-wrap: wrap; gap: 16px;
+  font-size: 10pt; color: #555;
+  font-family: 'Georgia', serif;
+}
+
+.letter-classic .classic-sender-address {
+  margin-top: 8px; font-size: 10pt; color: #666;
+}
+
+.letter-classic .classic-letter-body {
+  padding: 30px 50px 50px;
+}
+
+.letter-classic .classic-date {
+  font-size: 10.5pt; color: #333; margin-bottom: 24px;
+}
+
+.letter-classic .classic-recipient {
+  margin-bottom: 24px;
+}
+
+.letter-classic .classic-recipient-name { font-weight: 600; font-size: 11pt; }
+.letter-classic .classic-company-name { font-size: 11pt; color: #333; }
+.letter-classic .classic-company-address { font-size: 10pt; color: #666; margin-top: 4px; }
+
+.letter-classic .classic-subject {
+  margin-bottom: 24px; font-size: 11pt;
+}
+
+.letter-classic .classic-salutation {
+  margin-bottom: 20px; font-size: 11pt;
+}
+
+.letter-classic .classic-content p {
+  margin: 0 0 16px 0; text-align: justify;
+}
+
+.letter-classic .classic-closing {
+  margin-top: 30px;
+}
+
+.letter-classic .classic-closing p { margin: 0 0 30px 0; }
+
+.letter-classic .classic-signature {
+  font-weight: 400; font-size: 12pt; color: #1a1a1a;
+  font-family: 'Georgia', serif;
+  font-style: italic;
+}
+
+/* ==================== MODERN TEMPLATE ==================== */
+.letter-modern .modern-letter-header {
+  padding: 30px 50px 20px;
+  border-bottom: 3px solid var(--primary-color);
+}
+
+.letter-modern .modern-sender-name {
+  font-size: 24pt; font-weight: 600; color: var(--primary-color);
   margin: 0 0 8px 0; font-family: 'Segoe UI', Arial, sans-serif;
 }
 
-.sender-contact {
-  display: flex; flex-wrap: wrap; gap: 16px;
+.letter-modern .modern-sender-contact {
+  display: flex; flex-wrap: wrap; gap: 20px;
   font-size: 10pt; color: #555;
   font-family: 'Segoe UI', Arial, sans-serif;
 }
 
-.sender-address {
+.letter-modern .modern-sender-address {
   margin-top: 8px; font-size: 10pt; color: #666;
   font-family: 'Segoe UI', Arial, sans-serif;
 }
 
-.letter-date {
-  padding: 30px 50px 0; font-size: 10.5pt; color: #333;
-}
-
-.recipient-info {
-  padding: 20px 50px 0;
-}
-
-.recipient-name { font-weight: 600; font-size: 11pt; }
-.company-name { font-size: 11pt; color: #333; }
-.company-address { font-size: 10pt; color: #666; margin-top: 4px; }
-
-.letter-subject {
-  padding: 24px 50px 0; font-size: 11pt;
-}
-
-.letter-salutation {
-  padding: 24px 50px 0; font-size: 11pt;
-}
-
-.letter-body {
-  padding: 20px 50px;
-}
-
-.letter-body p {
-  margin: 0 0 16px 0; text-align: justify;
-}
-
-.letter-body p:last-child { margin-bottom: 0; }
-
-.letter-closing {
-  padding: 24px 50px 50px;
-}
-
-.letter-closing p { margin: 0 0 30px 0; }
-
-.signature {
-  font-weight: 600; font-size: 12pt;
-  color: var(--primary-color);
+.letter-modern .modern-letter-body {
+  padding: 30px 50px 50px;
   font-family: 'Segoe UI', Arial, sans-serif;
 }
 
+.letter-modern .modern-date {
+  font-size: 10pt; color: #666; margin-bottom: 20px;
+}
+
+.letter-modern .modern-recipient {
+  margin-bottom: 20px;
+}
+
+.letter-modern .modern-recipient-name { font-weight: 600; font-size: 11pt; }
+.letter-modern .modern-company-name { font-size: 11pt; color: #333; }
+.letter-modern .modern-company-address { font-size: 10pt; color: #666; margin-top: 4px; }
+
+.letter-modern .modern-subject {
+  margin-bottom: 20px; font-size: 11pt;
+  padding: 10px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.letter-modern .modern-salutation {
+  margin-bottom: 16px; font-size: 11pt;
+}
+
+.letter-modern .modern-content p {
+  margin: 0 0 14px 0; text-align: justify; line-height: 1.65;
+}
+
+.letter-modern .modern-closing {
+  margin-top: 28px;
+}
+
+.letter-modern .modern-closing p { margin: 0 0 24px 0; }
+
+.letter-modern .modern-signature {
+  font-weight: 600; font-size: 12pt; color: var(--primary-color);
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+</style>
+
+<style>
+/* ==================== CREATIVE TEMPLATE ==================== */
+.letter-creative .creative-letter-header {
+  background: var(--primary-color);
+  padding: 30px 50px;
+  color: #fff;
+}
+
+.letter-creative .creative-sender-name {
+  font-size: 26pt; font-weight: 700; color: #fff;
+  margin: 0 0 10px 0; font-family: 'Segoe UI', Arial, sans-serif;
+  letter-spacing: 1px;
+}
+
+.letter-creative .creative-sender-contact {
+  display: flex; flex-wrap: wrap; gap: 20px;
+  font-size: 10pt; color: rgba(255,255,255,0.9);
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.letter-creative .creative-letter-body {
+  padding: 30px 50px 50px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.letter-creative .creative-date {
+  font-size: 10pt; color: #666; margin-bottom: 20px;
+}
+
+.letter-creative .creative-recipient {
+  margin-bottom: 20px;
+}
+
+.letter-creative .creative-recipient-name { font-weight: 600; font-size: 11pt; }
+.letter-creative .creative-company-name { font-size: 11pt; color: #333; }
+.letter-creative .creative-company-address { font-size: 10pt; color: #666; margin-top: 4px; }
+
+.letter-creative .creative-subject {
+  margin-bottom: 20px; font-size: 11pt;
+  color: var(--primary-color);
+}
+
+.letter-creative .creative-salutation {
+  margin-bottom: 16px; font-size: 11pt;
+}
+
+.letter-creative .creative-content p {
+  margin: 0 0 14px 0; text-align: justify; line-height: 1.65;
+}
+
+.letter-creative .creative-closing {
+  margin-top: 28px;
+}
+
+.letter-creative .creative-closing p { margin: 0 0 24px 0; }
+
+.letter-creative .creative-signature {
+  font-weight: 700; font-size: 13pt; color: var(--primary-color);
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Print Styles */
 @media print {
   body { background: white !important; }
   .container > div:first-child, .container > div:last-child { display: none !important; }
@@ -182,10 +366,12 @@
   .letter-paper { box-shadow: none; width: 100%; }
 }
 
+/* Responsive */
 @media (max-width: 900px) {
   .letter-paper { width: 100%; min-height: auto; }
-  .header-content, .letter-date, .recipient-info, .letter-subject,
-  .letter-salutation, .letter-body, .letter-closing { padding-left: 24px; padding-right: 24px; }
+  .classic-letter-header, .classic-letter-body,
+  .modern-letter-header, .modern-letter-body,
+  .creative-letter-header, .creative-letter-body { padding-left: 24px; padding-right: 24px; }
 }
 </style>
 {% endblock %}

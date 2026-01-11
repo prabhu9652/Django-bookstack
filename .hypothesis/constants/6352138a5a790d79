@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/roadmap/views.py
+# hypothesis_version: 6.150.0
+
+['POST', 'User-Agent', 'completed', 'completed_count', 'completed_skills', 'description', 'difficulty', 'display_order', 'duration', 'error', 'estimated_duration', 'highlights', 'icon_class', 'id', 'in_progress', 'in_progress_count', 'in_progress_skills', 'is_core', 'journey_skills', 'name', 'not_started', 'order', 'page_type', 'path_slug', 'phases', 'remaining_count', 'roadmap/home.html', 'roadmap_detail', 'roadmap_home', 'roadmap_path', 'roadmap_paths', 'skill', 'skills', 'status', 'subtitle', 'success', 'title', 'total_skills', 'user_progress']

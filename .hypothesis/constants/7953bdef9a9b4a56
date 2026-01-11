@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/roadmap/migrations/0002_add_journey_skill_model.py
+# hypothesis_version: 6.150.0
+
+[100, '0001_initial', 'ID', 'Journey Skill', 'Journey Skills', 'JourneySkill', 'created_at', 'display_order', 'fas fa-code', 'icon_class', 'id', 'is_active', 'journey_skills', 'name', 'ordering', 'roadmap', 'roadmap.roadmappath', 'roadmap_path', 'updated_at', 'verbose_name', 'verbose_name_plural']

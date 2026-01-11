@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/books/migrations/0001_initial.py
+# hypothesis_version: 6.150.0
+
+[255, 'Movie', 'description', 'id', 'image', 'movie_images/', 'name', 'price']

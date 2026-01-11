@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/accounts/context_processors.py
+# hypothesis_version: 6.150.0
+
+['Unknown', 'access_context', 'access_status', 'can_request_access', 'has_content_access', 'is_superuser', 'user']

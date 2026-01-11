@@ -48,13 +48,220 @@
       <div class="wizard-grid">
         <!-- Left Panel: Configuration -->
         <div class="config-panel">
-          <!-- Role Selection -->
+          <!-- Template Style - Primary Focus (moved up to match cover letter) -->
+          <div class="config-section template-section">
+            <div class="section-header">
+              <div class="section-icon"><i class="fas fa-palette"></i></div>
+              <div>
+                <h2>Choose Template Style</h2>
+                <p>All templates are ATS-optimized. Select a preview to use that exact design.</p>
+              </div>
+            </div>
+            
+            <!-- Template Grid with Real Previews -->
+            <div class="template-grid" id="templateGrid">
+              {% for template in templates %}
+              <label class="template-card-wrapper" data-template="{{ template.id }}" data-template-slug="{{ template.slug }}">
+                <input type="radio" name="template" value="{{ template.id }}" {% if forloop.first %}checked{% endif %}>
+                <div class="template-card-new">
+                  <!-- Selection Indicator -->
+                  <div class="selection-indicator">
+                    <i class="fas fa-check"></i>
+                  </div>
+                  
+                  <!-- Template Preview Image -->
+                  <div class="template-preview-container">
+                    {% if template.preview_image %}
+                    <img 
+                      src="{{ template.preview_image.url }}" 
+                      alt="{{ template.name }} template preview"
+                      class="template-preview-img"
+                      loading="lazy"
+                      onerror="this.parentElement.classList.add('img-error'); this.style.display='none';"
+                      onload="this.parentElement.classList.add('img-loaded');"
+                    >
+                    {% else %}
+                    <!-- Distinct Mock Preview for each template style -->
+                    {% if template.slug == 'professional' %}
+                    <!-- Professional: Teal header with photo, left sidebar -->
+                    <div class="template-mock-preview mock-professional">
+                      <div class="mock-header" style="background: {{ template.primary_color }};">
+                        <div class="mock-photo"></div>
+                        <div class="mock-header-text">
+                          <div class="mock-name"></div>
+                          <div class="mock-title"></div>
+                          <div class="mock-contact-row"></div>
+                        </div>
+                      </div>
+                      <div class="mock-body-two-col">
+                        <div class="mock-left-sidebar">
+                          <div class="mock-section-label" style="color: {{ template.primary_color }};">SKILLS</div>
+                          <div class="mock-skill-item"></div>
+                          <div class="mock-skill-item w-80"></div>
+                          <div class="mock-skill-item w-60"></div>
+                          <div class="mock-skill-item"></div>
+                          <div class="mock-skill-item w-70"></div>
+                        </div>
+                        <div class="mock-main-content">
+                          <div class="mock-badge" style="background: {{ template.primary_color }};"></div>
+                          <div class="mock-text-block"></div>
+                          <div class="mock-text-block w-90"></div>
+                          <div class="mock-badge mt" style="background: {{ template.primary_color }};"></div>
+                          <div class="mock-job-header"></div>
+                          <div class="mock-bullet"></div>
+                          <div class="mock-bullet w-85"></div>
+                        </div>
+                      </div>
+                    </div>
+                    {% elif template.slug == 'modern' %}
+                    <!-- Modern: Dark header, right sidebar, clean minimal -->
+                    <div class="template-mock-preview mock-modern">
+                      <div class="mock-header" style="background: {{ template.primary_color }};">
+                        <div class="mock-name-modern"></div>
+                        <div class="mock-title-modern"></div>
+                        <div class="mock-contact-inline"></div>
+                      </div>
+                      <div class="mock-body-two-col-reverse">
+                        <div class="mock-main-content-modern">
+                          <div class="mock-section-title" style="border-color: {{ template.primary_color }};">Summary</div>
+                          <div class="mock-text-block"></div>
+                          <div class="mock-text-block w-80"></div>
+                          <div class="mock-section-title mt" style="border-color: {{ template.primary_color }};">Education</div>
+                          <div class="mock-edu-row"></div>
+                          <div class="mock-section-title mt" style="border-color: {{ template.primary_color }};">Employment</div>
+                          <div class="mock-job-header"></div>
+                          <div class="mock-bullet"></div>
+                        </div>
+                        <div class="mock-right-sidebar">
+                          <div class="mock-sidebar-title" style="border-color: {{ template.primary_color }};">Skills</div>
+                          <div class="mock-skill-line"></div>
+                          <div class="mock-skill-line"></div>
+                          <div class="mock-skill-line"></div>
+                          <div class="mock-skill-line"></div>
+                        </div>
+                      </div>
+                    </div>
+                    {% elif template.slug == 'executive' %}
+                    <!-- Executive: Mint header, bold name, left sidebar with accent bars -->
+                    <div class="template-mock-preview mock-executive">
+                      <div class="mock-header" style="background: {{ template.primary_color }};">
+                        <div class="mock-name-bold"></div>
+                        <div class="mock-title-exec"></div>
+                        <div class="mock-contact-stack">
+                          <div class="mock-contact-item"></div>
+                          <div class="mock-contact-item"></div>
+                          <div class="mock-contact-item"></div>
+                        </div>
+                      </div>
+                      <div class="mock-body-two-col">
+                        <div class="mock-left-sidebar-exec">
+                          <div class="mock-sidebar-heading">SKILLS</div>
+                          <div class="mock-skill-bar-item">
+                            <span class="mock-bar" style="background: {{ template.primary_color }};"></span>
+                            <span class="mock-skill-text"></span>
+                          </div>
+                          <div class="mock-skill-bar-item">
+                            <span class="mock-bar" style="background: {{ template.primary_color }};"></span>
+                            <span class="mock-skill-text w-80"></span>
+                          </div>
+                          <div class="mock-skill-bar-item">
+                            <span class="mock-bar" style="background: {{ template.primary_color }};"></span>
+                            <span class="mock-skill-text w-60"></span>
+                          </div>
+                          <div class="mock-skill-bar-item">
+                            <span class="mock-bar" style="background: {{ template.primary_color }};"></span>
+                            <span class="mock-skill-text"></span>
+                          </div>
+                        </div>
+                        <div class="mock-main-content">
+                          <div class="mock-badge" style="background: {{ template.primary_color }};"></div>
+                          <div class="mock-text-block"></div>
+                          <div class="mock-badge mt" style="background: {{ template.primary_color }};"></div>
+                          <div class="mock-edu-row"></div>
+                          <div class="mock-badge mt" style="background: {{ template.primary_color }};"></div>
+                          <div class="mock-job-header"></div>
+                          <div class="mock-bullet"></div>
+                        </div>
+                      </div>
+                    </div>
+                    {% else %}
+                    <!-- Default fallback -->
+                    <div class="template-mock-preview">
+                      <div class="mock-header-bar" style="background: {{ template.primary_color }};"></div>
+                      <div class="mock-layout">
+                        <div class="mock-sidebar-area"></div>
+                        <div class="mock-main-area">
+                          <div class="mock-text-line"></div>
+                          <div class="mock-text-line w-75"></div>
+                          <div class="mock-text-line w-50"></div>
+                        </div>
+                      </div>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                  </div>
+                  
+                  <!-- Template Info Footer -->
+                  <div class="template-card-footer">
+                    <div class="template-meta">
+                      <h4 class="template-name">{{ template.name }}</h4>
+                      <p class="template-description">
+                        {% if template.slug == 'professional' %}
+                        Photo + left sidebar skills
+                        {% elif template.slug == 'modern' %}
+                        Clean minimal, right sidebar
+                        {% elif template.slug == 'executive' %}
+                        Bold header, accent bars
+                        {% else %}
+                        {{ template.get_category_display }}
+                        {% endif %}
+                      </p>
+                    </div>
+                    <div class="template-badges">
+                      <span class="ats-badge-new"><i class="fas fa-shield-alt"></i> ATS</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Use Template CTA (visible on hover/selection) -->
+                  <div class="template-cta">
+                    <span><i class="fas fa-check-circle"></i> Selected</span>
+                  </div>
+                </div>
+              </label>
+              {% empty %}
+              <!-- Empty State: No Templates Available -->
+              <div class="templates-empty-state">
+                <div class="empty-icon">
+                  <i class="fas fa-file-alt"></i>
+                </div>
+                <h3>No Templates Available</h3>
+                <p>Templates are being prepared. A default professional template will be used.</p>
+                <input type="hidden" name="template" value="default">
+              </div>
+              {% endfor %}
+            </div>
+            
+            <!-- Selected Template Confirmation -->
+            <div class="selected-template-info" id="selectedTemplateInfo">
+              <div class="selected-icon"><i class="fas fa-check-circle"></i></div>
+              <div class="selected-text">
+                <span class="selected-label">Selected:</span>
+                <span class="selected-name" id="selectedTemplateName">{% if templates %}{{ templates.0.name }}{% else %}Professional{% endif %}</span>
+              </div>
+              <div class="selected-guarantee">
+                <i class="fas fa-lock"></i>
+                <span>Your resume will match this exact design</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Role Selection (moved below template) -->
           <div class="config-section">
             <div class="section-header">
-              <div class="section-icon"><i class="fas fa-user-tie"></i></div>
+              <div class="section-icon"><i class="fas fa-briefcase"></i></div>
               <div>
-                <h2>Select Your Target Role</h2>
-                <p>Choose the role you're applying for to get tailored content</p>
+                <h2>Select Target Role</h2>
+                <p>Get role-specific content suggestions</p>
               </div>
             </div>
             
@@ -74,95 +281,135 @@
               {% endfor %}
             </div>
           </div>
-
-          <!-- Template Style -->
-          <div class="config-section">
-            <div class="section-header">
-              <div class="section-icon"><i class="fas fa-palette"></i></div>
-              <div>
-                <h2>Choose Template Style</h2>
-                <p>All templates are ATS-optimized</p>
-              </div>
-            </div>
-            
-            <div class="template-options">
-              {% for template in templates %}
-              <label class="template-option" data-template="{{ template.id }}">
-                <input type="radio" name="template" value="{{ template.id }}" {% if forloop.first %}checked{% endif %}>
-                <div class="template-card">
-                  <div class="template-preview">
-                    <div class="preview-mock">
-                      <div class="mock-header"></div>
-                      <div class="mock-sidebar"></div>
-                      <div class="mock-content">
-                        <div class="mock-line"></div>
-                        <div class="mock-line short"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="template-info">
-                    <h4>{{ template.name }}</h4>
-                    <span class="ats-badge"><i class="fas fa-robot"></i> ATS-Safe</span>
-                  </div>
-                  <div class="template-check"><i class="fas fa-check-circle"></i></div>
-                </div>
-              </label>
-              {% empty %}
-              <label class="template-option" data-template="default">
-                <input type="radio" name="template" value="default" checked>
-                <div class="template-card">
-                  <div class="template-preview">
-                    <div class="preview-mock">
-                      <div class="mock-header"></div>
-                      <div class="mock-sidebar"></div>
-                      <div class="mock-content">
-                        <div class="mock-line"></div>
-                        <div class="mock-line short"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="template-info">
-                    <h4>Professional</h4>
-                    <span class="ats-badge"><i class="fas fa-robot"></i> ATS-Safe</span>
-                  </div>
-                  <div class="template-check"><i class="fas fa-check-circle"></i></div>
-                </div>
-              </label>
-              {% endfor %}
-            </div>
-          </div>
         </div>
 
         <!-- Right Panel: Preview & Info -->
         <div class="preview-panel">
           <div class="preview-card">
             <div class="preview-header">
-              <h3><i class="fas fa-eye"></i> Live Preview</h3>
-              <span class="preview-badge">Updates in real-time</span>
+              <h3><i class="fas fa-eye"></i> Template Preview</h3>
+              <span class="preview-badge" id="previewTemplateName">Professional</span>
             </div>
             <div class="preview-content">
-              <div class="resume-preview-mock">
-                <div class="rpm-header">
-                  <div class="rpm-photo"></div>
-                  <div class="rpm-title">
-                    <div class="rpm-name"></div>
-                    <div class="rpm-role"></div>
+              <!-- Dynamic Preview Container -->
+              <div class="live-preview-container" id="livePreviewContainer">
+                <!-- Template Image Preview (shown when template has image) -->
+                <div class="live-preview-image" id="livePreviewImage" style="display: none;">
+                  <img src="" alt="Selected template preview" id="previewImg">
+                </div>
+                
+                <!-- PROFESSIONAL Template Preview -->
+                <div class="resume-preview-mock preview-professional" id="previewProfessional">
+                  <div class="rpm-header" style="background: linear-gradient(135deg, #4a9d9a 0%, #3d8584 100%);">
+                    <div class="rpm-photo"></div>
+                    <div class="rpm-title">
+                      <div class="rpm-name"></div>
+                      <div class="rpm-role"></div>
+                      <div class="rpm-contact"></div>
+                    </div>
+                  </div>
+                  <div class="rpm-body">
+                    <div class="rpm-sidebar">
+                      <div class="rpm-section-label" style="color: #4a9d9a;">SKILLS</div>
+                      <div class="rpm-skill"></div>
+                      <div class="rpm-skill w-80"></div>
+                      <div class="rpm-skill w-60"></div>
+                      <div class="rpm-skill"></div>
+                      <div class="rpm-skill w-70"></div>
+                      <div class="rpm-section-label mt" style="color: #4a9d9a;">EDUCATION</div>
+                      <div class="rpm-edu-item"></div>
+                      <div class="rpm-edu-sub"></div>
+                    </div>
+                    <div class="rpm-main">
+                      <div class="rpm-badge" style="background: #4a9d9a;">PROFILE</div>
+                      <div class="rpm-text"></div>
+                      <div class="rpm-text w-90"></div>
+                      <div class="rpm-text w-80"></div>
+                      <div class="rpm-badge mt" style="background: #4a9d9a;">EMPLOYMENT</div>
+                      <div class="rpm-job-title"></div>
+                      <div class="rpm-job-company"></div>
+                      <div class="rpm-bullet"></div>
+                      <div class="rpm-bullet w-90"></div>
+                      <div class="rpm-bullet w-85"></div>
+                    </div>
                   </div>
                 </div>
-                <div class="rpm-body">
-                  <div class="rpm-sidebar">
-                    <div class="rpm-section-title"></div>
-                    <div class="rpm-skill"></div>
-                    <div class="rpm-skill"></div>
-                    <div class="rpm-skill"></div>
+                
+                <!-- MODERN Template Preview -->
+                <div class="resume-preview-mock preview-modern" id="previewModern" style="display: none;">
+                  <div class="rpm-header-modern" style="background: #2d3748;">
+                    <div class="rpm-name-modern"></div>
+                    <div class="rpm-role-modern"></div>
+                    <div class="rpm-contact-row"></div>
                   </div>
-                  <div class="rpm-main">
-                    <div class="rpm-section-title"></div>
-                    <div class="rpm-text"></div>
-                    <div class="rpm-text short"></div>
-                    <div class="rpm-section-title mt"></div>
-                    <div class="rpm-text"></div>
-                    <div class="rpm-text"></div>
+                  <div class="rpm-body-modern">
+                    <div class="rpm-main-modern">
+                      <div class="rpm-section-title" style="border-color: #2d3748;">Summary</div>
+                      <div class="rpm-text"></div>
+                      <div class="rpm-text w-90"></div>
+                      <div class="rpm-section-title mt" style="border-color: #2d3748;">Education</div>
+                      <div class="rpm-edu-row"></div>
+                      <div class="rpm-edu-row w-70"></div>
+                      <div class="rpm-section-title mt" style="border-color: #2d3748;">Employment</div>
+                      <div class="rpm-job-header"></div>
+                      <div class="rpm-job-sub"></div>
+                      <div class="rpm-bullet"></div>
+                      <div class="rpm-bullet w-85"></div>
+                    </div>
+                    <div class="rpm-sidebar-modern">
+                      <div class="rpm-sidebar-title" style="border-color: #2d3748;">Personal details</div>
+                      <div class="rpm-detail-item"></div>
+                      <div class="rpm-sidebar-title mt" style="border-color: #2d3748;">Skills</div>
+                      <div class="rpm-skill-line"></div>
+                      <div class="rpm-skill-line"></div>
+                      <div class="rpm-skill-line"></div>
+                      <div class="rpm-skill-line"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- EXECUTIVE Template Preview -->
+                <div class="resume-preview-mock preview-executive" id="previewExecutive" style="display: none;">
+                  <div class="rpm-header-exec" style="background: #81c9c5;">
+                    <div class="rpm-name-exec"></div>
+                    <div class="rpm-role-exec"></div>
+                    <div class="rpm-contact-stack">
+                      <div class="rpm-contact-item"></div>
+                      <div class="rpm-contact-item"></div>
+                      <div class="rpm-contact-item"></div>
+                    </div>
+                  </div>
+                  <div class="rpm-body-exec">
+                    <div class="rpm-sidebar-exec">
+                      <div class="rpm-sidebar-heading">SKILLS</div>
+                      <div class="rpm-skill-bar">
+                        <span class="rpm-bar" style="background: #81c9c5;"></span>
+                        <span class="rpm-skill-text"></span>
+                      </div>
+                      <div class="rpm-skill-bar">
+                        <span class="rpm-bar" style="background: #81c9c5;"></span>
+                        <span class="rpm-skill-text w-80"></span>
+                      </div>
+                      <div class="rpm-skill-bar">
+                        <span class="rpm-bar" style="background: #81c9c5;"></span>
+                        <span class="rpm-skill-text w-60"></span>
+                      </div>
+                      <div class="rpm-skill-bar">
+                        <span class="rpm-bar" style="background: #81c9c5;"></span>
+                        <span class="rpm-skill-text"></span>
+                      </div>
+                    </div>
+                    <div class="rpm-main-exec">
+                      <div class="rpm-badge" style="background: #81c9c5;">SUMMARY</div>
+                      <div class="rpm-text"></div>
+                      <div class="rpm-text w-90"></div>
+                      <div class="rpm-badge mt" style="background: #81c9c5;">EDUCATION</div>
+                      <div class="rpm-edu-row"></div>
+                      <div class="rpm-badge mt" style="background: #81c9c5;">EMPLOYMENT</div>
+                      <div class="rpm-job-header"></div>
+                      <div class="rpm-bullet"></div>
+                      <div class="rpm-bullet w-85"></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -224,6 +471,7 @@
 <form id="createResumeForm" method="post" style="display: none;">
   {% csrf_token %}
   <input type="hidden" name="role" id="selectedRole" value="devops_sre">
+  <input type="hidden" name="template_id" id="selectedTemplateId" value="">
 </form>
 
 <style>
@@ -595,6 +843,710 @@
 .template-option input:checked + .template-card .template-check {
   color: #4a9eff;
 }
+
+/* ========================================
+   NEW TEMPLATE GRID STYLES
+   Real Image Previews with States
+======================================== */
+
+.template-section {
+  position: relative;
+}
+
+/* Template Grid - Responsive */
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+@media (max-width: 1024px) {
+  .template-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .template-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Template Card Wrapper */
+.template-card-wrapper {
+  cursor: pointer;
+  display: block;
+}
+
+.template-card-wrapper input[type="radio"] {
+  display: none;
+}
+
+/* Template Card - New Design */
+.template-card-new {
+  position: relative;
+  background: var(--bg-surface);
+  border: 2px solid var(--border-default);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+.template-card-wrapper:hover .template-card-new {
+  border-color: rgba(74, 158, 255, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.template-card-wrapper input:checked + .template-card-new {
+  border-color: #4a9eff;
+  box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.15), 0 8px 20px rgba(74, 158, 255, 0.2);
+}
+
+/* Selection Indicator */
+.selection-indicator {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  background: #4a9eff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.75rem;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.2s ease;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(74, 158, 255, 0.4);
+}
+
+.template-card-wrapper input:checked + .template-card-new .selection-indicator {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Template Preview Container */
+.template-preview-container {
+  position: relative;
+  aspect-ratio: 8.5/11;
+  background: #f8fafc;
+  overflow: hidden;
+}
+
+/* Actual Template Preview Image */
+.template-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.template-preview-container.img-loaded .template-preview-img {
+  opacity: 1;
+}
+
+.template-preview-container.img-loaded .template-skeleton {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Skeleton Loader */
+.template-skeleton {
+  position: absolute;
+  inset: 0;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 30% 1fr;
+  grid-template-rows: 22% 1fr;
+  gap: 8px;
+  background: #fff;
+  transition: opacity 0.3s ease;
+}
+
+.skeleton-header {
+  grid-column: 1 / -1;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeleton-sidebar {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite 0.1s;
+  border-radius: 4px;
+}
+
+.skeleton-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px;
+}
+
+.skeleton-line {
+  height: 8px;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite 0.2s;
+  border-radius: 2px;
+}
+
+.skeleton-line.short {
+  width: 65%;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Error State */
+.template-error-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #f8fafc;
+  color: var(--text-muted);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.template-error-state i {
+  font-size: 2rem;
+  opacity: 0.5;
+}
+
+.template-error-state span {
+  font-size: 0.75rem;
+}
+
+.template-preview-container.img-error .template-error-state {
+  opacity: 1;
+}
+
+.template-preview-container.img-error .template-skeleton {
+  opacity: 0;
+}
+
+/* ========================================
+   DISTINCT MOCK PREVIEWS FOR EACH TEMPLATE
+   Shows visual difference between templates
+======================================== */
+
+.template-mock-preview {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Common mock elements */
+.mock-header {
+  padding: 8px 10px;
+  color: #fff;
+}
+
+.mock-photo {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  border: 1.5px solid rgba(255,255,255,0.4);
+  flex-shrink: 0;
+}
+
+.mock-name, .mock-name-modern, .mock-name-bold {
+  height: 10px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 2px;
+  margin-bottom: 4px;
+}
+
+.mock-title, .mock-title-modern, .mock-title-exec {
+  height: 6px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 2px;
+  width: 50%;
+}
+
+.mock-contact-row {
+  height: 4px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 1px;
+  width: 80%;
+  margin-top: 6px;
+}
+
+/* ==================== PROFESSIONAL TEMPLATE ==================== */
+.mock-professional .mock-header {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+}
+
+.mock-professional .mock-header-text {
+  flex: 1;
+}
+
+.mock-professional .mock-name {
+  width: 70%;
+  height: 12px;
+}
+
+.mock-body-two-col {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 32% 1fr;
+}
+
+.mock-left-sidebar {
+  background: #f5f5f5;
+  padding: 8px;
+}
+
+.mock-section-label {
+  font-size: 5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.mock-skill-item {
+  height: 5px;
+  background: #d1d5db;
+  border-radius: 1px;
+  margin-bottom: 4px;
+}
+
+.mock-skill-item.w-80 { width: 80%; }
+.mock-skill-item.w-70 { width: 70%; }
+.mock-skill-item.w-60 { width: 60%; }
+
+.mock-main-content {
+  padding: 8px 10px;
+}
+
+.mock-badge {
+  height: 8px;
+  width: 35%;
+  border-radius: 1px;
+  margin-bottom: 6px;
+}
+
+.mock-badge.mt { margin-top: 10px; }
+
+.mock-text-block {
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 1px;
+  margin-bottom: 3px;
+}
+
+.mock-text-block.w-90 { width: 90%; }
+.mock-text-block.w-80 { width: 80%; }
+
+.mock-job-header {
+  height: 6px;
+  background: #374151;
+  border-radius: 1px;
+  width: 60%;
+  margin-bottom: 4px;
+}
+
+.mock-bullet {
+  height: 4px;
+  background: #d1d5db;
+  border-radius: 1px;
+  margin-bottom: 3px;
+  margin-left: 8px;
+}
+
+.mock-bullet.w-85 { width: 85%; }
+
+/* ==================== MODERN TEMPLATE ==================== */
+.mock-modern .mock-header {
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.mock-modern .mock-name-modern {
+  width: 45%;
+  height: 11px;
+  background: rgba(255,255,255,0.95);
+}
+
+.mock-modern .mock-title-modern {
+  width: 30%;
+  margin-bottom: 6px;
+}
+
+.mock-contact-inline {
+  height: 4px;
+  background: rgba(255,255,255,0.5);
+  width: 70%;
+  border-radius: 1px;
+}
+
+.mock-body-two-col-reverse {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 35%;
+}
+
+.mock-main-content-modern {
+  padding: 8px 10px;
+  border-right: 1px solid #e5e7eb;
+}
+
+.mock-section-title {
+  font-size: 6px;
+  color: #333;
+  padding-bottom: 3px;
+  border-bottom: 1.5px solid;
+  margin-bottom: 6px;
+  width: 40%;
+}
+
+.mock-section-title.mt { margin-top: 8px; }
+
+.mock-edu-row {
+  height: 5px;
+  background: #e5e7eb;
+  border-radius: 1px;
+  margin-bottom: 3px;
+  width: 80%;
+}
+
+.mock-right-sidebar {
+  background: #f8f9fa;
+  padding: 8px;
+}
+
+.mock-sidebar-title {
+  font-size: 5px;
+  color: #666;
+  padding-bottom: 3px;
+  border-bottom: 1px solid;
+  margin-bottom: 6px;
+}
+
+.mock-skill-line {
+  height: 5px;
+  background: #e5e7eb;
+  border-radius: 1px;
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #eee;
+}
+
+/* ==================== EXECUTIVE TEMPLATE ==================== */
+.mock-executive .mock-header {
+  padding: 10px 12px;
+}
+
+.mock-executive .mock-name-bold {
+  width: 60%;
+  height: 14px;
+  background: rgba(255,255,255,0.95);
+  margin-bottom: 3px;
+}
+
+.mock-executive .mock-title-exec {
+  width: 35%;
+  margin-bottom: 6px;
+}
+
+.mock-contact-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mock-contact-item {
+  height: 4px;
+  background: rgba(255,255,255,0.6);
+  width: 55%;
+  border-radius: 1px;
+}
+
+.mock-left-sidebar-exec {
+  background: #f5f5f5;
+  padding: 8px;
+  width: 100%;
+}
+
+.mock-sidebar-heading {
+  font-size: 5px;
+  font-weight: 700;
+  color: #333;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.mock-skill-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.mock-bar {
+  width: 4px;
+  height: 4px;
+  flex-shrink: 0;
+}
+
+.mock-skill-text {
+  height: 4px;
+  background: #d1d5db;
+  border-radius: 1px;
+  flex: 1;
+}
+
+.mock-skill-text.w-80 { width: 80%; flex: none; }
+.mock-skill-text.w-60 { width: 60%; flex: none; }
+
+/* Legacy fallback styles */
+.mock-header-bar {
+  height: 22%;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.mock-layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 30% 1fr;
+  gap: 8px;
+}
+
+.mock-sidebar-area {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.mock-main-area {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px;
+}
+
+.mock-text-line {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 2px;
+}
+
+.mock-text-line.w-75 { width: 75%; }
+.mock-text-line.w-50 { width: 50%; }
+
+/* Template Card Footer */
+.template-card-footer {
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--border-default);
+}
+
+.template-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.template-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 2px 0;
+}
+
+.template-description {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.template-category {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.template-badges {
+  display: flex;
+  gap: 6px;
+}
+
+.ats-badge-new {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+/* Template CTA Overlay */
+.template-cta {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  padding: 12px;
+  background: linear-gradient(to top, rgba(74, 158, 255, 0.95), rgba(74, 158, 255, 0.85));
+  color: white;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: all 0.25s ease;
+}
+
+.template-cta i {
+  margin-right: 6px;
+}
+
+.template-card-wrapper input:checked + .template-card-new .template-cta {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Empty State */
+.templates-empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  background: var(--bg-elevated);
+  border: 2px dashed var(--border-default);
+  border-radius: 16px;
+  text-align: center;
+}
+
+.templates-empty-state .empty-icon {
+  width: 64px;
+  height: 64px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.templates-empty-state .empty-icon i {
+  font-size: 1.5rem;
+  color: #4a9eff;
+}
+
+.templates-empty-state h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.templates-empty-state p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 280px;
+}
+
+/* Selected Template Confirmation Bar */
+.selected-template-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding: 1rem 1.25rem;
+  background: rgba(74, 158, 255, 0.08);
+  border: 1px solid rgba(74, 158, 255, 0.2);
+  border-radius: 12px;
+}
+
+.selected-icon {
+  width: 36px;
+  height: 36px;
+  background: #4a9eff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.selected-text {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.selected-label {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.selected-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.selected-guarantee {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.selected-guarantee i {
+  font-size: 0.6875rem;
+}
+
+@media (max-width: 768px) {
+  .selected-template-info {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  
+  .selected-guarantee {
+    width: 100%;
+    justify-content: center;
+  }
+}
 </style>
 
 <style>
@@ -645,7 +1597,30 @@
   background: #f8fafc;
 }
 
-/* Resume Preview Mock */
+/* Live Preview Container */
+.live-preview-container {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.live-preview-image {
+  background: #fff;
+}
+
+.live-preview-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
+/* ========================================
+   RESUME PREVIEW MOCK - DISTINCT STYLES
+   Three different template previews
+======================================== */
+
 .resume-preview-mock {
   background: #fff;
   border: 1px solid #e5e7eb;
@@ -654,81 +1629,393 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.rpm-header {
-  background: linear-gradient(135deg, #4a9d9a 0%, #3d8584 100%);
-  padding: 1rem;
+/* ==================== PROFESSIONAL TEMPLATE PREVIEW ==================== */
+.preview-professional .rpm-header {
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.preview-professional .rpm-photo {
+  width: 45px;
+  height: 45px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.4);
+  flex-shrink: 0;
+}
+
+.preview-professional .rpm-title { flex: 1; }
+
+.preview-professional .rpm-name {
+  height: 14px;
+  width: 70%;
+  background: rgba(255,255,255,0.95);
+  border-radius: 2px;
+  margin-bottom: 5px;
+}
+
+.preview-professional .rpm-role {
+  height: 8px;
+  width: 45%;
+  background: rgba(255,255,255,0.7);
+  border-radius: 2px;
+  margin-bottom: 6px;
+}
+
+.preview-professional .rpm-contact {
+  height: 5px;
+  width: 80%;
+  background: rgba(255,255,255,0.5);
+  border-radius: 1px;
+}
+
+.preview-professional .rpm-body {
+  display: grid;
+  grid-template-columns: 85px 1fr;
+  min-height: 220px;
+}
+
+.preview-professional .rpm-sidebar {
+  background: #f5f5f5;
+  padding: 10px 8px;
+}
+
+.preview-professional .rpm-section-label {
+  font-size: 6px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.preview-professional .rpm-skill {
+  height: 5px;
+  background: #d1d5db;
+  border-radius: 1px;
+  margin-bottom: 5px;
+}
+
+.preview-professional .rpm-skill.w-80 { width: 80%; }
+.preview-professional .rpm-skill.w-70 { width: 70%; }
+.preview-professional .rpm-skill.w-60 { width: 60%; }
+
+.preview-professional .rpm-edu-item {
+  height: 6px;
+  background: #9ca3af;
+  border-radius: 1px;
+  margin-bottom: 3px;
+  width: 85%;
+}
+
+.preview-professional .rpm-edu-sub {
+  height: 4px;
+  background: #d1d5db;
+  border-radius: 1px;
+  width: 70%;
+}
+
+.preview-professional .rpm-main {
+  padding: 10px 12px;
+}
+
+.preview-professional .rpm-badge {
+  height: 10px;
+  width: 40%;
+  border-radius: 1px;
+  margin-bottom: 8px;
+}
+
+.preview-professional .rpm-badge.mt { margin-top: 12px; }
+
+.preview-professional .rpm-text {
+  height: 5px;
+  background: #e5e7eb;
+  border-radius: 1px;
+  margin-bottom: 4px;
+}
+
+.preview-professional .rpm-text.w-90 { width: 90%; }
+.preview-professional .rpm-text.w-80 { width: 80%; }
+
+.preview-professional .rpm-job-title {
+  height: 7px;
+  background: #374151;
+  border-radius: 1px;
+  width: 55%;
+  margin-bottom: 3px;
+}
+
+.preview-professional .rpm-job-company {
+  height: 5px;
+  background: #9ca3af;
+  border-radius: 1px;
+  width: 40%;
+  margin-bottom: 6px;
+}
+
+.preview-professional .rpm-bullet {
+  height: 4px;
+  background: #d1d5db;
+  border-radius: 1px;
+  margin-bottom: 4px;
+  margin-left: 8px;
+}
+
+.preview-professional .rpm-bullet.w-90 { width: 90%; }
+.preview-professional .rpm-bullet.w-85 { width: 85%; }
+
+/* ==================== MODERN TEMPLATE PREVIEW ==================== */
+.preview-modern .rpm-header-modern {
+  padding: 14px 16px;
+}
+
+.preview-modern .rpm-name-modern {
+  height: 14px;
+  width: 40%;
+  background: rgba(255,255,255,0.95);
+  border-radius: 2px;
+  margin-bottom: 4px;
+}
+
+.preview-modern .rpm-role-modern {
+  height: 7px;
+  width: 25%;
+  background: rgba(255,255,255,0.7);
+  border-radius: 1px;
+  margin-bottom: 8px;
+}
+
+.preview-modern .rpm-contact-row {
+  height: 5px;
+  width: 65%;
+  background: rgba(255,255,255,0.5);
+  border-radius: 1px;
+}
+
+.preview-modern .rpm-body-modern {
+  display: grid;
+  grid-template-columns: 1fr 90px;
+  min-height: 220px;
+}
+
+.preview-modern .rpm-main-modern {
+  padding: 10px 12px;
+  border-right: 1px solid #e5e7eb;
+}
+
+.preview-modern .rpm-section-title {
+  font-size: 7px;
+  color: #333;
+  padding-bottom: 4px;
+  border-bottom: 2px solid;
+  margin-bottom: 8px;
+  width: 35%;
+  height: auto;
+  background: none;
+}
+
+.preview-modern .rpm-section-title.mt { margin-top: 10px; }
+
+.preview-modern .rpm-text {
+  height: 5px;
+  background: #e5e7eb;
+  border-radius: 1px;
+  margin-bottom: 4px;
+}
+
+.preview-modern .rpm-text.w-90 { width: 90%; }
+
+.preview-modern .rpm-edu-row {
+  height: 6px;
+  background: #d1d5db;
+  border-radius: 1px;
+  margin-bottom: 4px;
+}
+
+.preview-modern .rpm-edu-row.w-70 { width: 70%; }
+
+.preview-modern .rpm-job-header {
+  height: 7px;
+  background: #374151;
+  border-radius: 1px;
+  width: 50%;
+  margin-bottom: 3px;
+}
+
+.preview-modern .rpm-job-sub {
+  height: 5px;
+  background: #2d3748;
+  border-radius: 1px;
+  width: 35%;
+  margin-bottom: 6px;
+}
+
+.preview-modern .rpm-bullet {
+  height: 4px;
+  background: #d1d5db;
+  border-radius: 1px;
+  margin-bottom: 4px;
+  margin-left: 6px;
+}
+
+.preview-modern .rpm-bullet.w-85 { width: 85%; }
+
+.preview-modern .rpm-sidebar-modern {
+  background: #f8f9fa;
+  padding: 10px 8px;
+}
+
+.preview-modern .rpm-sidebar-title {
+  font-size: 6px;
+  color: #666;
+  padding-bottom: 3px;
+  border-bottom: 1px solid;
+  margin-bottom: 8px;
+}
+
+.preview-modern .rpm-sidebar-title.mt { margin-top: 10px; }
+
+.preview-modern .rpm-detail-item {
+  height: 5px;
+  background: #d1d5db;
+  border-radius: 1px;
+  margin-bottom: 4px;
+  width: 80%;
+}
+
+.preview-modern .rpm-skill-line {
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 1px;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+/* ==================== EXECUTIVE TEMPLATE PREVIEW ==================== */
+.preview-executive .rpm-header-exec {
+  padding: 14px 16px;
+}
+
+.preview-executive .rpm-name-exec {
+  height: 18px;
+  width: 55%;
+  background: rgba(255,255,255,0.95);
+  border-radius: 2px;
+  margin-bottom: 4px;
+}
+
+.preview-executive .rpm-role-exec {
+  height: 8px;
+  width: 35%;
+  background: rgba(255,255,255,0.7);
+  border-radius: 1px;
+  margin-bottom: 8px;
+}
+
+.preview-executive .rpm-contact-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.preview-executive .rpm-contact-item {
+  height: 5px;
+  width: 50%;
+  background: rgba(255,255,255,0.6);
+  border-radius: 1px;
+}
+
+.preview-executive .rpm-body-exec {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  min-height: 220px;
+}
+
+.preview-executive .rpm-sidebar-exec {
+  background: #f5f5f5;
+  padding: 10px 8px;
+}
+
+.preview-executive .rpm-sidebar-heading {
+  font-size: 6px;
+  font-weight: 700;
+  color: #333;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.preview-executive .rpm-skill-bar {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 5px;
+  margin-bottom: 6px;
 }
 
-.rpm-photo {
-  width: 40px;
-  height: 40px;
-  background: rgba(255,255,255,0.2);
-  border-radius: 50%;
+.preview-executive .rpm-bar {
+  width: 5px;
+  height: 5px;
+  flex-shrink: 0;
 }
 
-.rpm-title { flex: 1; }
-
-.rpm-name {
-  height: 12px;
-  width: 60%;
-  background: rgba(255,255,255,0.9);
-  border-radius: 2px;
-  margin-bottom: 0.375rem;
+.preview-executive .rpm-skill-text {
+  height: 5px;
+  background: #d1d5db;
+  border-radius: 1px;
+  flex: 1;
 }
 
-.rpm-role {
-  height: 8px;
-  width: 40%;
-  background: rgba(255,255,255,0.6);
-  border-radius: 2px;
+.preview-executive .rpm-skill-text.w-80 { width: 80%; flex: none; }
+.preview-executive .rpm-skill-text.w-60 { width: 60%; flex: none; }
+
+.preview-executive .rpm-main-exec {
+  padding: 10px 12px;
 }
 
-.rpm-body {
-  display: grid;
-  grid-template-columns: 90px 1fr;
-  min-height: 200px;
+.preview-executive .rpm-badge {
+  height: 10px;
+  width: 38%;
+  border-radius: 1px;
+  margin-bottom: 8px;
 }
 
-.rpm-sidebar {
-  background: #f1f5f9;
-  padding: 0.75rem;
+.preview-executive .rpm-badge.mt { margin-top: 10px; }
+
+.preview-executive .rpm-text {
+  height: 5px;
+  background: #e5e7eb;
+  border-radius: 1px;
+  margin-bottom: 4px;
 }
 
-.rpm-main {
-  padding: 0.75rem;
+.preview-executive .rpm-text.w-90 { width: 90%; }
+
+.preview-executive .rpm-edu-row {
+  height: 6px;
+  background: #d1d5db;
+  border-radius: 1px;
+  margin-bottom: 4px;
+  width: 75%;
 }
 
-.rpm-section-title {
-  height: 8px;
+.preview-executive .rpm-job-header {
+  height: 7px;
+  background: #374151;
+  border-radius: 1px;
   width: 50%;
-  background: #1e293b;
-  border-radius: 2px;
-  margin-bottom: 0.5rem;
+  margin-bottom: 6px;
 }
 
-.rpm-section-title.mt { margin-top: 0.75rem; }
-
-.rpm-skill {
-  height: 6px;
-  background: #cbd5e1;
-  border-radius: 2px;
-  margin-bottom: 0.375rem;
+.preview-executive .rpm-bullet {
+  height: 4px;
+  background: #d1d5db;
+  border-radius: 1px;
+  margin-bottom: 4px;
+  margin-left: 6px;
 }
 
-.rpm-skill:nth-child(2) { width: 80%; }
-.rpm-skill:nth-child(3) { width: 60%; }
-
-.rpm-text {
-  height: 6px;
-  background: #e2e8f0;
-  border-radius: 2px;
-  margin-bottom: 0.375rem;
-}
-
-.rpm-text.short { width: 70%; }
+.preview-executive .rpm-bullet.w-85 { width: 85%; }
 
 /* ATS Indicator */
 .ats-indicator {
@@ -907,7 +2194,7 @@
   
   .preview-card { display: none; }
   
-  .template-options {
+  .template-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -923,7 +2210,7 @@
     width: 100%;
   }
   
-  .template-options {
+  .template-grid {
     grid-template-columns: 1fr;
   }
   
@@ -947,7 +2234,111 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('selectedRole').value = this.value;
     });
   });
+  
+  // Template selection handler - update selected template name and preview
+  document.querySelectorAll('input[name="template"]').forEach(input => {
+    input.addEventListener('change', function() {
+      const wrapper = this.closest('.template-card-wrapper');
+      const templateName = wrapper ? wrapper.querySelector('.template-name')?.textContent : 'Professional';
+      const templateSlug = wrapper ? wrapper.getAttribute('data-template-slug') : 'professional';
+      const templateId = this.value;
+      
+      // Update hidden form field
+      document.getElementById('selectedTemplateId').value = templateId;
+      
+      // Update selected template name in confirmation bar
+      const selectedNameEl = document.getElementById('selectedTemplateName');
+      if (selectedNameEl) {
+        selectedNameEl.textContent = templateName || 'Professional';
+      }
+      
+      // Update preview panel header
+      const previewNameEl = document.getElementById('previewTemplateName');
+      if (previewNameEl) {
+        previewNameEl.textContent = templateName || 'Professional';
+      }
+      
+      // Log for debugging
+      console.log('Template selected:', { id: templateId, name: templateName, slug: templateSlug });
+      
+      // Update live preview panel to show the correct template
+      updateLivePreview(wrapper, templateSlug);
+    });
+  });
+  
+  // Initialize image loading states
+  document.querySelectorAll('.template-preview-container').forEach(container => {
+    const img = container.querySelector('.template-preview-img');
+    if (img) {
+      // If image is already loaded (cached), trigger loaded state
+      if (img.complete && img.naturalHeight !== 0) {
+        container.classList.add('img-loaded');
+      }
+    } else {
+      // No image, show mock preview (already handled by template)
+      container.classList.add('no-image');
+    }
+  });
+  
+  // Initialize preview with first selected template
+  const firstSelected = document.querySelector('input[name="template"]:checked');
+  if (firstSelected) {
+    const wrapper = firstSelected.closest('.template-card-wrapper');
+    const templateSlug = wrapper ? wrapper.getAttribute('data-template-slug') : 'professional';
+    const templateId = firstSelected.value;
+    
+    // Initialize hidden form field
+    document.getElementById('selectedTemplateId').value = templateId;
+    
+    if (wrapper) {
+      updateLivePreview(wrapper, templateSlug);
+    }
+    
+    console.log('Initial template:', { id: templateId, slug: templateSlug });
+  }
 });
+
+function updateLivePreview(wrapper, templateSlug) {
+  const previewImg = document.getElementById('previewImg');
+  const livePreviewImage = document.getElementById('livePreviewImage');
+  
+  // Get all preview panels
+  const previewProfessional = document.getElementById('previewProfessional');
+  const previewModern = document.getElementById('previewModern');
+  const previewExecutive = document.getElementById('previewExecutive');
+  
+  if (!wrapper) return;
+  
+  // Get the template's preview image (if uploaded)
+  const templateImg = wrapper.querySelector('.template-preview-img');
+  
+  // Hide all mock previews first
+  if (previewProfessional) previewProfessional.style.display = 'none';
+  if (previewModern) previewModern.style.display = 'none';
+  if (previewExecutive) previewExecutive.style.display = 'none';
+  
+  if (templateImg && templateImg.src && !templateImg.closest('.template-preview-container').classList.contains('img-error')) {
+    // Show the actual uploaded template image
+    if (previewImg && livePreviewImage) {
+      previewImg.src = templateImg.src;
+      previewImg.alt = templateImg.alt;
+      livePreviewImage.style.display = 'block';
+    }
+  } else {
+    // Hide uploaded image preview
+    if (livePreviewImage) livePreviewImage.style.display = 'none';
+    
+    // Show the correct mock preview based on template slug
+    if (templateSlug === 'modern' && previewModern) {
+      previewModern.style.display = 'block';
+    } else if (templateSlug === 'executive' && previewExecutive) {
+      previewExecutive.style.display = 'block';
+    } else if (previewProfessional) {
+      // Default to professional
+      previewProfessional.style.display = 'block';
+    }
+  }
+}
 
 function createResume() {
   const btn = document.getElementById('continueBtn');
@@ -956,19 +2347,22 @@ function createResume() {
   
   const role = document.querySelector('input[name="role"]:checked')?.value || 'devops_sre';
   const templateInput = document.querySelector('input[name="template"]:checked');
-  const templateId = templateInput?.value || 'default';
+  const templateId = templateInput?.value;
+  
+  // Validate template selection
+  if (!templateId || templateId === 'default') {
+    alert('Please select a template before continuing.');
+    btn.innerHTML = 'Continue to Editor <i class="fas fa-arrow-right"></i>';
+    btn.disabled = false;
+    return;
+  }
   
   document.getElementById('selectedRole').value = role;
+  document.getElementById('selectedTemplateId').value = templateId;
   
   const form = document.getElementById('createResumeForm');
-  
-  if (templateId === 'default') {
-    // Use direct creation endpoint
-    window.location.href = `/resume-builder/create-resume-direct/?role=${role}`;
-  } else {
-    form.action = `/resume-builder/create-resume/${templateId}/`;
-    form.submit();
-  }
+  form.action = `/resume-builder/create-resume/${templateId}/`;
+  form.submit();
 }
 </script>
 {% endblock %}

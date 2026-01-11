@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/books/urls.py
+# hypothesis_version: 6.150.0
+
+['<int:id>/', '<int:id>/download/', '<int:id>/read/', '<int:id>/view/', 'books.category', 'books.create_review', 'books.delete_review', 'books.download', 'books.edit_review', 'books.index', 'books.read', 'books.show', 'books.view']
