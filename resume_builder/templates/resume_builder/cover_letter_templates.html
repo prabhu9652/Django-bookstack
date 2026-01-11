@@ -2,251 +2,1204 @@
 {% load static %}
 
 {% block content %}
-<div class="container" style="padding: var(--space-8) 0;">
-  <!-- Header -->
-  <div style="text-align: center; margin-bottom: var(--space-12);">
-    <h1 style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-4);">
-      Create Your Professional Cover Letter
-    </h1>
-    <p style="color: var(--text-secondary); font-size: var(--font-size-lg); max-width: 700px; margin: 0 auto;">
-      Select your role to get a tailored, industry-standard cover letter with role-specific content and professional formatting.
-    </p>
-  </div>
-
-  <!-- Role Selection -->
-  <div style="margin-bottom: var(--space-12);">
-    <h2 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-6); text-align: center;">
-      Step 1: Select Your Role
-    </h2>
-    
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-6); max-width: 1100px; margin: 0 auto;">
-      <!-- DevOps/SRE -->
-      <div class="role-card" data-role="devops_sre" onclick="selectRole('devops_sre')" 
-           style="background: var(--bg-surface); border: 2px solid var(--border-primary); border-radius: var(--radius-xl); padding: var(--space-6); cursor: pointer; transition: all 0.2s ease-out; position: relative;">
-        
-        <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
-          <div style="width: 56px; height: 56px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-server" style="font-size: var(--font-size-xl); color: var(--accent-primary);"></i>
-          </div>
-          <div>
-            <h3 style="font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary); margin: 0;">
-              DevOps / SRE Engineer
-            </h3>
-          </div>
+<div class="cover-letter-wizard">
+  <!-- Progress Header -->
+  <div class="wizard-header">
+    <div class="container">
+      <div class="wizard-nav">
+        <a href="{% url 'resume_builder:home' %}" class="back-link">
+          <i class="fas fa-arrow-left"></i>
+          <span>Back</span>
+        </a>
+        <div class="wizard-title">
+          <h1>Create Cover Letter</h1>
+          <p>Step 1 of 2: Context & Role Selection</p>
         </div>
-        
-        <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-4); line-height: 1.5;">
-          Cloud infrastructure, CI/CD pipelines, Kubernetes, Terraform, observability & monitoring
-        </p>
-        
-        <div style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
-          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">AWS</span>
-          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">Kubernetes</span>
-          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">Terraform</span>
-          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">CI/CD</span>
-          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">Docker</span>
-        </div>
-        
-        <div class="role-check" style="display: none; position: absolute; top: var(--space-4); right: var(--space-4);">
-          <i class="fas fa-check-circle" style="color: var(--accent-primary); font-size: var(--font-size-xl);"></i>
+        <div class="wizard-actions">
+          <span class="auto-save-indicator">
+            <i class="fas fa-cloud"></i>
+            <span>Auto-saved</span>
+          </span>
         </div>
       </div>
-
-      <!-- Software Engineer -->
-      <div class="role-card" data-role="software_engineer" onclick="selectRole('software_engineer')" 
-           style="background: var(--bg-surface); border: 2px solid var(--border-primary); border-radius: var(--radius-xl); padding: var(--space-6); cursor: pointer; transition: all 0.2s ease-out; position: relative;">
-        
-        <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
-          <div style="width: 56px; height: 56px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-code" style="font-size: var(--font-size-xl); color: var(--accent-primary);"></i>
+      
+      <!-- Progress Bar -->
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 50%;"></div>
+        </div>
+        <div class="progress-steps">
+          <div class="progress-step active">
+            <div class="step-dot"><i class="fas fa-check"></i></div>
+            <span>Setup</span>
           </div>
-          <div>
-            <h3 style="font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary); margin: 0;">
-              Software Engineer
-            </h3>
+          <div class="progress-step">
+            <div class="step-dot">2</div>
+            <span>Edit</span>
           </div>
-        </div>
-        
-        <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-4); line-height: 1.5;">
-          Full-stack development, APIs, microservices, system design, databases & clean architecture
-        </p>
-        
-        <div style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
-          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">Python</span>
-          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">React</span>
-          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">Node.js</span>
-          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">PostgreSQL</span>
-          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">REST APIs</span>
-        </div>
-        
-        <div class="role-check" style="display: none; position: absolute; top: var(--space-4); right: var(--space-4);">
-          <i class="fas fa-check-circle" style="color: var(--accent-primary); font-size: var(--font-size-xl);"></i>
-        </div>
-      </div>
-
-      <!-- DS/ML Engineer -->
-      <div class="role-card" data-role="ds_ml" onclick="selectRole('ds_ml')" 
-           style="background: var(--bg-surface); border: 2px solid var(--border-primary); border-radius: var(--radius-xl); padding: var(--space-6); cursor: pointer; transition: all 0.2s ease-out; position: relative;">
-        
-        <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
-          <div style="width: 56px; height: 56px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-brain" style="font-size: var(--font-size-xl); color: var(--accent-primary);"></i>
-          </div>
-          <div>
-            <h3 style="font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary); margin: 0;">
-              DS / ML Engineer
-            </h3>
-          </div>
-        </div>
-        
-        <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-4); line-height: 1.5;">
-          Machine learning, data pipelines, model training & deployment, MLOps & analytics
-        </p>
-        
-        <div style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
-          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">TensorFlow</span>
-          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">PyTorch</span>
-          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">Pandas</span>
-          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">MLflow</span>
-          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">Scikit-learn</span>
-        </div>
-        
-        <div class="role-check" style="display: none; position: absolute; top: var(--space-4); right: var(--space-4);">
-          <i class="fas fa-check-circle" style="color: var(--accent-primary); font-size: var(--font-size-xl);"></i>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Template Selection -->
-  <div id="templateSection" style="display: none;">
-    <h2 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-6); text-align: center;">
-      Step 2: Choose a Template Style
-    </h2>
-    
-    {% if templates %}
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-6); max-width: 1100px; margin: 0 auto;">
-        {% for template in templates %}
-          <div class="template-card" data-template-id="{{ template.id }}"
-               style="background: var(--bg-surface); border: 2px solid var(--border-primary); border-radius: var(--radius-xl); padding: var(--space-6); cursor: pointer; transition: all 0.2s ease-out;">
-            
-            <div style="width: 100%; height: 160px; background: var(--bg-elevated); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-4); border: 1px solid var(--border-primary);">
-              <i class="fas fa-envelope" style="font-size: var(--font-size-4xl); color: var(--accent-primary);"></i>
+  <!-- Main Content -->
+  <div class="wizard-content">
+    <div class="container">
+      <div class="wizard-grid">
+        <!-- Left Panel: Configuration -->
+        <div class="config-panel">
+          <!-- Letter Type Selection -->
+          <div class="config-section">
+            <div class="section-header">
+              <div class="section-icon"><i class="fas fa-file-signature"></i></div>
+              <div>
+                <h2>Cover Letter Type</h2>
+                <p>Choose the type that matches your application</p>
+              </div>
             </div>
             
-            <h3 style="font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2); text-align: center;">
-              {{ template.name }}
-            </h3>
-            <p style="color: var(--text-secondary); font-size: var(--font-size-sm); text-align: center; margin-bottom: var(--space-4);">
-              {{ template.description|default:"Professional cover letter template" }}
-            </p>
-            
-            <button type="button" onclick="createCoverLetter({{ template.id }})" class="btn btn-primary" style="width: 100%;">
-              <i class="fas fa-plus"></i>
-              Use This Template
-            </button>
+            <div class="letter-type-options">
+              <label class="letter-type-option">
+                <input type="radio" name="letter_type" value="job_specific" checked>
+                <div class="letter-type-card">
+                  <div class="lt-icon"><i class="fas fa-bullseye"></i></div>
+                  <div class="lt-content">
+                    <span class="lt-name">Job-Specific</span>
+                    <span class="lt-desc">Tailored for a specific job posting</span>
+                  </div>
+                  <div class="lt-badge">Recommended</div>
+                </div>
+              </label>
+              
+              <label class="letter-type-option">
+                <input type="radio" name="letter_type" value="general">
+                <div class="letter-type-card">
+                  <div class="lt-icon"><i class="fas fa-paper-plane"></i></div>
+                  <div class="lt-content">
+                    <span class="lt-name">General / Cold Outreach</span>
+                    <span class="lt-desc">For networking or speculative applications</span>
+                  </div>
+                </div>
+              </label>
+              
+              <label class="letter-type-option">
+                <input type="radio" name="letter_type" value="internship">
+                <div class="letter-type-card">
+                  <div class="lt-icon"><i class="fas fa-graduation-cap"></i></div>
+                  <div class="lt-content">
+                    <span class="lt-name">Internship / Fresher</span>
+                    <span class="lt-desc">For entry-level or internship positions</span>
+                  </div>
+                </div>
+              </label>
+            </div>
           </div>
-        {% endfor %}
-      </div>
-    {% else %}
-      <!-- No templates - show direct create option -->
-      <div class="card" style="padding: var(--space-8); text-align: center; max-width: 600px; margin: 0 auto;">
-        <div style="width: 64px; height: 64px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4) auto;">
-          <i class="fas fa-envelope" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
+
+          <!-- Role Selection -->
+          <div class="config-section">
+            <div class="section-header">
+              <div class="section-icon"><i class="fas fa-briefcase"></i></div>
+              <div>
+                <h2>Select Target Role</h2>
+                <p>Get role-specific content suggestions</p>
+              </div>
+            </div>
+            
+            <div class="role-options">
+              <label class="role-option">
+                <input type="radio" name="role" value="devops_sre" checked>
+                <div class="role-card">
+                  <div class="role-icon"><i class="fas fa-server"></i></div>
+                  <div class="role-info">
+                    <h3>DevOps / SRE Engineer</h3>
+                    <p>Cloud infrastructure, CI/CD, Kubernetes</p>
+                  </div>
+                  <div class="role-check"><i class="fas fa-check-circle"></i></div>
+                </div>
+              </label>
+              
+              <label class="role-option">
+                <input type="radio" name="role" value="software_engineer">
+                <div class="role-card">
+                  <div class="role-icon"><i class="fas fa-code"></i></div>
+                  <div class="role-info">
+                    <h3>Software Engineer</h3>
+                    <p>Full-stack development, APIs, system design</p>
+                  </div>
+                  <div class="role-check"><i class="fas fa-check-circle"></i></div>
+                </div>
+              </label>
+              
+              <label class="role-option">
+                <input type="radio" name="role" value="ds_ml">
+                <div class="role-card">
+                  <div class="role-icon"><i class="fas fa-brain"></i></div>
+                  <div class="role-info">
+                    <h3>Data Science / ML Engineer</h3>
+                    <p>Machine learning, data pipelines, MLOps</p>
+                  </div>
+                  <div class="role-check"><i class="fas fa-check-circle"></i></div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Tone Selection -->
+          <div class="config-section">
+            <div class="section-header">
+              <div class="section-icon"><i class="fas fa-comment-alt"></i></div>
+              <div>
+                <h2>Writing Tone</h2>
+                <p>Choose the tone that fits your target company</p>
+              </div>
+            </div>
+            
+            <div class="tone-options">
+              <label class="tone-option">
+                <input type="radio" name="tone" value="professional" checked>
+                <div class="tone-card">
+                  <div class="tone-icon"><i class="fas fa-user-tie"></i></div>
+                  <div class="tone-info">
+                    <span class="tone-name">Professional</span>
+                    <span class="tone-desc">Formal, corporate-friendly</span>
+                  </div>
+                </div>
+              </label>
+              
+              <label class="tone-option">
+                <input type="radio" name="tone" value="conversational">
+                <div class="tone-card">
+                  <div class="tone-icon"><i class="fas fa-comments"></i></div>
+                  <div class="tone-info">
+                    <span class="tone-name">Conversational</span>
+                    <span class="tone-desc">Friendly, startup-style</span>
+                  </div>
+                </div>
+              </label>
+              
+              <label class="tone-option">
+                <input type="radio" name="tone" value="executive">
+                <div class="tone-card">
+                  <div class="tone-icon"><i class="fas fa-crown"></i></div>
+                  <div class="tone-info">
+                    <span class="tone-name">Executive</span>
+                    <span class="tone-desc">Leadership-focused</span>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Template Selection -->
+          <div class="config-section">
+            <div class="section-header">
+              <div class="section-icon"><i class="fas fa-palette"></i></div>
+              <div>
+                <h2>Template Style</h2>
+                <p>All templates are recruiter-approved</p>
+              </div>
+            </div>
+            
+            <div class="template-options">
+              {% for template in templates %}
+              <label class="template-option">
+                <input type="radio" name="template" value="{{ template.id }}" {% if forloop.first %}checked{% endif %}>
+                <div class="template-card">
+                  <div class="template-preview">
+                    <div class="cl-preview-mock">
+                      <div class="clm-header"></div>
+                      <div class="clm-body">
+                        <div class="clm-line"></div>
+                        <div class="clm-line long"></div>
+                        <div class="clm-line"></div>
+                      </div>
+                      <div class="clm-signature"></div>
+                    </div>
+                  </div>
+                  <div class="template-info">
+                    <h4>{{ template.name }}</h4>
+                  </div>
+                  <div class="template-check"><i class="fas fa-check-circle"></i></div>
+                </div>
+              </label>
+              {% empty %}
+              <label class="template-option">
+                <input type="radio" name="template" value="default" checked>
+                <div class="template-card">
+                  <div class="template-preview">
+                    <div class="cl-preview-mock">
+                      <div class="clm-header"></div>
+                      <div class="clm-body">
+                        <div class="clm-line"></div>
+                        <div class="clm-line long"></div>
+                        <div class="clm-line"></div>
+                      </div>
+                      <div class="clm-signature"></div>
+                    </div>
+                  </div>
+                  <div class="template-info">
+                    <h4>Professional</h4>
+                  </div>
+                  <div class="template-check"><i class="fas fa-check-circle"></i></div>
+                </div>
+              </label>
+              {% endfor %}
+            </div>
+          </div>
         </div>
-        <h3 style="font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">
-          Ready to Create Your Cover Letter
-        </h3>
-        <p style="color: var(--text-secondary); margin-bottom: var(--space-4);">
-          Click below to create your professional cover letter with role-specific content.
-        </p>
-        <button type="button" onclick="createCoverLetterDirect()" class="btn btn-primary btn-lg">
-          <i class="fas fa-plus"></i>
-          Create Cover Letter
+
+        <!-- Right Panel: Preview & Tips -->
+        <div class="preview-panel">
+          <!-- Cover Letter Preview -->
+          <div class="preview-card">
+            <div class="preview-header">
+              <h3><i class="fas fa-eye"></i> Preview</h3>
+              <span class="preview-badge">Live preview</span>
+            </div>
+            <div class="preview-content">
+              <div class="cl-preview">
+                <div class="clp-header">
+                  <div class="clp-name"></div>
+                  <div class="clp-contact"></div>
+                </div>
+                <div class="clp-date"></div>
+                <div class="clp-recipient">
+                  <div class="clp-line short"></div>
+                  <div class="clp-line"></div>
+                </div>
+                <div class="clp-body">
+                  <div class="clp-para">
+                    <div class="clp-line"></div>
+                    <div class="clp-line long"></div>
+                    <div class="clp-line"></div>
+                  </div>
+                  <div class="clp-para">
+                    <div class="clp-line"></div>
+                    <div class="clp-line long"></div>
+                    <div class="clp-line"></div>
+                    <div class="clp-line short"></div>
+                  </div>
+                </div>
+                <div class="clp-signature">
+                  <div class="clp-line short"></div>
+                  <div class="clp-line shorter"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- What's Included -->
+          <div class="included-card">
+            <div class="included-header">
+              <i class="fas fa-magic"></i>
+              <span>What You'll Get</span>
+            </div>
+            <ul class="included-list">
+              <li><i class="fas fa-check"></i> Role-specific opening hook</li>
+              <li><i class="fas fa-check"></i> Skills & experience highlights</li>
+              <li><i class="fas fa-check"></i> Company alignment section</li>
+              <li><i class="fas fa-check"></i> Professional call-to-action</li>
+              <li><i class="fas fa-check"></i> Recruiter-optimized format</li>
+            </ul>
+          </div>
+
+          <!-- Tips -->
+          <div class="tips-card">
+            <div class="tips-header">
+              <i class="fas fa-lightbulb"></i>
+              <span>Pro Tips</span>
+            </div>
+            <ul class="tips-list">
+              <li><i class="fas fa-check"></i> Customize for each application</li>
+              <li><i class="fas fa-check"></i> Keep it under one page</li>
+              <li><i class="fas fa-check"></i> Match your resume's style</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Footer -->
+      <div class="wizard-footer">
+        <a href="{% url 'resume_builder:home' %}" class="btn-footer-secondary">
+          <i class="fas fa-arrow-left"></i>
+          Cancel
+        </a>
+        <button type="button" id="continueBtn" class="btn-footer-primary" onclick="createCoverLetter()">
+          Continue to Editor
+          <i class="fas fa-arrow-right"></i>
         </button>
       </div>
-    {% endif %}
-  </div>
-
-  <!-- Back Button -->
-  <div style="text-align: center; margin-top: var(--space-8);">
-    <a href="{% url 'resume_builder:dashboard' %}" class="btn btn-ghost">
-      <i class="fas fa-arrow-left"></i>
-      Back to Dashboard
-    </a>
+    </div>
   </div>
 </div>
 
-<!-- Hidden form for creating cover letter -->
+<!-- Hidden form -->
 <form id="createCoverLetterForm" method="post" style="display: none;">
   {% csrf_token %}
-  <input type="hidden" name="role" id="selectedRole" value="">
+  <input type="hidden" name="letter_type" id="selectedLetterType" value="job_specific">
+  <input type="hidden" name="role" id="selectedRole" value="devops_sre">
+  <input type="hidden" name="tone" id="selectedTone" value="professional">
 </form>
 
 <style>
-.role-card:hover {
-  border-color: var(--accent-primary);
-  transform: translateY(-4px);
-  background: var(--bg-elevated);
+/* Cover Letter Wizard - Reuses resume wizard styles */
+.cover-letter-wizard {
+  min-height: 100vh;
+  background: var(--bg-primary);
 }
 
-.role-card.selected {
-  border-color: var(--accent-primary);
-  background: var(--bg-elevated);
-  box-shadow: 0 0 0 3px var(--accent-subtle);
+/* Wizard Header */
+.wizard-header {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-default);
+  padding: 1rem 0 1.5rem;
+  position: sticky;
+  top: 64px;
+  z-index: 100;
 }
 
-.role-card.selected .role-check {
-  display: block !important;
+.wizard-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
 }
 
-.template-card:hover {
-  border-color: var(--accent-primary);
-  transform: translateY(-4px);
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.back-link:hover { color: #4a9eff; }
+
+.wizard-title {
+  text-align: center;
+}
+
+.wizard-title h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.wizard-title p {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.auto-save-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: #22c55e;
+}
+
+/* Progress Bar */
+.progress-container {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.progress-bar {
+  height: 4px;
   background: var(--bg-elevated);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4a9eff 0%, #22c55e 100%);
+  border-radius: 2px;
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+}
+
+.progress-step {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.progress-step.active { color: var(--text-primary); }
+
+.step-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.progress-step.active .step-dot {
+  background: #4a9eff;
+  border-color: #4a9eff;
+  color: white;
+}
+
+/* Wizard Content */
+.wizard-content {
+  padding: 2rem 0 4rem;
+}
+
+.wizard-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* Config Panel */
+.config-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.config-section {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.section-icon {
+  width: 44px;
+  height: 44px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.section-icon i {
+  font-size: 1.125rem;
+  color: #4a9eff;
+}
+
+.section-header h2 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.section-header p {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Letter Type Options */
+.letter-type-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.letter-type-option {
+  cursor: pointer;
+}
+
+.letter-type-option input { display: none; }
+
+.letter-type-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-default);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.letter-type-option:hover .letter-type-card {
+  border-color: rgba(74, 158, 255, 0.3);
+}
+
+.letter-type-option input:checked + .letter-type-card {
+  border-color: #4a9eff;
+  background: rgba(74, 158, 255, 0.05);
+}
+
+.lt-icon {
+  width: 44px;
+  height: 44px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.lt-icon i {
+  font-size: 1.125rem;
+  color: #4a9eff;
+}
+
+.lt-content {
+  flex: 1;
+}
+
+.lt-name {
+  display: block;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.125rem;
+}
+
+.lt-desc {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.lt-badge {
+  position: absolute;
+  top: -8px;
+  right: 12px;
+  padding: 0.25rem 0.625rem;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Role Options */
+.role-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.role-option { cursor: pointer; }
+.role-option input { display: none; }
+
+.role-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-default);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.role-option:hover .role-card {
+  border-color: rgba(74, 158, 255, 0.3);
+}
+
+.role-option input:checked + .role-card {
+  border-color: #4a9eff;
+  background: rgba(74, 158, 255, 0.05);
+}
+
+.role-icon {
+  width: 44px;
+  height: 44px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.role-icon i {
+  font-size: 1.125rem;
+  color: #4a9eff;
+}
+
+.role-info { flex: 1; }
+
+.role-info h3 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.125rem;
+}
+
+.role-info p {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.role-check {
+  color: var(--border-default);
+  font-size: 1.25rem;
+}
+
+.role-option input:checked + .role-card .role-check {
+  color: #4a9eff;
+}
+
+/* Tone Options */
+.tone-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.tone-option { cursor: pointer; }
+.tone-option input { display: none; }
+
+.tone-card {
+  padding: 1rem;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-default);
+  border-radius: 10px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.tone-option:hover .tone-card {
+  border-color: rgba(74, 158, 255, 0.3);
+}
+
+.tone-option input:checked + .tone-card {
+  border-color: #4a9eff;
+  background: rgba(74, 158, 255, 0.05);
+}
+
+.tone-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.75rem;
+}
+
+.tone-icon i {
+  font-size: 1rem;
+  color: #4a9eff;
+}
+
+.tone-name {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.125rem;
+}
+
+.tone-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Template Options */
+.template-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.template-option { cursor: pointer; }
+.template-option input { display: none; }
+
+.template-card {
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-default);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.template-option:hover .template-card {
+  border-color: rgba(74, 158, 255, 0.3);
+}
+
+.template-option input:checked + .template-card {
+  border-color: #4a9eff;
+}
+
+.template-preview {
+  padding: 0.75rem;
+  background: #fff;
+}
+
+.cl-preview-mock {
+  aspect-ratio: 8.5/11;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+
+.clm-header {
+  height: 15%;
+  background: linear-gradient(135deg, #4a9d9a 0%, #3d8584 100%);
+  border-radius: 2px;
+  margin-bottom: 0.5rem;
+}
+
+.clm-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.clm-line {
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 1px;
+}
+
+.clm-line.long { width: 90%; }
+
+.clm-signature {
+  height: 8px;
+  width: 40%;
+  background: #cbd5e1;
+  border-radius: 1px;
+}
+
+.template-info {
+  padding: 0.625rem;
+  text-align: center;
+  border-top: 1px solid var(--border-default);
+}
+
+.template-info h4 {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.template-check {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  color: transparent;
+  font-size: 1.125rem;
+}
+
+.template-option input:checked + .template-card .template-check {
+  color: #4a9eff;
+}
+
+/* Preview Panel */
+.preview-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: sticky;
+  top: 180px;
+}
+
+.preview-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.preview-header h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.preview-header i { color: #4a9eff; }
+
+.preview-badge {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+.preview-content {
+  padding: 1.25rem;
+  background: #f8fafc;
+}
+
+/* Cover Letter Preview Mock */
+.cl-preview {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  min-height: 280px;
+  transition: opacity 0.2s ease;
+}
+
+.clp-header {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #4a9d9a;
+}
+
+.clp-name {
+  height: 14px;
+  width: 45%;
+  background: #1e293b;
+  border-radius: 2px;
+  margin-bottom: 0.375rem;
+}
+
+.clp-contact {
+  height: 8px;
+  width: 70%;
+  background: #94a3b8;
+  border-radius: 2px;
+}
+
+.clp-date {
+  height: 8px;
+  width: 25%;
+  background: #cbd5e1;
+  border-radius: 2px;
+  margin-bottom: 1rem;
+}
+
+.clp-recipient {
+  margin-bottom: 1rem;
+}
+
+.clp-line {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 2px;
+  margin-bottom: 0.375rem;
+}
+
+.clp-line.short { width: 35%; }
+.clp-line.long { width: 95%; }
+.clp-line.shorter { width: 25%; }
+
+.clp-body {
+  margin-bottom: 1rem;
+}
+
+.clp-para {
+  margin-bottom: 0.75rem;
+}
+
+.clp-signature {
+  margin-top: 1rem;
+}
+
+/* Included Card */
+.included-card {
+  background: rgba(34, 197, 94, 0.05);
+  border: 1px solid rgba(34, 197, 94, 0.15);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.included-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #22c55e;
+  margin-bottom: 0.75rem;
+}
+
+.included-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.included-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.included-list li:last-child { margin-bottom: 0; }
+
+.included-list li i {
+  color: #22c55e;
+  font-size: 0.75rem;
+  margin-top: 0.125rem;
+}
+
+/* Tips Card */
+.tips-card {
+  background: rgba(74, 158, 255, 0.05);
+  border: 1px solid rgba(74, 158, 255, 0.15);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.tips-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #4a9eff;
+  margin-bottom: 0.75rem;
+}
+
+.tips-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tips-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.tips-list li:last-child { margin-bottom: 0; }
+
+.tips-list li i {
+  color: #22c55e;
+  font-size: 0.75rem;
+  margin-top: 0.125rem;
+}
+
+/* Wizard Footer */
+.wizard-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 2rem;
+  margin-top: 2rem;
+  border-top: 1px solid var(--border-default);
+}
+
+.btn-footer-primary, .btn-footer-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-footer-primary {
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  color: white;
+}
+
+.btn-footer-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 158, 255, 0.35);
+}
+
+.btn-footer-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+}
+
+.btn-footer-secondary:hover {
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .wizard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .preview-panel {
+    position: static;
+    order: -1;
+  }
+  
+  .preview-card { display: none; }
+  
+  .tone-options {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .template-options {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .wizard-nav {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .wizard-title {
+    order: -1;
+    width: 100%;
+  }
+  
+  .tone-options {
+    grid-template-columns: 1fr;
+  }
+  
+  .template-options {
+    grid-template-columns: 1fr;
+  }
+  
+  .wizard-footer {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .btn-footer-primary, .btn-footer-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .btn-footer-primary:hover {
+    transform: none;
+  }
+  
+  .role-card,
+  .tone-card,
+  .template-card,
+  .cl-preview {
+    transition: none;
+  }
 }
 </style>
 
 <script>
-let selectedRole = null;
-
-function selectRole(roleId) {
-  selectedRole = roleId;
-  document.getElementById('selectedRole').value = roleId;
-  
-  // Update UI
-  document.querySelectorAll('.role-card').forEach(card => {
-    card.classList.remove('selected');
+document.addEventListener('DOMContentLoaded', function() {
+  // Update hidden form values when selections change
+  document.querySelectorAll('input[name="letter_type"]').forEach(input => {
+    input.addEventListener('change', function() {
+      document.getElementById('selectedLetterType').value = this.value;
+      updatePreview();
+    });
   });
-  document.querySelector(`[data-role="${roleId}"]`).classList.add('selected');
   
-  // Show template section
-  document.getElementById('templateSection').style.display = 'block';
+  document.querySelectorAll('input[name="role"]').forEach(input => {
+    input.addEventListener('change', function() {
+      document.getElementById('selectedRole').value = this.value;
+      updatePreview();
+    });
+  });
   
-  // Scroll to template section
-  setTimeout(() => {
-    document.getElementById('templateSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 100);
+  document.querySelectorAll('input[name="tone"]').forEach(input => {
+    input.addEventListener('change', function() {
+      document.getElementById('selectedTone').value = this.value;
+      updatePreview();
+    });
+  });
+  
+  document.querySelectorAll('input[name="template"]').forEach(input => {
+    input.addEventListener('change', function() {
+      updatePreview();
+    });
+  });
+});
+
+function updatePreview() {
+  // Visual feedback for selection changes
+  const preview = document.querySelector('.cl-preview');
+  if (preview) {
+    preview.style.opacity = '0.7';
+    setTimeout(() => {
+      preview.style.opacity = '1';
+    }, 200);
+  }
 }
 
-function createCoverLetter(templateId) {
-  if (!selectedRole) {
-    alert('Please select a role first');
-    return;
-  }
+function createCoverLetter() {
+  const btn = document.getElementById('continueBtn');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+  btn.disabled = true;
   
-  const form = document.getElementById('createCoverLetterForm');
-  form.action = `/resume-builder/create-cover-letter/${templateId}/?role=${selectedRole}`;
-  form.submit();
-}
-
-function createCoverLetterDirect() {
-  if (!selectedRole) {
-    alert('Please select a role first');
-    return;
-  }
+  const letterType = document.querySelector('input[name="letter_type"]:checked')?.value || 'job_specific';
+  const role = document.querySelector('input[name="role"]:checked')?.value || 'devops_sre';
+  const tone = document.querySelector('input[name="tone"]:checked')?.value || 'professional';
+  const templateInput = document.querySelector('input[name="template"]:checked');
+  const templateId = templateInput?.value || 'default';
   
-  window.location.href = `/resume-builder/create-cover-letter/?role=${selectedRole}`;
+  document.getElementById('selectedRole').value = role;
+  document.getElementById('selectedLetterType').value = letterType;
+  
+  // Navigate to cover letter creation
+  const params = new URLSearchParams({
+    letter_type: letterType,
+    role: role,
+    tone: tone
+  });
+  
+  if (templateId && templateId !== 'default') {
+    // Use template-specific creation endpoint
+    const form = document.getElementById('createCoverLetterForm');
+    form.action = `{% url 'resume_builder:create_cover_letter' template_id=0 %}`.replace('/0/', `/${templateId}/`);
+    form.submit();
+  } else {
+    // Use direct creation endpoint
+    window.location.href = `{% url 'resume_builder:create_cover_letter_direct' %}?${params.toString()}`;
+  }
 }
 </script>
 {% endblock %}

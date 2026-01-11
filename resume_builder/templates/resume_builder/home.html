@@ -2,107 +2,1318 @@
 {% load static %}
 
 {% block content %}
-<div class="container" style="padding: var(--space-8) 0;">
-  <!-- Hero Section -->
-  <div style="text-align: center; margin-bottom: var(--space-16);">
-    <div style="background: var(--bg-hero); padding: var(--space-16) var(--space-8); border-radius: var(--radius-xl); margin-bottom: var(--space-8);">
-      <h1 style="font-size: var(--font-size-4xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-4);">
-        Professional Resume & Cover Letter Builder
-      </h1>
-      <p style="font-size: var(--font-size-lg); color: var(--text-secondary); max-width: 600px; margin: 0 auto var(--space-8) auto;">
-        Create stunning, professional resumes and cover letters with our easy-to-use builder. Choose from multiple templates and customize to your needs.
-      </p>
+<div class="resume-builder-landing">
+  
+  <!-- Hero Section with Creation Choice -->
+  <section class="rb-hero">
+    <div class="hero-bg-effects">
+      <div class="hero-gradient"></div>
+      <div class="hero-pattern"></div>
+    </div>
+    <div class="container">
+      <div class="hero-content-centered">
+        <div class="hero-badge">
+          <i class="fas fa-shield-alt"></i>
+          <span>ATS-Friendly & Recruiter-Approved</span>
+        </div>
+        <h1>Build Your Professional <span class="highlight">Career Documents</span></h1>
+        <p class="hero-subtitle">Create ATS-optimized resumes and compelling cover letters that get you noticed by recruiters and land interviews at top companies.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Creation Choice Section - Primary Decision Point -->
+  <section class="rb-creation-choice">
+    <div class="container">
+      <div class="choice-header">
+        <h2>What would you like to create?</h2>
+        <p>Choose your document type to get started with our guided builder</p>
+      </div>
       
-      {% if user.is_authenticated %}
-        <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
-          <a href="{% url 'resume_builder:resume_templates' %}" class="btn btn-primary btn-lg">
+      <div class="choice-cards">
+        <!-- Resume Card -->
+        <div class="choice-card choice-resume">
+          <div class="choice-icon">
             <i class="fas fa-file-alt"></i>
-            Create Resume
+          </div>
+          <div class="choice-content">
+            <h3>Create Resume</h3>
+            <p class="choice-tagline">Stand out with a professional, ATS-optimized resume</p>
+            
+            <div class="choice-use-cases">
+              <span class="use-case"><i class="fas fa-check"></i> Job Applications</span>
+              <span class="use-case"><i class="fas fa-check"></i> Career Switch</span>
+              <span class="use-case"><i class="fas fa-check"></i> Fresh Graduates</span>
+              <span class="use-case"><i class="fas fa-check"></i> Promotions</span>
+            </div>
+            
+            <div class="choice-meta">
+              <div class="meta-item">
+                <i class="fas fa-clock"></i>
+                <span>~10 min to complete</span>
+              </div>
+              <div class="meta-item">
+                <i class="fas fa-robot"></i>
+                <span>ATS Score Included</span>
+              </div>
+            </div>
+          </div>
+          
+          {% if user.is_authenticated %}
+          <a href="{% url 'resume_builder:resume_templates' %}" class="choice-cta">
+            <span>Start Resume</span>
+            <i class="fas fa-arrow-right"></i>
           </a>
-          <a href="{% url 'resume_builder:cover_letter_templates' %}" class="btn btn-secondary btn-lg">
-            <i class="fas fa-envelope"></i>
-            Create Cover Letter
+          {% else %}
+          <a href="{% url 'accounts.signup' %}?next={% url 'resume_builder:resume_templates' %}" class="choice-cta">
+            <span>Start Resume</span>
+            <i class="fas fa-arrow-right"></i>
           </a>
-          <a href="{% url 'resume_builder:dashboard' %}" class="btn btn-ghost btn-lg">
-            <i class="fas fa-tachometer-alt"></i>
-            My Documents
-          </a>
+          {% endif %}
         </div>
-      {% else %}
-        <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
-          <a href="{% url 'accounts.signup' %}" class="btn btn-primary btn-lg">
-            <i class="fas fa-user-plus"></i>
-            Get Started Free
+
+        <!-- Cover Letter Card -->
+        <div class="choice-card choice-cover-letter">
+          <div class="choice-icon">
+            <i class="fas fa-envelope-open-text"></i>
+          </div>
+          <div class="choice-content">
+            <h3>Create Cover Letter</h3>
+            <p class="choice-tagline">Craft a compelling letter that complements your resume</p>
+            
+            <div class="choice-use-cases">
+              <span class="use-case"><i class="fas fa-check"></i> Job-Specific</span>
+              <span class="use-case"><i class="fas fa-check"></i> Cold Outreach</span>
+              <span class="use-case"><i class="fas fa-check"></i> Internships</span>
+              <span class="use-case"><i class="fas fa-check"></i> Referrals</span>
+            </div>
+            
+            <div class="choice-meta">
+              <div class="meta-item">
+                <i class="fas fa-clock"></i>
+                <span>~5 min to complete</span>
+              </div>
+              <div class="meta-item">
+                <i class="fas fa-magic"></i>
+                <span>Role-Based Content</span>
+              </div>
+            </div>
+          </div>
+          
+          {% if user.is_authenticated %}
+          <a href="{% url 'resume_builder:cover_letter_templates' %}" class="choice-cta choice-cta-secondary">
+            <span>Start Cover Letter</span>
+            <i class="fas fa-arrow-right"></i>
           </a>
-          <a href="{% url 'accounts.login' %}" class="btn btn-ghost btn-lg">
-            <i class="fas fa-sign-in-alt"></i>
-            Sign In
+          {% else %}
+          <a href="{% url 'accounts.signup' %}?next={% url 'resume_builder:cover_letter_templates' %}" class="choice-cta choice-cta-secondary">
+            <span>Start Cover Letter</span>
+            <i class="fas fa-arrow-right"></i>
           </a>
+          {% endif %}
         </div>
+      </div>
+      
+      {% if not user.is_authenticated %}
+      <div class="choice-signin">
+        <p>Already have an account? <a href="{% url 'accounts.login' %}">Sign in</a> to access your documents</p>
+      </div>
       {% endif %}
     </div>
-  </div>
-
-  <!-- Features Grid -->
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-6); margin-bottom: var(--space-16);">
-    <div class="card" style="text-align: center; padding: var(--space-8);">
-      <div style="width: 60px; height: 60px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4) auto;">
-        <i class="fas fa-file-alt" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
-      </div>
-      <h3 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">
-        Professional Templates
-      </h3>
-      <p style="color: var(--text-secondary);">
-        Choose from {{ resume_count }} professionally designed resume templates that make you stand out.
-      </p>
-    </div>
-
-    <div class="card" style="text-align: center; padding: var(--space-8);">
-      <div style="width: 60px; height: 60px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4) auto;">
-        <i class="fas fa-envelope" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
-      </div>
-      <h3 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">
-        Cover Letters
-      </h3>
-      <p style="color: var(--text-secondary);">
-        Create compelling cover letters with {{ cover_letter_count }} templates tailored to different industries.
-      </p>
-    </div>
-
-    <div class="card" style="text-align: center; padding: var(--space-8);">
-      <div style="width: 60px; height: 60px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4) auto;">
-        <i class="fas fa-download" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
-      </div>
-      <h3 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">
-        Easy Export
-      </h3>
-      <p style="color: var(--text-secondary);">
-        Download your documents in multiple formats. Perfect for online applications and printing.
-      </p>
-    </div>
-  </div>
+  </section>
 
   {% if user.is_authenticated %}
-    <!-- User Stats -->
-    <div class="card" style="padding: var(--space-8); text-align: center;">
-      <h2 style="font-size: var(--font-size-2xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-6);">
-        Your Documents
-      </h2>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-6);">
-        <div>
-          <div style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--accent-primary);">
-            {{ user_resumes|default:0 }}
+  <!-- Quick Access for Authenticated Users -->
+  <section class="rb-quick-access">
+    <div class="container">
+      <div class="quick-access-card">
+        <div class="qa-header">
+          <div class="qa-icon">
+            <i class="fas fa-folder-open"></i>
           </div>
-          <div style="color: var(--text-secondary);">Resumes Created</div>
+          <div class="qa-info">
+            <h3>Your Documents</h3>
+            <p>Continue editing or create new documents</p>
+          </div>
         </div>
-        <div>
-          <div style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--accent-primary);">
-            {{ user_cover_letters|default:0 }}
+        <div class="qa-stats">
+          <div class="qa-stat">
+            <span class="qa-stat-value">{{ user_resumes|default:0 }}</span>
+            <span class="qa-stat-label">Resumes</span>
           </div>
-          <div style="color: var(--text-secondary);">Cover Letters</div>
+          <div class="qa-stat">
+            <span class="qa-stat-value">{{ user_cover_letters|default:0 }}</span>
+            <span class="qa-stat-label">Cover Letters</span>
+          </div>
+        </div>
+        <a href="{% url 'resume_builder:dashboard' %}" class="qa-cta">
+          <i class="fas fa-external-link-alt"></i>
+          View All Documents
+        </a>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- How It Works Section -->
+  <section class="rb-how-it-works">
+    <div class="container">
+      <div class="section-header-center">
+        <span class="section-badge">Simple Process</span>
+        <h2>How It Works</h2>
+        <p>Our guided process makes document creation fast and stress-free</p>
+      </div>
+      
+      <div class="process-tabs">
+        <button class="process-tab active" data-tab="resume">
+          <i class="fas fa-file-alt"></i>
+          Resume Process
+        </button>
+        <button class="process-tab" data-tab="cover-letter">
+          <i class="fas fa-envelope"></i>
+          Cover Letter Process
+        </button>
+      </div>
+      
+      <!-- Resume Process Steps -->
+      <div class="process-content active" id="resume-process">
+        <div class="steps-timeline">
+          <div class="timeline-step">
+            <div class="step-marker">1</div>
+            <div class="step-content">
+              <h4>Select Your Profile</h4>
+              <p>Choose your experience level (Fresher, Mid, Senior, Executive) and target industry</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-marker">2</div>
+            <div class="step-content">
+              <h4>Choose Template</h4>
+              <p>Pick from ATS-friendly, role-specific templates designed by recruiters</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-marker">3</div>
+            <div class="step-content">
+              <h4>Fill Your Details</h4>
+              <p>Add experience, skills, and education with smart suggestions and inline tips</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-marker">4</div>
+            <div class="step-content">
+              <h4>Review & Export</h4>
+              <p>Check your ATS score, preview your resume, and download as PDF</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Cover Letter Process Steps -->
+      <div class="process-content" id="cover-letter-process">
+        <div class="steps-timeline">
+          <div class="timeline-step">
+            <div class="step-marker">1</div>
+            <div class="step-content">
+              <h4>Select Letter Type</h4>
+              <p>Choose job-specific, general outreach, or internship cover letter</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-marker">2</div>
+            <div class="step-content">
+              <h4>Set Tone & Style</h4>
+              <p>Pick Professional, Conversational, or Executive tone for your target company</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-marker">3</div>
+            <div class="step-content">
+              <h4>Guided Writing</h4>
+              <p>Fill in sections with role-specific content suggestions and examples</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-marker">4</div>
+            <div class="step-content">
+              <h4>Preview & Export</h4>
+              <p>Review your letter, make final edits, and download as PDF</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  {% endif %}
+  </section>
+
+  <!-- Features Section -->
+  <section class="rb-features">
+    <div class="container">
+      <div class="section-header-center">
+        <span class="section-badge">Why Choose Us</span>
+        <h2>Built for Job Seekers</h2>
+        <p>Professional tools designed by recruiters and career experts</p>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-robot"></i></div>
+          <h3>ATS-Optimized</h3>
+          <p>Templates designed to pass Applicant Tracking Systems used by 99% of Fortune 500 companies.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-palette"></i></div>
+          <h3>Professional Templates</h3>
+          <p>Role-specific layouts tailored for different industries and experience levels.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-lightbulb"></i></div>
+          <h3>Smart Suggestions</h3>
+          <p>Get role-specific content suggestions and bullet point examples to highlight achievements.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-eye"></i></div>
+          <h3>Live Preview</h3>
+          <p>See your changes in real-time as you build. No surprises when you download.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-file-pdf"></i></div>
+          <h3>PDF Export</h3>
+          <p>Download high-quality PDF files that look perfect on any device and print beautifully.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-sync-alt"></i></div>
+          <h3>Version Control</h3>
+          <p>Create multiple versions for different roles and track your document history.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Role Templates Section -->
+  <section class="rb-roles">
+    <div class="container">
+      <div class="section-header-center">
+        <span class="section-badge">Tailored for You</span>
+        <h2>Templates for Every Role</h2>
+        <p>Industry-specific templates with pre-written content suggestions</p>
+      </div>
+      
+      <div class="roles-grid">
+        <a href="{% url 'resume_builder:resume_templates' %}?role=devops_sre" class="role-preview-card">
+          <div class="role-icon"><i class="fas fa-server"></i></div>
+          <h3>DevOps / SRE</h3>
+          <p>Cloud infrastructure, CI/CD, Kubernetes, monitoring & observability</p>
+          <div class="role-skills">
+            <span>AWS</span><span>Terraform</span><span>K8s</span><span>Docker</span>
+          </div>
+          <span class="role-cta">Create Resume <i class="fas fa-arrow-right"></i></span>
+        </a>
+        
+        <a href="{% url 'resume_builder:resume_templates' %}?role=software_engineer" class="role-preview-card">
+          <div class="role-icon"><i class="fas fa-code"></i></div>
+          <h3>Software Engineer</h3>
+          <p>Full-stack development, APIs, databases, system design</p>
+          <div class="role-skills">
+            <span>Python</span><span>React</span><span>Node.js</span><span>SQL</span>
+          </div>
+          <span class="role-cta">Create Resume <i class="fas fa-arrow-right"></i></span>
+        </a>
+        
+        <a href="{% url 'resume_builder:resume_templates' %}?role=ds_ml" class="role-preview-card">
+          <div class="role-icon"><i class="fas fa-brain"></i></div>
+          <h3>Data Science / ML</h3>
+          <p>Machine learning, data pipelines, model deployment, analytics</p>
+          <div class="role-skills">
+            <span>Python</span><span>TensorFlow</span><span>PyTorch</span><span>SQL</span>
+          </div>
+          <span class="role-cta">Create Resume <i class="fas fa-arrow-right"></i></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="rb-cta">
+    <div class="container">
+      <div class="cta-card">
+        <div class="cta-glow"></div>
+        <div class="cta-content">
+          <div class="cta-icon"><i class="fas fa-rocket"></i></div>
+          <h2>Ready to Build Your Career Documents?</h2>
+          <p>Join thousands of job seekers who have landed their dream jobs with our tools.</p>
+          <div class="cta-buttons">
+            {% if user.is_authenticated %}
+            <a href="{% url 'resume_builder:resume_templates' %}" class="btn-cta-primary">
+              <i class="fas fa-file-alt"></i> Create Resume
+            </a>
+            <a href="{% url 'resume_builder:cover_letter_templates' %}" class="btn-cta-secondary">
+              <i class="fas fa-envelope"></i> Create Cover Letter
+            </a>
+            {% else %}
+            <a href="{% url 'accounts.signup' %}" class="btn-cta-primary">
+              <i class="fas fa-user-plus"></i> Get Started Free
+            </a>
+            <a href="{% url 'accounts.login' %}" class="btn-cta-secondary">Sign In</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </div>
+
+<style>
+/* Resume Builder Landing Page Styles */
+.resume-builder-landing {
+  background: var(--bg-primary);
+}
+
+/* Hero Section - Centered */
+.rb-hero {
+  position: relative;
+  padding: 4rem 0 2rem;
+  overflow: hidden;
+}
+
+.hero-bg-effects {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-gradient {
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 150%;
+  background: radial-gradient(ellipse, rgba(74, 158, 255, 0.08) 0%, transparent 70%);
+}
+
+.hero-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(74, 158, 255, 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+.hero-content-centered {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 50px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #22c55e;
+  margin-bottom: 1.5rem;
+}
+
+.hero-content-centered h1 {
+  font-size: 2.75rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.15;
+  margin: 0 0 1rem;
+  letter-spacing: -0.02em;
+}
+
+.hero-content-centered h1 .highlight {
+  background: linear-gradient(135deg, #4a9eff 0%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+</style>
+
+<style>
+/* Creation Choice Section - Primary Decision Point */
+.rb-creation-choice {
+  padding: 3rem 0 4rem;
+}
+
+.choice-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.choice-header h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.choice-header p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.choice-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.choice-card {
+  background: var(--bg-surface);
+  border: 2px solid var(--border-default);
+  border-radius: 20px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.choice-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #4a9eff 0%, #6366f1 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.choice-card:hover {
+  border-color: rgba(74, 158, 255, 0.4);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.choice-card:hover::before {
+  opacity: 1;
+}
+
+.choice-icon {
+  width: 64px;
+  height: 64px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.choice-icon i {
+  font-size: 1.75rem;
+  color: #4a9eff;
+}
+
+.choice-cover-letter .choice-icon {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.choice-cover-letter .choice-icon i {
+  color: #8b5cf6;
+}
+
+.choice-content {
+  flex: 1;
+}
+
+.choice-content h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.choice-tagline {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin: 0 0 1.25rem;
+  line-height: 1.5;
+}
+
+.choice-use-cases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.use-case {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: var(--bg-elevated);
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.use-case i {
+  font-size: 0.625rem;
+  color: #22c55e;
+}
+
+.choice-meta {
+  display: flex;
+  gap: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-default);
+  margin-bottom: 1.5rem;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.meta-item i {
+  color: #4a9eff;
+  font-size: 0.875rem;
+}
+
+.choice-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.choice-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(74, 158, 255, 0.4);
+  color: white;
+}
+
+.choice-cta i {
+  transition: transform 0.25s ease;
+}
+
+.choice-cta:hover i {
+  transform: translateX(4px);
+}
+
+.choice-cta-secondary {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+}
+
+.choice-cta-secondary:hover {
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+}
+
+.choice-signin {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+}
+
+.choice-signin a {
+  color: #4a9eff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.choice-signin a:hover {
+  text-decoration: underline;
+}
+</style>
+
+<style>
+/* Quick Access Section */
+.rb-quick-access {
+  padding: 0 0 3rem;
+}
+
+.quick-access-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.qa-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.qa-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qa-icon i {
+  font-size: 1.25rem;
+  color: #4a9eff;
+}
+
+.qa-info h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.125rem;
+}
+
+.qa-info p {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.qa-stats {
+  display: flex;
+  gap: 2rem;
+  padding: 0 2rem;
+  border-left: 1px solid var(--border-default);
+  border-right: 1px solid var(--border-default);
+}
+
+.qa-stat {
+  text-align: center;
+}
+
+.qa-stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #4a9eff;
+}
+
+.qa-stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.qa-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.qa-cta:hover {
+  border-color: #4a9eff;
+  color: #4a9eff;
+}
+
+/* How It Works Section */
+.rb-how-it-works {
+  padding: 4rem 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(74, 158, 255, 0.02) 50%, transparent 100%);
+}
+
+.section-header-center {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.section-badge {
+  display: inline-block;
+  padding: 0.375rem 0.875rem;
+  background: rgba(74, 158, 255, 0.1);
+  border: 1px solid rgba(74, 158, 255, 0.2);
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4a9eff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 1rem;
+}
+
+.section-header-center h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.section-header-center p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.process-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.process-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  background: var(--bg-surface);
+  border: 2px solid var(--border-default);
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.process-tab:hover {
+  border-color: rgba(74, 158, 255, 0.3);
+  color: var(--text-primary);
+}
+
+.process-tab.active {
+  background: rgba(74, 158, 255, 0.1);
+  border-color: #4a9eff;
+  color: #4a9eff;
+}
+
+.process-content {
+  display: none;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.process-content.active {
+  display: block;
+}
+
+.steps-timeline {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.steps-timeline::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border-default);
+}
+
+.timeline-step {
+  position: relative;
+  padding: 0 0 2rem 2rem;
+}
+
+.timeline-step:last-child {
+  padding-bottom: 0;
+}
+
+.step-marker {
+  position: absolute;
+  left: -2rem;
+  top: 0;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.step-content h4 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.375rem;
+}
+
+.step-content p {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+</style>
+
+<style>
+/* Features Section */
+.rb-features {
+  padding: 4rem 0;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.feature-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  padding: 1.75rem;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(74, 158, 255, 0.3);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+  width: 52px;
+  height: 52px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.feature-icon i {
+  font-size: 1.25rem;
+  color: #4a9eff;
+}
+
+.feature-card h3 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.feature-card p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Roles Section */
+.rb-roles {
+  padding: 4rem 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(74, 158, 255, 0.02) 50%, transparent 100%);
+}
+
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.role-preview-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  padding: 2rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: block;
+}
+
+.role-preview-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(74, 158, 255, 0.4);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.role-preview-card:hover .role-cta {
+  color: #4a9eff;
+}
+
+.role-preview-card:hover .role-cta i {
+  transform: translateX(4px);
+}
+
+.role-icon {
+  width: 56px;
+  height: 56px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.role-icon i {
+  font-size: 1.5rem;
+  color: #4a9eff;
+}
+
+.role-preview-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.role-preview-card p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 1rem;
+}
+
+.role-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.role-skills span {
+  padding: 0.25rem 0.625rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.role-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: all 0.25s ease;
+}
+
+.role-cta i {
+  font-size: 0.75rem;
+  transition: transform 0.25s ease;
+}
+</style>
+
+<style>
+/* CTA Section */
+.rb-cta {
+  padding: 4rem 0 5rem;
+}
+
+.cta-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(74, 158, 255, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%);
+  border: 1px solid rgba(74, 158, 255, 0.15);
+  border-radius: 24px;
+  padding: 4rem 2rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.cta-glow {
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(74, 158, 255, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cta-content {
+  position: relative;
+}
+
+.cta-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #4a9eff 0%, #6366f1 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 10px 30px rgba(74, 158, 255, 0.3);
+}
+
+.cta-icon i {
+  font-size: 2rem;
+  color: white;
+}
+
+.cta-card h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.75rem;
+}
+
+.cta-card p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 500px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-cta-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.btn-cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(74, 158, 255, 0.4);
+  color: white;
+}
+
+.btn-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: transparent;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1rem;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.btn-cta-secondary:hover {
+  border-color: #4a9eff;
+  color: #4a9eff;
+}
+</style>
+
+<style>
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .hero-content-centered h1 {
+    font-size: 2.25rem;
+  }
+  
+  .choice-cards {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+  }
+  
+  .features-grid, .roles-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .quick-access-card {
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .qa-header {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  
+  .qa-stats {
+    border: none;
+    padding: 1rem 0;
+    border-top: 1px solid var(--border-default);
+    border-bottom: 1px solid var(--border-default);
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  
+  .qa-cta {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .rb-hero {
+    padding: 3rem 0 1.5rem;
+  }
+  
+  .hero-content-centered h1 {
+    font-size: 1.875rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .choice-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .choice-card {
+    padding: 1.5rem;
+  }
+  
+  .choice-meta {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .process-tabs {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .process-tab {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+  
+  .features-grid, .roles-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn-cta-primary, .btn-cta-secondary {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-content-centered h1 {
+    font-size: 1.625rem;
+  }
+  
+  .section-header-center h2 {
+    font-size: 1.375rem;
+  }
+  
+  .choice-use-cases {
+    flex-direction: column;
+  }
+  
+  .use-case {
+    justify-content: flex-start;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .choice-card:hover,
+  .feature-card:hover,
+  .role-preview-card:hover {
+    transform: none;
+  }
+  
+  .choice-cta:hover,
+  .btn-cta-primary:hover {
+    transform: none;
+  }
+  
+  .choice-cta:hover i,
+  .role-cta i {
+    transform: none;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Process tabs functionality
+  const tabs = document.querySelectorAll('.process-tab');
+  const contents = document.querySelectorAll('.process-content');
+  
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      const targetTab = this.dataset.tab;
+      
+      // Update active tab
+      tabs.forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Update active content
+      contents.forEach(content => {
+        content.classList.remove('active');
+        if (content.id === targetTab + '-process') {
+          content.classList.add('active');
+        }
+      });
+    });
+  });
+});
+</script>
 {% endblock %}
