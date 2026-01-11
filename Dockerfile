@@ -33,11 +33,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpangoft2-1.0-0 \
     libharfbuzz0b \
     libfribidi0 \
-    libgdk-pixbuf2.0-0 \
+    libgdk-pixbuf-2.0-0 \
     libffi8 \
     libcairo2 \
-    libgirepository-1.0-1 \
-    gir1.2-pango-1.0 \
     shared-mime-info \
     fonts-liberation \
     fonts-dejavu-core \
