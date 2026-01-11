@@ -33,6 +33,64 @@
 
   <!-- Paths Section -->
   <div class="container roadmap-content">
+    <!-- Learning Journey Visualization -->
+    <div class="journey-visualization">
+      <div class="journey-header">
+        <h3>Your Learning Journey</h3>
+        <p>Follow the path from beginner to expert</p>
+      </div>
+      <div class="journey-path">
+        <div class="journey-line"></div>
+        <div class="journey-stage stage-1">
+          <div class="stage-node">
+            <div class="node-icon"><i class="fas fa-flag"></i></div>
+            <div class="node-pulse"></div>
+          </div>
+          <div class="stage-content">
+            <span class="stage-label">Start</span>
+            <span class="stage-title">Foundation</span>
+          </div>
+        </div>
+        <div class="journey-stage stage-2">
+          <div class="stage-node">
+            <div class="node-icon"><i class="fas fa-book-reader"></i></div>
+          </div>
+          <div class="stage-content">
+            <span class="stage-label">Phase 1</span>
+            <span class="stage-title">Core Skills</span>
+          </div>
+        </div>
+        <div class="journey-stage stage-3">
+          <div class="stage-node">
+            <div class="node-icon"><i class="fas fa-code"></i></div>
+          </div>
+          <div class="stage-content">
+            <span class="stage-label">Phase 2</span>
+            <span class="stage-title">Practice</span>
+          </div>
+        </div>
+        <div class="journey-stage stage-4">
+          <div class="stage-node">
+            <div class="node-icon"><i class="fas fa-project-diagram"></i></div>
+          </div>
+          <div class="stage-content">
+            <span class="stage-label">Phase 3</span>
+            <span class="stage-title">Projects</span>
+          </div>
+        </div>
+        <div class="journey-stage stage-5">
+          <div class="stage-node completed">
+            <div class="node-icon"><i class="fas fa-trophy"></i></div>
+            <div class="node-glow"></div>
+          </div>
+          <div class="stage-content">
+            <span class="stage-label">Complete</span>
+            <span class="stage-title">Expert</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="paths-section" id="roadmap-cards">
       <div class="section-header">
         <div class="section-title-group">
@@ -276,6 +334,236 @@
 /* Content Section */
 .roadmap-content {
   padding: 3rem 0 4rem;
+}
+
+/* Learning Journey Visualization */
+.journey-visualization {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 20px;
+  padding: 2.5rem;
+  margin-bottom: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.journey-visualization::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #4a9eff 0%, #6366f1 50%, #22c55e 100%);
+}
+
+.journey-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.journey-header h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.journey-header p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.journey-path {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  padding: 0 1rem;
+}
+
+.journey-line {
+  position: absolute;
+  top: 28px;
+  left: 60px;
+  right: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #4a9eff 0%, #6366f1 50%, #22c55e 100%);
+  border-radius: 2px;
+  z-index: 0;
+}
+
+.journey-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(74, 158, 255, 0.8), rgba(74, 158, 255, 0.3));
+  border-radius: 2px;
+  animation: journeyProgress 3s ease-in-out infinite;
+}
+
+@keyframes journeyProgress {
+  0% { left: 0; opacity: 1; }
+  100% { left: 70%; opacity: 0; }
+}
+
+.journey-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  max-width: 120px;
+}
+
+.stage-node {
+  width: 56px;
+  height: 56px;
+  background: var(--bg-elevated);
+  border: 3px solid var(--border-default);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.stage-node:hover {
+  transform: scale(1.1);
+  border-color: #4a9eff;
+  box-shadow: 0 0 20px rgba(74, 158, 255, 0.3);
+}
+
+.node-icon {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  transition: color 0.3s ease;
+}
+
+.stage-node:hover .node-icon {
+  color: #4a9eff;
+}
+
+.stage-1 .stage-node {
+  border-color: #4a9eff;
+  background: rgba(74, 158, 255, 0.1);
+}
+
+.stage-1 .node-icon {
+  color: #4a9eff;
+}
+
+.node-pulse {
+  position: absolute;
+  inset: -4px;
+  border: 2px solid #4a9eff;
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.15); opacity: 0; }
+}
+
+.stage-5 .stage-node.completed {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.stage-5 .node-icon {
+  color: #22c55e;
+}
+
+.node-glow {
+  position: absolute;
+  inset: -8px;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.2) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: glow 2s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+.stage-content {
+  text-align: center;
+}
+
+.stage-label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
+
+.stage-title {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.stage-1 .stage-label { color: #4a9eff; }
+.stage-5 .stage-label { color: #22c55e; }
+
+/* Responsive Journey */
+@media (max-width: 768px) {
+  .journey-visualization {
+    padding: 2rem 1.5rem;
+  }
+  
+  .journey-path {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 0;
+  }
+  
+  .journey-line {
+    display: none;
+  }
+  
+  .journey-stage {
+    flex: 0 0 calc(33.333% - 1rem);
+    max-width: none;
+  }
+  
+  .stage-node {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .node-icon {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .journey-stage {
+    flex: 0 0 calc(50% - 1rem);
+  }
+  
+  .stage-node {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .stage-title {
+    font-size: 0.75rem;
+  }
 }
 
 /* Paths Section */
