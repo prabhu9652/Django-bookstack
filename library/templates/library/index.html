@@ -29,9 +29,9 @@
     </p>
     
     <div class="d-flex justify-content-center gap-3">
-      <a href="{% url 'books.index' %}" class="btn btn-primary">
-        <i class="fas fa-plus"></i>
-        Add Technical Books
+      <a href="{% url 'books.index' %}" class="add-books-btn">
+        <i class="fas fa-plus-circle"></i>
+        <span>Browse & Add Books</span>
       </a>
     </div>
   </div>
@@ -138,28 +138,32 @@
                 {{ library_item.book.author|default:"Technical Author" }}
               </p>
               
-              <!-- Action Buttons -->
-              <div class="book-actions">
-                <a href="{% url 'books.show' library_item.book.id %}" class="btn btn-primary btn-sm">
-                  <i class="fas fa-eye"></i>
-                  View Details
-                </a>
-                {% if library_item.book.pdf %}
-                  <a href="{% url 'books.view' library_item.book.id %}" class="btn btn-secondary btn-sm" target="_blank">
-                    <i class="fas fa-book-open"></i>
-                    Read PDF
+              <!-- Action Buttons - Enhanced -->
+              <div class="library-book-actions">
+                <div class="primary-book-actions">
+                  <a href="{% url 'books.show' library_item.book.id %}" class="library-action-btn view-btn">
+                    <i class="fas fa-eye"></i>
+                    <span>View</span>
                   </a>
-                {% endif %}
-                <button type="button" class="btn btn-sm library-remove-btn" data-book-id="{{ library_item.book.id }}" title="Remove from library">
-                  <i class="fas fa-trash"></i>
-                  Delete
+                  {% if library_item.book.pdf %}
+                    <a href="{% url 'books.view' library_item.book.id %}" class="library-action-btn read-btn" target="_blank">
+                      <i class="fas fa-book-open"></i>
+                      <span>Read</span>
+                    </a>
+                  {% endif %}
+                </div>
+                <button type="button" class="library-remove-btn-enhanced" 
+                        data-book-id="{{ library_item.book.id }}" 
+                        data-book-title="{{ library_item.book.name }}"
+                        title="Remove from library">
+                  <i class="fas fa-trash-alt"></i>
                 </button>
               </div>
               
               <!-- Added Date -->
-              <div class="added-date">
+              <div class="library-added-date">
                 <i class="fas fa-calendar-plus"></i>
-                Added {{ library_item.added_date|date:"M d, Y" }}
+                <span>Added {{ library_item.added_date|date:"M d, Y" }}</span>
               </div>
             </div>
           </div>
@@ -189,10 +193,254 @@
 </div>
 
 <style>
-/* Library Page Specific Styles */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+/* Library Page Enhanced Styles */
+
+/* Add Books Button */
+.add-books-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-8);
+  background: linear-gradient(135deg, var(--accent-primary), #2563eb);
+  color: white;
+  border-radius: var(--radius-xl);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease-out;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.add-books-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  color: white;
+  text-decoration: none;
+}
+
+.add-books-btn:active {
+  transform: translateY(0);
+}
+
+.add-books-btn i {
+  font-size: var(--font-size-lg);
+}
+
+/* Enhanced Book Actions */
+.library-book-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: auto;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-default);
+}
+
+.primary-book-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex: 1;
+}
+
+.library-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease-out;
+  flex: 1;
+}
+
+.library-action-btn.view-btn {
+  background: linear-gradient(135deg, var(--accent-primary), #2563eb);
+  color: white;
+}
+
+.library-action-btn.view-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  color: white;
+  text-decoration: none;
+}
+
+.library-action-btn.read-btn {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+}
+
+.library-action-btn.read-btn:hover {
+  background: var(--accent-subtle);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+/* Enhanced Remove Button */
+.library-remove-btn-enhanced {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  border: 1px solid var(--border-default);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+  flex-shrink: 0;
+}
+
+.library-remove-btn-enhanced:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+  color: #ef4444;
+  transform: translateY(-2px);
+}
+
+.library-remove-btn-enhanced:active {
+  transform: translateY(0);
+}
+
+.library-remove-btn-enhanced:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Added Date */
+.library-added-date {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-default);
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.library-added-date i {
+  color: var(--accent-primary);
+}
+
+/* Remove Confirmation Modal */
+.remove-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.15s ease-out;
+}
+
+.remove-modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.remove-modal-content {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-8);
+  max-width: 420px;
+  width: 90%;
+  transform: scale(0.95) translateY(10px);
+  transition: all 0.15s ease-out;
+}
+
+.remove-modal-overlay.show .remove-modal-content {
+  transform: scale(1) translateY(0);
+}
+
+.remove-modal-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.remove-modal-icon {
+  width: 72px;
+  height: 72px;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-4);
+}
+
+.remove-modal-icon i {
+  font-size: var(--font-size-2xl);
+  color: #ef4444;
+}
+
+.remove-modal-header h3 {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+}
+
+.remove-modal-header p {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.remove-modal-actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.remove-modal-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+  border: none;
+}
+
+.remove-modal-btn.cancel-btn {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+}
+
+.remove-modal-btn.cancel-btn:hover {
+  background: var(--bg-surface);
+}
+
+.remove-modal-btn.confirm-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.remove-modal-btn.confirm-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 /* Responsive Design */
@@ -206,8 +454,23 @@
     padding-bottom: var(--space-4) !important;
   }
   
-  .book-actions {
-    flex-direction: column !important;
+  .library-book-actions {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  
+  .primary-book-actions {
+    width: 100%;
+  }
+  
+  .library-remove-btn-enhanced {
+    width: 100%;
+    height: auto;
+    padding: var(--space-3);
+  }
+  
+  .remove-modal-actions {
+    flex-direction: column;
   }
 }
 
@@ -220,8 +483,9 @@
     display: none !important;
   }
   
-  .header-actions {
-    flex-direction: column !important;
+  .add-books-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>
@@ -229,12 +493,38 @@
 <script>
 // Enhanced Library page functionality
 document.addEventListener('DOMContentLoaded', function() {
+  // Create and append modal to body
+  const modalHTML = `
+    <div id="removeBookModal" class="remove-modal-overlay">
+      <div class="remove-modal-content">
+        <div class="remove-modal-header">
+          <div class="remove-modal-icon">
+            <i class="fas fa-bookmark-slash"></i>
+          </div>
+          <h3>Remove from Library</h3>
+          <p id="removeBookMessage">Are you sure you want to remove this book from your library?</p>
+        </div>
+        <div class="remove-modal-actions">
+          <button id="cancelRemove" class="remove-modal-btn cancel-btn">
+            <i class="fas fa-times"></i>
+            Cancel
+          </button>
+          <button id="confirmRemove" class="remove-modal-btn confirm-btn">
+            <i class="fas fa-trash-alt"></i>
+            Remove Book
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+  
   // Enhanced book card interactions
   const bookCards = document.querySelectorAll('.book-card');
   bookCards.forEach(card => {
     card.addEventListener('click', function(e) {
       // Don't navigate if clicking on remove button or action buttons
-      if (e.target.closest('.library-remove-btn') || e.target.closest('.book-actions')) {
+      if (e.target.closest('.library-remove-btn-enhanced') || e.target.closest('.library-book-actions')) {
         return;
       }
       
@@ -255,69 +545,116 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
   
-  // Delete/Remove book functionality
-  const removeButtons = document.querySelectorAll('.library-remove-btn');
-  removeButtons.forEach(button => {
-    button.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      const bookId = this.dataset.bookId;
-      const bookCard = this.closest('.book-card');
-      const bookTitle = bookCard.querySelector('.book-title a').textContent.trim();
-      
-      // Confirm deletion
-      if (confirm(`Remove "${bookTitle}" from your library?`)) {
-        // Disable button during request
-        this.disabled = true;
-        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Removing...';
-        
-        // Get CSRF token
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        
-        // Make AJAX request to remove book
-        fetch('/library/remove/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken,
-          },
-          body: JSON.stringify({
-            book_id: bookId
-          })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            // Animate card removal
-            bookCard.style.transform = 'scale(0.8)';
-            bookCard.style.opacity = '0';
+  // Enhanced Remove book functionality with modal
+  const modal = document.getElementById('removeBookModal');
+  const removeMessage = document.getElementById('removeBookMessage');
+  const cancelBtn = document.getElementById('cancelRemove');
+  const confirmBtn = document.getElementById('confirmRemove');
+  let currentRemoveData = null;
+  
+  function showModal(bookData) {
+    currentRemoveData = bookData;
+    removeMessage.textContent = `Are you sure you want to remove "${bookData.title}" from your library? You can always add it back later.`;
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+  
+  function hideModal() {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+    currentRemoveData = null;
+  }
+  
+  function removeBook(bookData) {
+    const bookCard = document.querySelector(`.book-card[data-book-id="${bookData.id}"]`);
+    const removeBtn = bookCard?.querySelector('.library-remove-btn-enhanced');
+    
+    if (removeBtn) {
+      removeBtn.disabled = true;
+      removeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    }
+    
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    fetch('/library/remove/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      },
+      body: JSON.stringify({
+        book_id: bookData.id
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        if (bookCard) {
+          bookCard.style.transform = 'scale(0.9)';
+          bookCard.style.opacity = '0';
+          bookCard.style.transition = 'all 0.2s ease-out';
+          
+          setTimeout(() => {
+            bookCard.remove();
             
-            setTimeout(() => {
-              bookCard.remove();
-              
-              // Check if this was the last book and show empty state
-              const remainingBooks = document.querySelectorAll('.book-card');
-              if (remainingBooks.length === 0) {
-                location.reload(); // Reload to show empty state
-              }
-            }, 300);
-          } else {
-            alert('Error removing book: ' + data.message);
-            // Re-enable button
-            this.disabled = false;
-            this.innerHTML = '<i class="fas fa-trash"></i> Delete';
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Error removing book from library');
-          // Re-enable button
-          this.disabled = false;
-          this.innerHTML = '<i class="fas fa-trash"></i> Delete';
-        });
+            const remainingBooks = document.querySelectorAll('.book-card');
+            if (remainingBooks.length === 0) {
+              location.reload();
+            }
+          }, 200);
+        }
+      } else {
+        alert('Error removing book: ' + (data.message || 'Unknown error'));
+        if (removeBtn) {
+          removeBtn.disabled = false;
+          removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+        }
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error removing book from library');
+      if (removeBtn) {
+        removeBtn.disabled = false;
+        removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
       }
     });
+  }
+  
+  // Event listeners for remove buttons
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.library-remove-btn-enhanced')) {
+      e.preventDefault();
+      e.stopPropagation();
+      const btn = e.target.closest('.library-remove-btn-enhanced');
+      const bookData = {
+        id: btn.dataset.bookId,
+        title: btn.dataset.bookTitle
+      };
+      showModal(bookData);
+    }
+  });
+  
+  cancelBtn.addEventListener('click', hideModal);
+  
+  confirmBtn.addEventListener('click', () => {
+    if (currentRemoveData) {
+      const dataToRemove = {...currentRemoveData};
+      hideModal();
+      setTimeout(() => removeBook(dataToRemove), 50);
+    }
+  });
+  
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('show')) {
+      hideModal();
+    }
+  });
+  
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      hideModal();
+    }
   });
 });
 </script>

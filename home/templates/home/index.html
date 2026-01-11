@@ -36,7 +36,7 @@
   </div>
 
   <!-- Core Features Section -->
-  <div class="animate-slide-left animate-stagger-2 mb-12">
+  <div class="animate-slide-left animate-stagger-2" style="margin-bottom: var(--space-20);">
     <div class="d-flex align-items-center justify-content-between mb-6">
       <h2 class="d-flex align-items-center">
         <div class="feature-icon mr-4">
@@ -146,7 +146,7 @@
 
   <!-- Recent Books Section -->
   {% if template_data.recent_books %}
-  <div class="animate-slide-right animate-stagger-3">
+  <div class="animate-slide-right animate-stagger-3" style="margin-top: var(--space-20); margin-bottom: var(--space-20);">
     <div class="d-flex align-items-center justify-content-between mb-6">
       <h2 class="d-flex align-items-center">
         <div class="feature-icon mr-4">
@@ -210,7 +210,7 @@
   {% endif %}
 
   <!-- Platform Stats Section -->
-  <div class="animate-slide-left animate-stagger-4">
+  <div class="animate-slide-left animate-stagger-4" style="margin-top: var(--space-20); margin-bottom: var(--space-20);">
     <div class="text-center mb-6">
       <h2 class="d-flex align-items-center justify-content-center">
         <div class="feature-icon mr-4">
@@ -249,7 +249,7 @@
 
   <!-- Call to Action -->
   {% if not user.is_authenticated %}
-  <div class="text-center mt-16">
+  <div class="text-center" style="margin-top: var(--space-24);">
     <div class="card" style="max-width: 600px; margin: 0 auto; padding: var(--space-12);">
       <div class="empty-icon mb-6 animate-pulse">
         <i class="fas fa-rocket"></i>

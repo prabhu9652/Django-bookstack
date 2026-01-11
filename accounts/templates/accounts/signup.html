@@ -2,394 +2,138 @@
 {% load static %}
 
 {% block content %}
-<div class="auth-page">
-  <!-- Floating Graphics -->
-  <div class="auth-floating-graphics">
-    <div class="auth-float-icon auth-float-1">
-      <i class="fas fa-rocket"></i>
-    </div>
-    <div class="auth-float-icon auth-float-2">
-      <i class="fas fa-code"></i>
-    </div>
-    <div class="auth-float-icon auth-float-3">
-      <i class="fas fa-graduation-cap"></i>
-    </div>
-    <div class="auth-float-icon auth-float-4">
-      <i class="fas fa-lightbulb"></i>
-    </div>
+<div class="min-h-screen flex items-center justify-center py-12 px-4 relative overflow-hidden">
+  <!-- Background Effects -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-br from-blue-500/10 to-purple-500/5 rounded-full blur-3xl opacity-40 animate-float"></div>
+    <div class="absolute bottom-1/4 left-1/4 w-80 h-80 bg-gradient-to-tr from-emerald-500/10 to-blue-500/5 rounded-full blur-3xl opacity-30 animate-float" style="animation-delay: 2s;"></div>
   </div>
 
-  <div class="auth-container">
-    <div class="auth-card">
-      <div class="auth-header">
-        <div class="auth-icon">
-          <i class="fas fa-user-plus"></i>
+  <div class="w-full max-w-md relative z-10">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="w-20 h-20 bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 rounded-full flex items-center justify-center mx-auto mb-6 animate-scale-in">
+        <i class="fas fa-user-plus text-3xl text-blue-500"></i>
+      </div>
+      <h1 class="text-3xl font-bold mb-3" style="color: var(--text-primary);">Join TechBookHub</h1>
+      <p style="color: var(--text-secondary);">Start building your technical library today</p>
+    </div>
+
+    <!-- Sign Up Form -->
+    <div class="card" style="background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-xl); padding: var(--space-8); box-shadow: var(--shadow-lg);">
+      <!-- Admin Approval Notice -->
+      <div style="margin-bottom: var(--space-6); background: linear-gradient(135deg, rgba(251, 191, 36, 0.08) 0%, rgba(251, 191, 36, 0.03) 100%); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: var(--radius-lg); padding: var(--space-4);">
+        <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+          <div style="width: 32px; height: 32px; background: rgba(251, 191, 36, 0.15); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <i class="fas fa-info-circle" style="color: #fbbf24; font-size: var(--text-sm);"></i>
+          </div>
+          <div>
+            <p style="color: var(--text-secondary); font-size: var(--text-sm); line-height: 1.5; margin: 0;">
+              <strong style="color: var(--text-primary);">Note:</strong> After registration, admin approval is required to access and manage content.
+            </p>
+          </div>
         </div>
-        <h1 class="auth-title">Join TechBookHub</h1>
-        <p class="auth-subtitle">Start building your technical library today</p>
       </div>
 
-      <form method="POST" class="auth-form">
+      <form method="POST" style="display: flex; flex-direction: column; gap: var(--space-6);">
         {% csrf_token %}
         
+        <!-- Username Field -->
         <div class="form-group">
-          <label for="username" class="form-label">
-            <i class="fas fa-user"></i>
+          <label for="username" style="display: flex; align-items: center; gap: var(--space-2); font-weight: var(--font-semibold); color: var(--text-primary); margin-bottom: var(--space-2);">
+            <i class="fas fa-user" style="color: var(--accent-primary);"></i>
             Username
           </label>
-          <div class="form-input-wrapper">
-            <input type="text" name="username" id="username" class="form-control" 
-                   placeholder="Choose a unique username" required>
-            <div class="form-input-icon">
+          <div style="position: relative;">
+            <div style="position: absolute; left: var(--space-3); top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;">
               <i class="fas fa-user"></i>
             </div>
+            <input type="text" name="username" id="username" 
+                   style="width: 100%; padding: var(--space-3) var(--space-3) var(--space-3) var(--space-10); font-size: var(--text-sm); color: var(--text-primary); background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-lg); transition: all 0.2s ease-out; outline: none;"
+                   placeholder="Choose a unique username" required
+                   onfocus="this.style.borderColor='var(--accent-primary)'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)';"
+                   onblur="this.style.borderColor='var(--border-default)'; this.style.boxShadow='none';">
           </div>
         </div>
 
+        <!-- Email Field -->
         <div class="form-group">
-          <label for="email" class="form-label">
-            <i class="fas fa-envelope"></i>
+          <label for="email" style="display: flex; align-items: center; gap: var(--space-2); font-weight: var(--font-semibold); color: var(--text-primary); margin-bottom: var(--space-2);">
+            <i class="fas fa-envelope" style="color: var(--accent-primary);"></i>
             Email Address
           </label>
-          <div class="form-input-wrapper">
-            <input type="email" name="email" id="email" class="form-control" 
-                   placeholder="Enter your email address" required>
-            <div class="form-input-icon">
+          <div style="position: relative;">
+            <div style="position: absolute; left: var(--space-3); top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;">
               <i class="fas fa-envelope"></i>
             </div>
+            <input type="email" name="email" id="email" 
+                   style="width: 100%; padding: var(--space-3) var(--space-3) var(--space-3) var(--space-10); font-size: var(--text-sm); color: var(--text-primary); background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-lg); transition: all 0.2s ease-out; outline: none;"
+                   placeholder="Enter your email address" required
+                   onfocus="this.style.borderColor='var(--accent-primary)'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)';"
+                   onblur="this.style.borderColor='var(--border-default)'; this.style.boxShadow='none';">
           </div>
         </div>
 
+        <!-- Password Field -->
         <div class="form-group">
-          <label for="password1" class="form-label">
-            <i class="fas fa-lock"></i>
+          <label for="password1" style="display: flex; align-items: center; gap: var(--space-2); font-weight: var(--font-semibold); color: var(--text-primary); margin-bottom: var(--space-2);">
+            <i class="fas fa-lock" style="color: var(--accent-primary);"></i>
             Password
           </label>
-          <div class="form-input-wrapper">
-            <input type="password" name="password1" id="password1" class="form-control" 
-                   placeholder="Create a strong password" required>
-            <div class="form-input-icon">
+          <div style="position: relative;">
+            <div style="position: absolute; left: var(--space-3); top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;">
               <i class="fas fa-lock"></i>
             </div>
+            <input type="password" name="password1" id="password1" 
+                   style="width: 100%; padding: var(--space-3) var(--space-3) var(--space-3) var(--space-10); font-size: var(--text-sm); color: var(--text-primary); background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-lg); transition: all 0.2s ease-out; outline: none;"
+                   placeholder="Create a strong password" required
+                   onfocus="this.style.borderColor='var(--accent-primary)'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)';"
+                   onblur="this.style.borderColor='var(--border-default)'; this.style.boxShadow='none';">
           </div>
         </div>
 
+        <!-- Confirm Password Field -->
         <div class="form-group">
-          <label for="password2" class="form-label">
-            <i class="fas fa-shield-alt"></i>
+          <label for="password2" style="display: flex; align-items: center; gap: var(--space-2); font-weight: var(--font-semibold); color: var(--text-primary); margin-bottom: var(--space-2);">
+            <i class="fas fa-shield-alt" style="color: var(--accent-primary);"></i>
             Confirm Password
           </label>
-          <div class="form-input-wrapper">
-            <input type="password" name="password2" id="password2" class="form-control" 
-                   placeholder="Confirm your password" required>
-            <div class="form-input-icon">
+          <div style="position: relative;">
+            <div style="position: absolute; left: var(--space-3); top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;">
               <i class="fas fa-shield-alt"></i>
             </div>
+            <input type="password" name="password2" id="password2" 
+                   style="width: 100%; padding: var(--space-3) var(--space-3) var(--space-3) var(--space-10); font-size: var(--text-sm); color: var(--text-primary); background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-lg); transition: all 0.2s ease-out; outline: none;"
+                   placeholder="Confirm your password" required
+                   onfocus="this.style.borderColor='var(--accent-primary)'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)';"
+                   onblur="this.style.borderColor='var(--border-default)'; this.style.boxShadow='none';">
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary auth-submit-btn">
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary" 
+                style="width: 100%; padding: var(--space-4) var(--space-6); font-size: var(--text-base); font-weight: var(--font-semibold); background: linear-gradient(135deg, var(--accent-primary), #2563eb); border: none; border-radius: var(--radius-lg); color: white; cursor: pointer; transition: all 0.2s ease-out; display: flex; align-items: center; justify-content: center; gap: var(--space-2);"
+                onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 10px 15px -3px rgba(59, 130, 246, 0.25), 0 4px 6px -2px rgba(59, 130, 246, 0.1)';"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(59, 130, 246, 0.25)';"
+                onmousedown="this.style.transform='translateY(0)';"
+                onmouseup="this.style.transform='translateY(-1px)';">
           <i class="fas fa-user-plus"></i>
           <span>Create Account</span>
-          <div class="btn-glow"></div>
         </button>
       </form>
+    </div>
 
-      <div class="auth-footer">
-        <p>Already have an account?</p>
-        <a href="{% url 'accounts.login' %}" class="auth-link">
-          <i class="fas fa-sign-in-alt"></i>
-          Sign in here
-        </a>
-      </div>
+    <!-- Footer Links -->
+    <div class="text-center" style="margin-top: var(--space-8); padding-top: var(--space-6); border-top: 1px solid var(--border-default);">
+      <p style="color: var(--text-secondary); margin-bottom: var(--space-3);">Already have an account?</p>
+      <a href="{% url 'accounts.login' %}" class="btn btn-secondary" 
+         style="padding: var(--space-3) var(--space-5); font-size: var(--text-sm); font-weight: var(--font-medium); background: var(--bg-elevated); border: 1px solid var(--border-default); border-radius: var(--radius-lg); color: var(--text-primary); text-decoration: none; cursor: pointer; transition: all 0.2s ease-out; display: inline-flex; align-items: center; gap: var(--space-2);"
+         onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 6px -1px rgba(0, 0, 0, 0.1)';"
+         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+        <i class="fas fa-sign-in-alt"></i>
+        <span>Sign in here</span>
+      </a>
     </div>
   </div>
 </div>
-
-<style>
-/* ========================================
-   ENHANCED FLOATING GRAPHICS FOR SIGNUP
-======================================== */
-.auth-floating-graphics {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
-}
-
-.auth-float-icon {
-  position: absolute;
-  width: 70px;
-  height: 70px;
-  background: var(--bg-surface);
-  border: 2px solid var(--border-primary);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--accent-primary);
-  font-size: 1.8rem;
-  opacity: 0.25;
-  animation: authFloatGentle 8s ease-in-out infinite;
-  box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(10px);
-}
-
-.auth-float-1 {
-  top: 15%;
-  right: 10%;
-  animation-delay: 0s;
-}
-
-.auth-float-2 {
-  top: 45%;
-  left: 5%;
-  animation-delay: 2s;
-}
-
-.auth-float-3 {
-  bottom: 30%;
-  right: 15%;
-  animation-delay: 4s;
-}
-
-.auth-float-4 {
-  top: 70%;
-  left: 15%;
-  animation-delay: 6s;
-}
-
-@keyframes authFloatGentle {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg) scale(1);
-    opacity: 0.25;
-  }
-  25% {
-    transform: translateY(-10px) rotate(-3deg) scale(1.05);
-    opacity: 0.4;
-  }
-  50% {
-    transform: translateY(-20px) rotate(0deg) scale(1.1);
-    opacity: 0.5;
-  }
-  75% {
-    transform: translateY(-10px) rotate(3deg) scale(1.05);
-    opacity: 0.4;
-  }
-}
-
-/* ========================================
-   ENHANCED FORM INPUT STYLING
-======================================== */
-.form-input-wrapper {
-  position: relative;
-}
-
-.form-input-wrapper .form-control {
-  padding-left: var(--space-12);
-  transition: all var(--transition-smooth);
-}
-
-.form-input-icon {
-  position: absolute;
-  left: var(--space-4);
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-muted);
-  font-size: var(--font-size-sm);
-  transition: all var(--transition-smooth);
-  pointer-events: none;
-}
-
-.form-input-wrapper:focus-within .form-input-icon {
-  color: var(--accent-primary);
-  transform: translateY(-50%) scale(1.1);
-}
-
-.form-label {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--space-2);
-  transition: all var(--transition-smooth);
-}
-
-.form-label i {
-  color: var(--accent-primary);
-  font-size: var(--font-size-sm);
-}
-
-/* ========================================
-   ENHANCED SUBMIT BUTTON
-======================================== */
-.auth-submit-btn {
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: all var(--transition-smooth);
-}
-
-.auth-submit-btn .btn-glow {
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  transition: left 0.6s ease;
-}
-
-.auth-submit-btn:hover .btn-glow {
-  left: 100%;
-}
-
-.auth-submit-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 
-    0 10px 30px rgba(74, 158, 255, 0.4),
-    0 0 0 1px var(--accent-glow-soft),
-    0 0 20px var(--accent-glow-subtle);
-}
-
-.auth-submit-btn:active {
-  transform: translateY(-1px);
-}
-
-/* ========================================
-   ENHANCED FOOTER LINK
-======================================== */
-.auth-link {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  color: var(--accent-primary);
-  font-weight: 600;
-  text-decoration: none;
-  position: relative;
-  transition: all var(--transition-smooth);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
-}
-
-.auth-link::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--accent-primary);
-  transition: width var(--transition-smooth);
-}
-
-.auth-link:hover {
-  color: var(--accent-hover);
-  background: var(--accent-subtle);
-  transform: translateY(-2px);
-}
-
-.auth-link:hover::before {
-  width: 100%;
-}
-
-.auth-link i {
-  font-size: var(--font-size-sm);
-  transition: transform var(--transition-smooth);
-}
-
-.auth-link:hover i {
-  transform: translateX(2px);
-}
-
-/* ========================================
-   RESPONSIVE ENHANCEMENTS
-======================================== */
-@media (max-width: 768px) {
-  .auth-floating-graphics {
-    display: none;
-  }
-  
-  .auth-float-icon {
-    width: 50px;
-    height: 50px;
-    font-size: 1.4rem;
-  }
-  
-  .form-input-wrapper .form-control {
-    padding-left: var(--space-10);
-  }
-  
-  .form-input-icon {
-    left: var(--space-3);
-  }
-}
-
-@media (max-width: 480px) {
-  .auth-card {
-    margin: 0 var(--space-2);
-  }
-  
-  .auth-title {
-    font-size: var(--font-size-lg);
-  }
-  
-  .auth-subtitle {
-    font-size: var(--font-size-sm);
-  }
-  
-  .form-label {
-    font-size: var(--font-size-sm);
-  }
-  
-  .auth-submit-btn {
-    font-size: var(--font-size-sm);
-    padding: var(--space-3) var(--space-4);
-  }
-}
-
-/* ========================================
-   ACCESSIBILITY ENHANCEMENTS
-======================================== */
-@media (prefers-reduced-motion: reduce) {
-  .auth-float-icon {
-    animation: none;
-  }
-  
-  .auth-submit-btn:hover {
-    transform: none;
-  }
-  
-  .auth-link:hover {
-    transform: none;
-  }
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .auth-card {
-    border-width: 2px;
-  }
-  
-  .form-control {
-    border-width: 2px;
-  }
-  
-  .auth-float-icon {
-    border-width: 2px;
-    opacity: 0.6;
-  }
-}
-</style>
 {% endblock content %}
