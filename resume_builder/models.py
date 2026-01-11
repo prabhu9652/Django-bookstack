@@ -23,6 +23,9 @@ class ResumeTemplate(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    # Color scheme
+    primary_color = models.CharField(max_length=7, default='#4a9d9a', help_text='Primary color hex code')
+    
     class Meta:
         ordering = ['category', 'name']
     
@@ -54,6 +57,9 @@ class CoverLetterTemplate(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    # Color scheme
+    primary_color = models.CharField(max_length=7, default='#4a9d9a', help_text='Primary color hex code')
+    
     class Meta:
         ordering = ['tone', 'name']
     
@@ -68,23 +74,55 @@ class CoverLetterTemplate(models.Model):
 
 class Resume(models.Model):
     """User's resume documents"""
+    
+    ROLE_CHOICES = [
+        ('devops_sre', 'DevOps / SRE Engineer'),
+        ('software_engineer', 'Software Engineer'),
+        ('ds_ml', 'DS / ML Engineer'),
+    ]
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='resumes')
     template = models.ForeignKey(ResumeTemplate, on_delete=models.CASCADE)
     title = models.CharField(max_length=200, default="My Resume")
+    role = models.CharField(max_length=30, choices=ROLE_CHOICES, default='software_engineer')
     
-    # Personal Information
+    # Profile Photo
+    profile_photo = models.ImageField(upload_to='resume_photos/', blank=True, null=True)
+    
+    # Color Theme
+    primary_color = models.CharField(max_length=7, default='#4a9d9a', help_text='Header/accent color')
+    
+    # Personal Information (Header)
     full_name = models.CharField(max_length=100)
+    role_title = models.CharField(max_length=100, blank=True, help_text="e.g., Senior DevOps Engineer")
     email = models.EmailField()
     phone = models.CharField(max_length=20, blank=True)
+    address = models.TextField(blank=True, help_text="Full address")
     location = models.CharField(max_length=100, blank=True)
-    website = models.URLField(blank=True)
     linkedin = models.URLField(blank=True)
+    github = models.URLField(blank=True)
+    website = models.URLField(blank=True)
     
-    # Content
-    summary = models.TextField(blank=True)
-    experience = models.JSONField(default=list)
-    education = models.JSONField(default=list)
+    # Skills - Simple list for left sidebar
     skills = models.JSONField(default=list)
+    
+    # Profile/Summary (4-6 lines, role-specific)
+    summary = models.TextField(blank=True)
+    
+    # Experience - Achievement-driven bullet points
+    experience = models.JSONField(default=list)
+    
+    # Projects (Optional)
+    projects = models.JSONField(default=list)
+    
+    # Education
+    education = models.JSONField(default=list)
+    
+    # Languages
+    languages = models.JSONField(default=list)
+    
+    # Certifications (Optional)
+    certifications = models.JSONField(default=list)
     
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)
@@ -95,6 +133,15 @@ class Resume(models.Model):
     
     def __str__(self):
         return f"{self.title} - {self.user.username}"
+    
+    def get_role_display_title(self):
+        """Get the display title based on role"""
+        role_titles = {
+            'devops_sre': 'DevOps / SRE Engineer',
+            'software_engineer': 'Software Engineer',
+            'ds_ml': 'Data Science / ML Engineer',
+        }
+        return self.role_title or role_titles.get(self.role, 'Professional')
 
 
 class CoverLetter(models.Model):
@@ -103,19 +150,30 @@ class CoverLetter(models.Model):
     template = models.ForeignKey(CoverLetterTemplate, on_delete=models.CASCADE)
     title = models.CharField(max_length=200, default="My Cover Letter")
     
+    # Color Theme
+    primary_color = models.CharField(max_length=7, default='#4a9d9a', help_text='Header/accent color')
+    
     # Personal Information
     full_name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=20, blank=True)
+    address = models.TextField(blank=True, help_text="Full address")
     location = models.CharField(max_length=100, blank=True)
+    linkedin = models.URLField(blank=True)
     
     # Company Information
     company_name = models.CharField(max_length=100)
+    company_address = models.TextField(blank=True)
     position_title = models.CharField(max_length=100)
     hiring_manager = models.CharField(max_length=100, blank=True)
     
-    # Content
-    content = models.TextField()
+    # Content sections
+    opening_paragraph = models.TextField(blank=True, help_text="Introduction and why you're applying")
+    body_paragraph = models.TextField(blank=True, help_text="Your qualifications and achievements")
+    closing_paragraph = models.TextField(blank=True, help_text="Call to action and closing")
+    
+    # Legacy content field
+    content = models.TextField(blank=True)
     
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)

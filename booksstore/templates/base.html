@@ -67,35 +67,77 @@
         <!-- Auth Actions -->
         <div class="navbar-auth">
           {% if user.is_authenticated %}
-            <!-- Access Status Indicator -->
-            {% if access_context.is_superuser %}
-              <span class="access-status admin" title="Administrator">
-                <i class="fas fa-crown"></i> Admin
-              </span>
-            {% elif access_context.has_content_access %}
-              <span class="access-status approved" title="Access Approved">
-                <i class="fas fa-check-circle"></i> Approved
-              </span>
-            {% elif access_context.access_status and access_context.access_status.is_pending %}
-              <span class="access-status pending" title="Access Pending">
-                <i class="fas fa-clock"></i> Pending
-              </span>
-            {% elif access_context.access_status and access_context.access_status.is_rejected %}
-              <span class="access-status rejected" title="Access Rejected">
-                <i class="fas fa-times-circle"></i> Rejected
-              </span>
-            {% else %}
-              <span class="access-status unknown" title="Access Status Unknown">
-                <i class="fas fa-question-circle"></i> Unknown
-              </span>
-            {% endif %}
-            
-            <!-- Access Status Link -->
-            <a href="{% url 'accounts.access_status' %}" class="btn btn-ghost btn-sm {% if request.resolver_match.url_name == 'accounts.access_status' or request.resolver_match.url_name == 'accounts.request_access' or request.resolver_match.url_name == 'accounts.access_denied' %}active{% endif %}" onclick="this.innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> Loading...'; this.style.pointerEvents='none';">
-              <i class="fas fa-user-shield"></i> Access
-            </a>
-            
-            <a href="{% url 'accounts.logout' %}" class="btn btn-ghost btn-sm" onclick="this.innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> Signing Out...'; this.style.pointerEvents='none';">Sign Out</a>
+            <!-- User Profile Dropdown -->
+            <div class="user-profile-dropdown">
+              <button class="profile-trigger" id="profileTrigger" aria-expanded="false" aria-haspopup="true">
+                <div class="profile-avatar">
+                  <span class="avatar-initials">{{ user.username|slice:":1"|upper }}</span>
+                </div>
+                <span class="profile-name">{{ user.username }}</span>
+                <i class="fas fa-chevron-down profile-chevron"></i>
+              </button>
+              
+              <!-- Profile Dropdown Panel -->
+              <div class="profile-dropdown-panel" id="profileDropdown">
+                <!-- User Info Section -->
+                <div class="profile-header-section">
+                  <div class="profile-avatar-large">
+                    <span class="avatar-initials-large">{{ user.username|slice:":1"|upper }}</span>
+                  </div>
+                  <div class="profile-user-info">
+                    <h4 class="profile-username">{{ user.username }}</h4>
+                    <p class="profile-email">{{ user.email|default:"No email set" }}</p>
+                  </div>
+                </div>
+                
+                <!-- Access Status Section -->
+                <div class="profile-status-section">
+                  <div class="status-label">Access Status</div>
+                  {% if access_context.is_superuser %}
+                    <div class="status-badge admin">
+                      <i class="fas fa-crown"></i>
+                      <span>Administrator</span>
+                    </div>
+                  {% elif access_context.has_content_access %}
+                    <div class="status-badge approved">
+                      <i class="fas fa-check-circle"></i>
+                      <span>Active</span>
+                    </div>
+                  {% elif access_context.access_status and access_context.access_status.is_pending %}
+                    <div class="status-badge pending">
+                      <i class="fas fa-clock"></i>
+                      <span>Pending Approval</span>
+                    </div>
+                  {% elif access_context.access_status and access_context.access_status.is_rejected %}
+                    <div class="status-badge rejected">
+                      <i class="fas fa-times-circle"></i>
+                      <span>Restricted</span>
+                    </div>
+                  {% else %}
+                    <div class="status-badge unknown">
+                      <i class="fas fa-question-circle"></i>
+                      <span>Unknown</span>
+                    </div>
+                  {% endif %}
+                </div>
+                
+                <!-- Profile Actions -->
+                <div class="profile-actions-section">
+                  <a href="{% url 'accounts.access_status' %}" class="profile-action-item">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Access & Permissions</span>
+                  </a>
+                </div>
+                
+                <!-- Sign Out Section -->
+                <div class="profile-signout-section">
+                  <a href="{% url 'accounts.logout' %}" class="signout-btn" onclick="this.innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> Signing Out...'; this.style.pointerEvents='none';">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sign Out</span>
+                  </a>
+                </div>
+              </div>
+            </div>
           {% else %}
             <a href="{% url 'accounts.login' %}" class="btn btn-ghost btn-sm">Sign In</a>
             <a href="{% url 'accounts.signup' %}" class="btn btn-primary btn-sm">Sign Up</a>
@@ -113,8 +155,8 @@
 
     <!-- Main Content -->
     <main style="padding-top: 64px;" id="main-content">
-      <!-- Page Transition Overlay -->
-      <div id="page-transition-overlay" class="page-transition-overlay">
+      <!-- Page Transition Overlay (hidden by default) -->
+      <div id="page-transition-overlay" class="page-transition-overlay" style="display: none;">
         <div class="transition-spinner">
           <i class="fas fa-spinner"></i>
         </div>
@@ -162,6 +204,52 @@
     <!-- Scripts -->
     <script src="{% static 'js/minimal-interactions.js' %}"></script>
     <script src="{% static 'js/page-transitions.js' %}"></script>
+    
+    <!-- Profile Dropdown Script -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const profileTrigger = document.getElementById('profileTrigger');
+      const profileDropdown = document.getElementById('profileDropdown');
+      
+      if (profileTrigger && profileDropdown) {
+        // Toggle dropdown on click
+        profileTrigger.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const isExpanded = profileTrigger.getAttribute('aria-expanded') === 'true';
+          
+          if (isExpanded) {
+            closeDropdown();
+          } else {
+            openDropdown();
+          }
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!profileTrigger.contains(e.target) && !profileDropdown.contains(e.target)) {
+            closeDropdown();
+          }
+        });
+        
+        // Close dropdown on escape key
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            closeDropdown();
+          }
+        });
+        
+        function openDropdown() {
+          profileTrigger.setAttribute('aria-expanded', 'true');
+          profileDropdown.classList.add('show');
+        }
+        
+        function closeDropdown() {
+          profileTrigger.setAttribute('aria-expanded', 'false');
+          profileDropdown.classList.remove('show');
+        }
+      }
+    });
+    </script>
     
     {% block extra_js %}
     {% endblock extra_js %}

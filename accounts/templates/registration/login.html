@@ -2,436 +2,501 @@
 {% load static %}
 
 {% block content %}
-<!-- Enterprise-Grade Sign In Page -->
-<div class="auth-page-container">
-  <div class="auth-background-pattern"></div>
+<!-- Force visibility immediately -->
+<script>
+(function() {
+  var pc = document.getElementById('page-content');
+  if (pc) { pc.style.cssText = 'opacity:1 !important; transform:none !important;'; }
+})();
+</script>
+<!-- Compact Sign In Page -->
+<div class="auth-compact-container" style="opacity: 1 !important; transform: none !important;">
+  <!-- Ambient glow effects -->
+  <div class="auth-ambient-glow glow-1"></div>
+  <div class="auth-ambient-glow glow-2"></div>
   
-  <div class="auth-content-wrapper">
-    <!-- Left Side - Branding & Features -->
-    <div class="auth-branding-section">
-      <div class="branding-content">
-        <div class="brand-logo animate-fade-in-up">
-          <div class="logo-icon">
-            <i class="fas fa-code-branch"></i>
-          </div>
-          <h2>TechBookHub</h2>
-        </div>
-        
-        <div class="brand-tagline animate-fade-in-up delay-200">
-          <h3>Enterprise Technical Library</h3>
-          <p>Access premium technical content curated for developers, engineers, and technology professionals.</p>
-        </div>
-        
-        <div class="feature-highlights animate-fade-in-up delay-400">
-          <div class="feature-item">
-            <div class="feature-icon">
-              <i class="fas fa-shield-check"></i>
-            </div>
-            <div class="feature-text">
-              <h4>Secure Access</h4>
-              <p>Enterprise-grade security with admin approval workflow</p>
-            </div>
-          </div>
-          
-          <div class="feature-item">
-            <div class="feature-icon">
-              <i class="fas fa-books"></i>
-            </div>
-            <div class="feature-text">
-              <h4>Premium Content</h4>
-              <p>Curated technical books and resources for professionals</p>
-            </div>
-          </div>
-          
-          <div class="feature-item">
-            <div class="feature-icon">
-              <i class="fas fa-download"></i>
-            </div>
-            <div class="feature-text">
-              <h4>Offline Access</h4>
-              <p>Download PDFs for offline reading and reference</p>
-            </div>
-          </div>
-        </div>
+  <div class="auth-compact-card">
+    <!-- Logo & Header -->
+    <div class="auth-compact-header">
+      <div class="auth-logo">
+        <i class="fas fa-code-branch"></i>
       </div>
+      <h1>Welcome Back</h1>
+      <p>Sign in to access your technical library</p>
     </div>
     
-    <!-- Right Side - Sign In Form -->
-    <div class="auth-form-section">
-      <div class="auth-form-container animate-slide-in-right">
-        <div class="auth-form-header">
-          <h1 class="auth-title">Welcome Back</h1>
-          <p class="auth-subtitle">Sign in to access your technical library</p>
-        </div>
-        
-        <!-- Error Messages -->
-        {% if form.errors %}
-          <div class="alert alert-error animate-shake">
-            <div class="alert-icon">
-              <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <div class="alert-content">
-              {% for field, errors in form.errors.items %}
-                {% for error in errors %}
-                  <div class="error-item">
-                    {% if field == '__all__' %}
-                      {{ error }}
-                    {% else %}
-                      {{ field|title }}: {{ error }}
-                    {% endif %}
-                  </div>
-                {% endfor %}
-              {% endfor %}
-            </div>
-          </div>
-        {% endif %}
-        
-        <!-- Success Messages -->
-        {% if messages %}
-          {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} animate-slide-down">
-              <div class="alert-icon">
-                {% if message.tags == 'success' %}
-                  <i class="fas fa-check-circle"></i>
-                {% elif message.tags == 'error' %}
-                  <i class="fas fa-exclamation-triangle"></i>
-                {% else %}
-                  <i class="fas fa-info-circle"></i>
-                {% endif %}
-              </div>
-              <div class="alert-content">
-                {{ message }}
-              </div>
-            </div>
+    <!-- Error Messages -->
+    {% if form.errors %}
+      <div class="auth-alert auth-alert-error">
+        <i class="fas fa-exclamation-circle"></i>
+        <div>
+          {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+              <span>{% if field != '__all__' %}{{ field|title }}: {% endif %}{{ error }}</span>
+            {% endfor %}
           {% endfor %}
-        {% endif %}
-        
-        <form method="post" class="auth-form" id="loginForm">
-          {% csrf_token %}
-          
-          <div class="form-group">
-            <label for="{{ form.username.id_for_label }}" class="form-label">
-              <i class="fas fa-user"></i>
-              Username
-            </label>
-            <div class="input-wrapper">
-              {{ form.username }}
-              <div class="input-focus-border"></div>
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="{{ form.password.id_for_label }}" class="form-label">
-              <i class="fas fa-lock"></i>
-              Password
-            </label>
-            <div class="input-wrapper">
-              {{ form.password }}
-              <div class="input-focus-border"></div>
-              <button type="button" class="password-toggle" id="passwordToggle">
-                <i class="fas fa-eye"></i>
-              </button>
-            </div>
-          </div>
-          
-          <div class="form-options">
-            <label class="checkbox-wrapper">
-              <input type="checkbox" id="remember" name="remember">
-              <span class="checkbox-custom"></span>
-              <span class="checkbox-label">Remember me for 30 days</span>
-            </label>
-            
-            <a href="#" class="forgot-link">Forgot password?</a>
-          </div>
-          
-          <button type="submit" class="btn-auth-primary" id="signInBtn">
-            <span class="btn-text">
-              <i class="fas fa-sign-in-alt"></i>
-              Sign In
-            </span>
-            <div class="btn-loading">
-              <div class="loading-spinner"></div>
-              Signing In...
-            </div>
-          </button>
-          
-          <div class="auth-divider">
-            <span>New to TechBookHub?</span>
-          </div>
-          
-          <a href="{% url 'accounts.signup' %}" class="btn-auth-secondary">
-            <i class="fas fa-user-plus"></i>
-            Create Account
-          </a>
-        </form>
+        </div>
       </div>
+    {% endif %}
+    
+    {% if messages %}
+      {% for message in messages %}
+        <div class="auth-alert auth-alert-{{ message.tags }}">
+          <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+          <span>{{ message }}</span>
+        </div>
+      {% endfor %}
+    {% endif %}
+    
+    <!-- Login Form -->
+    <form method="post" class="auth-compact-form">
+      {% csrf_token %}
+      
+      <div class="compact-form-group">
+        <label for="{{ form.username.id_for_label }}">
+          <i class="fas fa-user"></i> Username
+        </label>
+        {{ form.username }}
+      </div>
+      
+      <div class="compact-form-group">
+        <label for="{{ form.password.id_for_label }}">
+          <i class="fas fa-lock"></i> Password
+        </label>
+        <div class="password-input-wrap">
+          {{ form.password }}
+          <button type="button" class="pwd-toggle" onclick="togglePassword(this)">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="compact-form-options">
+        <label class="compact-checkbox">
+          <input type="checkbox" name="remember">
+          <span>Remember me</span>
+        </label>
+        <a href="#" class="compact-link">Forgot password?</a>
+      </div>
+      
+      <button type="submit" class="auth-btn-primary">
+        <i class="fas fa-sign-in-alt"></i> Sign In
+      </button>
+    </form>
+    
+    <!-- Footer -->
+    <div class="auth-compact-footer">
+      <span>New to TechBookHub?</span>
+      <a href="{% url 'accounts.signup' %}">Create Account</a>
     </div>
   </div>
 </div>
 
 <style>
-.auth-section {
-  max-width: 450px;
-  margin: 0 auto;
-  padding: var(--space-4);
-}
-
-.auth-form {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-xl);
-  padding: var(--space-8);
-  box-shadow: var(--shadow-lg);
-}
-
-.auth-icon {
-  width: 80px;
-  height: 80px;
-  background: var(--accent-subtle);
-  border-radius: 50%;
+.auth-compact-container {
+  min-height: calc(100vh - 70px);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+  position: relative;
+  overflow: hidden;
 }
 
-.auth-icon i {
-  font-size: var(--font-size-2xl);
-  color: var(--accent-primary);
+/* Ambient glow effects */
+.auth-ambient-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  pointer-events: none;
+  animation: ambientFloat 8s ease-in-out infinite;
 }
 
-.auth-title {
-  font-size: var(--font-size-2xl);
+.auth-ambient-glow.glow-1 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(74, 158, 255, 0.3) 0%, transparent 70%);
+  top: -100px;
+  right: -50px;
+  animation-delay: 0s;
+}
+
+.auth-ambient-glow.glow-2 {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+  bottom: -80px;
+  left: -50px;
+  animation-delay: -4s;
+}
+
+@keyframes ambientFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -20px) scale(1.1); }
+}
+
+/* Card with glow effect */
+.auth-compact-card {
+  width: 100%;
+  max-width: 400px;
+  background: rgba(30, 35, 45, 0.95);
+  border: 1px solid rgba(74, 158, 255, 0.15);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  box-shadow: 
+    0 25px 60px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(74, 158, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: cardEntrance 0.5s ease-out;
+}
+
+.auth-compact-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 30px 70px rgba(0, 0, 0, 0.45),
+    0 0 50px rgba(74, 158, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.auth-compact-header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.auth-logo {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  box-shadow: 
+    0 10px 30px rgba(74, 158, 255, 0.35),
+    0 0 20px rgba(74, 158, 255, 0.2);
+  animation: logoPulse 3s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+  0%, 100% { box-shadow: 0 10px 30px rgba(74, 158, 255, 0.35), 0 0 20px rgba(74, 158, 255, 0.2); }
+  50% { box-shadow: 0 10px 35px rgba(74, 158, 255, 0.45), 0 0 30px rgba(74, 158, 255, 0.3); }
+}
+
+.auth-logo i {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.auth-compact-header h1 {
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: var(--space-2);
+  margin: 0 0 0.25rem;
 }
 
-.auth-subtitle {
+.auth-compact-header p {
+  font-size: 0.875rem;
   color: var(--text-secondary);
-  font-size: var(--font-size-sm);
+  margin: 0;
 }
 
-.form-errors {
-  background: var(--error-subtle);
-  border: 1px solid var(--error);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
-}
-
-.error-message {
+.auth-alert {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  color: var(--error);
-  font-size: var(--font-size-sm);
-  margin-bottom: var(--space-2);
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  animation: alertSlide 0.3s ease-out;
 }
 
-.error-message:last-child {
-  margin-bottom: 0;
+@keyframes alertSlide {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.messages {
-  background: var(--info-subtle);
-  border: 1px solid var(--info);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
+.auth-alert-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
 }
 
-.message {
+.auth-alert-success {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+}
+
+.auth-compact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+}
+
+.compact-form-group {
+  animation: fieldFadeIn 0.4s ease-out backwards;
+}
+
+.compact-form-group:nth-child(1) { animation-delay: 0.1s; }
+.compact-form-group:nth-child(2) { animation-delay: 0.2s; }
+
+@keyframes fieldFadeIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.compact-form-group label {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  color: var(--info);
-  font-size: var(--font-size-sm);
-  margin-bottom: var(--space-2);
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
 }
 
-.message:last-child {
-  margin-bottom: 0;
+.compact-form-group label i {
+  color: #4a9eff;
+  font-size: 0.8rem;
+  transition: transform 0.2s ease;
 }
 
-.message-success {
-  color: var(--success);
-  background: var(--success-subtle);
-  border-color: var(--success);
+.compact-form-group:focus-within label i {
+  transform: scale(1.1);
 }
 
-.message-error {
-  color: var(--error);
-  background: var(--error-subtle);
-  border-color: var(--error);
-}
-
-.form-group .form-control {
+.compact-form-group input {
   width: 100%;
+  padding: 0.875rem 1rem;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  background: rgba(15, 20, 25, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  transition: all 0.25s ease;
 }
 
-.form-options {
+.compact-form-group input:hover {
+  border-color: rgba(74, 158, 255, 0.3);
+  background: rgba(15, 20, 25, 0.8);
+}
+
+.compact-form-group input:focus {
+  outline: none;
+  border-color: #4a9eff;
+  background: rgba(15, 20, 25, 0.9);
+  box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.15), 0 0 20px rgba(74, 158, 255, 0.1);
+}
+
+.password-input-wrap {
+  position: relative;
+}
+
+.password-input-wrap input {
+  padding-right: 2.75rem;
+}
+
+.pwd-toggle {
+  position: absolute;
+  right: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.pwd-toggle:hover {
+  color: #4a9eff;
+  background: rgba(74, 158, 255, 0.1);
+}
+
+.compact-form-options {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 0.8125rem;
+  animation: fieldFadeIn 0.4s ease-out 0.3s backwards;
 }
 
-.remember-me {
+.compact-checkbox {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-}
-
-.form-check {
-  width: auto;
-  margin: 0;
-}
-
-.form-check-label {
-  font-size: var(--font-size-sm);
+  gap: 0.5rem;
   color: var(--text-secondary);
   cursor: pointer;
+  transition: color 0.2s ease;
 }
 
-.forgot-password {
-  color: var(--accent-primary);
+.compact-checkbox:hover {
+  color: var(--text-primary);
+}
+
+.compact-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: #4a9eff;
+}
+
+.compact-link {
+  color: #4a9eff;
   text-decoration: none;
-  font-size: var(--font-size-sm);
   font-weight: 500;
+  transition: all 0.2s ease;
 }
 
-.forgot-password:hover {
-  color: var(--accent-hover);
-  text-decoration: underline;
+.compact-link:hover {
+  color: #6bb3ff;
+  text-shadow: 0 0 10px rgba(74, 158, 255, 0.3);
 }
 
-.auth-link {
-  color: var(--accent-primary);
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.auth-link:hover {
-  color: var(--accent-hover);
-  text-decoration: underline;
-}
-
-.access-info {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-xl);
-  padding: var(--space-6);
-}
-
-.info-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  margin-bottom: var(--space-4);
-}
-
-.info-icon {
-  width: 50px;
-  height: 50px;
-  background: var(--success-subtle);
-  border-radius: var(--radius-lg);
+.auth-btn-primary {
+  width: 100%;
+  padding: 0.9375rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  animation: fieldFadeIn 0.4s ease-out 0.4s backwards;
 }
 
-.info-icon i {
-  font-size: var(--font-size-lg);
-  color: var(--success);
+.auth-btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
 }
 
-.info-header h3 {
-  font-size: var(--font-size-lg);
+.auth-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(74, 158, 255, 0.4), 0 0 30px rgba(74, 158, 255, 0.2);
+}
+
+.auth-btn-primary:hover::before {
+  left: 100%;
+}
+
+.auth-btn-primary:active {
+  transform: translateY(0);
+}
+
+.auth-compact-footer {
+  text-align: center;
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  animation: fieldFadeIn 0.4s ease-out 0.5s backwards;
+}
+
+.auth-compact-footer a {
+  color: #4a9eff;
+  text-decoration: none;
   font-weight: 600;
-  color: var(--text-primary);
-  margin: 0;
+  margin-left: 0.25rem;
+  transition: all 0.2s ease;
 }
 
-.info-content p {
-  color: var(--text-secondary);
-  margin-bottom: var(--space-4);
+.auth-compact-footer a:hover {
+  color: #6bb3ff;
+  text-shadow: 0 0 10px rgba(74, 158, 255, 0.3);
 }
 
-.access-features {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 var(--space-4) 0;
-}
-
-.access-features li {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  color: var(--text-secondary);
-  font-size: var(--font-size-sm);
-  margin-bottom: var(--space-3);
-}
-
-.access-features li i {
-  color: var(--success);
-  font-size: var(--font-size-sm);
-}
-
-.approval-note {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3);
-  background: var(--warning-subtle);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  color: var(--warning);
-}
-
-.approval-note i {
-  flex-shrink: 0;
-}
-
-@media (max-width: 768px) {
-  .auth-section {
-    padding: var(--space-2);
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .auth-ambient-glow,
+  .auth-compact-card,
+  .auth-logo,
+  .compact-form-group,
+  .auth-btn-primary,
+  .auth-compact-footer,
+  .compact-form-options {
+    animation: none;
   }
   
-  .auth-form {
-    padding: var(--space-6);
+  .auth-compact-card:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-compact-container {
+    padding: 1rem;
   }
   
-  .form-options {
-    flex-direction: column;
-    gap: var(--space-3);
-    align-items: flex-start;
+  .auth-compact-card {
+    padding: 1.75rem 1.5rem;
+    border-radius: 16px;
+  }
+  
+  .auth-ambient-glow {
+    display: none;
   }
 }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Add form validation feedback
-  const form = document.querySelector('.login-form');
-  const inputs = form.querySelectorAll('input[type="text"], input[type="password"]');
-  
-  inputs.forEach(input => {
-    input.addEventListener('blur', function() {
-      if (this.value.trim() === '') {
-        this.classList.add('error');
-      } else {
-        this.classList.remove('error');
-      }
-    });
-    
-    input.addEventListener('input', function() {
-      this.classList.remove('error');
-    });
-  });
-  
-  // Focus first input
-  const firstInput = form.querySelector('input');
-  if (firstInput) {
-    firstInput.focus();
+function togglePassword(btn) {
+  const input = btn.parentElement.querySelector('input');
+  const icon = btn.querySelector('i');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.classList.replace('fa-eye', 'fa-eye-slash');
+  } else {
+    input.type = 'password';
+    icon.classList.replace('fa-eye-slash', 'fa-eye');
   }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Ensure page content is visible
+  const pageContent = document.getElementById('page-content');
+  if (pageContent) {
+    pageContent.style.opacity = '1';
+    pageContent.style.transform = 'none';
+  }
+  
+  const firstInput = document.querySelector('.auth-compact-form input');
+  if (firstInput) firstInput.focus();
 });
 </script>
 {% endblock %}

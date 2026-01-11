@@ -2,75 +2,190 @@
 {% load static %}
 
 {% block content %}
-<div class="container" style="padding: var(--space-8) 0;">
-  <!-- Header -->
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-8);">
+<div class="container" style="padding: var(--space-6) 0;">
+  <!-- Header Actions -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6); flex-wrap: wrap; gap: var(--space-4);">
     <div>
-      <h1 style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-2);">
-        Cover Letter Preview
-      </h1>
-      <p style="color: var(--text-secondary);">
-        {{ cover_letter.title }}
-      </p>
+      <h1 style="font-size: var(--font-size-2xl); font-weight: 700; color: var(--text-primary);">Cover Letter Preview</h1>
+      <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">{{ cover_letter.title }}</p>
     </div>
     <div style="display: flex; gap: var(--space-3);">
-      <a href="{% url 'resume_builder:edit_cover_letter' cover_letter.id %}" class="btn btn-secondary">
-        <i class="fas fa-edit"></i>
-        Edit
-      </a>
-      <a href="{% url 'resume_builder:download_cover_letter' cover_letter.id %}" class="btn btn-primary">
-        <i class="fas fa-download"></i>
-        Download
-      </a>
+      <a href="{% url 'resume_builder:edit_cover_letter' cover_letter.id %}" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit</a>
+      <a href="{% url 'resume_builder:download_cover_letter' cover_letter.id %}" class="btn btn-primary"><i class="fas fa-download"></i> Download</a>
+      <button onclick="window.print()" class="btn btn-ghost"><i class="fas fa-print"></i> Print</button>
     </div>
   </div>
 
-  <!-- Preview -->
-  <div class="card" style="padding: var(--space-8); background: white; color: #000;">
-    <div style="max-width: 600px; margin: 0 auto; font-family: 'Arial', sans-serif; line-height: 1.6;">
-      <!-- Header -->
-      <div style="text-align: right; margin-bottom: 30px;">
-        <div style="font-weight: bold; font-size: 16px;">{{ cover_letter.full_name }}</div>
-        <div style="font-size: 14px;">{{ cover_letter.email }}</div>
-        {% if cover_letter.phone %}<div style="font-size: 14px;">{{ cover_letter.phone }}</div>{% endif %}
-        {% if cover_letter.location %}<div style="font-size: 14px;">{{ cover_letter.location }}</div>{% endif %}
-      </div>
+  <!-- Cover Letter Preview -->
+  <div class="letter-preview-wrapper">
+    <div class="letter-paper" style="--primary-color: {{ cover_letter.primary_color|default:'#4a9d9a' }};">
       
+      <!-- Header with colored bar -->
+      <header class="letter-header">
+        <div class="header-bar"></div>
+        <div class="header-content">
+          <h1 class="sender-name">{{ cover_letter.full_name }}</h1>
+          <div class="sender-contact">
+            {% if cover_letter.email %}<span>{{ cover_letter.email }}</span>{% endif %}
+            {% if cover_letter.phone %}<span>{{ cover_letter.phone }}</span>{% endif %}
+            {% if cover_letter.linkedin %}<span>{{ cover_letter.linkedin }}</span>{% endif %}
+          </div>
+          {% if cover_letter.address %}
+          <div class="sender-address">{{ cover_letter.address }}</div>
+          {% endif %}
+        </div>
+      </header>
+
       <!-- Date -->
-      <div style="margin-bottom: 30px;">
-        <div style="font-size: 14px;">{{ "now"|date:"F d, Y" }}</div>
+      <div class="letter-date">
+        {{ "now"|date:"F d, Y" }}
       </div>
-      
-      <!-- Company Info -->
-      <div style="margin-bottom: 30px;">
-        {% if cover_letter.hiring_manager %}
-        <div style="font-size: 14px; font-weight: bold;">{{ cover_letter.hiring_manager }}</div>
-        {% endif %}
-        <div style="font-size: 14px; font-weight: bold;">{{ cover_letter.company_name }}</div>
+
+      <!-- Recipient -->
+      <div class="recipient-info">
+        {% if cover_letter.hiring_manager %}<div class="recipient-name">{{ cover_letter.hiring_manager }}</div>{% endif %}
+        <div class="company-name">{{ cover_letter.company_name }}</div>
+        {% if cover_letter.company_address %}<div class="company-address">{{ cover_letter.company_address }}</div>{% endif %}
       </div>
-      
+
       <!-- Subject -->
-      <div style="margin-bottom: 20px;">
-        <strong>Re: {{ cover_letter.position_title }}</strong>
+      <div class="letter-subject">
+        <strong>Re: Application for {{ cover_letter.position_title }}</strong>
       </div>
-      
-      <!-- Content -->
-      <div style="white-space: pre-line; margin-bottom: 30px; font-size: 14px; line-height: 1.6;">{{ cover_letter.content }}</div>
-      
-      <!-- Signature -->
-      <div style="font-size: 14px;">
-        <div>Sincerely,</div>
-        <div style="margin-top: 20px; font-weight: bold;">{{ cover_letter.full_name }}</div>
+
+      <!-- Salutation -->
+      <div class="letter-salutation">
+        Dear {% if cover_letter.hiring_manager %}{{ cover_letter.hiring_manager }}{% else %}Hiring Manager{% endif %},
       </div>
+
+      <!-- Body -->
+      <div class="letter-body">
+        {% if cover_letter.opening_paragraph %}
+        <p>{{ cover_letter.opening_paragraph }}</p>
+        {% endif %}
+        
+        {% if cover_letter.body_paragraph %}
+        <p>{{ cover_letter.body_paragraph|linebreaks }}</p>
+        {% endif %}
+        
+        {% if cover_letter.closing_paragraph %}
+        <p>{{ cover_letter.closing_paragraph }}</p>
+        {% endif %}
+        
+        {% if cover_letter.content and not cover_letter.opening_paragraph %}
+        <div style="white-space: pre-line;">{{ cover_letter.content }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Closing -->
+      <div class="letter-closing">
+        <p>Sincerely,</p>
+        <div class="signature">{{ cover_letter.full_name }}</div>
+      </div>
+
     </div>
   </div>
 
-  <!-- Back Button -->
-  <div style="text-align: center; margin-top: var(--space-8);">
-    <a href="{% url 'resume_builder:edit_cover_letter' cover_letter.id %}" class="btn btn-ghost">
-      <i class="fas fa-arrow-left"></i>
-      Back to Editor
-    </a>
+  <div style="text-align: center; margin-top: var(--space-6);">
+    <a href="{% url 'resume_builder:edit_cover_letter' cover_letter.id %}" class="btn btn-ghost"><i class="fas fa-arrow-left"></i> Back to Editor</a>
   </div>
 </div>
+
+<style>
+.letter-preview-wrapper {
+  display: flex; justify-content: center; padding: var(--space-4);
+  background: var(--bg-elevated); border-radius: var(--radius-xl);
+}
+
+.letter-paper {
+  width: 210mm; min-height: 297mm; background: #fff; color: #1a1a1a;
+  font-family: 'Georgia', 'Times New Roman', serif; font-size: 11pt;
+  line-height: 1.6; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  padding: 0;
+}
+
+.letter-header {
+  position: relative;
+}
+
+.header-bar {
+  height: 8px; background: var(--primary-color);
+}
+
+.header-content {
+  padding: 30px 50px 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sender-name {
+  font-size: 24pt; font-weight: 700; color: var(--primary-color);
+  margin: 0 0 8px 0; font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.sender-contact {
+  display: flex; flex-wrap: wrap; gap: 16px;
+  font-size: 10pt; color: #555;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.sender-address {
+  margin-top: 8px; font-size: 10pt; color: #666;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.letter-date {
+  padding: 30px 50px 0; font-size: 10.5pt; color: #333;
+}
+
+.recipient-info {
+  padding: 20px 50px 0;
+}
+
+.recipient-name { font-weight: 600; font-size: 11pt; }
+.company-name { font-size: 11pt; color: #333; }
+.company-address { font-size: 10pt; color: #666; margin-top: 4px; }
+
+.letter-subject {
+  padding: 24px 50px 0; font-size: 11pt;
+}
+
+.letter-salutation {
+  padding: 24px 50px 0; font-size: 11pt;
+}
+
+.letter-body {
+  padding: 20px 50px;
+}
+
+.letter-body p {
+  margin: 0 0 16px 0; text-align: justify;
+}
+
+.letter-body p:last-child { margin-bottom: 0; }
+
+.letter-closing {
+  padding: 24px 50px 50px;
+}
+
+.letter-closing p { margin: 0 0 30px 0; }
+
+.signature {
+  font-weight: 600; font-size: 12pt;
+  color: var(--primary-color);
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+@media print {
+  body { background: white !important; }
+  .container > div:first-child, .container > div:last-child { display: none !important; }
+  .letter-preview-wrapper { padding: 0; background: white; }
+  .letter-paper { box-shadow: none; width: 100%; }
+}
+
+@media (max-width: 900px) {
+  .letter-paper { width: 100%; min-height: auto; }
+  .header-content, .letter-date, .recipient-info, .letter-subject,
+  .letter-salutation, .letter-body, .letter-closing { padding-left: 24px; padding-right: 24px; }
+}
+</style>
 {% endblock %}

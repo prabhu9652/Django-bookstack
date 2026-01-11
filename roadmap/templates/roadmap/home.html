@@ -3,383 +3,782 @@
 {% load roadmap_extras %}
 
 {% block content %}
-<div class="container p-8">
-  <!-- Clean Header -->
-  <div class="roadmap-header d-flex justify-content-between align-items-center mb-12 animate-slide-down">
-    <div class="header-content">
-      <h1 class="d-flex align-items-center gap-3 mb-2">
-        <div class="header-icon">
-          <i class="fas fa-route"></i>
-        </div>
-        Engineering Career Roadmaps
-      </h1>
-      <p class="text-secondary">
-        Navigate your transformation from DevOps to Full-Stack Development to Data Science & Machine Learning
-      </p>
-    </div>
-    <div class="header-actions d-flex gap-3">
-      {% if user.is_authenticated %}
-        <a href="#roadmap-cards" class="btn btn-primary animate-slide-right">
+<div class="roadmap-page">
+  <!-- Hero Section -->
+  <div class="roadmap-hero">
+    <div class="hero-bg-pattern"></div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">
           <i class="fas fa-compass"></i>
-          Explore Paths
-        </a>
-      {% else %}
-        <a href="{% url 'accounts.signup' %}" class="btn btn-primary animate-slide-right">
-          <i class="fas fa-user-plus"></i>
-          Start Journey
-        </a>
-        <a href="{% url 'accounts.login' %}" class="btn btn-secondary animate-slide-right">
-          <i class="fas fa-sign-in-alt"></i>
-          Sign In
-        </a>
-      {% endif %}
+          <span>Career Roadmaps</span>
+        </div>
+        <h1>Navigate Your Engineering Journey</h1>
+        <p>Transform your career with structured learning paths from DevOps to Full-Stack Development to Data Science & Machine Learning</p>
+        {% if not user.is_authenticated %}
+        <div class="hero-actions">
+          <a href="{% url 'accounts.signup' %}" class="btn-hero-primary">
+            <i class="fas fa-rocket"></i>
+            Start Your Journey
+          </a>
+          <a href="{% url 'accounts.login' %}" class="btn-hero-secondary">
+            <i class="fas fa-sign-in-alt"></i>
+            Sign In
+          </a>
+        </div>
+        {% endif %}
+      </div>
     </div>
   </div>
 
-  <!-- Roadmap Paths Section -->
-  <div class="roadmap-section animate-slide-right">
-    <div class="resume-header mb-8">
-      <h2 class="d-flex align-items-center">
-        <div class="section-icon">
-          <i class="fas fa-map"></i>
+  <!-- Paths Section -->
+  <div class="container roadmap-content">
+    <div class="paths-section" id="roadmap-cards">
+      <div class="section-header">
+        <div class="section-title-group">
+          <div class="section-icon">
+            <i class="fas fa-map-signs"></i>
+          </div>
+          <div>
+            <h2>Choose Your Engineering Path</h2>
+            <p>Select a roadmap to begin your transformation</p>
+          </div>
         </div>
-        Choose Your Engineering Path
-      </h2>
+        {% if roadmap_paths %}
+        <div class="paths-count">
+          <span class="count-number">{{ roadmap_paths|length }}</span>
+          <span class="count-label">Path{{ roadmap_paths|length|pluralize }}</span>
+        </div>
+        {% endif %}
+      </div>
+      
       {% if roadmap_paths %}
-        <span class="document-count">
-          {{ roadmap_paths|length }} path{{ roadmap_paths|length|pluralize }}
-        </span>
-      {% endif %}
-    </div>
-    
-    {% if roadmap_paths %}
-      <div class="roadmap-paths-grid">
+      <div class="paths-grid">
         {% for path in roadmap_paths %}
-          <a href="{% url 'roadmap:path_detail' path.slug %}" class="roadmap-path-card animate-slide-up animate-stagger-{{ forloop.counter0|add:1 }}" data-path-slug="{{ path.slug }}" data-path-id="{{ path.id }}">
-            
-            <div class="path-content">
-              <!-- Path Header -->
-              <div class="path-header d-flex justify-content-between align-items-start mb-5">
-                <div class="path-info">
-                  <div class="path-icon mb-4">
-                    <i class="{{ path.icon_class }}"></i>
-                  </div>
-                  <h3 class="path-title mb-3">
-                    {{ path.name }}
-                  </h3>
-                  <p class="path-subtitle mb-4">
-                    {{ path.subtitle }}
-                  </p>
-                </div>
-                
-                <!-- Status Badge -->
-                <div class="path-status">
-                  <i class="fas fa-check-circle"></i>
-                  Available
-                </div>
-              </div>
-              
-              <!-- Path Description -->
-              <p class="path-description mb-5">
-                {{ path.description }}
-              </p>
-              
-              <!-- Path Meta -->
-              <div class="path-meta mb-5">
-                <div class="meta-item">
-                  <i class="fas fa-signal"></i>
-                  <span>{{ path.get_difficulty_display }}</span>
-                </div>
-                <div class="meta-item">
-                  <i class="fas fa-clock"></i>
-                  <span>{{ path.estimated_duration }}</span>
-                </div>
-              </div>
-              
-              {% if path.highlights.all %}
-                <div class="path-highlights mb-5">
-                  {% for highlight in path.highlights.all %}
-                    <div class="highlight-item mb-3">
-                      <i class="{{ highlight.icon_class }}"></i>
-                      <span>{{ highlight.title }}</span>
-                    </div>
-                  {% endfor %}
-                </div>
-              {% endif %}
-              
-              {% if user.is_authenticated %}
-                {% with progress=user_progress|lookup:path.slug %}
-                  {% if progress.total_skills %}
-                    <div class="path-progress mb-4">
-                      <div class="progress-header d-flex justify-content-between align-items-center mb-2">
-                        <span class="progress-label">Progress</span>
-                        <span class="progress-count">{{ progress.completed_skills }}/{{ progress.total_skills }}</span>
-                      </div>
-                      <div class="progress-bar">
-                        <div class="progress-fill" style="width: {% widthratio progress.completed_skills progress.total_skills 100 %}%;"></div>
-                      </div>
-                    </div>
-                  {% endif %}
-                {% endwith %}
-              {% endif %}
+        <a href="{% url 'roadmap:path_detail' path.slug %}" class="path-card" data-path-slug="{{ path.slug }}">
+          <div class="path-card-glow"></div>
+          
+          <!-- Card Header -->
+          <div class="path-card-header">
+            <div class="path-icon-wrap">
+              <i class="{{ path.icon_class }}"></i>
             </div>
-          </a>
+            <div class="path-badge">
+              <i class="fas fa-check-circle"></i>
+              Available
+            </div>
+          </div>
+          
+          <!-- Card Body -->
+          <div class="path-card-body">
+            <h3>{{ path.name }}</h3>
+            <p class="path-subtitle">{{ path.subtitle }}</p>
+            <p class="path-desc">{{ path.description }}</p>
+            
+            <!-- Meta Info -->
+            <div class="path-meta-row">
+              <div class="meta-chip">
+                <i class="fas fa-signal"></i>
+                {{ path.get_difficulty_display }}
+              </div>
+              <div class="meta-chip">
+                <i class="fas fa-clock"></i>
+                {{ path.estimated_duration }}
+              </div>
+            </div>
+            
+            <!-- Highlights -->
+            {% if path.highlights.all %}
+            <div class="path-highlights-list">
+              {% for highlight in path.highlights.all|slice:":4" %}
+              <div class="highlight-row">
+                <i class="{{ highlight.icon_class }}"></i>
+                <span>{{ highlight.title }}</span>
+              </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Progress (if authenticated) -->
+            {% if user.is_authenticated %}
+            {% with progress=user_progress|lookup:path.slug %}
+            {% if progress.total_skills %}
+            <div class="path-progress-bar">
+              <div class="progress-info">
+                <span>Progress</span>
+                <span>{{ progress.completed_skills }}/{{ progress.total_skills }}</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" style="width: {% widthratio progress.completed_skills progress.total_skills 100 %}%;"></div>
+              </div>
+            </div>
+            {% endif %}
+            {% endwith %}
+            {% endif %}
+          </div>
+          
+          <!-- Card Footer -->
+          <div class="path-card-footer">
+            <span class="explore-text">Explore Path</span>
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        </a>
         {% endfor %}
       </div>
-    {% else %}
-      <div class="empty-state">
-        <div class="empty-icon animate-pulse">
+      {% else %}
+      <div class="empty-paths">
+        <div class="empty-icon">
           <i class="fas fa-route"></i>
         </div>
-        <h3>No roadmaps available</h3>
+        <h3>Roadmaps Coming Soon</h3>
         <p>Engineering roadmaps are being prepared. Check back soon for comprehensive career paths.</p>
       </div>
-    {% endif %}
-  </div>
+      {% endif %}
+    </div>
 
-  <!-- Call to Action -->
-  {% if not user.is_authenticated %}
-  <div class="roadmap-section animate-slide-up" style="margin-top: var(--space-24);">
-    <div class="cta-card">
-      <div class="cta-icon animate-pulse">
-        <i class="fas fa-rocket"></i>
-      </div>
-      <h3>Ready to Transform Your Engineering Career?</h3>
-      <p>Join thousands of engineers building expertise across DevOps, Development, and Data Science. 
-        Track your progress and advance your technical career.</p>
-      <div class="d-flex gap-4 justify-content-center flex-wrap">
-        <a href="{% url 'accounts.signup' %}" class="btn btn-primary btn-lg">
-          <i class="fas fa-user-plus"></i>
-          Create Account
-        </a>
-        <a href="{% url 'accounts.login' %}" class="btn btn-secondary btn-lg">
-          <i class="fas fa-sign-in-alt"></i>
-          Sign In
-        </a>
+    <!-- CTA Section (for non-authenticated users) -->
+    {% if not user.is_authenticated %}
+    <div class="cta-section">
+      <div class="cta-card">
+        <div class="cta-glow"></div>
+        <div class="cta-content">
+          <div class="cta-icon">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <h3>Ready to Level Up?</h3>
+          <p>Join thousands of engineers building expertise across DevOps, Development, and Data Science. Track your progress and advance your career.</p>
+          <div class="cta-buttons">
+            <a href="{% url 'accounts.signup' %}" class="btn-cta-primary">
+              <i class="fas fa-user-plus"></i>
+              Create Free Account
+            </a>
+            <a href="{% url 'accounts.login' %}" class="btn-cta-secondary">
+              Sign In
+            </a>
+          </div>
+        </div>
       </div>
     </div>
+    {% endif %}
   </div>
-  {% endif %}
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Enhanced card hover effects with enterprise-grade animations
-  function setupCardEffects() {
-    const cards = document.querySelectorAll('.roadmap-path-card');
-    
-    cards.forEach(card => {
-      const overlay = card.querySelector('.card-overlay');
-      const icon = card.querySelector('.path-icon');
-      
-      card.addEventListener('mouseenter', () => {
-        card.style.transform = 'translateY(-8px) scale(1.02)';
-        card.style.borderColor = 'var(--accent-primary)';
-        card.style.boxShadow = 'var(--shadow-lg), var(--glow-subtle)';
-        if (overlay) overlay.style.opacity = '0.1';
-        if (icon) {
-          icon.style.background = 'var(--accent-primary)';
-          icon.style.transform = 'scale(1.1)';
-          const iconElement = icon.querySelector('i');
-          if (iconElement) iconElement.style.color = 'white';
-        }
-      });
-      
-      card.addEventListener('mouseleave', () => {
-        card.style.transform = 'translateY(0) scale(1)';
-        card.style.borderColor = 'var(--border-primary)';
-        card.style.boxShadow = 'none';
-        if (overlay) overlay.style.opacity = '0';
-        if (icon) {
-          icon.style.background = 'var(--accent-subtle)';
-          icon.style.transform = 'scale(1)';
-          const iconElement = icon.querySelector('i');
-          if (iconElement) iconElement.style.color = 'var(--accent-primary)';
-        }
-      });
-      
-      // Add click feedback
-      card.addEventListener('click', () => {
-        card.style.transform = 'translateY(-4px) scale(1.01)';
-        setTimeout(() => {
-          card.style.transform = 'translateY(-8px) scale(1.02)';
-        }, 100);
-      });
-    });
-  }
-  
-  // Progressive disclosure for path highlights
-  function setupProgressiveDisclosure() {
-    const pathCards = document.querySelectorAll('.roadmap-path-card');
-    
-    pathCards.forEach(card => {
-      const highlights = card.querySelector('.path-highlights');
-      if (highlights) {
-        const items = highlights.querySelectorAll('.highlight-item');
-        
-        // Initially show only first 3 highlights
-        items.forEach((item, index) => {
-          if (index >= 3) {
-            item.style.display = 'none';
-          }
-        });
-        
-        // Show all on hover
-        card.addEventListener('mouseenter', () => {
-          items.forEach(item => {
-            item.style.display = 'flex';
-            item.style.animation = 'slideUp 0.3s ease-out';
-          });
-        });
-        
-        card.addEventListener('mouseleave', () => {
-          items.forEach((item, index) => {
-            if (index >= 3) {
-              setTimeout(() => {
-                item.style.display = 'none';
-              }, 200);
-            }
-          });
-        });
-      }
-    });
-  }
-  
-  // Initialize all functionality
-  setupCardEffects();
-  setupProgressiveDisclosure();
-});
-</script>
-
 <style>
-/* Roadmap Page Styles */
-.roadmap-paths-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: var(--space-8);
+/* Roadmap Page Layout */
+.roadmap-page {
+  min-height: calc(100vh - 64px);
+  background: var(--bg-primary);
 }
 
-.path-icon {
-  width: 64px;
-  height: 64px;
-  background: var(--accent-subtle);
-  border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-normal);
-}
-
-.path-icon i {
-  color: var(--accent-primary);
-  font-size: var(--font-size-xl);
-}
-
-.path-status {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  background: var(--success-subtle);
-  color: var(--success);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-}
-
-.path-description {
-  color: var(--text-secondary);
-  line-height: 1.6;
-  font-size: var(--font-size-sm);
-}
-
-.highlight-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-}
-
-.highlight-item i {
-  color: var(--accent-primary);
-  width: 16px;
-  text-align: center;
-}
-
-.progress-label {
-  font-size: var(--font-size-xs);
-  color: var(--text-tertiary);
-  font-weight: 600;
-}
-
-.progress-count {
-  font-size: var(--font-size-xs);
-  color: var(--text-tertiary);
-}
-
-.cta-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-xl);
-  padding: var(--space-16);
-  text-align: center;
+/* Hero Section */
+.roadmap-hero {
   position: relative;
+  padding: 4rem 0 5rem;
+  background: linear-gradient(135deg, rgba(74, 158, 255, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%);
+  border-bottom: 1px solid var(--border-default);
   overflow: hidden;
 }
 
-.cta-icon {
-  width: 100px;
-  height: 100px;
-  background: var(--accent-subtle);
-  border-radius: var(--radius-xl);
+.hero-bg-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(74, 158, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  max-width: 700px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(74, 158, 255, 0.1);
+  border: 1px solid rgba(74, 158, 255, 0.2);
+  border-radius: 50px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #4a9eff;
+  margin-bottom: 1.5rem;
+}
+
+.hero-content h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 1rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.hero-content > p {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 0 2rem;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-hero-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(74, 158, 255, 0.3);
+}
+
+.btn-hero-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(74, 158, 255, 0.4);
+}
+
+.btn-hero-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  background: transparent;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.btn-hero-secondary:hover {
+  border-color: #4a9eff;
+  color: #4a9eff;
+  background: rgba(74, 158, 255, 0.05);
+}
+
+/* Content Section */
+.roadmap-content {
+  padding: 3rem 0 4rem;
+}
+
+/* Paths Section */
+.paths-section {
+  margin-bottom: 4rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.section-title-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.section-icon {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, rgba(74, 158, 255, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%);
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto var(--space-8) auto;
+}
+
+.section-icon i {
+  font-size: 1.25rem;
+  color: #4a9eff;
+}
+
+.section-title-group h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.section-title-group p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.paths-count {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-elevated);
+  border-radius: 10px;
+}
+
+.count-number {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #4a9eff;
+}
+
+.count-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* Paths Grid */
+.paths-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Path Card */
+.path-card {
+  position: relative;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.path-card-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(180deg, rgba(74, 158, 255, 0.06) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.path-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(74, 158, 255, 0.3);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.15),
+    0 0 30px rgba(74, 158, 255, 0.08);
+}
+
+.path-card:hover .path-card-glow {
+  opacity: 1;
+}
+
+.path-card:hover .path-icon-wrap {
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  transform: scale(1.05);
+}
+
+.path-card:hover .path-icon-wrap i {
+  color: white;
+}
+
+.path-card:hover .path-card-footer {
+  color: #4a9eff;
+}
+
+.path-card:hover .path-card-footer i {
+  transform: translateX(4px);
+}
+
+/* Card Header */
+.path-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.5rem 1.5rem 0;
+}
+
+.path-icon-wrap {
+  width: 56px;
+  height: 56px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.path-icon-wrap i {
+  font-size: 1.375rem;
+  color: #4a9eff;
+  transition: color 0.3s ease;
+}
+
+.path-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Card Body */
+.path-card-body {
+  padding: 1.25rem 1.5rem;
+  flex: 1;
+}
+
+.path-card-body h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.375rem;
+}
+
+.path-subtitle {
+  font-size: 0.875rem;
+  color: #4a9eff;
+  margin: 0 0 0.75rem;
+  font-weight: 500;
+}
+
+.path-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin: 0 0 1rem;
+}
+
+/* Meta Row */
+.path-meta-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: var(--bg-elevated);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.meta-chip i {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* Highlights */
+.path-highlights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.highlight-row {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.highlight-row i {
+  width: 14px;
+  color: #4a9eff;
+  font-size: 0.75rem;
+}
+
+/* Progress Bar */
+.path-progress-bar {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-default);
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.progress-track {
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4a9eff 0%, #22c55e 100%);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+/* Card Footer */
+.path-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-default);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+.path-card-footer i {
+  transition: transform 0.3s ease;
+}
+
+/* Empty State */
+.empty-paths {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-default);
+  border-radius: 16px;
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--bg-elevated);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.empty-icon i {
+  font-size: 2rem;
+  color: var(--text-muted);
+}
+
+.empty-paths h3 {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.empty-paths p {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* CTA Section */
+.cta-section {
+  margin-top: 2rem;
+}
+
+.cta-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(74, 158, 255, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%);
+  border: 1px solid rgba(74, 158, 255, 0.15);
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.cta-glow {
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(74, 158, 255, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cta-content {
+  position: relative;
+}
+
+.cta-icon {
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(135deg, #4a9eff 0%, #6366f1 100%);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 10px 30px rgba(74, 158, 255, 0.3);
 }
 
 .cta-icon i {
-  font-size: var(--font-size-4xl);
-  color: var(--accent-primary);
+  font-size: 1.75rem;
+  color: white;
 }
 
-/* Enhanced responsive design */
+.cta-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.75rem;
+}
+
+.cta-card > .cta-content > p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 500px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-cta-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.btn-cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(74, 158, 255, 0.4);
+}
+
+.btn-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.875rem 1.5rem;
+  background: transparent;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.btn-cta-secondary:hover {
+  border-color: #4a9eff;
+  color: #4a9eff;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  .roadmap-paths-grid {
-    grid-template-columns: 1fr !important;
+  .roadmap-hero {
+    padding: 3rem 0 4rem;
   }
   
-  .roadmap-header {
-    flex-direction: column !important;
-    gap: var(--space-4) !important;
-    text-align: center !important;
+  .hero-content h1 {
+    font-size: 1.875rem;
   }
   
-  .resume-header {
-    flex-direction: column !important;
-    gap: var(--space-3) !important;
-    text-align: center !important;
+  .hero-content > p {
+    font-size: 1rem;
   }
   
-  .path-meta {
-    grid-template-columns: 1fr !important;
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .paths-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .cta-card {
+    padding: 2rem 1.5rem;
   }
 }
 
 @media (max-width: 480px) {
-  .cta-card {
-    padding: var(--space-12) !important;
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
   }
   
-  .header-actions {
-    flex-direction: column !important;
-    width: 100% !important;
+  .btn-hero-primary,
+  .btn-hero-secondary {
+    width: 100%;
+    justify-content: center;
   }
   
-  .header-actions .btn {
-    width: 100% !important;
+  .section-title-group {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+  
+  .cta-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn-cta-primary,
+  .btn-cta-secondary {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Smooth card interactions
+  const cards = document.querySelectorAll('.path-card');
+  
+  cards.forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      card.style.transform = 'translateY(-6px)';
+    });
+    
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'translateY(0)';
+    });
+  });
+});
+</script>
 {% endblock %}

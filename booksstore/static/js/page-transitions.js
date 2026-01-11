@@ -36,7 +36,19 @@ class PageTransitions {
     setupBasicAnimations() {
         this.pageContent = document.getElementById('page-content');
         
-        // Add initial page load animation only
+        // Skip animation for auth pages to prevent disappearing content
+        if (window.location.pathname.includes('/login') || 
+            window.location.pathname.includes('/signup') ||
+            window.location.pathname.includes('/accounts/')) {
+            // Ensure content is visible
+            if (this.pageContent) {
+                this.pageContent.style.opacity = '1';
+                this.pageContent.style.transform = 'none';
+            }
+            return;
+        }
+        
+        // Add initial page load animation only for non-auth pages
         this.animatePageIn();
     }
 
@@ -173,6 +185,19 @@ class PageTransitions {
     async animatePageIn() {
         return new Promise((resolve) => {
             if (!this.pageContent) {
+                resolve();
+                return;
+            }
+            
+            // Skip animation for auth pages - keep content visible
+            if (window.location.pathname.includes('/login') || 
+                window.location.pathname.includes('/signup') ||
+                window.location.pathname.includes('/accounts/')) {
+                this.pageContent.style.opacity = '1';
+                this.pageContent.style.transform = 'none';
+                if (this.overlay) {
+                    this.overlay.style.display = 'none';
+                }
                 resolve();
                 return;
             }
