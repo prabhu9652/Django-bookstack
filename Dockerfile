@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libjpeg-dev \
     zlib1g-dev \
+    libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build
@@ -22,9 +23,24 @@ RUN pip install --upgrade pip && \
 # =========================
 FROM python:3.12-slim
 
+# Install runtime dependencies including WeasyPrint system libraries
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libjpeg62-turbo \
     zlib1g \
+    # WeasyPrint dependencies for PDF generation
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libpangoft2-1.0-0 \
+    libharfbuzz0b \
+    libfribidi0 \
+    libgdk-pixbuf2.0-0 \
+    libffi8 \
+    libcairo2 \
+    libgirepository-1.0-1 \
+    gir1.2-pango-1.0 \
+    shared-mime-info \
+    fonts-liberation \
+    fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
