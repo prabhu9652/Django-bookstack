@@ -6,60 +6,167 @@
   <!-- Header -->
   <div style="text-align: center; margin-bottom: var(--space-12);">
     <h1 style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-4);">
-      Choose Cover Letter Template
+      Create Your Professional Cover Letter
     </h1>
-    <p style="color: var(--text-secondary); font-size: var(--font-size-lg); max-width: 600px; margin: 0 auto;">
-      Select a template that matches the tone and style for your application.
+    <p style="color: var(--text-secondary); font-size: var(--font-size-lg); max-width: 700px; margin: 0 auto;">
+      Select your role to get a tailored, industry-standard cover letter with role-specific content and professional formatting.
     </p>
   </div>
 
-  <!-- Templates Grid -->
-  {% if templates %}
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-6);">
-      {% for template in templates %}
-        <div class="card template-card" style="padding: var(--space-6); cursor: pointer; transition: var(--transition-smooth);" 
-             onclick="selectTemplate({{ template.id }}, '{{ template.name }}')">
-          <div style="text-align: center; margin-bottom: var(--space-4);">
-            <div style="width: 100%; height: 200px; background: var(--bg-surface); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-4); border: 2px solid var(--border-primary);">
-              <i class="fas fa-envelope" style="font-size: var(--font-size-4xl); color: var(--accent-primary);"></i>
-            </div>
-            <h3 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
-              {{ template.name }}
-            </h3>
-            <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-1);">
-              {{ template.get_tone_display }}
-            </p>
-            <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">
-              {{ template.description }}
-            </p>
+  <!-- Role Selection -->
+  <div style="margin-bottom: var(--space-12);">
+    <h2 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-6); text-align: center;">
+      Step 1: Select Your Role
+    </h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-6); max-width: 1100px; margin: 0 auto;">
+      <!-- DevOps/SRE -->
+      <div class="role-card" data-role="devops_sre" onclick="selectRole('devops_sre')" 
+           style="background: var(--bg-surface); border: 2px solid var(--border-primary); border-radius: var(--radius-xl); padding: var(--space-6); cursor: pointer; transition: all 0.2s ease-out; position: relative;">
+        
+        <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
+          <div style="width: 56px; height: 56px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-server" style="font-size: var(--font-size-xl); color: var(--accent-primary);"></i>
           </div>
-          
-          <div style="text-align: center;">
-            <a href="{% url 'resume_builder:create_cover_letter' template.id %}" class="btn btn-primary" style="width: 100%;">
-              <i class="fas fa-plus"></i>
-              Use This Template
-            </a>
+          <div>
+            <h3 style="font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary); margin: 0;">
+              DevOps / SRE Engineer
+            </h3>
           </div>
         </div>
-      {% endfor %}
-    </div>
-  {% else %}
-    <div class="card" style="padding: var(--space-12); text-align: center;">
-      <div style="width: 80px; height: 80px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4) auto;">
-        <i class="fas fa-exclamation-triangle" style="font-size: var(--font-size-3xl); color: var(--warning);"></i>
+        
+        <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-4); line-height: 1.5;">
+          Cloud infrastructure, CI/CD pipelines, Kubernetes, Terraform, observability & monitoring
+        </p>
+        
+        <div style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
+          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">AWS</span>
+          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">Kubernetes</span>
+          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">Terraform</span>
+          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">CI/CD</span>
+          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">Docker</span>
+        </div>
+        
+        <div class="role-check" style="display: none; position: absolute; top: var(--space-4); right: var(--space-4);">
+          <i class="fas fa-check-circle" style="color: var(--accent-primary); font-size: var(--font-size-xl);"></i>
+        </div>
       </div>
-      <h3 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">
-        No templates available
-      </h3>
-      <p style="color: var(--text-secondary); margin-bottom: var(--space-6);">
-        Cover letter templates are being set up. Please check back later.
-      </p>
-      <a href="{% url 'resume_builder:dashboard' %}" class="btn btn-ghost">
-        <i class="fas fa-arrow-left"></i>
-        Back to Dashboard
-      </a>
+
+      <!-- Software Engineer -->
+      <div class="role-card" data-role="software_engineer" onclick="selectRole('software_engineer')" 
+           style="background: var(--bg-surface); border: 2px solid var(--border-primary); border-radius: var(--radius-xl); padding: var(--space-6); cursor: pointer; transition: all 0.2s ease-out; position: relative;">
+        
+        <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
+          <div style="width: 56px; height: 56px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-code" style="font-size: var(--font-size-xl); color: var(--accent-primary);"></i>
+          </div>
+          <div>
+            <h3 style="font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary); margin: 0;">
+              Software Engineer
+            </h3>
+          </div>
+        </div>
+        
+        <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-4); line-height: 1.5;">
+          Full-stack development, APIs, microservices, system design, databases & clean architecture
+        </p>
+        
+        <div style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
+          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">Python</span>
+          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">React</span>
+          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">Node.js</span>
+          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">PostgreSQL</span>
+          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">REST APIs</span>
+        </div>
+        
+        <div class="role-check" style="display: none; position: absolute; top: var(--space-4); right: var(--space-4);">
+          <i class="fas fa-check-circle" style="color: var(--accent-primary); font-size: var(--font-size-xl);"></i>
+        </div>
+      </div>
+
+      <!-- DS/ML Engineer -->
+      <div class="role-card" data-role="ds_ml" onclick="selectRole('ds_ml')" 
+           style="background: var(--bg-surface); border: 2px solid var(--border-primary); border-radius: var(--radius-xl); padding: var(--space-6); cursor: pointer; transition: all 0.2s ease-out; position: relative;">
+        
+        <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
+          <div style="width: 56px; height: 56px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-brain" style="font-size: var(--font-size-xl); color: var(--accent-primary);"></i>
+          </div>
+          <div>
+            <h3 style="font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary); margin: 0;">
+              DS / ML Engineer
+            </h3>
+          </div>
+        </div>
+        
+        <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-4); line-height: 1.5;">
+          Machine learning, data pipelines, model training & deployment, MLOps & analytics
+        </p>
+        
+        <div style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
+          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">TensorFlow</span>
+          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">PyTorch</span>
+          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">Pandas</span>
+          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">MLflow</span>
+          <span style="background: var(--bg-elevated); color: var(--text-secondary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--font-size-xs);">Scikit-learn</span>
+        </div>
+        
+        <div class="role-check" style="display: none; position: absolute; top: var(--space-4); right: var(--space-4);">
+          <i class="fas fa-check-circle" style="color: var(--accent-primary); font-size: var(--font-size-xl);"></i>
+        </div>
+      </div>
     </div>
-  {% endif %}
+  </div>
+
+  <!-- Template Selection -->
+  <div id="templateSection" style="display: none;">
+    <h2 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-6); text-align: center;">
+      Step 2: Choose a Template Style
+    </h2>
+    
+    {% if templates %}
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-6); max-width: 1100px; margin: 0 auto;">
+        {% for template in templates %}
+          <div class="template-card" data-template-id="{{ template.id }}"
+               style="background: var(--bg-surface); border: 2px solid var(--border-primary); border-radius: var(--radius-xl); padding: var(--space-6); cursor: pointer; transition: all 0.2s ease-out;">
+            
+            <div style="width: 100%; height: 160px; background: var(--bg-elevated); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-4); border: 1px solid var(--border-primary);">
+              <i class="fas fa-envelope" style="font-size: var(--font-size-4xl); color: var(--accent-primary);"></i>
+            </div>
+            
+            <h3 style="font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2); text-align: center;">
+              {{ template.name }}
+            </h3>
+            <p style="color: var(--text-secondary); font-size: var(--font-size-sm); text-align: center; margin-bottom: var(--space-4);">
+              {{ template.description|default:"Professional cover letter template" }}
+            </p>
+            
+            <button type="button" onclick="createCoverLetter({{ template.id }})" class="btn btn-primary" style="width: 100%;">
+              <i class="fas fa-plus"></i>
+              Use This Template
+            </button>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <!-- No templates - show direct create option -->
+      <div class="card" style="padding: var(--space-8); text-align: center; max-width: 600px; margin: 0 auto;">
+        <div style="width: 64px; height: 64px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4) auto;">
+          <i class="fas fa-envelope" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
+        </div>
+        <h3 style="font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">
+          Ready to Create Your Cover Letter
+        </h3>
+        <p style="color: var(--text-secondary); margin-bottom: var(--space-4);">
+          Click below to create your professional cover letter with role-specific content.
+        </p>
+        <button type="button" onclick="createCoverLetterDirect()" class="btn btn-primary btn-lg">
+          <i class="fas fa-plus"></i>
+          Create Cover Letter
+        </button>
+      </div>
+    {% endif %}
+  </div>
 
   <!-- Back Button -->
   <div style="text-align: center; margin-top: var(--space-8);">
@@ -70,35 +177,76 @@
   </div>
 </div>
 
-<script>
-function selectTemplate(templateId, templateName) {
-  // Add clean visual feedback - no heavy shadows
-  document.querySelectorAll('.template-card').forEach(card => {
-    card.style.transform = 'scale(1)';
-    card.style.borderColor = 'var(--border-primary)';
-    card.style.background = 'var(--bg-surface)';
-  });
-  
-  event.currentTarget.style.transform = 'scale(1.02)';
-  event.currentTarget.style.borderColor = 'var(--accent-primary)';
-  event.currentTarget.style.background = 'var(--bg-elevated)';
+<!-- Hidden form for creating cover letter -->
+<form id="createCoverLetterForm" method="post" style="display: none;">
+  {% csrf_token %}
+  <input type="hidden" name="role" id="selectedRole" value="">
+</form>
+
+<style>
+.role-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-4px);
+  background: var(--bg-elevated);
 }
 
-// Add clean hover effects - no heavy shadows
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.template-card').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-      this.style.transform = 'translateY(-4px)';
-      this.style.borderColor = 'var(--accent-primary)';
-      this.style.background = 'var(--bg-elevated)';
-    });
-    
-    card.addEventListener('mouseleave', function() {
-      this.style.transform = 'translateY(0)';
-      this.style.borderColor = 'var(--border-primary)';
-      this.style.background = 'var(--bg-surface)';
-    });
+.role-card.selected {
+  border-color: var(--accent-primary);
+  background: var(--bg-elevated);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+.role-card.selected .role-check {
+  display: block !important;
+}
+
+.template-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-4px);
+  background: var(--bg-elevated);
+}
+</style>
+
+<script>
+let selectedRole = null;
+
+function selectRole(roleId) {
+  selectedRole = roleId;
+  document.getElementById('selectedRole').value = roleId;
+  
+  // Update UI
+  document.querySelectorAll('.role-card').forEach(card => {
+    card.classList.remove('selected');
   });
-});
+  document.querySelector(`[data-role="${roleId}"]`).classList.add('selected');
+  
+  // Show template section
+  document.getElementById('templateSection').style.display = 'block';
+  
+  // Scroll to template section
+  setTimeout(() => {
+    document.getElementById('templateSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function createCoverLetter(templateId) {
+  if (!selectedRole) {
+    alert('Please select a role first');
+    return;
+  }
+  
+  const form = document.getElementById('createCoverLetterForm');
+  form.action = `/resume-builder/create-cover-letter/${templateId}/?role=${selectedRole}`;
+  form.submit();
+}
+
+function createCoverLetterDirect() {
+  if (!selectedRole) {
+    alert('Please select a role first');
+    return;
+  }
+  
+  window.location.href = `/resume-builder/create-cover-letter/?role=${selectedRole}`;
+}
 </script>
 {% endblock %}

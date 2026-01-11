@@ -19,6 +19,9 @@
       <form method="post">
         {% csrf_token %}
         
+        <!-- Hidden role field -->
+        <input type="hidden" name="role" value="{{ role|default:'devops_sre' }}">
+        
         <div style="margin-bottom: var(--space-6);">
           <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
             Cover Letter Title
@@ -39,7 +42,7 @@
           <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
             Position Title
           </label>
-          <input type="text" name="position_title" placeholder="Position Title" required
+          <input type="text" name="position_title" placeholder="e.g., DevOps Engineer, Software Engineer" required
                  style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
         </div>
 
