@@ -142,8 +142,8 @@ class RoadmapHighlight(models.Model):
 class JourneySkill(models.Model):
     """
     Represents tools displayed in the 'Start Your Journey' section.
-    Each tool links to an external learning resource.
-    Managed entirely from Admin Panel - no progress tracking.
+    Each tool links to an external learning resource with progress tracking.
+    Managed entirely from Admin Panel.
     """
     roadmap_path = models.ForeignKey(
         RoadmapPath, 
@@ -173,3 +173,43 @@ class JourneySkill(models.Model):
     
     def __str__(self):
         return f"{self.roadmap_path.name} - {self.name}"
+
+
+class JourneySkillProgress(models.Model):
+    """
+    Tracks user progress on Journey Tools (Start Your Journey section).
+    Status cycles: not_started -> in_progress -> completed -> not_started
+    """
+    STATUS_CHOICES = [
+        ('not_started', 'Not Started'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+    ]
+    
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='journey_skill_progress'
+    )
+    journey_skill = models.ForeignKey(
+        JourneySkill, 
+        on_delete=models.CASCADE, 
+        related_name='user_progress'
+    )
+    status = models.CharField(
+        max_length=20, 
+        choices=STATUS_CHOICES, 
+        default='not_started'
+    )
+    started_at = models.DateTimeField(null=True, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        unique_together = ['user', 'journey_skill']
+        verbose_name = 'Journey Skill Progress'
+        verbose_name_plural = 'Journey Skill Progress'
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.journey_skill.name} - {self.status}"

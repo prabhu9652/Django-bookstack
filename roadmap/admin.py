@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import RoadmapPath, RoadmapPhase, RoadmapSkill, UserProgress, RoadmapHighlight, JourneySkill
+from .models import RoadmapPath, RoadmapPhase, RoadmapSkill, UserProgress, RoadmapHighlight, JourneySkill, JourneySkillProgress
 
 
 class RoadmapHighlightInline(admin.TabularInline):
@@ -108,3 +108,13 @@ class JourneySkillAdmin(admin.ModelAdmin):
             'fields': ('display_order', 'is_active')
         }),
     )
+
+
+@admin.register(JourneySkillProgress)
+class JourneySkillProgressAdmin(admin.ModelAdmin):
+    """Admin for viewing Journey Skill Progress"""
+    list_display = ('user', 'journey_skill', 'status', 'started_at', 'completed_at', 'updated_at')
+    list_filter = ('status', 'journey_skill__roadmap_path', 'updated_at')
+    search_fields = ('user__username', 'user__email', 'journey_skill__name')
+    ordering = ('-updated_at',)
+    readonly_fields = ('created_at', 'updated_at')
