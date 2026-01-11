@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     path('', views.index, name='books.index'),
     path('category/<slug:slug>/', views.category, name='books.category'),
+    path('<int:id>/read/', views.read_pdf, name='books.read'),
     path('<int:id>/view/', views.view_pdf, name='books.view'),
     path('<int:id>/download/', views.download_pdf, name='books.download'),
     path('<int:id>/', views.show, name='books.show'),

@@ -2,678 +2,1416 @@
 {% load static %}
 
 {% block content %}
-<div class="container p-8">
-  <div class="admin-section">
-    <!-- Header -->
-    <div class="page-header mb-8">
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <h1 class="mb-2">Access Control Management</h1>
-          <p class="text-secondary">Manage user access requests and permissions</p>
+<div class="admin-access-page">
+  <div class="container">
+    <!-- Page Header -->
+    <div class="admin-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <i class="fas fa-shield-alt"></i>
         </div>
-        <div class="header-stats d-flex gap-4">
-          <div class="stat-item">
-            <div class="stat-number">{{ pending_users|length }}</div>
-            <div class="stat-label">Pending</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-number">{{ approved_users|length }}</div>
-            <div class="stat-label">Approved</div>
-          </div>
+        <div class="header-text">
+          <h1>Access Control</h1>
+          <p>Manage user access requests and permissions</p>
+        </div>
+      </div>
+      <div class="header-stats">
+        <div class="stat-card pending-stat">
+          <div class="stat-value">{{ pending_users|length }}</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card approved-stat">
+          <div class="stat-value">{{ approved_users|length }}</div>
+          <div class="stat-label">Approved</div>
+        </div>
+        <div class="stat-card rejected-stat">
+          <div class="stat-value">{{ rejected_users|length }}</div>
+          <div class="stat-label">Rejected</div>
         </div>
       </div>
     </div>
-    
-    <!-- Pending Requests -->
+
+    <!-- Pending Requests Section -->
     {% if pending_requests or pending_users %}
-    <div class="section-card mb-8">
+    <div class="section-card pending-section">
       <div class="section-header">
-        <h2>
-          <i class="fas fa-clock text-warning"></i>
-          Pending Access Requests
-        </h2>
-        <span class="badge badge-warning">{{ pending_requests|length }} new</span>
-      </div>
-      
-      {% if pending_requests %}
-        <div class="requests-table">
-          <div class="table-header">
-            <div class="col-user">User</div>
-            <div class="col-date">Requested</div>
-            <div class="col-message">Message</div>
-            <div class="col-actions">Actions</div>
+        <div class="section-title">
+          <div class="title-icon pending"><i class="fas fa-clock"></i></div>
+          <div>
+            <h2>Pending Requests</h2>
+            <p>Users awaiting access approval</p>
           </div>
-          
+        </div>
+        {% if pending_requests %}
+        <span class="count-badge pending">{{ pending_requests|length }} new</span>
+        {% endif %}
+      </div>
+
+      {% if pending_requests %}
+      <div class="requests-table">
+        <div class="table-header">
+          <div class="col col-user">User</div>
+          <div class="col col-date">Requested</div>
+          <div class="col col-message">Message</div>
+          <div class="col col-actions">Actions</div>
+        </div>
+        <div class="table-body">
           {% for request in pending_requests %}
-            <div class="table-row" data-user-id="{{ request.user.id }}">
-              <div class="col-user">
+          <div class="table-row" data-user-id="{{ request.user.id }}">
+            <div class="col col-user">
+              <div class="user-cell">
+                <div class="user-avatar">
+                  <span>{{ request.user.username|slice:":1"|upper }}</span>
+                </div>
                 <div class="user-info">
-                  <div class="user-name">{{ request.user.get_full_name|default:request.user.username }}</div>
-                  <div class="user-email">{{ request.user.email }}</div>
-                </div>
-              </div>
-              <div class="col-date">
-                <div class="date-info">
-                  <div class="date">{{ request.requested_at|date:"M d, Y" }}</div>
-                  <div class="time">{{ request.requested_at|date:"g:i A" }}</div>
-                </div>
-              </div>
-              <div class="col-message">
-                {% if request.message %}
-                  <div class="message-text">{{ request.message|truncatechars:100 }}</div>
-                {% else %}
-                  <span class="text-muted">No message</span>
-                {% endif %}
-              </div>
-              <div class="col-actions">
-                <div class="action-buttons">
-                  <button class="btn btn-sm btn-success approve-btn" data-user-id="{{ request.user.id }}">
-                    <i class="fas fa-check"></i>
-                    Approve
-                  </button>
-                  <button class="btn btn-sm btn-danger reject-btn" data-user-id="{{ request.user.id }}">
-                    <i class="fas fa-times"></i>
-                    Reject
-                  </button>
+                  <span class="user-name">{{ request.user.get_full_name|default:request.user.username }}</span>
+                  <span class="user-email">{{ request.user.email|default:"No email" }}</span>
                 </div>
               </div>
             </div>
+            <div class="col col-date">
+              <div class="date-cell">
+                <span class="date">{{ request.requested_at|date:"M d, Y" }}</span>
+                <span class="time">{{ request.requested_at|date:"g:i A" }}</span>
+              </div>
+            </div>
+            <div class="col col-message">
+              {% if request.message %}
+              <div class="message-cell">
+                <p>{{ request.message|truncatechars:80 }}</p>
+                {% if request.message|length > 80 %}
+                <button class="view-full-btn" data-message="{{ request.message }}">View full</button>
+                {% endif %}
+              </div>
+              {% else %}
+              <span class="no-message">No message provided</span>
+              {% endif %}
+            </div>
+            <div class="col col-actions">
+              <div class="action-buttons">
+                <button class="btn-action approve" data-user-id="{{ request.user.id }}" title="Approve">
+                  <i class="fas fa-check"></i>
+                  <span>Approve</span>
+                </button>
+                <button class="btn-action reject" data-user-id="{{ request.user.id }}" title="Reject">
+                  <i class="fas fa-times"></i>
+                  <span>Reject</span>
+                </button>
+              </div>
+            </div>
+          </div>
           {% endfor %}
         </div>
+      </div>
       {% else %}
-        <div class="empty-state">
-          <i class="fas fa-inbox"></i>
-          <p>No pending requests</p>
-        </div>
+      <div class="empty-state">
+        <div class="empty-icon"><i class="fas fa-inbox"></i></div>
+        <h3>No Pending Requests</h3>
+        <p>All access requests have been processed</p>
+      </div>
       {% endif %}
     </div>
     {% endif %}
-    
-    <!-- User Status Overview -->
-    <div class="status-overview mb-8">
-      <div class="status-tabs">
+
+    <!-- User Management Tabs -->
+    <div class="section-card users-section">
+      <div class="tabs-header">
         <button class="tab-btn active" data-tab="approved">
-          Approved Users ({{ approved_users|length }})
+          <i class="fas fa-check-circle"></i>
+          <span>Approved</span>
+          <span class="tab-count">{{ approved_users|length }}</span>
         </button>
         <button class="tab-btn" data-tab="rejected">
-          Rejected Users ({{ rejected_users|length }})
+          <i class="fas fa-times-circle"></i>
+          <span>Rejected</span>
+          <span class="tab-count">{{ rejected_users|length }}</span>
         </button>
         <button class="tab-btn" data-tab="pending">
-          Pending Users ({{ pending_users|length }})
+          <i class="fas fa-clock"></i>
+          <span>Pending</span>
+          <span class="tab-count">{{ pending_users|length }}</span>
         </button>
       </div>
-      
-      <!-- Approved Users -->
+
+      <!-- Approved Users Tab -->
       <div class="tab-content active" id="approved-tab">
         {% if approved_users %}
-          <div class="users-grid">
-            {% for status in approved_users %}
-              <div class="user-card approved">
-                <div class="user-header">
-                  <div class="user-avatar">
-                    <i class="fas fa-user"></i>
-                  </div>
-                  <div class="user-details">
-                    <div class="user-name">{{ status.user.get_full_name|default:status.user.username }}</div>
-                    <div class="user-email">{{ status.user.email }}</div>
-                  </div>
-                  <div class="status-badge approved">
-                    <i class="fas fa-check-circle"></i>
-                    Approved
-                  </div>
-                </div>
-                <div class="user-meta">
-                  <div class="meta-item">
-                    <strong>Approved:</strong> {{ status.approved_at|date:"M d, Y" }}
-                  </div>
-                  <div class="meta-item">
-                    <strong>By:</strong> {{ status.approved_by.username }}
-                  </div>
-                </div>
-                <div class="user-actions">
-                  <button class="btn btn-sm btn-warning suspend-btn" data-user-id="{{ status.user.id }}">
-                    <i class="fas fa-ban"></i>
-                    Suspend
-                  </button>
-                </div>
+        <div class="users-grid">
+          {% for status in approved_users %}
+          <div class="user-card approved">
+            <div class="card-header">
+              <div class="user-avatar-lg">
+                <span>{{ status.user.username|slice:":1"|upper }}</span>
               </div>
-            {% endfor %}
+              <div class="user-details">
+                <h4>{{ status.user.get_full_name|default:status.user.username }}</h4>
+                <p>{{ status.user.email|default:"No email" }}</p>
+              </div>
+              <div class="status-indicator approved">
+                <i class="fas fa-check-circle"></i>
+              </div>
+            </div>
+            <div class="card-meta">
+              <div class="meta-item">
+                <i class="fas fa-calendar-check"></i>
+                <span>Approved {{ status.approved_at|date:"M d, Y" }}</span>
+              </div>
+              <div class="meta-item">
+                <i class="fas fa-user-shield"></i>
+                <span>By {{ status.approved_by.username|default:"Admin" }}</span>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn-card-action suspend" data-user-id="{{ status.user.id }}">
+                <i class="fas fa-ban"></i>
+                <span>Suspend Access</span>
+              </button>
+            </div>
           </div>
+          {% endfor %}
+        </div>
         {% else %}
-          <div class="empty-state">
-            <i class="fas fa-users"></i>
-            <p>No approved users</p>
-          </div>
+        <div class="empty-state">
+          <div class="empty-icon"><i class="fas fa-users"></i></div>
+          <h3>No Approved Users</h3>
+          <p>No users have been approved yet</p>
+        </div>
         {% endif %}
       </div>
-      
-      <!-- Rejected Users -->
+
+      <!-- Rejected Users Tab -->
       <div class="tab-content" id="rejected-tab">
         {% if rejected_users %}
-          <div class="users-grid">
-            {% for status in rejected_users %}
-              <div class="user-card rejected">
-                <div class="user-header">
-                  <div class="user-avatar">
-                    <i class="fas fa-user"></i>
-                  </div>
-                  <div class="user-details">
-                    <div class="user-name">{{ status.user.get_full_name|default:status.user.username }}</div>
-                    <div class="user-email">{{ status.user.email }}</div>
-                  </div>
-                  <div class="status-badge rejected">
-                    <i class="fas fa-times-circle"></i>
-                    Rejected
-                  </div>
-                </div>
-                {% if status.rejection_reason %}
-                  <div class="rejection-reason">
-                    <strong>Reason:</strong> {{ status.rejection_reason }}
-                  </div>
-                {% endif %}
-                <div class="user-actions">
-                  <button class="btn btn-sm btn-success approve-btn" data-user-id="{{ status.user.id }}">
-                    <i class="fas fa-check"></i>
-                    Approve
-                  </button>
-                </div>
+        <div class="users-grid">
+          {% for status in rejected_users %}
+          <div class="user-card rejected">
+            <div class="card-header">
+              <div class="user-avatar-lg">
+                <span>{{ status.user.username|slice:":1"|upper }}</span>
               </div>
-            {% endfor %}
+              <div class="user-details">
+                <h4>{{ status.user.get_full_name|default:status.user.username }}</h4>
+                <p>{{ status.user.email|default:"No email" }}</p>
+              </div>
+              <div class="status-indicator rejected">
+                <i class="fas fa-times-circle"></i>
+              </div>
+            </div>
+            {% if status.rejection_reason %}
+            <div class="rejection-reason">
+              <span class="reason-label">Rejection reason:</span>
+              <p>{{ status.rejection_reason }}</p>
+            </div>
+            {% endif %}
+            <div class="card-actions">
+              <button class="btn-card-action approve" data-user-id="{{ status.user.id }}">
+                <i class="fas fa-check"></i>
+                <span>Approve Now</span>
+              </button>
+            </div>
           </div>
+          {% endfor %}
+        </div>
         {% else %}
-          <div class="empty-state">
-            <i class="fas fa-user-times"></i>
-            <p>No rejected users</p>
-          </div>
+        <div class="empty-state">
+          <div class="empty-icon"><i class="fas fa-user-times"></i></div>
+          <h3>No Rejected Users</h3>
+          <p>No users have been rejected</p>
+        </div>
         {% endif %}
       </div>
-      
-      <!-- Pending Users -->
+
+      <!-- Pending Users Tab -->
       <div class="tab-content" id="pending-tab">
         {% if pending_users %}
-          <div class="users-grid">
-            {% for status in pending_users %}
-              <div class="user-card pending">
-                <div class="user-header">
-                  <div class="user-avatar">
-                    <i class="fas fa-user"></i>
-                  </div>
-                  <div class="user-details">
-                    <div class="user-name">{{ status.user.get_full_name|default:status.user.username }}</div>
-                    <div class="user-email">{{ status.user.email }}</div>
-                  </div>
-                  <div class="status-badge pending">
-                    <i class="fas fa-clock"></i>
-                    Pending
-                  </div>
-                </div>
-                <div class="user-meta">
-                  <div class="meta-item">
-                    <strong>Requested:</strong> {{ status.requested_at|date:"M d, Y" }}
-                  </div>
-                </div>
-                <div class="user-actions">
-                  <button class="btn btn-sm btn-success approve-btn" data-user-id="{{ status.user.id }}">
-                    <i class="fas fa-check"></i>
-                    Approve
-                  </button>
-                  <button class="btn btn-sm btn-danger reject-btn" data-user-id="{{ status.user.id }}">
-                    <i class="fas fa-times"></i>
-                    Reject
-                  </button>
-                </div>
+        <div class="users-grid">
+          {% for status in pending_users %}
+          <div class="user-card pending">
+            <div class="card-header">
+              <div class="user-avatar-lg">
+                <span>{{ status.user.username|slice:":1"|upper }}</span>
               </div>
-            {% endfor %}
+              <div class="user-details">
+                <h4>{{ status.user.get_full_name|default:status.user.username }}</h4>
+                <p>{{ status.user.email|default:"No email" }}</p>
+              </div>
+              <div class="status-indicator pending">
+                <i class="fas fa-clock"></i>
+              </div>
+            </div>
+            <div class="card-meta">
+              <div class="meta-item">
+                <i class="fas fa-calendar"></i>
+                <span>Requested {{ status.requested_at|date:"M d, Y" }}</span>
+              </div>
+            </div>
+            <div class="card-actions dual">
+              <button class="btn-card-action approve" data-user-id="{{ status.user.id }}">
+                <i class="fas fa-check"></i>
+                <span>Approve</span>
+              </button>
+              <button class="btn-card-action reject" data-user-id="{{ status.user.id }}">
+                <i class="fas fa-times"></i>
+                <span>Reject</span>
+              </button>
+            </div>
           </div>
+          {% endfor %}
+        </div>
         {% else %}
-          <div class="empty-state">
-            <i class="fas fa-user-clock"></i>
-            <p>No pending users</p>
-          </div>
+        <div class="empty-state">
+          <div class="empty-icon"><i class="fas fa-user-clock"></i></div>
+          <h3>No Pending Users</h3>
+          <p>All users have been processed</p>
+        </div>
         {% endif %}
       </div>
     </div>
-    
-    <!-- Recent Activity -->
-    <div class="section-card">
+
+    <!-- Activity Log -->
+    <div class="section-card activity-section">
       <div class="section-header">
-        <h2>
-          <i class="fas fa-history"></i>
-          Recent Activity
-        </h2>
+        <div class="section-title">
+          <div class="title-icon activity"><i class="fas fa-history"></i></div>
+          <div>
+            <h2>Recent Activity</h2>
+            <p>Access control audit log</p>
+          </div>
+        </div>
       </div>
-      
+
       {% if recent_logs %}
-        <div class="activity-list">
-          {% for log in recent_logs %}
-            <div class="activity-item">
-              <div class="activity-icon">
-                {% if log.action == 'approved' %}
-                  <i class="fas fa-check-circle text-success"></i>
-                {% elif log.action == 'rejected' %}
-                  <i class="fas fa-times-circle text-danger"></i>
-                {% elif log.action == 'suspended' %}
-                  <i class="fas fa-ban text-warning"></i>
-                {% elif log.action == 'requested' %}
-                  <i class="fas fa-paper-plane text-info"></i>
-                {% else %}
-                  <i class="fas fa-eye text-secondary"></i>
-                {% endif %}
-              </div>
-              <div class="activity-content">
-                <div class="activity-text">
-                  <strong>{{ log.user.username }}</strong> 
-                  {{ log.get_action_display|lower }}
-                  {% if log.performed_by and log.performed_by != log.user %}
-                    by <strong>{{ log.performed_by.username }}</strong>
-                  {% endif %}
-                </div>
-                <div class="activity-time">
-                  {{ log.timestamp|timesince }} ago
-                </div>
-              </div>
-            </div>
-          {% endfor %}
+      <div class="activity-list">
+        {% for log in recent_logs %}
+        <div class="activity-item">
+          <div class="activity-icon {% if log.action == 'approved' %}approved{% elif log.action == 'rejected' %}rejected{% elif log.action == 'suspended' %}suspended{% elif log.action == 'requested' %}requested{% else %}default{% endif %}">
+            {% if log.action == 'approved' %}
+            <i class="fas fa-check-circle"></i>
+            {% elif log.action == 'rejected' %}
+            <i class="fas fa-times-circle"></i>
+            {% elif log.action == 'suspended' %}
+            <i class="fas fa-ban"></i>
+            {% elif log.action == 'requested' %}
+            <i class="fas fa-paper-plane"></i>
+            {% else %}
+            <i class="fas fa-eye"></i>
+            {% endif %}
+          </div>
+          <div class="activity-content">
+            <p class="activity-text">
+              <strong>{{ log.user.username }}</strong>
+              {{ log.get_action_display|lower }}
+              {% if log.performed_by and log.performed_by != log.user %}
+              by <strong>{{ log.performed_by.username }}</strong>
+              {% endif %}
+            </p>
+            <span class="activity-time">{{ log.timestamp|timesince }} ago</span>
+          </div>
         </div>
+        {% endfor %}
+      </div>
       {% else %}
-        <div class="empty-state">
-          <i class="fas fa-history"></i>
-          <p>No recent activity</p>
-        </div>
+      <div class="empty-state small">
+        <div class="empty-icon"><i class="fas fa-history"></i></div>
+        <p>No recent activity</p>
+      </div>
       {% endif %}
     </div>
   </div>
 </div>
 
 <!-- Rejection Modal -->
-<div id="rejectionModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header text-center mb-6">
-      <div class="modal-icon">
-        <i class="fas fa-times-circle"></i>
-      </div>
-      <h3>Reject Access Request</h3>
-      <p>Provide a reason for rejecting this user's access.</p>
-    </div>
-    
-    <form id="rejectionForm">
-      {% csrf_token %}
-      <input type="hidden" id="rejectUserId" name="user_id">
-      <div class="form-group mb-4">
-        <label for="rejectionReason" class="form-label">
-          Rejection Reason
-        </label>
-        <textarea 
-          id="rejectionReason" 
-          name="reason" 
-          class="form-control" 
-          rows="3" 
-          placeholder="Explain why access is being rejected..."
-          required></textarea>
-      </div>
+<div id="rejectionModal" class="admin-modal">
+  <div class="modal-backdrop"></div>
+  <div class="modal-container">
+    <div class="modal-card">
+      <button class="modal-close" id="closeRejectModal">
+        <i class="fas fa-times"></i>
+      </button>
       
-      <div class="modal-actions d-flex gap-3 justify-content-center">
-        <button type="button" id="cancelReject" class="btn btn-secondary">
-          <i class="fas fa-times"></i>
-          Cancel
-        </button>
-        <button type="submit" class="btn btn-danger">
+      <div class="modal-header">
+        <div class="modal-icon reject">
           <i class="fas fa-times-circle"></i>
-          Reject Access
-        </button>
+        </div>
+        <h2>Reject Access Request</h2>
+        <p>Provide a reason for rejecting this user's access</p>
       </div>
-    </form>
+
+      <form id="rejectionForm">
+        {% csrf_token %}
+        <input type="hidden" id="rejectUserId" name="user_id">
+        
+        <div class="form-group">
+          <label for="rejectionReason">Rejection Reason</label>
+          <textarea 
+            id="rejectionReason" 
+            name="reason" 
+            placeholder="Explain why access is being rejected..."
+            rows="4"
+            required></textarea>
+          <span class="form-hint">This will be visible to the user</span>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-modal-cancel" id="cancelReject">Cancel</button>
+          <button type="submit" class="btn-modal-confirm reject">
+            <i class="fas fa-times-circle"></i>
+            <span>Reject Access</span>
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
+<!-- Suspension Modal -->
+<div id="suspensionModal" class="admin-modal">
+  <div class="modal-backdrop"></div>
+  <div class="modal-container">
+    <div class="modal-card">
+      <button class="modal-close" id="closeSuspendModal">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <div class="modal-header">
+        <div class="modal-icon suspend">
+          <i class="fas fa-ban"></i>
+        </div>
+        <h2>Suspend User Access</h2>
+        <p>This will revoke the user's content access</p>
+      </div>
+
+      <form id="suspensionForm">
+        {% csrf_token %}
+        <input type="hidden" id="suspendUserId" name="user_id">
+        
+        <div class="form-group">
+          <label for="suspensionReason">Suspension Reason</label>
+          <textarea 
+            id="suspensionReason" 
+            name="reason" 
+            placeholder="Explain why access is being suspended..."
+            rows="4"></textarea>
+          <span class="form-hint">Optional - will be visible to the user</span>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-modal-cancel" id="cancelSuspend">Cancel</button>
+          <button type="submit" class="btn-modal-confirm suspend">
+            <i class="fas fa-ban"></i>
+            <span>Suspend Access</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Message Preview Modal -->
+<div id="messageModal" class="admin-modal">
+  <div class="modal-backdrop"></div>
+  <div class="modal-container">
+    <div class="modal-card small">
+      <button class="modal-close" id="closeMessageModal">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <div class="modal-header">
+        <div class="modal-icon message">
+          <i class="fas fa-comment-alt"></i>
+        </div>
+        <h2>User Message</h2>
+      </div>
+
+      <div class="message-content" id="fullMessageContent"></div>
+
+      <div class="modal-actions single">
+        <button type="button" class="btn-modal-cancel" id="closeMessage">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <style>
-.admin-section {
-  max-width: 1200px;
-  margin: 0 auto;
+/* ============================================
+   ADMIN ACCESS CONTROL PAGE
+   ============================================ */
+.admin-access-page {
+  min-height: calc(100vh - 80px);
+  padding: 2rem 0 4rem;
+  background: var(--bg-primary);
+}
+
+/* Header */
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, rgba(74, 158, 255, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%);
+  border: 1px solid rgba(74, 158, 255, 0.2);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-icon i {
+  font-size: 1.5rem;
+  color: #4a9eff;
+}
+
+.header-text h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.header-text p {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin: 0;
 }
 
 .header-stats {
   display: flex;
-  gap: var(--space-6);
+  gap: 0.75rem;
 }
 
-.stat-item {
+.stat-card {
+  padding: 0.875rem 1.25rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
   text-align: center;
+  min-width: 80px;
 }
 
-.stat-number {
-  font-size: var(--font-size-2xl);
-  font-weight: 700;
-  color: var(--accent-primary);
+.stat-card.pending-stat { border-top: 3px solid #f59e0b; }
+.stat-card.approved-stat { border-top: 3px solid #22c55e; }
+.stat-card.rejected-stat { border-top: 3px solid #ef4444; }
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
 }
 
 .stat-label {
-  font-size: var(--font-size-sm);
+  font-size: 0.75rem;
   color: var(--text-secondary);
+  margin-top: 0.25rem;
 }
 
+/* Section Card */
 .section-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-xl);
-  padding: var(--space-6);
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-6);
-  padding-bottom: var(--space-4);
+  padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border-default);
 }
 
-.badge {
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.title-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title-icon.pending { background: rgba(245, 158, 11, 0.15); }
+.title-icon.pending i { color: #f59e0b; }
+.title-icon.activity { background: rgba(74, 158, 255, 0.15); }
+.title-icon.activity i { color: #4a9eff; }
+
+.section-title h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.section-title p {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.count-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
   font-weight: 600;
 }
 
-.badge-warning {
-  background: var(--warning-subtle);
-  color: var(--warning);
+.count-badge.pending {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
 }
 
+/* Requests Table */
 .requests-table {
-  display: flex;
-  flex-direction: column;
-}
-
-.table-header,
-.table-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr 2fr 1fr;
-  gap: var(--space-4);
-  padding: var(--space-4);
-  align-items: center;
+  overflow-x: auto;
 }
 
 .table-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1.2fr;
+  gap: 1rem;
+  padding: 0.875rem 1.5rem;
   background: var(--bg-elevated);
-  border-radius: var(--radius-md);
+  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--space-2);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .table-row {
-  border-bottom: 1px solid var(--border-default);
-  transition: background-color var(--transition-fast);
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1.2fr;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-muted);
+  align-items: center;
+  transition: background 0.15s ease;
 }
 
 .table-row:hover {
   background: var(--bg-elevated);
 }
 
-.user-info .user-name {
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #4a9eff 0%, #6366f1 100%);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.user-avatar span {
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-email {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.date-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-cell .date {
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
-.user-info .user-email {
-  font-size: var(--font-size-sm);
+.date-cell .time {
+  font-size: 0.75rem;
   color: var(--text-secondary);
 }
 
-.date-info .date {
+.message-cell p {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.view-full-btn {
+  background: none;
+  border: none;
+  color: #4a9eff;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0;
+  margin-top: 0.25rem;
 }
 
-.date-info .time {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
+.view-full-btn:hover {
+  text-decoration: underline;
 }
 
-.message-text {
-  color: var(--text-secondary);
-  font-size: var(--font-size-sm);
+.no-message {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 .action-buttons {
   display: flex;
-  gap: var(--space-2);
+  gap: 0.5rem;
 }
 
-.status-tabs {
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-action.approve {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.btn-action.approve:hover {
+  background: #22c55e;
+  color: white;
+}
+
+.btn-action.reject {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.btn-action.reject:hover {
+  background: #ef4444;
+  color: white;
+}
+
+/* Tabs */
+.tabs-header {
   display: flex;
-  gap: var(--space-2);
-  margin-bottom: var(--space-6);
+  gap: 0.25rem;
+  padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--border-default);
+  background: var(--bg-elevated);
 }
 
 .tab-btn {
-  padding: var(--space-3) var(--space-4);
-  background: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: transparent;
   border: none;
-  color: var(--text-secondary);
+  border-radius: 8px;
+  font-size: 0.875rem;
   font-weight: 500;
+  color: var(--text-secondary);
   cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all var(--transition-fast);
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 .tab-btn.active {
-  color: var(--accent-primary);
-  border-bottom-color: var(--accent-primary);
+  background: var(--bg-surface);
+  color: #4a9eff;
+  font-weight: 600;
+}
+
+.tab-count {
+  padding: 0.125rem 0.5rem;
+  background: var(--bg-primary);
+  border-radius: 50px;
+  font-size: 0.75rem;
+}
+
+.tab-btn.active .tab-count {
+  background: rgba(74, 158, 255, 0.15);
+  color: #4a9eff;
 }
 
 .tab-content {
   display: none;
+  padding: 1.5rem;
 }
 
 .tab-content.active {
   display: block;
 }
 
+/* Users Grid */
 .users-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
 }
 
 .user-card {
   background: var(--bg-elevated);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
+  border-radius: 12px;
+  padding: 1.25rem;
+  transition: all 0.2s ease;
 }
 
-.user-card.approved {
-  border-left: 4px solid var(--success);
+.user-card:hover {
+  border-color: rgba(74, 158, 255, 0.3);
 }
 
-.user-card.rejected {
-  border-left: 4px solid var(--error);
-}
+.user-card.approved { border-left: 3px solid #22c55e; }
+.user-card.rejected { border-left: 3px solid #ef4444; }
+.user-card.pending { border-left: 3px solid #f59e0b; }
 
-.user-card.pending {
-  border-left: 4px solid var(--warning);
-}
-
-.user-header {
+.card-header {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  margin-bottom: var(--space-3);
+  gap: 0.875rem;
+  margin-bottom: 1rem;
 }
 
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  background: var(--accent-subtle);
-  border-radius: 50%;
+.user-avatar-lg {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #4a9eff 0%, #6366f1 100%);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 
-.user-avatar i {
-  color: var(--accent-primary);
+.user-avatar-lg span {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
 }
 
 .user-details {
   flex: 1;
+  min-width: 0;
 }
 
-.user-details .user-name {
+.user-details h4 {
+  font-size: 0.9375rem;
   font-weight: 600;
   color: var(--text-primary);
+  margin: 0 0 0.125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.user-details .user-email {
-  font-size: var(--font-size-sm);
+.user-details p {
+  font-size: 0.8125rem;
   color: var(--text-secondary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.status-badge {
+.status-indicator {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
+  justify-content: center;
 }
 
-.status-badge.approved {
-  background: var(--success-subtle);
-  color: var(--success);
-}
+.status-indicator.approved { background: rgba(34, 197, 94, 0.15); }
+.status-indicator.approved i { color: #22c55e; }
+.status-indicator.rejected { background: rgba(239, 68, 68, 0.15); }
+.status-indicator.rejected i { color: #ef4444; }
+.status-indicator.pending { background: rgba(245, 158, 11, 0.15); }
+.status-indicator.pending i { color: #f59e0b; }
 
-.status-badge.rejected {
-  background: var(--error-subtle);
-  color: var(--error);
-}
-
-.status-badge.pending {
-  background: var(--warning-subtle);
-  color: var(--warning);
-}
-
-.user-meta {
-  margin-bottom: var(--space-3);
+.card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-bottom: 1rem;
 }
 
 .meta-item {
-  font-size: var(--font-size-sm);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
   color: var(--text-secondary);
-  margin-bottom: var(--space-1);
+}
+
+.meta-item i {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  width: 14px;
 }
 
 .rejection-reason {
-  background: var(--error-subtle);
-  color: var(--error);
-  padding: var(--space-2);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  margin-bottom: var(--space-3);
+  background: rgba(239, 68, 68, 0.08);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
 }
 
-.user-actions {
+.reason-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #ef4444;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.rejection-reason p {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0.25rem 0 0;
+  line-height: 1.4;
+}
+
+.card-actions {
   display: flex;
-  gap: var(--space-2);
+  gap: 0.5rem;
 }
 
+.card-actions.dual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.btn-card-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.625rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.btn-card-action.approve {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.btn-card-action.approve:hover {
+  background: #22c55e;
+  color: white;
+}
+
+.btn-card-action.reject {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.btn-card-action.reject:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-card-action.suspend {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.btn-card-action.suspend:hover {
+  background: #f59e0b;
+  color: white;
+}
+</style>
+
+
+<style>
+/* Activity List */
 .activity-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+  padding: 1rem 1.5rem;
 }
 
 .activity-item {
   display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3);
-  background: var(--bg-elevated);
-  border-radius: var(--radius-md);
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
 }
 
 .activity-icon {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
+
+.activity-icon.approved { background: rgba(34, 197, 94, 0.15); }
+.activity-icon.approved i { color: #22c55e; }
+.activity-icon.rejected { background: rgba(239, 68, 68, 0.15); }
+.activity-icon.rejected i { color: #ef4444; }
+.activity-icon.suspended { background: rgba(245, 158, 11, 0.15); }
+.activity-icon.suspended i { color: #f59e0b; }
+.activity-icon.requested { background: rgba(74, 158, 255, 0.15); }
+.activity-icon.requested i { color: #4a9eff; }
+.activity-icon.default { background: var(--bg-elevated); }
+.activity-icon.default i { color: var(--text-muted); }
 
 .activity-content {
   flex: 1;
 }
 
 .activity-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.25rem;
+  line-height: 1.4;
+}
+
+.activity-text strong {
   color: var(--text-primary);
-  margin-bottom: var(--space-1);
 }
 
 .activity-time {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
 
+/* Empty State */
 .empty-state {
   text-align: center;
-  padding: var(--space-8);
-  color: var(--text-secondary);
+  padding: 3rem 2rem;
 }
 
-.empty-state i {
-  font-size: var(--font-size-3xl);
-  margin-bottom: var(--space-3);
-  opacity: 0.5;
+.empty-state.small {
+  padding: 2rem;
 }
 
-.modal-icon {
-  width: 80px;
-  height: 80px;
-  background: var(--error-subtle);
-  border-radius: 50%;
+.empty-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--bg-elevated);
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto var(--space-4);
+  margin: 0 auto 1rem;
 }
 
-.modal-icon i {
-  font-size: var(--font-size-3xl);
-  color: var(--error);
+.empty-icon i {
+  font-size: 1.5rem;
+  color: var(--text-muted);
+}
+
+.empty-state h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.375rem;
+}
+
+.empty-state p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Modals */
+.admin-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+.admin-modal.show {
+  display: block;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.admin-modal.show .modal-backdrop {
+  opacity: 1;
+}
+
+.modal-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 18px;
+  padding: 1.75rem;
+  transform: scale(0.95) translateY(20px);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.modal-card.small {
+  max-width: 400px;
+}
+
+.admin-modal.show .modal-card {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-secondary);
+}
+
+.modal-close:hover {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.modal-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.modal-icon.reject {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.modal-icon.reject i {
+  font-size: 1.5rem;
+  color: #ef4444;
+}
+
+.modal-icon.suspend {
+  background: rgba(245, 158, 11, 0.15);
+}
+
+.modal-icon.suspend i {
+  font-size: 1.5rem;
+  color: #f59e0b;
+}
+
+.modal-icon.message {
+  background: rgba(74, 158, 255, 0.15);
+}
+
+.modal-icon.message i {
+  font-size: 1.5rem;
+  color: #4a9eff;
+}
+
+.modal-header h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.375rem;
+}
+
+.modal-header p {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.form-group textarea {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  resize: vertical;
+  min-height: 100px;
+  transition: border-color 0.2s ease;
+}
+
+.form-group textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.form-group textarea:focus {
+  outline: none;
+  border-color: #4a9eff;
+  box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1);
+}
+
+.form-hint {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.375rem;
+}
+
+.message-content {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  padding: 1rem;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.modal-actions.single {
+  justify-content: center;
+}
+
+.btn-modal-cancel {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-modal-cancel:hover {
+  background: var(--bg-primary);
+}
+
+.btn-modal-confirm {
+  flex: 1.5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-modal-confirm.reject {
+  background: #ef4444;
+}
+
+.btn-modal-confirm.reject:hover {
+  background: #dc2626;
+}
+
+.btn-modal-confirm.suspend {
+  background: #f59e0b;
+}
+
+.btn-modal-confirm.suspend:hover {
+  background: #d97706;
+}
+
+.btn-modal-confirm:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .header-stats {
+    width: 100%;
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width: 768px) {
-  .header-stats {
-    flex-direction: column;
-    gap: var(--space-3);
-  }
-  
   .table-header,
   .table-row {
     grid-template-columns: 1fr;
-    gap: var(--space-2);
+    gap: 0.75rem;
+  }
+  
+  .table-header {
+    display: none;
+  }
+  
+  .table-row {
+    padding: 1.25rem;
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    margin: 0.5rem 1rem;
+  }
+  
+  .col::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+  }
+  
+  .action-buttons {
+    justify-content: flex-start;
+  }
+  
+  .tabs-header {
+    flex-wrap: wrap;
   }
   
   .users-grid {
     grid-template-columns: 1fr;
   }
   
-  .status-tabs {
-    flex-direction: column;
-  }
-  
-  .user-actions {
-    flex-direction: column;
+  .modal-card {
+    padding: 1.5rem;
   }
   
   .modal-actions {
-    flex-direction: column !important;
+    flex-direction: column;
+  }
+  
+  .btn-modal-confirm {
+    order: -1;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .modal-card,
+  .modal-backdrop,
+  .btn-action,
+  .btn-card-action,
+  .btn-modal-confirm {
+    transition: none;
   }
 }
 </style>
@@ -688,11 +1426,9 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.addEventListener('click', function() {
       const tabId = this.dataset.tab;
       
-      // Update active tab button
       tabBtns.forEach(b => b.classList.remove('active'));
       this.classList.add('active');
       
-      // Update active tab content
       tabContents.forEach(content => {
         content.classList.remove('active');
         if (content.id === `${tabId}-tab`) {
@@ -702,20 +1438,32 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
   
+  // Modal helpers
+  function showModal(modal) {
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+  
+  function hideModal(modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+  
   // Approval functionality
-  const approveButtons = document.querySelectorAll('.approve-btn');
-  approveButtons.forEach(btn => {
+  document.querySelectorAll('.btn-action.approve, .btn-card-action.approve').forEach(btn => {
     btn.addEventListener('click', function() {
       const userId = this.dataset.userId;
-      const originalText = this.innerHTML;
+      const originalHTML = this.innerHTML;
+      
+      if (!confirm('Are you sure you want to approve this user?')) return;
       
       this.disabled = true;
-      this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Approving...';
+      this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
       
       fetch(`/accounts/admin/approve-user/${userId}/`, {
         method: 'POST',
         headers: {
-          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '',
           'X-Requested-With': 'XMLHttpRequest'
         }
       })
@@ -725,64 +1473,42 @@ document.addEventListener('DOMContentLoaded', function() {
           location.reload();
         } else {
           alert(data.error || 'Failed to approve user');
+          this.disabled = false;
+          this.innerHTML = originalHTML;
         }
       })
       .catch(error => {
         console.error('Error:', error);
         alert('Failed to approve user');
-      })
-      .finally(() => {
         this.disabled = false;
-        this.innerHTML = originalText;
+        this.innerHTML = originalHTML;
       });
     });
   });
   
   // Rejection functionality
-  const rejectButtons = document.querySelectorAll('.reject-btn');
   const rejectionModal = document.getElementById('rejectionModal');
   const rejectionForm = document.getElementById('rejectionForm');
   const rejectUserIdInput = document.getElementById('rejectUserId');
-  const cancelRejectBtn = document.getElementById('cancelReject');
   
-  rejectButtons.forEach(btn => {
+  document.querySelectorAll('.btn-action.reject, .btn-card-action.reject').forEach(btn => {
     btn.addEventListener('click', function() {
-      const userId = this.dataset.userId;
-      rejectUserIdInput.value = userId;
-      
-      rejectionModal.style.display = 'block';
-      setTimeout(() => {
-        rejectionModal.style.opacity = '1';
-        rejectionModal.querySelector('.modal-content').style.transform = 'translate(-50%, -50%) scale(1)';
-      }, 10);
+      rejectUserIdInput.value = this.dataset.userId;
+      showModal(rejectionModal);
     });
   });
   
-  function hideRejectionModal() {
-    rejectionModal.style.opacity = '0';
-    rejectionModal.querySelector('.modal-content').style.transform = 'translate(-50%, -50%) scale(0.9)';
-    setTimeout(() => {
-      rejectionModal.style.display = 'none';
-    }, 300);
-  }
+  document.getElementById('closeRejectModal')?.addEventListener('click', () => hideModal(rejectionModal));
+  document.getElementById('cancelReject')?.addEventListener('click', () => hideModal(rejectionModal));
+  rejectionModal?.querySelector('.modal-backdrop')?.addEventListener('click', () => hideModal(rejectionModal));
   
-  if (cancelRejectBtn) {
-    cancelRejectBtn.addEventListener('click', hideRejectionModal);
-  }
-  
-  rejectionModal.addEventListener('click', function(e) {
-    if (e.target === rejectionModal) {
-      hideRejectionModal();
-    }
-  });
-  
-  rejectionForm.addEventListener('submit', function(e) {
+  rejectionForm?.addEventListener('submit', function(e) {
     e.preventDefault();
     
     const formData = new FormData(this);
     const userId = rejectUserIdInput.value;
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
+    const submitBtn = this.querySelector('.btn-modal-confirm');
+    const originalHTML = submitBtn.innerHTML;
     
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rejecting...';
@@ -790,70 +1516,102 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch(`/accounts/admin/reject-user/${userId}/`, {
       method: 'POST',
       body: formData,
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest'
-      }
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        hideRejectionModal();
+        hideModal(rejectionModal);
         location.reload();
       } else {
         alert(data.error || 'Failed to reject user');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalHTML;
       }
     })
     .catch(error => {
       console.error('Error:', error);
       alert('Failed to reject user');
-    })
-    .finally(() => {
       submitBtn.disabled = false;
-      submitBtn.innerHTML = originalText;
+      submitBtn.innerHTML = originalHTML;
     });
   });
   
   // Suspension functionality
-  const suspendButtons = document.querySelectorAll('.suspend-btn');
-  suspendButtons.forEach(btn => {
+  const suspensionModal = document.getElementById('suspensionModal');
+  const suspensionForm = document.getElementById('suspensionForm');
+  const suspendUserIdInput = document.getElementById('suspendUserId');
+  
+  document.querySelectorAll('.btn-card-action.suspend').forEach(btn => {
     btn.addEventListener('click', function() {
-      const userId = this.dataset.userId;
-      const reason = prompt('Enter reason for suspension:');
-      
-      if (reason !== null) {
-        const originalText = this.innerHTML;
-        this.disabled = true;
-        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Suspending...';
-        
-        const formData = new FormData();
-        formData.append('reason', reason);
-        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
-        
-        fetch(`/accounts/admin/suspend-user/${userId}/`, {
-          method: 'POST',
-          body: formData,
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-          }
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            location.reload();
-          } else {
-            alert(data.error || 'Failed to suspend user');
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Failed to suspend user');
-        })
-        .finally(() => {
-          this.disabled = false;
-          this.innerHTML = originalText;
-        });
-      }
+      suspendUserIdInput.value = this.dataset.userId;
+      showModal(suspensionModal);
     });
+  });
+  
+  document.getElementById('closeSuspendModal')?.addEventListener('click', () => hideModal(suspensionModal));
+  document.getElementById('cancelSuspend')?.addEventListener('click', () => hideModal(suspensionModal));
+  suspensionModal?.querySelector('.modal-backdrop')?.addEventListener('click', () => hideModal(suspensionModal));
+  
+  suspensionForm?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const userId = suspendUserIdInput.value;
+    const submitBtn = this.querySelector('.btn-modal-confirm');
+    const originalHTML = submitBtn.innerHTML;
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Suspending...';
+    
+    fetch(`/accounts/admin/suspend-user/${userId}/`, {
+      method: 'POST',
+      body: formData,
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        hideModal(suspensionModal);
+        location.reload();
+      } else {
+        alert(data.error || 'Failed to suspend user');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalHTML;
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Failed to suspend user');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalHTML;
+    });
+  });
+  
+  // Message preview functionality
+  const messageModal = document.getElementById('messageModal');
+  const messageContent = document.getElementById('fullMessageContent');
+  
+  document.querySelectorAll('.view-full-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      messageContent.textContent = this.dataset.message;
+      showModal(messageModal);
+    });
+  });
+  
+  document.getElementById('closeMessageModal')?.addEventListener('click', () => hideModal(messageModal));
+  document.getElementById('closeMessage')?.addEventListener('click', () => hideModal(messageModal));
+  messageModal?.querySelector('.modal-backdrop')?.addEventListener('click', () => hideModal(messageModal));
+  
+  // Close modals on Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      [rejectionModal, suspensionModal, messageModal].forEach(modal => {
+        if (modal?.classList.contains('show')) {
+          hideModal(modal);
+        }
+      });
+    }
   });
 });
 </script>

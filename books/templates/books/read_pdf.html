@@ -1,0 +1,544 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="pdf-reader-page">
+  <!-- Reader Header -->
+  <div class="reader-header">
+    <div class="header-left">
+      <a href="{% url 'books.show' template_data.book.id %}" class="back-btn" title="Back to book details">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      <div class="book-info-compact">
+        <h1>{{ template_data.book.name }}</h1>
+        <p>{{ template_data.book.author|default:"Technical Author" }}</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      {% if template_data.is_in_library %}
+      <span class="library-badge">
+        <i class="fas fa-bookmark"></i>
+        In Library
+      </span>
+      {% endif %}
+      <a href="{% url 'books.download' template_data.book.id %}" class="action-btn download-btn" title="Download PDF">
+        <i class="fas fa-download"></i>
+        <span>Download</span>
+      </a>
+      <button class="action-btn fullscreen-btn" id="fullscreenBtn" title="Toggle fullscreen">
+        <i class="fas fa-expand"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- PDF Viewer Container -->
+  <div class="pdf-viewer-container" id="pdfContainer">
+    <div class="pdf-loading" id="pdfLoading">
+      <div class="loading-spinner">
+        <i class="fas fa-spinner fa-spin"></i>
+      </div>
+      <p>Loading PDF...</p>
+    </div>
+    <iframe 
+      id="pdfViewer"
+      src="{% url 'books.view' template_data.book.id %}"
+      title="PDF Viewer - {{ template_data.book.name }}"
+      allowfullscreen>
+    </iframe>
+  </div>
+
+  <!-- Mobile Bottom Bar -->
+  <div class="mobile-bottom-bar">
+    <a href="{% url 'books.show' template_data.book.id %}" class="mobile-action">
+      <i class="fas fa-info-circle"></i>
+      <span>Details</span>
+    </a>
+    <a href="{% url 'books.download' template_data.book.id %}" class="mobile-action">
+      <i class="fas fa-download"></i>
+      <span>Download</span>
+    </a>
+    <button class="mobile-action" id="mobileFullscreenBtn">
+      <i class="fas fa-expand"></i>
+      <span>Fullscreen</span>
+    </button>
+    <a href="{% url 'library.index' %}" class="mobile-action">
+      <i class="fas fa-bookmark"></i>
+      <span>Library</span>
+    </a>
+  </div>
+</div>
+
+<style>
+/* ============================================
+   PDF READER PAGE - FULL-SCREEN READING MODE
+   ============================================ */
+.pdf-reader-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #1a1a2e;
+  overflow: hidden;
+}
+
+/* Reader Header */
+.reader-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(180deg, rgba(26, 26, 46, 0.98) 0%, rgba(26, 26, 46, 0.95) 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  transform: translateX(-2px);
+}
+
+.book-info-compact {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.book-info-compact h1 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.book-info-compact p {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0.125rem 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.library-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #22c55e;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+}
+
+.action-btn.download-btn:hover {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.4);
+  color: #22c55e;
+}
+
+.fullscreen-btn {
+  padding: 0.5rem;
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+}
+
+/* PDF Viewer Container */
+.pdf-viewer-container {
+  flex: 1;
+  position: relative;
+  background: #0d0d1a;
+  overflow: hidden;
+}
+
+.pdf-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: #0d0d1a;
+  z-index: 10;
+  transition: opacity 0.3s ease;
+}
+
+.pdf-loading.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-spinner i {
+  font-size: 1.5rem;
+  color: #4a9eff;
+}
+
+.pdf-loading p {
+  font-size: 0.9375rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+#pdfViewer {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #0d0d1a;
+}
+
+/* Fullscreen Mode */
+.pdf-reader-page.fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+.pdf-reader-page.fullscreen .reader-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: all 0.3s ease;
+}
+
+.pdf-reader-page.fullscreen:hover .reader-header,
+.pdf-reader-page.fullscreen .reader-header:focus-within {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pdf-reader-page.fullscreen .pdf-viewer-container {
+  height: 100vh;
+}
+
+.pdf-reader-page.fullscreen .mobile-bottom-bar {
+  opacity: 0;
+  transform: translateY(100%);
+  transition: all 0.3s ease;
+}
+
+.pdf-reader-page.fullscreen:hover .mobile-bottom-bar {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Mobile Bottom Bar */
+.mobile-bottom-bar {
+  display: none;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(180deg, rgba(26, 26, 46, 0.95) 0%, rgba(26, 26, 46, 0.98) 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.mobile-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-size: 0.6875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.mobile-action i {
+  font-size: 1.125rem;
+}
+
+.mobile-action:hover,
+.mobile-action:active {
+  color: #4a9eff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .reader-header {
+    padding: 0.625rem 1rem;
+  }
+  
+  .book-info-compact h1 {
+    font-size: 0.875rem;
+  }
+  
+  .book-info-compact p {
+    font-size: 0.75rem;
+  }
+  
+  .action-btn span {
+    display: none;
+  }
+  
+  .action-btn {
+    padding: 0.5rem;
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+  }
+  
+  .library-badge span {
+    display: none;
+  }
+  
+  .library-badge {
+    padding: 0.375rem 0.5rem;
+  }
+  
+  .mobile-bottom-bar {
+    display: flex;
+    justify-content: space-around;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-left {
+    gap: 0.75rem;
+  }
+  
+  .back-btn {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .action-btn,
+  .fullscreen-btn {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .header-actions {
+    gap: 0.5rem;
+  }
+}
+
+/* Dark mode adjustments (already dark by default) */
+@media (prefers-color-scheme: light) {
+  .pdf-reader-page {
+    background: #f5f5f5;
+  }
+  
+  .reader-header {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%);
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+  }
+  
+  .back-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.7);
+  }
+  
+  .back-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: #000;
+  }
+  
+  .book-info-compact h1 {
+    color: #1a1a2e;
+  }
+  
+  .book-info-compact p {
+    color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .action-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.7);
+  }
+  
+  .action-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: #000;
+  }
+  
+  .pdf-viewer-container,
+  .pdf-loading {
+    background: #e8e8e8;
+  }
+  
+  .pdf-loading p {
+    color: rgba(0, 0, 0, 0.6);
+  }
+  
+  .mobile-bottom-bar {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.98) 100%);
+    border-top-color: rgba(0, 0, 0, 0.08);
+  }
+  
+  .mobile-action {
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .back-btn,
+  .action-btn,
+  .mobile-action,
+  .pdf-loading,
+  .reader-header {
+    transition: none;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const pdfViewer = document.getElementById('pdfViewer');
+  const pdfLoading = document.getElementById('pdfLoading');
+  const pdfContainer = document.getElementById('pdfContainer');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  const mobileFullscreenBtn = document.getElementById('mobileFullscreenBtn');
+  const readerPage = document.querySelector('.pdf-reader-page');
+  
+  // Hide loading when PDF loads
+  pdfViewer.addEventListener('load', function() {
+    pdfLoading.classList.add('hidden');
+  });
+  
+  // Fallback: hide loading after timeout
+  setTimeout(function() {
+    pdfLoading.classList.add('hidden');
+  }, 5000);
+  
+  // Fullscreen toggle
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      if (readerPage.requestFullscreen) {
+        readerPage.requestFullscreen();
+      } else if (readerPage.webkitRequestFullscreen) {
+        readerPage.webkitRequestFullscreen();
+      } else if (readerPage.msRequestFullscreen) {
+        readerPage.msRequestFullscreen();
+      }
+      readerPage.classList.add('fullscreen');
+      updateFullscreenIcon(true);
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+      readerPage.classList.remove('fullscreen');
+      updateFullscreenIcon(false);
+    }
+  }
+  
+  function updateFullscreenIcon(isFullscreen) {
+    const icon = fullscreenBtn.querySelector('i');
+    if (isFullscreen) {
+      icon.classList.remove('fa-expand');
+      icon.classList.add('fa-compress');
+    } else {
+      icon.classList.remove('fa-compress');
+      icon.classList.add('fa-expand');
+    }
+  }
+  
+  // Listen for fullscreen change
+  document.addEventListener('fullscreenchange', function() {
+    if (!document.fullscreenElement) {
+      readerPage.classList.remove('fullscreen');
+      updateFullscreenIcon(false);
+    }
+  });
+  
+  fullscreenBtn.addEventListener('click', toggleFullscreen);
+  if (mobileFullscreenBtn) {
+    mobileFullscreenBtn.addEventListener('click', toggleFullscreen);
+  }
+  
+  // Keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    // F key or F11 for fullscreen
+    if (e.key === 'f' || e.key === 'F' || e.key === 'F11') {
+      e.preventDefault();
+      toggleFullscreen();
+    }
+    // Escape to exit fullscreen (handled by browser, but also remove class)
+    if (e.key === 'Escape') {
+      readerPage.classList.remove('fullscreen');
+      updateFullscreenIcon(false);
+    }
+  });
+});
+</script>
+{% endblock %}

@@ -48,53 +48,6 @@
       <div class="wizard-grid">
         <!-- Left Panel: Configuration -->
         <div class="config-panel">
-          <!-- Letter Type Selection -->
-          <div class="config-section">
-            <div class="section-header">
-              <div class="section-icon"><i class="fas fa-file-signature"></i></div>
-              <div>
-                <h2>Cover Letter Type</h2>
-                <p>Choose the type that matches your application</p>
-              </div>
-            </div>
-            
-            <div class="letter-type-options">
-              <label class="letter-type-option">
-                <input type="radio" name="letter_type" value="job_specific" checked>
-                <div class="letter-type-card">
-                  <div class="lt-icon"><i class="fas fa-bullseye"></i></div>
-                  <div class="lt-content">
-                    <span class="lt-name">Job-Specific</span>
-                    <span class="lt-desc">Tailored for a specific job posting</span>
-                  </div>
-                  <div class="lt-badge">Recommended</div>
-                </div>
-              </label>
-              
-              <label class="letter-type-option">
-                <input type="radio" name="letter_type" value="general">
-                <div class="letter-type-card">
-                  <div class="lt-icon"><i class="fas fa-paper-plane"></i></div>
-                  <div class="lt-content">
-                    <span class="lt-name">General / Cold Outreach</span>
-                    <span class="lt-desc">For networking or speculative applications</span>
-                  </div>
-                </div>
-              </label>
-              
-              <label class="letter-type-option">
-                <input type="radio" name="letter_type" value="internship">
-                <div class="letter-type-card">
-                  <div class="lt-icon"><i class="fas fa-graduation-cap"></i></div>
-                  <div class="lt-content">
-                    <span class="lt-name">Internship / Fresher</span>
-                    <span class="lt-desc">For entry-level or internship positions</span>
-                  </div>
-                </div>
-              </label>
-            </div>
-          </div>
-
           <!-- Role Selection -->
           <div class="config-section">
             <div class="section-header">
@@ -139,52 +92,6 @@
                     <p>Machine learning, data pipelines, MLOps</p>
                   </div>
                   <div class="role-check"><i class="fas fa-check-circle"></i></div>
-                </div>
-              </label>
-            </div>
-          </div>
-
-          <!-- Tone Selection -->
-          <div class="config-section">
-            <div class="section-header">
-              <div class="section-icon"><i class="fas fa-comment-alt"></i></div>
-              <div>
-                <h2>Writing Tone</h2>
-                <p>Choose the tone that fits your target company</p>
-              </div>
-            </div>
-            
-            <div class="tone-options">
-              <label class="tone-option">
-                <input type="radio" name="tone" value="professional" checked>
-                <div class="tone-card">
-                  <div class="tone-icon"><i class="fas fa-user-tie"></i></div>
-                  <div class="tone-info">
-                    <span class="tone-name">Professional</span>
-                    <span class="tone-desc">Formal, corporate-friendly</span>
-                  </div>
-                </div>
-              </label>
-              
-              <label class="tone-option">
-                <input type="radio" name="tone" value="conversational">
-                <div class="tone-card">
-                  <div class="tone-icon"><i class="fas fa-comments"></i></div>
-                  <div class="tone-info">
-                    <span class="tone-name">Conversational</span>
-                    <span class="tone-desc">Friendly, startup-style</span>
-                  </div>
-                </div>
-              </label>
-              
-              <label class="tone-option">
-                <input type="radio" name="tone" value="executive">
-                <div class="tone-card">
-                  <div class="tone-icon"><i class="fas fa-crown"></i></div>
-                  <div class="tone-info">
-                    <span class="tone-name">Executive</span>
-                    <span class="tone-desc">Leadership-focused</span>
-                  </div>
                 </div>
               </label>
             </div>
@@ -336,9 +243,7 @@
 <!-- Hidden form -->
 <form id="createCoverLetterForm" method="post" style="display: none;">
   {% csrf_token %}
-  <input type="hidden" name="letter_type" id="selectedLetterType" value="job_specific">
   <input type="hidden" name="role" id="selectedRole" value="devops_sre">
-  <input type="hidden" name="tone" id="selectedTone" value="professional">
 </form>
 
 <style>
@@ -519,87 +424,6 @@
   margin: 0;
 }
 
-/* Letter Type Options */
-.letter-type-options {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.letter-type-option {
-  cursor: pointer;
-}
-
-.letter-type-option input { display: none; }
-
-.letter-type-card {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: var(--bg-elevated);
-  border: 2px solid var(--border-default);
-  border-radius: 12px;
-  transition: all 0.2s ease;
-  position: relative;
-}
-
-.letter-type-option:hover .letter-type-card {
-  border-color: rgba(74, 158, 255, 0.3);
-}
-
-.letter-type-option input:checked + .letter-type-card {
-  border-color: #4a9eff;
-  background: rgba(74, 158, 255, 0.05);
-}
-
-.lt-icon {
-  width: 44px;
-  height: 44px;
-  background: rgba(74, 158, 255, 0.1);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.lt-icon i {
-  font-size: 1.125rem;
-  color: #4a9eff;
-}
-
-.lt-content {
-  flex: 1;
-}
-
-.lt-name {
-  display: block;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.125rem;
-}
-
-.lt-desc {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-}
-
-.lt-badge {
-  position: absolute;
-  top: -8px;
-  right: 12px;
-  padding: 0.25rem 0.625rem;
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  color: white;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
 /* Role Options */
 .role-options {
   display: flex;
@@ -667,63 +491,6 @@
 
 .role-option input:checked + .role-card .role-check {
   color: #4a9eff;
-}
-
-/* Tone Options */
-.tone-options {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
-}
-
-.tone-option { cursor: pointer; }
-.tone-option input { display: none; }
-
-.tone-card {
-  padding: 1rem;
-  background: var(--bg-elevated);
-  border: 2px solid var(--border-default);
-  border-radius: 10px;
-  text-align: center;
-  transition: all 0.2s ease;
-}
-
-.tone-option:hover .tone-card {
-  border-color: rgba(74, 158, 255, 0.3);
-}
-
-.tone-option input:checked + .tone-card {
-  border-color: #4a9eff;
-  background: rgba(74, 158, 255, 0.05);
-}
-
-.tone-icon {
-  width: 40px;
-  height: 40px;
-  background: rgba(74, 158, 255, 0.1);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 0.75rem;
-}
-
-.tone-icon i {
-  font-size: 1rem;
-  color: #4a9eff;
-}
-
-.tone-name {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.125rem;
-}
-
-.tone-desc {
-  font-size: 0.75rem;
-  color: var(--text-muted);
 }
 
 /* Template Options */
@@ -1074,10 +841,6 @@
   
   .preview-card { display: none; }
   
-  .tone-options {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
   .template-options {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1092,10 +855,6 @@
   .wizard-title {
     order: -1;
     width: 100%;
-  }
-  
-  .tone-options {
-    grid-template-columns: 1fr;
   }
   
   .template-options {
@@ -1120,7 +879,6 @@
   }
   
   .role-card,
-  .tone-card,
   .template-card,
   .cl-preview {
     transition: none;
@@ -1131,23 +889,9 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   // Update hidden form values when selections change
-  document.querySelectorAll('input[name="letter_type"]').forEach(input => {
-    input.addEventListener('change', function() {
-      document.getElementById('selectedLetterType').value = this.value;
-      updatePreview();
-    });
-  });
-  
   document.querySelectorAll('input[name="role"]').forEach(input => {
     input.addEventListener('change', function() {
       document.getElementById('selectedRole').value = this.value;
-      updatePreview();
-    });
-  });
-  
-  document.querySelectorAll('input[name="tone"]').forEach(input => {
-    input.addEventListener('change', function() {
-      document.getElementById('selectedTone').value = this.value;
       updatePreview();
     });
   });
@@ -1175,20 +919,15 @@ function createCoverLetter() {
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
   btn.disabled = true;
   
-  const letterType = document.querySelector('input[name="letter_type"]:checked')?.value || 'job_specific';
   const role = document.querySelector('input[name="role"]:checked')?.value || 'devops_sre';
-  const tone = document.querySelector('input[name="tone"]:checked')?.value || 'professional';
   const templateInput = document.querySelector('input[name="template"]:checked');
   const templateId = templateInput?.value || 'default';
   
   document.getElementById('selectedRole').value = role;
-  document.getElementById('selectedLetterType').value = letterType;
   
   // Navigate to cover letter creation
   const params = new URLSearchParams({
-    letter_type: letterType,
-    role: role,
-    tone: tone
+    role: role
   });
   
   if (templateId && templateId !== 'default') {

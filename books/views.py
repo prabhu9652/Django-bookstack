@@ -62,6 +62,35 @@ def view_pdf(request, id):
     response['X-Frame-Options'] = 'SAMEORIGIN'
     return response
 
+
+@require_pdf_access
+def read_pdf(request, id):
+    """PDF Reader page with embedded viewer and book info."""
+    book = get_object_or_404(Book, id=id)
+    if not book.pdf:
+        raise Http404("PDF not found")
+    
+    # Check if book is in user's library
+    is_in_library = False
+    if request.user.is_authenticated:
+        try:
+            from library.models import UserLibrary
+            is_in_library = UserLibrary.objects.filter(user=request.user, book=book).exists()
+        except ImportError:
+            pass
+    
+    # Get access context
+    access_context = get_user_access_context(request.user)
+    
+    template_data = {
+        'title': f'Reading: {book.name}',
+        'book': book,
+        'is_in_library': is_in_library,
+        'access_context': access_context,
+    }
+    
+    return render(request, 'books/read_pdf.html', {'template_data': template_data})
+
 def index(request):
     search_term = request.GET.get('search')
     if search_term:
@@ -164,6 +193,21 @@ def show(request, id):
         else:
             logger.info(f"Book {id} has no cover image")
 
+        # Get PDF file size
+        pdf_size = None
+        pdf_size_display = None
+        if book.pdf:
+            try:
+                pdf_size = book.pdf.size  # Size in bytes
+                if pdf_size >= 1024 * 1024:  # >= 1 MB
+                    pdf_size_display = f"{pdf_size / (1024 * 1024):.1f} MB"
+                elif pdf_size >= 1024:  # >= 1 KB
+                    pdf_size_display = f"{pdf_size / 1024:.0f} KB"
+                else:
+                    pdf_size_display = f"{pdf_size} bytes"
+            except Exception as e:
+                logger.warning(f"Could not get PDF size for book {id}: {e}")
+
         template_data = {}
         template_data['title'] = book.name
         template_data['book'] = book
@@ -171,6 +215,8 @@ def show(request, id):
         template_data['category'] = category
         template_data['is_in_library'] = is_in_library
         template_data['access_context'] = access_context
+        template_data['pdf_size'] = pdf_size
+        template_data['pdf_size_display'] = pdf_size_display
         return render(request, 'books/show.html', {'template_data': template_data})
     except Exception as e:
         logger.error(f"Error loading book {id}: {str(e)}")
