@@ -164,37 +164,72 @@
                 </div>
                 <span class="start-label">Start Your Journey</span>
                 
-                <!-- Dynamic Journey Tools - Admin Managed External Links -->
+                <!-- Dynamic Journey Tools with Progress Tracking -->
                 {% if journey_skills %}
                 <div class="journey-tools-section">
                   <p class="journey-tools-subtitle">Essential Tools & Resources</p>
+                  
+                  <!-- Progress Summary -->
+                  {% if user.is_authenticated %}
+                  <div class="journey-progress-summary">
+                    <div class="progress-bar-container">
+                      <div class="progress-bar-fill" style="width: {% widthratio journey_completed_count journey_total 100 %}%"></div>
+                    </div>
+                    <div class="progress-stats">
+                      <span class="stat completed"><i class="fas fa-check-circle"></i> <span id="journeyCompletedCount">{{ journey_completed_count }}</span> Completed</span>
+                      <span class="stat in-progress"><i class="fas fa-spinner"></i> <span id="journeyInProgressCount">{{ journey_in_progress_count }}</span> In Progress</span>
+                      <span class="stat remaining"><i class="far fa-circle"></i> <span id="journeyRemainingCount">{{ journey_remaining }}</span> Remaining</span>
+                    </div>
+                  </div>
+                  {% endif %}
+                  
                   <div class="journey-tools-list">
                     {% for tool in journey_skills %}
-                    {% if tool.external_url %}
-                    <a href="{{ tool.external_url }}" 
-                       target="_blank" 
-                       rel="noopener noreferrer" 
-                       class="journey-tool-item">
+                    <div class="journey-tool-item {% if user.is_authenticated %}clickable{% endif %} {% if tool.id in journey_skill_progress %}status-{{ journey_skill_progress|lookup:tool.id }}{% else %}status-not_started{% endif %}"
+                         data-skill-id="{{ tool.id }}"
+                         data-external-url="{{ tool.external_url }}">
+                      <div class="tool-status-indicator">
+                        {% if tool.id in journey_skill_progress %}
+                          {% if journey_skill_progress|lookup:tool.id == 'completed' %}
+                          <i class="fas fa-check-circle"></i>
+                          {% elif journey_skill_progress|lookup:tool.id == 'in_progress' %}
+                          <i class="fas fa-clock"></i>
+                          {% else %}
+                          <i class="far fa-circle"></i>
+                          {% endif %}
+                        {% else %}
+                        <i class="far fa-circle"></i>
+                        {% endif %}
+                      </div>
                       <div class="tool-icon">
                         <i class="{{ tool.icon_class }}"></i>
                       </div>
                       <span class="tool-name">{{ tool.name }}</span>
-                      <i class="fas fa-external-link-alt tool-external-icon"></i>
-                    </a>
-                    {% else %}
-                    <div class="journey-tool-item no-link">
-                      <div class="tool-icon">
-                        <i class="{{ tool.icon_class }}"></i>
-                      </div>
-                      <span class="tool-name">{{ tool.name }}</span>
+                      {% if tool.external_url %}
+                      <a href="{{ tool.external_url }}" 
+                         target="_blank" 
+                         rel="noopener noreferrer" 
+                         class="tool-external-link"
+                         onclick="event.stopPropagation();"
+                         title="Open documentation">
+                        <i class="fas fa-external-link-alt"></i>
+                      </a>
+                      {% endif %}
                     </div>
-                    {% endif %}
                     {% endfor %}
                   </div>
+                  
+                  {% if user.is_authenticated %}
+                  <p class="journey-tools-hint">
+                    <i class="fas fa-mouse-pointer"></i>
+                    Click a tool to track progress • Click <i class="fas fa-external-link-alt"></i> to open docs
+                  </p>
+                  {% else %}
                   <p class="journey-tools-hint">
                     <i class="fas fa-info-circle"></i>
-                    Click any tool to open its official documentation
+                    <a href="{% url 'accounts.login' %}">Sign in</a> to track your progress
                   </p>
+                  {% endif %}
                 </div>
                 {% endif %}
               </div>
@@ -895,13 +930,12 @@
 
 /* ============================================
    JOURNEY TOOLS - Start Your Journey Section
-   Clean vertical list with external links
-   No progress tracking - tools only
+   Vertical list with progress tracking
    ============================================ */
 .journey-tools-section {
   margin-top: 1.5rem;
   width: 100%;
-  max-width: 480px;
+  max-width: 520px;
 }
 
 .journey-tools-subtitle {
@@ -914,6 +948,51 @@
   text-align: center;
 }
 
+/* Progress Summary */
+.journey-progress-summary {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.progress-bar-container {
+  height: 8px;
+  background: var(--bg-primary);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4a9eff 0%, #22c55e 100%);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.progress-stats .stat {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.progress-stats .stat.completed { color: #22c55e; }
+.progress-stats .stat.in-progress { color: #f59e0b; }
+.progress-stats .stat.remaining { color: var(--text-muted); }
+
+.progress-stats .stat i { font-size: 0.6875rem; }
+
 .journey-tools-list {
   display: flex;
   flex-direction: column;
@@ -923,17 +1002,19 @@
 .journey-tool-item {
   display: flex;
   align-items: center;
-  gap: 0.875rem;
+  gap: 0.75rem;
   padding: 0.75rem 1rem;
   background: var(--bg-elevated);
   border: 1px solid var(--border-default);
   border-radius: 10px;
-  text-decoration: none;
   color: var(--text-primary);
   transition: all 0.2s ease;
-  /* Subtle fade-in */
   opacity: 0;
   animation: toolFadeIn 0.3s ease forwards;
+}
+
+.journey-tool-item.clickable {
+  cursor: pointer;
 }
 
 .journey-tool-item:nth-child(1) { animation-delay: 0ms; }
@@ -949,30 +1030,85 @@
 .journey-tool-item:nth-child(n+11) { animation-delay: 300ms; }
 
 @keyframes toolFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.journey-tool-item:hover {
-  background: var(--bg-surface);
-  border-color: rgba(74, 158, 255, 0.4);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+/* Status Indicator */
+.tool-status-indicator {
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.journey-tool-item.no-link {
-  cursor: default;
+.tool-status-indicator i {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
 }
 
-.journey-tool-item.no-link:hover {
+/* Status States */
+.journey-tool-item.status-not_started {
   background: var(--bg-elevated);
   border-color: var(--border-default);
-  box-shadow: none;
+}
+
+.journey-tool-item.status-not_started .tool-status-indicator i {
+  color: var(--text-muted);
+}
+
+.journey-tool-item.status-in_progress {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.journey-tool-item.status-in_progress .tool-status-indicator i {
+  color: #f59e0b;
+}
+
+.journey-tool-item.status-in_progress .tool-icon {
+  background: rgba(245, 158, 11, 0.15);
+}
+
+.journey-tool-item.status-in_progress .tool-icon i {
+  color: #f59e0b;
+}
+
+.journey-tool-item.status-completed {
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.journey-tool-item.status-completed .tool-status-indicator i {
+  color: #22c55e;
+}
+
+.journey-tool-item.status-completed .tool-icon {
+  background: rgba(34, 197, 94, 0.15);
+}
+
+.journey-tool-item.status-completed .tool-icon i {
+  color: #22c55e;
+}
+
+/* Hover States */
+.journey-tool-item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.journey-tool-item.status-not_started:hover {
+  border-color: rgba(74, 158, 255, 0.4);
+}
+
+.journey-tool-item.status-in_progress:hover {
+  border-color: rgba(245, 158, 11, 0.5);
+}
+
+.journey-tool-item.status-completed:hover {
+  border-color: rgba(34, 197, 94, 0.5);
 }
 
 .tool-icon {
@@ -984,11 +1120,13 @@
   background: rgba(74, 158, 255, 0.1);
   border-radius: 8px;
   flex-shrink: 0;
+  transition: all 0.2s ease;
 }
 
 .tool-icon i {
   font-size: 1rem;
   color: #4a9eff;
+  transition: color 0.2s ease;
 }
 
 .tool-name {
@@ -998,32 +1136,54 @@
   color: var(--text-primary);
 }
 
-.tool-external-icon {
-  font-size: 0.6875rem;
+.tool-external-link {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
   color: var(--text-muted);
-  opacity: 0.6;
-  transition: opacity 0.2s ease;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
-.journey-tool-item:hover .tool-external-icon {
-  opacity: 1;
+.tool-external-link:hover {
+  background: rgba(74, 158, 255, 0.1);
+  border-color: rgba(74, 158, 255, 0.3);
   color: #4a9eff;
+}
+
+.tool-external-link i {
+  font-size: 0.6875rem;
 }
 
 .journey-tools-hint {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
   font-size: 0.6875rem;
   color: var(--text-muted);
   margin-top: 1rem;
   text-align: center;
+  flex-wrap: wrap;
 }
 
 .journey-tools-hint i {
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  font-size: 0.6875rem;
+}
+
+.journey-tools-hint a {
+  color: #4a9eff;
+  text-decoration: none;
+}
+
+.journey-tools-hint a:hover {
+  text-decoration: underline;
 }
 
 /* Reduced motion support */
@@ -1031,6 +1191,10 @@
   .journey-tool-item {
     animation: none;
     opacity: 1;
+    transform: none;
+  }
+  
+  .journey-tool-item:hover {
     transform: none;
   }
 }
@@ -1042,8 +1206,17 @@
     padding: 0 0.5rem;
   }
   
+  .journey-progress-summary {
+    padding: 0.875rem;
+  }
+  
+  .progress-stats {
+    gap: 1rem;
+  }
+  
   .journey-tool-item {
     padding: 0.625rem 0.875rem;
+    gap: 0.625rem;
   }
   
   .tool-icon {
@@ -1761,6 +1934,90 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+  
+  // ============================================
+  // JOURNEY TOOL PROGRESS TRACKING
+  // Click to cycle: not_started -> in_progress -> completed
+  // ============================================
+  const journeyToolItems = document.querySelectorAll('.journey-tool-item.clickable');
+  
+  journeyToolItems.forEach(item => {
+    item.addEventListener('click', function(e) {
+      // Don't trigger if clicking the external link
+      if (e.target.closest('.tool-external-link')) return;
+      
+      const skillId = this.dataset.skillId;
+      if (!skillId) return;
+      
+      updateJourneySkillProgress(skillId, this);
+    });
+  });
+  
+  function updateJourneySkillProgress(skillId, itemElement) {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (!csrfToken) return;
+    
+    // Add loading state
+    itemElement.style.opacity = '0.7';
+    itemElement.style.pointerEvents = 'none';
+    
+    fetch(`/roadmap/api/journey-skill/${skillId}/progress/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': csrfToken.value
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Update item status class
+        itemElement.classList.remove('status-not_started', 'status-in_progress', 'status-completed');
+        itemElement.classList.add('status-' + data.status);
+        
+        // Update status indicator icon
+        const indicator = itemElement.querySelector('.tool-status-indicator i');
+        if (indicator) {
+          if (data.status === 'completed') {
+            indicator.className = 'fas fa-check-circle';
+          } else if (data.status === 'in_progress') {
+            indicator.className = 'fas fa-clock';
+          } else {
+            indicator.className = 'far fa-circle';
+          }
+        }
+        
+        // Update progress summary
+        const completedEl = document.getElementById('journeyCompletedCount');
+        const inProgressEl = document.getElementById('journeyInProgressCount');
+        const remainingEl = document.getElementById('journeyRemainingCount');
+        const progressFill = document.querySelector('.journey-progress-summary .progress-bar-fill');
+        
+        if (completedEl) completedEl.textContent = data.completed_count;
+        if (inProgressEl) inProgressEl.textContent = data.in_progress_count;
+        if (remainingEl) remainingEl.textContent = data.remaining_count;
+        
+        if (progressFill && data.total_count > 0) {
+          const percent = Math.round((data.completed_count / data.total_count) * 100);
+          progressFill.style.width = percent + '%';
+        }
+        
+        // Visual feedback
+        itemElement.style.transform = 'translateX(8px) scale(1.02)';
+        setTimeout(() => {
+          itemElement.style.transform = '';
+        }, 200);
+      }
+    })
+    .catch(error => {
+      console.error('Error updating journey skill progress:', error);
+    })
+    .finally(() => {
+      // Remove loading state
+      itemElement.style.opacity = '';
+      itemElement.style.pointerEvents = '';
+    });
+  }
 });
 </script>
 {% endblock %}
