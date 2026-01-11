@@ -13,8 +13,9 @@
       {% if template_data.book.cover and template_data.book.cover.url %}
         <img src="{{ template_data.book.cover.url }}" 
              alt="{{ template_data.book.name }}" 
-             loading="lazy"
-             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+             loading="eager"
+             decoding="async"
+             fetchpriority="high">
         <div class="book-cover-large-placeholder" style="display: none;">
           <i class="fas fa-file-code"></i>
           <div class="placeholder-text">Technical Book</div>
@@ -22,8 +23,9 @@
       {% elif template_data.book.cover_image and template_data.book.cover_image.url %}
         <img src="{{ template_data.book.cover_image.url }}" 
              alt="{{ template_data.book.name }}" 
-             loading="lazy"
-             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+             loading="eager"
+             decoding="async"
+             fetchpriority="high">
         <div class="book-cover-large-placeholder" style="display: none;">
           <i class="fas fa-file-code"></i>
           <div class="placeholder-text">Technical Book</div>

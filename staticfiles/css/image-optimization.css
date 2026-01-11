@@ -1,0 +1,219 @@
+/**
+ * Image Optimization CSS
+ * Provides loading states, aspect ratios, and smooth transitions for images
+ */
+
+/* Base image container with aspect ratio */
+.book-cover {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-elevated, #1a1a2e);
+  /* Maintain aspect ratio to prevent layout shifts */
+  aspect-ratio: 3 / 4;
+}
+
+.book-cover-large {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-elevated, #1a1a2e);
+  aspect-ratio: 3 / 4;
+}
+
+/* Image loading skeleton animation */
+.book-cover::before,
+.book-cover-large::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    var(--bg-elevated, #1a1a2e) 0%,
+    var(--bg-surface, #252540) 50%,
+    var(--bg-elevated, #1a1a2e) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* Hide skeleton when image is loaded */
+.book-cover.loaded::before,
+.book-cover-large.loaded::before {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Image styles with smooth fade-in */
+.book-cover img,
+.book-cover-large img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 2;
+}
+
+/* Show image when loaded */
+.book-cover img.loaded,
+.book-cover-large img.loaded,
+.book-cover.loaded img,
+.book-cover-large.loaded img {
+  opacity: 1;
+}
+
+/* Hover effect for book covers */
+.book-card:hover .book-cover img.loaded {
+  transform: scale(1.05);
+}
+
+/* Placeholder styling */
+.book-cover-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--bg-elevated, #1a1a2e) 0%, var(--bg-surface, #252540) 100%);
+  color: var(--text-muted, #6b7280);
+  z-index: 2;
+}
+
+.book-cover-placeholder i {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.6;
+}
+
+.book-cover-placeholder span {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+}
+
+/* Large placeholder for detail pages */
+.book-cover-large-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--bg-elevated, #1a1a2e) 0%, var(--bg-surface, #252540) 100%);
+  color: var(--text-muted, #6b7280);
+  z-index: 2;
+}
+
+.book-cover-large-placeholder i {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.book-cover-large-placeholder .placeholder-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+}
+
+/* Error state for failed images */
+.book-cover.error::before,
+.book-cover-large.error::before {
+  opacity: 0;
+}
+
+.book-cover.error img,
+.book-cover-large.error img {
+  display: none;
+}
+
+/* Blur-up effect for progressive loading */
+.book-cover img.blur-up {
+  filter: blur(10px);
+  transform: scale(1.1);
+}
+
+.book-cover img.blur-up.loaded {
+  filter: blur(0);
+  transform: scale(1);
+}
+
+/* Native lazy loading support indicator */
+.book-cover img[loading="lazy"] {
+  /* Browser handles lazy loading */
+}
+
+/* Intersection observer fallback styles */
+.book-cover img.lazy-load {
+  opacity: 0;
+}
+
+.book-cover img.lazy-load.visible {
+  opacity: 1;
+}
+
+/* Responsive image sizes */
+@media (max-width: 768px) {
+  .book-cover {
+    aspect-ratio: 3 / 4;
+  }
+  
+  .book-cover-placeholder i {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .book-cover-placeholder i {
+    font-size: 1.5rem;
+  }
+  
+  .book-cover-placeholder span {
+    font-size: 0.625rem;
+  }
+}
+
+/* Prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .book-cover::before,
+  .book-cover-large::before {
+    animation: none;
+    background: var(--bg-elevated, #1a1a2e);
+  }
+  
+  .book-cover img,
+  .book-cover-large img {
+    transition: none;
+  }
+  
+  .book-card:hover .book-cover img.loaded {
+    transform: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .book-cover-placeholder,
+  .book-cover-large-placeholder {
+    border: 2px solid currentColor;
+  }
+}

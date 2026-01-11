@@ -61,6 +61,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Custom middleware for media file caching
+    'booksstore.middleware.MediaCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'booksstore.urls'
