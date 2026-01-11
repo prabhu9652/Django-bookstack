@@ -1,0 +1,435 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="padding: var(--space-6) 0;">
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6); flex-wrap: wrap; gap: var(--space-4);">
+    <div>
+      <h1 style="font-size: var(--font-size-2xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-1);">
+        Edit Resume
+      </h1>
+      <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">
+        {{ resume.title }} • {{ resume.get_role_display }}
+      </p>
+    </div>
+    <div style="display: flex; gap: var(--space-3);">
+      <button type="button" onclick="saveResume()" class="btn btn-primary" id="saveBtn">
+        <i class="fas fa-save"></i> Save
+      </button>
+      <a href="{% url 'resume_builder:preview_resume' resume.id %}" class="btn btn-secondary">
+        <i class="fas fa-eye"></i> Preview
+      </a>
+      <a href="{% url 'resume_builder:download_resume' resume.id %}" class="btn btn-ghost">
+        <i class="fas fa-download"></i> Download
+      </a>
+    </div>
+  </div>
+
+  <form method="post" id="resumeForm" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <!-- Profile Photo & Color Theme -->
+    <div class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+      <h2 class="section-title"><i class="fas fa-palette"></i> Profile & Theme</h2>
+      
+      <div style="display: grid; grid-template-columns: auto 1fr; gap: var(--space-8); align-items: start;">
+        <!-- Photo Upload -->
+        <div style="text-align: center;">
+          <div id="photoPreview" style="width: 140px; height: 140px; border-radius: 50%; background: var(--bg-elevated); border: 3px solid var(--border-primary); display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: var(--space-3);">
+            {% if resume.profile_photo %}
+              <img src="{{ resume.profile_photo.url }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+            {% else %}
+              <i class="fas fa-user" style="font-size: 48px; color: var(--text-muted);"></i>
+            {% endif %}
+          </div>
+          <label class="btn btn-ghost btn-sm" style="cursor: pointer;">
+            <i class="fas fa-camera"></i> Upload Photo
+            <input type="file" name="profile_photo" id="photoInput" accept="image/*" style="display: none;" onchange="previewPhoto(this)">
+          </label>
+        </div>
+        
+        <!-- Color Theme -->
+        <div>
+          <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">
+            Resume Color Theme
+          </label>
+          <div style="display: flex; gap: var(--space-3); flex-wrap: wrap;">
+            {% for color in color_options %}
+              <label class="color-option" style="cursor: pointer;">
+                <input type="radio" name="primary_color" value="{{ color.value }}" {% if resume.primary_color == color.value %}checked{% endif %} style="display: none;">
+                <div class="color-swatch" style="width: 48px; height: 48px; background: {{ color.value }}; border-radius: var(--radius-lg); border: 3px solid transparent; transition: all 0.2s;" title="{{ color.name }}"></div>
+              </label>
+            {% endfor %}
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <input type="color" id="customColor" value="{{ resume.primary_color }}" style="width: 48px; height: 48px; border: none; cursor: pointer; border-radius: var(--radius-lg);">
+              <span style="font-size: var(--font-size-sm); color: var(--text-muted);">Custom</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header Information -->
+    <div class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+      <h2 class="section-title"><i class="fas fa-user"></i> Header Information</h2>
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" name="full_name" value="{{ resume.full_name }}" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Role Title *</label>
+          <input type="text" name="role_title" value="{{ resume.role_title }}" placeholder="DevOps/SRE" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" name="email" value="{{ resume.email }}" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" name="phone" value="{{ resume.phone }}" placeholder="+91 1234567890" class="form-input">
+        </div>
+        <div class="form-group" style="grid-column: span 2;">
+          <label>Address</label>
+          <textarea name="address" rows="2" class="form-input" placeholder="Full address (will appear in header)">{{ resume.address }}</textarea>
+        </div>
+        <div class="form-group">
+          <label>LinkedIn URL</label>
+          <input type="text" name="linkedin" value="{{ resume.linkedin }}" placeholder="linkedin.com/in/username" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>GitHub URL</label>
+          <input type="text" name="github" value="{{ resume.github }}" placeholder="github.com/username" class="form-input">
+        </div>
+      </div>
+    </div>
+
+    <!-- Skills (Left Sidebar) -->
+    <div class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+      <h2 class="section-title"><i class="fas fa-cogs"></i> Skills <span style="font-size: var(--font-size-sm); font-weight: 400; color: var(--text-muted);">(One per line - appears in left sidebar)</span></h2>
+      
+      <textarea id="skillsInput" rows="12" class="form-input" placeholder="AWS&#10;Azure&#10;GCP&#10;Terraform&#10;Kubernetes&#10;Docker&#10;Jenkins&#10;Python&#10;GitHub Actions">{% for skill in resume.skills %}{{ skill }}{% if not forloop.last %}
+{% endif %}{% endfor %}</textarea>
+      <p style="color: var(--text-muted); font-size: var(--font-size-xs); margin-top: var(--space-2);">
+        Enter one skill per line. These will appear in the left sidebar of your resume.
+      </p>
+    </div>
+
+    <!-- Profile / Summary -->
+    <div class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+      <h2 class="section-title"><i class="fas fa-align-left"></i> Profile Summary</h2>
+      
+      <textarea name="summary" rows="5" class="form-input" placeholder="I am a Cloud DevOps and SRE Engineer with 8+ years of experience, specializing in DevOps toolchains, build and release management, configuration management, infrastructure management, and automated deployments...">{{ resume.summary }}</textarea>
+    </div>
+
+    <!-- Employment / Experience -->
+    <div class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+      <h2 class="section-title"><i class="fas fa-briefcase"></i> Employment</h2>
+      
+      <div id="experienceContainer">
+        {% for exp in resume.experience %}
+          <div class="experience-item" style="background: var(--bg-elevated); padding: var(--space-5); border-radius: var(--radius-lg); margin-bottom: var(--space-4); border: 1px solid var(--border-primary);">
+            <div class="form-grid" style="margin-bottom: var(--space-4);">
+              <div class="form-group">
+                <label>Role / Title</label>
+                <input type="text" value="{{ exp.role }}" data-field="role" class="form-input" placeholder="SRE">
+              </div>
+              <div class="form-group">
+                <label>Company</label>
+                <input type="text" value="{{ exp.company }}" data-field="company" class="form-input" placeholder="Techverito">
+              </div>
+              <div class="form-group">
+                <label>Start Date</label>
+                <input type="text" value="{{ exp.start_date }}" data-field="start_date" class="form-input" placeholder="Jul 2022">
+              </div>
+              <div class="form-group">
+                <label>End Date</label>
+                <input type="text" value="{{ exp.end_date }}" data-field="end_date" class="form-input" placeholder="Present">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Achievement Bullets <span style="color: var(--text-muted); font-weight: 400;">(One per line, use **text** for bold)</span></label>
+              <textarea data-field="bullets" rows="8" class="form-input" placeholder="Designed and deployed automated infrastructure using **Terraform** and **Terragrunt** on **AWS** for consistent and repeatable provisioning.&#10;Built and optimized CI/CD pipelines using **GitHub Actions** and **GitLab CI/CD**, including security scans with Trivy and Jit.&#10;Set up monitoring and observability with **CloudWatch**, Grafana, Prometheus, Loki, and the ELK stack.">{% for bullet in exp.bullets %}{{ bullet }}{% if not forloop.last %}
+{% endif %}{% endfor %}</textarea>
+            </div>
+            
+            <button type="button" onclick="removeExperience(this)" class="btn btn-ghost btn-sm" style="color: var(--error);">
+              <i class="fas fa-trash"></i> Remove
+            </button>
+          </div>
+        {% empty %}
+          <div class="experience-item" style="background: var(--bg-elevated); padding: var(--space-5); border-radius: var(--radius-lg); margin-bottom: var(--space-4); border: 1px solid var(--border-primary);">
+            <div class="form-grid" style="margin-bottom: var(--space-4);">
+              <div class="form-group">
+                <label>Role / Title</label>
+                <input type="text" data-field="role" class="form-input" placeholder="SRE">
+              </div>
+              <div class="form-group">
+                <label>Company</label>
+                <input type="text" data-field="company" class="form-input" placeholder="Techverito">
+              </div>
+              <div class="form-group">
+                <label>Start Date</label>
+                <input type="text" data-field="start_date" class="form-input" placeholder="Jul 2022">
+              </div>
+              <div class="form-group">
+                <label>End Date</label>
+                <input type="text" data-field="end_date" class="form-input" placeholder="Present">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Achievement Bullets</label>
+              <textarea data-field="bullets" rows="8" class="form-input" placeholder="Designed and deployed automated infrastructure using **Terraform** and **Terragrunt** on **AWS**..."></textarea>
+            </div>
+            <button type="button" onclick="removeExperience(this)" class="btn btn-ghost btn-sm" style="color: var(--error);">
+              <i class="fas fa-trash"></i> Remove
+            </button>
+          </div>
+        {% endfor %}
+      </div>
+      
+      <button type="button" onclick="addExperience()" class="btn btn-ghost">
+        <i class="fas fa-plus"></i> Add Employment
+      </button>
+    </div>
+
+    <!-- Education -->
+    <div class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+      <h2 class="section-title"><i class="fas fa-graduation-cap"></i> Education</h2>
+      
+      <div id="educationContainer">
+        {% for edu in resume.education %}
+          <div class="education-item" style="background: var(--bg-elevated); padding: var(--space-5); border-radius: var(--radius-lg); margin-bottom: var(--space-4); border: 1px solid var(--border-primary);">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Degree</label>
+                <input type="text" value="{{ edu.degree }}" data-field="degree" class="form-input" placeholder="Bachelor of Technology">
+              </div>
+              <div class="form-group">
+                <label>Field of Study</label>
+                <input type="text" value="{{ edu.field }}" data-field="field" class="form-input" placeholder="Computer Science">
+              </div>
+              <div class="form-group">
+                <label>Institution</label>
+                <input type="text" value="{{ edu.school }}" data-field="school" class="form-input" placeholder="University Name">
+              </div>
+              <div class="form-group">
+                <label>Year</label>
+                <input type="text" value="{{ edu.graduation_date }}" data-field="graduation_date" class="form-input" placeholder="2020">
+              </div>
+            </div>
+            <button type="button" onclick="removeEducation(this)" class="btn btn-ghost btn-sm" style="color: var(--error); margin-top: var(--space-3);">
+              <i class="fas fa-trash"></i> Remove
+            </button>
+          </div>
+        {% endfor %}
+      </div>
+      
+      <button type="button" onclick="addEducation()" class="btn btn-ghost">
+        <i class="fas fa-plus"></i> Add Education
+      </button>
+    </div>
+
+    <!-- Languages -->
+    <div class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+      <h2 class="section-title"><i class="fas fa-language"></i> Languages</h2>
+      <input type="text" id="languagesInput" class="form-input" placeholder="English, Hindi, Telugu" value="{% for lang in resume.languages %}{{ lang }}{% if not forloop.last %}, {% endif %}{% endfor %}">
+    </div>
+
+    <!-- Actions -->
+    <div style="display: flex; gap: var(--space-4); justify-content: center; padding: var(--space-6) 0;">
+      <button type="button" onclick="saveResume()" class="btn btn-primary btn-lg">
+        <i class="fas fa-save"></i> Save Resume
+      </button>
+      <a href="{% url 'resume_builder:preview_resume' resume.id %}" class="btn btn-secondary btn-lg">
+        <i class="fas fa-eye"></i> Preview
+      </a>
+      <a href="{% url 'resume_builder:dashboard' %}" class="btn btn-ghost btn-lg">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+    </div>
+  </form>
+</div>
+
+<style>
+.section-title {
+  font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary);
+  margin-bottom: var(--space-5); padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--border-primary);
+  display: flex; align-items: center; gap: var(--space-3);
+}
+.section-title i { color: var(--accent-primary); }
+.form-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4);
+}
+.form-group { display: flex; flex-direction: column; gap: var(--space-2); }
+.form-group label { font-weight: 600; color: var(--text-primary); font-size: var(--font-size-sm); }
+.form-input {
+  width: 100%; padding: var(--space-3); background: var(--bg-input);
+  border: 1px solid var(--border-primary); border-radius: var(--radius-md);
+  color: var(--text-primary); font-size: var(--font-size-base); transition: border-color 0.2s;
+}
+.form-input:focus {
+  outline: none; border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+.form-input::placeholder { color: var(--text-muted); }
+.color-option input:checked + .color-swatch {
+  border-color: var(--accent-primary) !important; transform: scale(1.1);
+}
+.color-swatch:hover { transform: scale(1.05); }
+</style>
+
+<script>
+const resumeId = {{ resume.id }};
+const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+function previewPhoto(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('photoPreview').innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">`;
+    };
+    reader.readAsDataURL(input.files[0]);
+    
+    // Upload immediately
+    const formData = new FormData();
+    formData.append('profile_photo', input.files[0]);
+    
+    fetch(`/resume-builder/api/upload-photo/${resumeId}/`, {
+      method: 'POST',
+      headers: { 'X-CSRFToken': csrfToken },
+      body: formData
+    }).then(r => r.json()).then(data => {
+      if (!data.success) alert('Error uploading photo');
+    });
+  }
+}
+
+// Custom color picker
+document.getElementById('customColor').addEventListener('change', function() {
+  document.querySelectorAll('input[name="primary_color"]').forEach(r => r.checked = false);
+  this.value = this.value;
+});
+
+async function saveResume() {
+  const saveBtn = document.getElementById('saveBtn');
+  saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  saveBtn.disabled = true;
+  
+  try {
+    const data = collectFormData();
+    const response = await fetch(`/resume-builder/api/save-resume/${resumeId}/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    
+    if (result.success) {
+      saveBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+      setTimeout(() => { saveBtn.innerHTML = '<i class="fas fa-save"></i> Save'; saveBtn.disabled = false; }, 2000);
+    } else {
+      throw new Error(result.error || 'Failed to save');
+    }
+  } catch (error) {
+    saveBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+    setTimeout(() => { saveBtn.innerHTML = '<i class="fas fa-save"></i> Save'; saveBtn.disabled = false; }, 2000);
+    alert('Error: ' + error.message);
+  }
+}
+
+function collectFormData() {
+  const form = document.getElementById('resumeForm');
+  const colorInput = form.querySelector('input[name="primary_color"]:checked');
+  const customColor = document.getElementById('customColor').value;
+  
+  return {
+    full_name: form.querySelector('[name="full_name"]').value,
+    role_title: form.querySelector('[name="role_title"]').value,
+    email: form.querySelector('[name="email"]').value,
+    phone: form.querySelector('[name="phone"]').value,
+    address: form.querySelector('[name="address"]').value,
+    linkedin: form.querySelector('[name="linkedin"]').value,
+    github: form.querySelector('[name="github"]').value,
+    summary: form.querySelector('[name="summary"]').value,
+    primary_color: colorInput ? colorInput.value : customColor,
+    skills: document.getElementById('skillsInput').value.split('\n').map(s => s.trim()).filter(s => s),
+    experience: collectExperience(),
+    education: collectEducation(),
+    languages: document.getElementById('languagesInput').value.split(',').map(l => l.trim()).filter(l => l),
+  };
+}
+
+function collectExperience() {
+  const experience = [];
+  document.querySelectorAll('.experience-item').forEach(item => {
+    const exp = {};
+    item.querySelectorAll('[data-field]').forEach(input => {
+      if (input.dataset.field === 'bullets') {
+        exp.bullets = input.value.split('\n').map(b => b.trim()).filter(b => b);
+      } else {
+        exp[input.dataset.field] = input.value;
+      }
+    });
+    if (exp.company || exp.role) experience.push(exp);
+  });
+  return experience;
+}
+
+function collectEducation() {
+  const education = [];
+  document.querySelectorAll('.education-item').forEach(item => {
+    const edu = {};
+    item.querySelectorAll('[data-field]').forEach(input => { edu[input.dataset.field] = input.value; });
+    if (edu.degree || edu.school) education.push(edu);
+  });
+  return education;
+}
+
+function addExperience() {
+  const container = document.getElementById('experienceContainer');
+  const div = document.createElement('div');
+  div.className = 'experience-item';
+  div.style.cssText = 'background: var(--bg-elevated); padding: var(--space-5); border-radius: var(--radius-lg); margin-bottom: var(--space-4); border: 1px solid var(--border-primary);';
+  div.innerHTML = `
+    <div class="form-grid" style="margin-bottom: var(--space-4);">
+      <div class="form-group"><label>Role / Title</label><input type="text" data-field="role" class="form-input" placeholder="SRE"></div>
+      <div class="form-group"><label>Company</label><input type="text" data-field="company" class="form-input" placeholder="Company Name"></div>
+      <div class="form-group"><label>Start Date</label><input type="text" data-field="start_date" class="form-input" placeholder="Jul 2022"></div>
+      <div class="form-group"><label>End Date</label><input type="text" data-field="end_date" class="form-input" placeholder="Present"></div>
+    </div>
+    <div class="form-group"><label>Achievement Bullets</label><textarea data-field="bullets" rows="8" class="form-input" placeholder="One bullet point per line..."></textarea></div>
+    <button type="button" onclick="removeExperience(this)" class="btn btn-ghost btn-sm" style="color: var(--error);"><i class="fas fa-trash"></i> Remove</button>
+  `;
+  container.appendChild(div);
+}
+
+function removeExperience(btn) { btn.closest('.experience-item').remove(); }
+
+function addEducation() {
+  const container = document.getElementById('educationContainer');
+  const div = document.createElement('div');
+  div.className = 'education-item';
+  div.style.cssText = 'background: var(--bg-elevated); padding: var(--space-5); border-radius: var(--radius-lg); margin-bottom: var(--space-4); border: 1px solid var(--border-primary);';
+  div.innerHTML = `
+    <div class="form-grid">
+      <div class="form-group"><label>Degree</label><input type="text" data-field="degree" class="form-input" placeholder="Bachelor of Technology"></div>
+      <div class="form-group"><label>Field of Study</label><input type="text" data-field="field" class="form-input" placeholder="Computer Science"></div>
+      <div class="form-group"><label>Institution</label><input type="text" data-field="school" class="form-input" placeholder="University Name"></div>
+      <div class="form-group"><label>Year</label><input type="text" data-field="graduation_date" class="form-input" placeholder="2020"></div>
+    </div>
+    <button type="button" onclick="removeEducation(this)" class="btn btn-ghost btn-sm" style="color: var(--error); margin-top: var(--space-3);"><i class="fas fa-trash"></i> Remove</button>
+  `;
+  container.appendChild(div);
+}
+
+function removeEducation(btn) { btn.closest('.education-item').remove(); }
+
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveResume(); }
+});
+</script>
+{% endblock %}

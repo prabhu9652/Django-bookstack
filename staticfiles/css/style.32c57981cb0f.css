@@ -1,0 +1,159 @@
+/* Legacy styles - kept for compatibility */
+.bg-index{
+  background: url("/static/img/background.5c403b1a85ec.jpg") no-repeat fixed;
+  background-size: 100% auto;
+}
+
+/* Navbar styles removed - handled by minimal-enterprise.css */
+
+.bg-dark {
+  background-color: #2E2E2E !important;
+}
+
+.ms-footer {
+  background-color: #202020;
+}
+
+.ms-footer p {
+  color: #7F7F7F;
+  font-size: 13px;
+}
+
+.ms-footer a:hover {
+  color: #6ab43e;
+  text-decoration: none;
+}
+
+.ms-footer-bottom span{
+  font-size: 13px;
+  line-height: 38px;
+}
+
+/* Additional compatibility styles for dark theme */
+body.dark-theme {
+  background: var(--bg-primary, #0a0a0a);
+  color: var(--text-primary, #ffffff);
+}
+
+/* Ensure all text is visible in dark theme */
+.dark-theme .text-dark {
+  color: var(--text-primary, #ffffff) !important;
+}
+
+.dark-theme .bg-light {
+  background: var(--bg-secondary, #1a1a1a) !important;
+}
+
+.dark-theme .bg-white {
+  background: var(--bg-card, #1e1e1e) !important;
+}
+
+/* Bootstrap overrides for dark theme */
+.dark-theme .card {
+  background: var(--bg-card, #1e1e1e);
+  border-color: var(--border-primary, #333333);
+  color: var(--text-primary, #ffffff);
+}
+
+.dark-theme .form-control {
+  background: var(--bg-secondary, #1a1a1a);
+  border-color: var(--border-primary, #333333);
+  color: var(--text-primary, #ffffff);
+}
+
+.dark-theme .form-control:focus {
+  background: var(--bg-secondary, #1a1a1a);
+  border-color: var(--border-accent, #667eea);
+  color: var(--text-primary, #ffffff);
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.dark-theme .dropdown-menu {
+  background: var(--bg-card, #1e1e1e);
+  border-color: var(--border-primary, #333333);
+}
+
+.dark-theme .dropdown-item {
+  color: var(--text-secondary, #b0b0b0);
+}
+
+.dark-theme .dropdown-item:hover {
+  background: var(--bg-card-hover, #252525);
+  color: var(--text-primary, #ffffff);
+}
+
+.dark-theme .alert {
+  background: var(--bg-card, #1e1e1e);
+  border-color: var(--border-primary, #333333);
+  color: var(--text-primary, #ffffff);
+}
+
+.dark-theme .modal-content {
+  background: var(--bg-card, #1e1e1e);
+  border-color: var(--border-primary, #333333);
+}
+
+.dark-theme .modal-header {
+  border-bottom-color: var(--border-primary, #333333);
+}
+
+.dark-theme .modal-footer {
+  border-top-color: var(--border-primary, #333333);
+}
+
+/* Ensure proper text contrast */
+.dark-theme .text-muted {
+  color: var(--text-muted, #808080) !important;
+}
+
+.dark-theme .text-secondary {
+  color: var(--text-secondary, #b0b0b0) !important;
+}
+
+/* Loading states */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(102, 126, 234, 0.3);
+  border-top: 3px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+}
+
+.ms-footer-bottom a {
+  color: #6ab43e;
+  text-decoration: none;
+}
+
+.ms-footer-bottom a:hover {
+  color: #fff;
+}
+
+.img-card-200 {
+  width: fit-content;
+  max-height: 200px;
+}
+
+.img-card-400 {
+  width: fit-content;
+  max-height: 400px;
+}

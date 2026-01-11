@@ -18,17 +18,9 @@ class ProductUI {
 
   // Enhanced Navigation
   setupNavigation() {
-    // Set active navigation state
-    const currentPath = window.location.pathname;
-    const navLinks = document.querySelectorAll('.nav-link');
+    // Remove JavaScript-based active state logic - let Django handle it server-side
+    // The active state is already correctly set in the Django template
     
-    navLinks.forEach(link => {
-      const href = link.getAttribute('href');
-      if (href === currentPath || (currentPath !== '/' && href !== '/' && currentPath.startsWith(href))) {
-        link.classList.add('active');
-      }
-    });
-
     // Navbar scroll effect
     const navbar = document.querySelector('.navbar');
     if (navbar) {
@@ -41,13 +33,58 @@ class ProductUI {
       });
     }
 
-    // Mobile menu toggle (if needed)
-    const mobileToggle = document.querySelector('.mobile-toggle');
+    // Mobile menu functionality
+    this.setupMobileMenu();
+
+    // No dropdown functionality needed - all nav items are regular links
+  }
+
+  // Mobile menu setup
+  setupMobileMenu() {
+    const mobileToggle = document.querySelector('.mobile-menu-toggle');
     const navMenu = document.querySelector('.navbar-nav');
     
     if (mobileToggle && navMenu) {
-      mobileToggle.addEventListener('click', () => {
-        navMenu.classList.toggle('show');
+      mobileToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        mobileToggle.classList.toggle('active');
+        navMenu.classList.toggle('mobile-menu-open');
+        
+        // Prevent body scroll when menu is open
+        if (navMenu.classList.contains('mobile-menu-open')) {
+          document.body.style.overflow = 'hidden';
+        } else {
+          document.body.style.overflow = '';
+        }
+      });
+      
+      // Close mobile menu when clicking on nav links - but don't prevent navigation
+      const navLinks = navMenu.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          // Only close mobile menu, don't prevent navigation
+          mobileToggle.classList.remove('active');
+          navMenu.classList.remove('mobile-menu-open');
+          document.body.style.overflow = '';
+        });
+      });
+      
+      // Close mobile menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!mobileToggle.contains(e.target) && !navMenu.contains(e.target)) {
+          mobileToggle.classList.remove('active');
+          navMenu.classList.remove('mobile-menu-open');
+          document.body.style.overflow = '';
+        }
+      });
+      
+      // Close mobile menu on escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navMenu.classList.contains('mobile-menu-open')) {
+          mobileToggle.classList.remove('active');
+          navMenu.classList.remove('mobile-menu-open');
+          document.body.style.overflow = '';
+        }
       });
     }
   }

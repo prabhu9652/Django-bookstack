@@ -16,11 +16,20 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
-    <!-- Minimal Enterprise CSS -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/minimal-enterprise.css' %}?v=20260109">
+    <!-- Unified Dark Theme CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/dark-theme-unified.css' %}?v=20260111-darktheme">
+    
+    <!-- Component-specific enhancements -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/components-dark.css' %}?v=20260111-darktheme">
+    
+    <!-- Enterprise Authentication Styles -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/auth-enterprise.css' %}?v=20260111-enterprise">
     
     <!-- Shared Library Management -->
-    <script src="{% static 'js/library-manager.js' %}" defer></script>>
+    <script src="{% static 'js/library-manager.js' %}" defer></script>
+    
+    <!-- Enterprise Authentication JavaScript -->
+    <script src="{% static 'js/auth-enterprise.js' %}" defer></script>
     
     <!-- Meta tags -->
     <meta name="description" content="TechBookHub - Professional technical books for DevOps, Cloud Computing, Data Science, Machine Learning, and Software Development">
@@ -38,36 +47,121 @@
     <!-- Minimal Navigation -->
     <nav class="navbar">
       <div class="navbar-content">
-        <!-- Brand -->
-        <a href="{% url 'home.index' %}" class="navbar-brand">
-          <i class="fas fa-code"></i>
-          TechBookHub
-        </a>
-        
-        <!-- Navigation -->
+        <!-- Navigation Links -->
         <ul class="navbar-nav">
-          <li><a href="{% url 'home.index' %}" class="nav-link">Home</a></li>
-          <li><a href="{% url 'books.index' %}" class="nav-link">Books</a></li>
+          <li><a href="{% url 'home.index' %}" class="nav-link {% if request.resolver_match.url_name == 'home.index' %}active{% endif %}">Home</a></li>
+          <li><a href="{% url 'books.index' %}" class="nav-link {% if request.resolver_match.url_name and 'books' in request.resolver_match.url_name and not request.resolver_match.namespace %}active{% endif %}">Books</a></li>
           {% if user.is_authenticated %}
-            <li><a href="{% url 'library.index' %}" class="nav-link">My Library</a></li>
+            <li><a href="{% url 'library.index' %}" class="nav-link {% if request.resolver_match.url_name and 'library' in request.resolver_match.url_name and not request.resolver_match.namespace %}active{% endif %}">My Library</a></li>
           {% endif %}
-          <li><a href="{% url 'home.about' %}" class="nav-link">About</a></li>
+          
+          <!-- Resume Builder -->
+          <li><a href="{% url 'resume_builder:home' %}" class="nav-link {% if request.resolver_match.namespace == 'resume_builder' %}active{% endif %}">Resume Builder</a></li>
+          
+          <!-- Roadmap -->
+          <li><a href="{% url 'roadmap:home' %}" class="nav-link {% if request.resolver_match.namespace == 'roadmap' %}active{% endif %}">Roadmap</a></li>
+          
+          <li><a href="{% url 'home.about' %}" class="nav-link {% if request.resolver_match.url_name == 'home.about' %}active{% endif %}">About</a></li>
         </ul>
         
         <!-- Auth Actions -->
         <div class="navbar-auth">
           {% if user.is_authenticated %}
-            <a href="{% url 'accounts.logout' %}" class="btn btn-ghost btn-sm">Sign Out</a>
+            <!-- User Profile Dropdown -->
+            <div class="user-profile-dropdown">
+              <button class="profile-trigger" id="profileTrigger" aria-expanded="false" aria-haspopup="true">
+                <div class="profile-avatar">
+                  <span class="avatar-initials">{{ user.username|slice:":1"|upper }}</span>
+                </div>
+                <span class="profile-name">{{ user.username }}</span>
+                <i class="fas fa-chevron-down profile-chevron"></i>
+              </button>
+              
+              <!-- Profile Dropdown Panel -->
+              <div class="profile-dropdown-panel" id="profileDropdown">
+                <!-- User Info Section -->
+                <div class="profile-header-section">
+                  <div class="profile-avatar-large">
+                    <span class="avatar-initials-large">{{ user.username|slice:":1"|upper }}</span>
+                  </div>
+                  <div class="profile-user-info">
+                    <h4 class="profile-username">{{ user.username }}</h4>
+                    <p class="profile-email">{{ user.email|default:"No email set" }}</p>
+                  </div>
+                </div>
+                
+                <!-- Access Status Section -->
+                <div class="profile-status-section">
+                  <div class="status-label">Access Status</div>
+                  {% if access_context.is_superuser %}
+                    <div class="status-badge admin">
+                      <i class="fas fa-crown"></i>
+                      <span>Administrator</span>
+                    </div>
+                  {% elif access_context.has_content_access %}
+                    <div class="status-badge approved">
+                      <i class="fas fa-check-circle"></i>
+                      <span>Active</span>
+                    </div>
+                  {% elif access_context.access_status and access_context.access_status.is_pending %}
+                    <div class="status-badge pending">
+                      <i class="fas fa-clock"></i>
+                      <span>Pending Approval</span>
+                    </div>
+                  {% elif access_context.access_status and access_context.access_status.is_rejected %}
+                    <div class="status-badge rejected">
+                      <i class="fas fa-times-circle"></i>
+                      <span>Restricted</span>
+                    </div>
+                  {% else %}
+                    <div class="status-badge unknown">
+                      <i class="fas fa-question-circle"></i>
+                      <span>Unknown</span>
+                    </div>
+                  {% endif %}
+                </div>
+                
+                <!-- Profile Actions -->
+                <div class="profile-actions-section">
+                  <a href="{% url 'accounts.access_status' %}" class="profile-action-item">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Access & Permissions</span>
+                  </a>
+                </div>
+                
+                <!-- Sign Out Section -->
+                <div class="profile-signout-section">
+                  <a href="{% url 'accounts.logout' %}" class="signout-btn" onclick="this.innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> Signing Out...'; this.style.pointerEvents='none';">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sign Out</span>
+                  </a>
+                </div>
+              </div>
+            </div>
           {% else %}
             <a href="{% url 'accounts.login' %}" class="btn btn-ghost btn-sm">Sign In</a>
             <a href="{% url 'accounts.signup' %}" class="btn btn-primary btn-sm">Sign Up</a>
           {% endif %}
         </div>
+        
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
       </div>
     </nav>
 
     <!-- Main Content -->
-    <main style="padding-top: 64px;">
+    <main style="padding-top: 64px;" id="main-content">
+      <!-- Page Transition Overlay (hidden by default) -->
+      <div id="page-transition-overlay" class="page-transition-overlay" style="display: none;">
+        <div class="transition-spinner">
+          <i class="fas fa-spinner"></i>
+        </div>
+      </div>
+      
       <!-- Messages -->
       {% if messages %}
         <div class="container" style="padding-top: var(--space-4);">
@@ -90,8 +184,10 @@
         </div>
       {% endif %}
       
-      {% block content %}
-      {% endblock content %}
+      <div class="page-content" id="page-content">
+        {% block content %}
+        {% endblock content %}
+      </div>
     </main>
 
     <!-- Minimal Footer -->
@@ -107,6 +203,53 @@
 
     <!-- Scripts -->
     <script src="{% static 'js/minimal-interactions.js' %}"></script>
+    <script src="{% static 'js/page-transitions.js' %}"></script>
+    
+    <!-- Profile Dropdown Script -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const profileTrigger = document.getElementById('profileTrigger');
+      const profileDropdown = document.getElementById('profileDropdown');
+      
+      if (profileTrigger && profileDropdown) {
+        // Toggle dropdown on click
+        profileTrigger.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const isExpanded = profileTrigger.getAttribute('aria-expanded') === 'true';
+          
+          if (isExpanded) {
+            closeDropdown();
+          } else {
+            openDropdown();
+          }
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!profileTrigger.contains(e.target) && !profileDropdown.contains(e.target)) {
+            closeDropdown();
+          }
+        });
+        
+        // Close dropdown on escape key
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            closeDropdown();
+          }
+        });
+        
+        function openDropdown() {
+          profileTrigger.setAttribute('aria-expanded', 'true');
+          profileDropdown.classList.add('show');
+        }
+        
+        function closeDropdown() {
+          profileTrigger.setAttribute('aria-expanded', 'false');
+          profileDropdown.classList.remove('show');
+        }
+      }
+    });
+    </script>
     
     {% block extra_js %}
     {% endblock extra_js %}

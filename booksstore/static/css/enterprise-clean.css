@@ -195,81 +195,9 @@ a:hover {
 .gap-6 { gap: var(--space-6); }
 
 /* ========================================
-   NAVIGATION - ENTERPRISE STYLE
+   NAVIGATION - REMOVED
+   Navbar styles handled by minimal-enterprise.css
 ======================================== */
-
-.navbar {
-  background: var(--bg-surface);
-  border-bottom: 1px solid var(--border-primary);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  height: 64px;
-}
-
-.navbar-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 var(--space-4);
-}
-
-.navbar-brand {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  text-decoration: none;
-}
-
-.navbar-brand:hover {
-  color: var(--accent-primary);
-  text-decoration: none;
-}
-
-.navbar-brand i {
-  color: var(--accent-primary);
-  font-size: 1.1em;
-}
-
-.navbar-nav {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.navbar-auth {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.nav-link {
-  padding: var(--space-2) var(--space-3);
-  color: var(--text-secondary);
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
-  text-decoration: none;
-}
-
-.nav-link:hover,
-.nav-link.active {
-  color: var(--text-primary);
-  background: var(--bg-secondary);
-  text-decoration: none;
-}
 
 /* ========================================
    BUTTON SYSTEM - ENTERPRISE STYLE

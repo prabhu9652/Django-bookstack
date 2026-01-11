@@ -1,0 +1,454 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load roadmap_extras %}
+
+{% block content %}
+<!-- Roadmap Enhanced Styles -->
+<link rel="stylesheet" type="text/css" href="{% static 'css/roadmap.css' %}?v=20260110">
+<div class="container" style="padding: var(--space-8) 0;">
+  <!-- Breadcrumb Navigation -->
+  <div class="breadcrumb-nav" style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-6); font-size: var(--font-size-sm); animation: slideInDown 0.6s ease-out;">
+    <a href="{% url 'roadmap:home' %}" class="breadcrumb-link" style="color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; gap: var(--space-2); transition: color var(--transition-fast);">
+      <i class="fas fa-route"></i>
+      Roadmaps
+    </a>
+    <i class="fas fa-chevron-right" style="color: var(--text-muted);"></i>
+    <span class="breadcrumb-current" style="color: var(--text-primary); font-weight: 600;">{{ roadmap_path.name }}</span>
+  </div>
+
+  <!-- Path Header -->
+  <div class="path-header" style="background: var(--bg-surface); border: 1px solid var(--border-primary); border-radius: var(--radius-xl); padding: var(--space-8); margin-bottom: var(--space-8); animation: slideInLeft 0.6s ease-out 0.2s both;">
+    <div class="path-header-content" style="display: flex; align-items: flex-start; gap: var(--space-8);">
+      <div class="path-icon" style="width: 120px; height: 120px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <i class="{{ roadmap_path.icon_class }}" style="font-size: 3rem; color: var(--accent-primary);"></i>
+      </div>
+      <div class="path-info" style="flex: 1;">
+        <h1 class="path-title" style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-3); line-height: 1.1;">
+          {{ roadmap_path.name }}
+        </h1>
+        <p class="path-subtitle" style="font-size: var(--font-size-lg); color: var(--text-secondary); margin-bottom: var(--space-4); font-weight: 500;">
+          {{ roadmap_path.subtitle }}
+        </p>
+        <p class="path-description" style="color: var(--text-secondary); line-height: 1.6; margin-bottom: var(--space-6); font-size: var(--font-size-base);">
+          {{ roadmap_path.description }}
+        </p>
+        
+        <div class="path-meta" style="display: flex; gap: var(--space-4); flex-wrap: wrap;">
+          <div class="meta-item" style="display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-sm); color: var(--text-tertiary); background: var(--bg-elevated); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--border-primary);">
+            <i class="fas fa-signal" style="color: var(--accent-primary);"></i>
+            <span>{{ roadmap_path.get_difficulty_display }}</span>
+          </div>
+          <div class="meta-item" style="display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-sm); color: var(--text-tertiary); background: var(--bg-elevated); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--border-primary);">
+            <i class="fas fa-clock" style="color: var(--accent-primary);"></i>
+            <span>{{ roadmap_path.estimated_duration }}</span>
+          </div>
+          <div class="meta-item" style="display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-sm); color: var(--text-tertiary); background: var(--bg-elevated); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--border-primary);">
+            <i class="fas fa-list" style="color: var(--accent-primary);"></i>
+            <span>{{ phases.count }} phases</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Overview (if authenticated) -->
+  {% if user.is_authenticated %}
+  <div class="progress-overview" style="background: var(--bg-surface); border: 1px solid var(--border-primary); border-radius: var(--radius-xl); padding: var(--space-6); margin-bottom: var(--space-8); animation: slideInRight 0.6s ease-out 0.4s both;">
+    <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4);">
+      <h3 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); display: flex; align-items: center;">
+        <div class="section-icon" style="width: 40px; height: 40px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-right: var(--space-3);">
+          <i class="fas fa-chart-line" style="color: var(--accent-primary); font-size: var(--font-size-base);"></i>
+        </div>
+        Your Progress
+      </h3>
+    </div>
+    <div class="progress-stats">
+      <!-- Progress stats will be calculated and displayed here -->
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Roadmap Phases -->
+  <div class="roadmap-phases-section" style="animation: slideInLeft 0.6s ease-out 0.6s both;">
+    <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-6);">
+      <h2 style="font-size: var(--font-size-2xl); font-weight: 600; color: var(--text-primary); display: flex; align-items: center;">
+        <div class="section-icon" style="width: 48px; height: 48px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-right: var(--space-4);">
+          <i class="fas fa-layer-group" style="color: var(--accent-primary); font-size: var(--font-size-lg);"></i>
+        </div>
+        Learning Phases
+      </h2>
+      {% if phases %}
+        <span class="phase-count" style="background: var(--accent-subtle); color: var(--accent-primary); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); font-size: var(--font-size-sm); font-weight: 600;">
+          {{ phases.count }} phase{{ phases.count|pluralize }}
+        </span>
+      {% endif %}
+    </div>
+    
+    <div class="phases-grid" style="display: grid; gap: var(--space-6);">
+      {% for phase in phases %}
+        <div class="phase-card" data-phase-id="{{ phase.id }}" style="background: var(--bg-surface); border: 1px solid var(--border-primary); border-radius: var(--radius-xl); padding: var(--space-6); transition: all var(--transition-smooth); position: relative; overflow: hidden; animation: slideUp 0.4s ease-out {{ forloop.counter0|add:1|floatformat:1 }}s both;">
+          <!-- Hover gradient overlay -->
+          <div class="card-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--accent-glow) 0%, transparent 50%); opacity: 0; transition: opacity var(--transition-smooth); pointer-events: none;"></div>
+          
+          <div class="phase-header" style="display: flex; align-items: flex-start; gap: var(--space-4); margin-bottom: var(--space-6); position: relative; z-index: 2;">
+            <div class="phase-number" style="width: 48px; height: 48px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: var(--font-size-lg); font-weight: 700; color: var(--accent-primary);">
+              {{ forloop.counter }}
+            </div>
+            <div class="phase-info" style="flex: 1;">
+              <h3 class="phase-title" style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+                {{ phase.name }}
+              </h3>
+              <p class="phase-description" style="color: var(--text-secondary); line-height: 1.6; margin-bottom: var(--space-3); font-size: var(--font-size-sm);">
+                {{ phase.description }}
+              </p>
+              <div class="phase-duration" style="display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-xs); color: var(--text-tertiary); background: var(--bg-elevated); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); border: 1px solid var(--border-primary); width: fit-content);">
+                <i class="fas fa-clock" style="color: var(--accent-primary);"></i>
+                <span>{{ phase.duration }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="phase-skills" style="position: relative; z-index: 2;">
+            <h4 style="font-size: var(--font-size-base); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2);">
+              <i class="fas fa-tasks" style="color: var(--accent-primary); font-size: var(--font-size-sm);"></i>
+              Skills to Master
+            </h4>
+            <div class="skills-grid" style="display: grid; gap: var(--space-3);">
+              {% for skill in phase.skills.all %}
+                <div class="skill-item {% if skill.id in user_progress %}skill-{{ user_progress|lookup:skill.id }}{% endif %}" 
+                     data-skill-id="{{ skill.id }}" style="background: var(--bg-elevated); border: 1px solid var(--border-primary); border-radius: var(--radius-lg); padding: var(--space-4); transition: all var(--transition-fast); position: relative;">
+                  <div class="skill-content" style="position: relative; z-index: 2;">
+                    <div class="skill-header" style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: var(--space-2);">
+                      <h5 class="skill-name" style="font-size: var(--font-size-base); font-weight: 600; color: var(--text-primary); margin: 0; display: flex; align-items: center; gap: var(--space-2);">
+                        {{ skill.name }}
+                        {% if skill.is_core %}
+                          <span class="core-badge" style="background: var(--accent-subtle); color: var(--accent-primary); padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: var(--font-size-xs); font-weight: 600;">Core</span>
+                        {% else %}
+                          <span class="optional-badge" style="background: var(--bg-primary); color: var(--text-muted); padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: var(--font-size-xs); font-weight: 600;">Optional</span>
+                        {% endif %}
+                      </h5>
+                      {% if user.is_authenticated %}
+                        <div class="skill-status" style="display: flex; gap: var(--space-1);">
+                          <button class="status-btn" data-status="not_started" title="Not Started" style="width: 28px; height: 28px; border: none; background: var(--bg-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all var(--transition-fast); color: var(--text-muted);">
+                            <i class="fas fa-circle" style="font-size: var(--font-size-xs);"></i>
+                          </button>
+                          <button class="status-btn" data-status="in_progress" title="In Progress" style="width: 28px; height: 28px; border: none; background: var(--bg-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all var(--transition-fast); color: var(--text-muted);">
+                            <i class="fas fa-play-circle" style="font-size: var(--font-size-xs);"></i>
+                          </button>
+                          <button class="status-btn" data-status="completed" title="Completed" style="width: 28px; height: 28px; border: none; background: var(--bg-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all var(--transition-fast); color: var(--text-muted);">
+                            <i class="fas fa-check-circle" style="font-size: var(--font-size-xs);"></i>
+                          </button>
+                        </div>
+                      {% endif %}
+                    </div>
+                    {% if skill.description %}
+                      <p class="skill-description" style="color: var(--text-secondary); line-height: 1.6; font-size: var(--font-size-xs); margin: 0;">
+                        {{ skill.description }}
+                      </p>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="path-actions" style="display: flex; gap: var(--space-4); justify-content: center; margin-top: var(--space-8); padding-top: var(--space-8); border-top: 1px solid var(--border-primary); animation: slideInRight 0.6s ease-out 0.8s both;">
+    <a href="{% url 'roadmap:home' %}" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i>
+      Back to Roadmaps
+    </a>
+    {% if user.is_authenticated %}
+      <button class="btn btn-primary" id="reset-progress">
+        <i class="fas fa-redo"></i>
+        Reset Progress
+      </button>
+    {% else %}
+      <a href="{% url 'accounts.signup' %}" class="btn btn-primary">
+        <i class="fas fa-user-plus"></i>
+        Sign Up to Track Progress
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+{% csrf_token %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Enhanced card hover effects
+  function setupCardEffects() {
+    const cards = document.querySelectorAll('.phase-card');
+    
+    cards.forEach(card => {
+      const overlay = card.querySelector('.card-overlay');
+      const phaseNumber = card.querySelector('.phase-number');
+      
+      card.addEventListener('mouseenter', () => {
+        card.style.transform = 'translateY(-4px) scale(1.01)';
+        card.style.borderColor = 'var(--accent-primary)';
+        card.style.boxShadow = 'var(--shadow-lg)';
+        if (overlay) overlay.style.opacity = '0.1';
+        if (phaseNumber) {
+          phaseNumber.style.background = 'var(--accent-primary)';
+          phaseNumber.style.color = 'white';
+          phaseNumber.style.transform = 'scale(1.1)';
+        }
+      });
+      
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'translateY(0) scale(1)';
+        card.style.borderColor = 'var(--border-primary)';
+        card.style.boxShadow = 'none';
+        if (overlay) overlay.style.opacity = '0';
+        if (phaseNumber) {
+          phaseNumber.style.background = 'var(--accent-subtle)';
+          phaseNumber.style.color = 'var(--accent-primary)';
+          phaseNumber.style.transform = 'scale(1)';
+        }
+      });
+    });
+  }
+  
+  // Enhanced skill item hover effects
+  function setupSkillEffects() {
+    const skillItems = document.querySelectorAll('.skill-item');
+    
+    skillItems.forEach(item => {
+      item.addEventListener('mouseenter', () => {
+        item.style.borderColor = 'var(--accent-primary)';
+        item.style.background = 'var(--bg-surface)';
+        item.style.transform = 'translateY(-2px)';
+      });
+      
+      item.addEventListener('mouseleave', () => {
+        item.style.borderColor = 'var(--border-primary)';
+        item.style.background = 'var(--bg-elevated)';
+        item.style.transform = 'translateY(0)';
+      });
+    });
+  }
+  
+  // Progress tracking functionality
+  function setupProgressTracking() {
+    const skillItems = document.querySelectorAll('.skill-item');
+    
+    skillItems.forEach(item => {
+      const statusBtns = item.querySelectorAll('.status-btn');
+      const skillId = item.dataset.skillId;
+      
+      statusBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const status = this.dataset.status;
+          updateSkillProgress(skillId, status, item);
+        });
+        
+        // Enhanced button hover effects
+        btn.addEventListener('mouseenter', () => {
+          btn.style.background = 'var(--bg-surface)';
+          btn.style.color = 'var(--text-secondary)';
+          btn.style.transform = 'scale(1.1)';
+        });
+        
+        btn.addEventListener('mouseleave', () => {
+          if (!btn.classList.contains('active')) {
+            btn.style.background = 'var(--bg-primary)';
+            btn.style.color = 'var(--text-muted)';
+          }
+          btn.style.transform = 'scale(1)';
+        });
+      });
+    });
+  }
+  
+  function updateSkillProgress(skillId, status, skillItem) {
+    fetch(`/roadmap/api/skill/${skillId}/progress/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+      },
+      body: `status=${status}`
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Update UI to reflect new status
+        skillItem.className = `skill-item skill-${status}`;
+        
+        // Update status buttons
+        const statusBtns = skillItem.querySelectorAll('.status-btn');
+        statusBtns.forEach(btn => {
+          btn.classList.remove('active');
+          btn.style.background = 'var(--bg-primary)';
+          btn.style.color = 'var(--text-muted)';
+          
+          if (btn.dataset.status === status) {
+            btn.classList.add('active');
+            if (status === 'completed') {
+              btn.style.background = 'var(--success)';
+              btn.style.color = 'white';
+            } else if (status === 'in_progress') {
+              btn.style.background = 'var(--warning)';
+              btn.style.color = 'white';
+            } else {
+              btn.style.background = 'var(--accent-primary)';
+              btn.style.color = 'white';
+            }
+          }
+        });
+        
+        // Update skill item styling based on status
+        if (status === 'completed') {
+          skillItem.style.borderColor = 'var(--success)';
+          skillItem.style.background = 'rgba(34, 197, 94, 0.05)';
+        } else if (status === 'in_progress') {
+          skillItem.style.borderColor = 'var(--warning)';
+          skillItem.style.background = 'rgba(245, 158, 11, 0.05)';
+        } else {
+          skillItem.style.borderColor = 'var(--border-primary)';
+          skillItem.style.background = 'var(--bg-elevated)';
+        }
+      }
+    })
+    .catch(error => {
+      console.error('Error updating progress:', error);
+    });
+  }
+  
+  // Initialize all functionality
+  setupCardEffects();
+  setupSkillEffects();
+  setupProgressTracking();
+});
+</script>
+
+<style>
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.breadcrumb-link:hover {
+  color: var(--accent-primary) !important;
+}
+
+.status-btn.active {
+  background: var(--accent-primary) !important;
+  color: white !important;
+}
+
+.status-btn[data-status="completed"].active {
+  background: var(--success) !important;
+}
+
+.status-btn[data-status="in_progress"].active {
+  background: var(--warning) !important;
+}
+
+.skill-item.skill-completed {
+  border-color: var(--success) !important;
+  background: rgba(34, 197, 94, 0.05) !important;
+}
+
+.skill-item.skill-in_progress {
+  border-color: var(--warning) !important;
+  background: rgba(245, 158, 11, 0.05) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .path-header-content {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: var(--space-6) !important;
+  }
+  
+  .path-icon {
+    margin: 0 auto !important;
+  }
+  
+  .path-meta {
+    justify-content: center !important;
+  }
+  
+  .phase-header {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: var(--space-3) !important;
+  }
+  
+  .phase-number {
+    margin: 0 auto !important;
+  }
+  
+  .skill-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: var(--space-3) !important;
+  }
+  
+  .path-actions {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .path-title {
+    font-size: var(--font-size-2xl) !important;
+  }
+  
+  .phase-card {
+    padding: var(--space-5) !important;
+  }
+  
+  .skill-item {
+    padding: var(--space-3) !important;
+  }
+}
+</style>
+{% endblock %}

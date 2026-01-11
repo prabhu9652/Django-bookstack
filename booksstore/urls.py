@@ -25,6 +25,8 @@ urlpatterns = [
     path('books/', include('books.urls')),
     path('accounts/', include('accounts.urls')),
     path('library/', include('library.urls')),
+    path('resume-builder/', include('resume_builder.urls')),
+    path('roadmap/', include('roadmap.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL,

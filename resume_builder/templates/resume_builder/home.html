@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="padding: var(--space-8) 0;">
+  <!-- Hero Section -->
+  <div style="text-align: center; margin-bottom: var(--space-16);">
+    <div style="background: var(--bg-hero); padding: var(--space-16) var(--space-8); border-radius: var(--radius-xl); margin-bottom: var(--space-8);">
+      <h1 style="font-size: var(--font-size-4xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-4);">
+        Professional Resume & Cover Letter Builder
+      </h1>
+      <p style="font-size: var(--font-size-lg); color: var(--text-secondary); max-width: 600px; margin: 0 auto var(--space-8) auto;">
+        Create stunning, professional resumes and cover letters with our easy-to-use builder. Choose from multiple templates and customize to your needs.
+      </p>
+      
+      {% if user.is_authenticated %}
+        <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
+          <a href="{% url 'resume_builder:resume_templates' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-file-alt"></i>
+            Create Resume
+          </a>
+          <a href="{% url 'resume_builder:cover_letter_templates' %}" class="btn btn-secondary btn-lg">
+            <i class="fas fa-envelope"></i>
+            Create Cover Letter
+          </a>
+          <a href="{% url 'resume_builder:dashboard' %}" class="btn btn-ghost btn-lg">
+            <i class="fas fa-tachometer-alt"></i>
+            My Documents
+          </a>
+        </div>
+      {% else %}
+        <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
+          <a href="{% url 'accounts.signup' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-user-plus"></i>
+            Get Started Free
+          </a>
+          <a href="{% url 'accounts.login' %}" class="btn btn-ghost btn-lg">
+            <i class="fas fa-sign-in-alt"></i>
+            Sign In
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Features Grid -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-6); margin-bottom: var(--space-16);">
+    <div class="card" style="text-align: center; padding: var(--space-8);">
+      <div style="width: 60px; height: 60px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4) auto;">
+        <i class="fas fa-file-alt" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
+      </div>
+      <h3 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">
+        Professional Templates
+      </h3>
+      <p style="color: var(--text-secondary);">
+        Choose from {{ resume_count }} professionally designed resume templates that make you stand out.
+      </p>
+    </div>
+
+    <div class="card" style="text-align: center; padding: var(--space-8);">
+      <div style="width: 60px; height: 60px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4) auto;">
+        <i class="fas fa-envelope" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
+      </div>
+      <h3 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">
+        Cover Letters
+      </h3>
+      <p style="color: var(--text-secondary);">
+        Create compelling cover letters with {{ cover_letter_count }} templates tailored to different industries.
+      </p>
+    </div>
+
+    <div class="card" style="text-align: center; padding: var(--space-8);">
+      <div style="width: 60px; height: 60px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4) auto;">
+        <i class="fas fa-download" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
+      </div>
+      <h3 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">
+        Easy Export
+      </h3>
+      <p style="color: var(--text-secondary);">
+        Download your documents in multiple formats. Perfect for online applications and printing.
+      </p>
+    </div>
+  </div>
+
+  {% if user.is_authenticated %}
+    <!-- User Stats -->
+    <div class="card" style="padding: var(--space-8); text-align: center;">
+      <h2 style="font-size: var(--font-size-2xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-6);">
+        Your Documents
+      </h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-6);">
+        <div>
+          <div style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--accent-primary);">
+            {{ user_resumes|default:0 }}
+          </div>
+          <div style="color: var(--text-secondary);">Resumes Created</div>
+        </div>
+        <div>
+          <div style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--accent-primary);">
+            {{ user_cover_letters|default:0 }}
+          </div>
+          <div style="color: var(--text-secondary);">Cover Letters</div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

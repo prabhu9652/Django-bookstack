@@ -1,0 +1,502 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Force visibility immediately -->
+<script>
+(function() {
+  var pc = document.getElementById('page-content');
+  if (pc) { pc.style.cssText = 'opacity:1 !important; transform:none !important;'; }
+})();
+</script>
+<!-- Compact Sign In Page -->
+<div class="auth-compact-container" style="opacity: 1 !important; transform: none !important;">
+  <!-- Ambient glow effects -->
+  <div class="auth-ambient-glow glow-1"></div>
+  <div class="auth-ambient-glow glow-2"></div>
+  
+  <div class="auth-compact-card">
+    <!-- Logo & Header -->
+    <div class="auth-compact-header">
+      <div class="auth-logo">
+        <i class="fas fa-code-branch"></i>
+      </div>
+      <h1>Welcome Back</h1>
+      <p>Sign in to access your technical library</p>
+    </div>
+    
+    <!-- Error Messages -->
+    {% if form.errors %}
+      <div class="auth-alert auth-alert-error">
+        <i class="fas fa-exclamation-circle"></i>
+        <div>
+          {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+              <span>{% if field != '__all__' %}{{ field|title }}: {% endif %}{{ error }}</span>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+    
+    {% if messages %}
+      {% for message in messages %}
+        <div class="auth-alert auth-alert-{{ message.tags }}">
+          <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+          <span>{{ message }}</span>
+        </div>
+      {% endfor %}
+    {% endif %}
+    
+    <!-- Login Form -->
+    <form method="post" class="auth-compact-form">
+      {% csrf_token %}
+      
+      <div class="compact-form-group">
+        <label for="{{ form.username.id_for_label }}">
+          <i class="fas fa-user"></i> Username
+        </label>
+        {{ form.username }}
+      </div>
+      
+      <div class="compact-form-group">
+        <label for="{{ form.password.id_for_label }}">
+          <i class="fas fa-lock"></i> Password
+        </label>
+        <div class="password-input-wrap">
+          {{ form.password }}
+          <button type="button" class="pwd-toggle" onclick="togglePassword(this)">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="compact-form-options">
+        <label class="compact-checkbox">
+          <input type="checkbox" name="remember">
+          <span>Remember me</span>
+        </label>
+        <a href="#" class="compact-link">Forgot password?</a>
+      </div>
+      
+      <button type="submit" class="auth-btn-primary">
+        <i class="fas fa-sign-in-alt"></i> Sign In
+      </button>
+    </form>
+    
+    <!-- Footer -->
+    <div class="auth-compact-footer">
+      <span>New to TechBookHub?</span>
+      <a href="{% url 'accounts.signup' %}">Create Account</a>
+    </div>
+  </div>
+</div>
+
+<style>
+.auth-compact-container {
+  min-height: calc(100vh - 70px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ambient glow effects */
+.auth-ambient-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  pointer-events: none;
+  animation: ambientFloat 8s ease-in-out infinite;
+}
+
+.auth-ambient-glow.glow-1 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(74, 158, 255, 0.3) 0%, transparent 70%);
+  top: -100px;
+  right: -50px;
+  animation-delay: 0s;
+}
+
+.auth-ambient-glow.glow-2 {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+  bottom: -80px;
+  left: -50px;
+  animation-delay: -4s;
+}
+
+@keyframes ambientFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -20px) scale(1.1); }
+}
+
+/* Card with glow effect */
+.auth-compact-card {
+  width: 100%;
+  max-width: 400px;
+  background: rgba(30, 35, 45, 0.95);
+  border: 1px solid rgba(74, 158, 255, 0.15);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  box-shadow: 
+    0 25px 60px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(74, 158, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: cardEntrance 0.5s ease-out;
+}
+
+.auth-compact-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 30px 70px rgba(0, 0, 0, 0.45),
+    0 0 50px rgba(74, 158, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.auth-compact-header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.auth-logo {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  box-shadow: 
+    0 10px 30px rgba(74, 158, 255, 0.35),
+    0 0 20px rgba(74, 158, 255, 0.2);
+  animation: logoPulse 3s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+  0%, 100% { box-shadow: 0 10px 30px rgba(74, 158, 255, 0.35), 0 0 20px rgba(74, 158, 255, 0.2); }
+  50% { box-shadow: 0 10px 35px rgba(74, 158, 255, 0.45), 0 0 30px rgba(74, 158, 255, 0.3); }
+}
+
+.auth-logo i {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.auth-compact-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.auth-compact-header p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.auth-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  animation: alertSlide 0.3s ease-out;
+}
+
+@keyframes alertSlide {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-alert-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.auth-alert-success {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+}
+
+.auth-compact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+}
+
+.compact-form-group {
+  animation: fieldFadeIn 0.4s ease-out backwards;
+}
+
+.compact-form-group:nth-child(1) { animation-delay: 0.1s; }
+.compact-form-group:nth-child(2) { animation-delay: 0.2s; }
+
+@keyframes fieldFadeIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.compact-form-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.compact-form-group label i {
+  color: #4a9eff;
+  font-size: 0.8rem;
+  transition: transform 0.2s ease;
+}
+
+.compact-form-group:focus-within label i {
+  transform: scale(1.1);
+}
+
+.compact-form-group input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  background: rgba(15, 20, 25, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  transition: all 0.25s ease;
+}
+
+.compact-form-group input:hover {
+  border-color: rgba(74, 158, 255, 0.3);
+  background: rgba(15, 20, 25, 0.8);
+}
+
+.compact-form-group input:focus {
+  outline: none;
+  border-color: #4a9eff;
+  background: rgba(15, 20, 25, 0.9);
+  box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.15), 0 0 20px rgba(74, 158, 255, 0.1);
+}
+
+.password-input-wrap {
+  position: relative;
+}
+
+.password-input-wrap input {
+  padding-right: 2.75rem;
+}
+
+.pwd-toggle {
+  position: absolute;
+  right: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.pwd-toggle:hover {
+  color: #4a9eff;
+  background: rgba(74, 158, 255, 0.1);
+}
+
+.compact-form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8125rem;
+  animation: fieldFadeIn 0.4s ease-out 0.3s backwards;
+}
+
+.compact-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.compact-checkbox:hover {
+  color: var(--text-primary);
+}
+
+.compact-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: #4a9eff;
+}
+
+.compact-link {
+  color: #4a9eff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.compact-link:hover {
+  color: #6bb3ff;
+  text-shadow: 0 0 10px rgba(74, 158, 255, 0.3);
+}
+
+.auth-btn-primary {
+  width: 100%;
+  padding: 0.9375rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  animation: fieldFadeIn 0.4s ease-out 0.4s backwards;
+}
+
+.auth-btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.auth-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(74, 158, 255, 0.4), 0 0 30px rgba(74, 158, 255, 0.2);
+}
+
+.auth-btn-primary:hover::before {
+  left: 100%;
+}
+
+.auth-btn-primary:active {
+  transform: translateY(0);
+}
+
+.auth-compact-footer {
+  text-align: center;
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  animation: fieldFadeIn 0.4s ease-out 0.5s backwards;
+}
+
+.auth-compact-footer a {
+  color: #4a9eff;
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.auth-compact-footer a:hover {
+  color: #6bb3ff;
+  text-shadow: 0 0 10px rgba(74, 158, 255, 0.3);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .auth-ambient-glow,
+  .auth-compact-card,
+  .auth-logo,
+  .compact-form-group,
+  .auth-btn-primary,
+  .auth-compact-footer,
+  .compact-form-options {
+    animation: none;
+  }
+  
+  .auth-compact-card:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-compact-container {
+    padding: 1rem;
+  }
+  
+  .auth-compact-card {
+    padding: 1.75rem 1.5rem;
+    border-radius: 16px;
+  }
+  
+  .auth-ambient-glow {
+    display: none;
+  }
+}
+</style>
+
+<script>
+function togglePassword(btn) {
+  const input = btn.parentElement.querySelector('input');
+  const icon = btn.querySelector('i');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.classList.replace('fa-eye', 'fa-eye-slash');
+  } else {
+    input.type = 'password';
+    icon.classList.replace('fa-eye-slash', 'fa-eye');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Ensure page content is visible
+  const pageContent = document.getElementById('page-content');
+  if (pageContent) {
+    pageContent.style.opacity = '1';
+    pageContent.style.transform = 'none';
+  }
+  
+  const firstInput = document.querySelector('.auth-compact-form input');
+  if (firstInput) firstInput.focus();
+});
+</script>
+{% endblock %}

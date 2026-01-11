@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="padding: var(--space-8) 0;">
+  <!-- Header -->
+  <div style="text-align: center; margin-bottom: var(--space-8);">
+    <h1 style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-4);">
+      Create Cover Letter
+    </h1>
+    <p style="color: var(--text-secondary); font-size: var(--font-size-lg);">
+      Using template: <strong>{{ template.name }}</strong>
+    </p>
+  </div>
+
+  <!-- Form -->
+  <div style="max-width: 600px; margin: 0 auto;">
+    <div class="card" style="padding: var(--space-8);">
+      <form method="post">
+        {% csrf_token %}
+        
+        <div style="margin-bottom: var(--space-6);">
+          <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+            Cover Letter Title
+          </label>
+          <input type="text" name="title" value="My {{ template.name }} Cover Letter" required
+                 style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+        </div>
+
+        <div style="margin-bottom: var(--space-6);">
+          <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+            Company Name
+          </label>
+          <input type="text" name="company_name" placeholder="Company Name" required
+                 style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+        </div>
+
+        <div style="margin-bottom: var(--space-6);">
+          <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+            Position Title
+          </label>
+          <input type="text" name="position_title" placeholder="Position Title" required
+                 style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+        </div>
+
+        <div style="margin-bottom: var(--space-6);">
+          <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+            Full Name
+          </label>
+          <input type="text" name="full_name" value="{% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}" required
+                 style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+        </div>
+
+        <div style="margin-bottom: var(--space-6);">
+          <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+            Email
+          </label>
+          <input type="email" name="email" value="{{ user.email }}" required
+                 style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+        </div>
+
+        <div style="margin-bottom: var(--space-8);">
+          <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+            Hiring Manager (Optional)
+          </label>
+          <input type="text" name="hiring_manager" placeholder="Hiring Manager Name"
+                 style="width: 100%; padding: var(--space-3); background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: var(--font-size-base);">
+        </div>
+
+        <div style="display: flex; gap: var(--space-4); justify-content: center;">
+          <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus"></i>
+            Create Cover Letter
+          </button>
+          <a href="{% url 'resume_builder:cover_letter_templates' %}" class="btn btn-ghost btn-lg">
+            <i class="fas fa-arrow-left"></i>
+            Back to Templates
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

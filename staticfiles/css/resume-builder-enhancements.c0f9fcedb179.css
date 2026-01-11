@@ -1,0 +1,538 @@
+/* ========================================
+   RESUME BUILDER ENHANCEMENTS - CLEAN VERSION
+   Modern UI with lightweight, flat design
+======================================== */
+
+/* ========================================
+   KEYFRAME ANIMATIONS - LIGHTWEIGHT
+======================================== */
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes gentlePulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.9;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* ========================================
+   CLEAN DOCUMENT CARDS - NO DROP EFFECTS
+======================================== */
+
+.document-card {
+  position: relative;
+  cursor: pointer;
+  will-change: transform;
+  /* REMOVED: Heavy shadows and drop effects */
+  transition: all var(--transition-smooth);
+}
+
+.document-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-hover));
+  transform: scaleX(0);
+  transition: transform var(--transition-smooth);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.document-card:hover::before {
+  transform: scaleX(1);
+}
+
+.document-card .card-overlay {
+  border-radius: var(--radius-xl);
+}
+
+/* CLEAN HOVER EFFECT - NO HEAVY SHADOWS */
+.document-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-primary);
+  /* REMOVED: Heavy box-shadow with glow effects */
+  background: var(--bg-elevated);
+}
+
+.document-card:hover .card-overlay {
+  opacity: 0.05;
+}
+
+.document-card:hover .document-actions-direct {
+  opacity: 1 !important;
+  transform: translateX(0);
+}
+
+/* ========================================
+   CLEAN SECTION ICONS
+======================================== */
+
+.section-icon {
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.section-icon:hover {
+  background: var(--accent-subtle);
+  transform: scale(1.05);
+}
+
+/* ========================================
+   CLEAN ACTION ICONS - NO HEAVY EFFECTS
+======================================== */
+
+.document-actions-direct {
+  position: relative;
+  z-index: 3;
+  animation: slideInRight 0.4s ease-out 0.2s both;
+}
+
+.action-icon {
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+  transition: all var(--transition-smooth);
+}
+
+/* CLEAN HOVER EFFECTS - NO HEAVY SHADOWS */
+.action-icon:hover {
+  transform: translateY(-2px);
+  /* REMOVED: Heavy box-shadow */
+  border-color: var(--border-secondary);
+}
+
+.action-icon:active {
+  transform: translateY(0);
+  transition: transform 0.1s ease-out;
+}
+
+.action-icon.edit-action:hover {
+  background: var(--accent-subtle) !important;
+  border-color: var(--accent-primary) !important;
+  color: var(--accent-primary) !important;
+}
+
+.action-icon.view-action:hover {
+  background: var(--bg-elevated) !important;
+  border-color: var(--border-secondary) !important;
+  color: var(--accent-primary) !important;
+}
+
+.action-icon.download-action:hover {
+  background: var(--success-subtle) !important;
+  border-color: var(--success) !important;
+  color: var(--success) !important;
+}
+
+.action-icon.delete-action:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: var(--error) !important;
+  color: var(--error) !important;
+  /* REMOVED: Heavy rotation and shadow effects */
+}
+
+/* Action icon focus states for accessibility */
+.action-icon:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Staggered animation for action icons */
+.action-icon:nth-child(1) { animation-delay: 0.1s; }
+.action-icon:nth-child(2) { animation-delay: 0.15s; }
+.action-icon:nth-child(3) { animation-delay: 0.2s; }
+.action-icon:nth-child(4) { animation-delay: 0.25s; }
+
+/* ========================================
+   CLEAN DOCUMENT STATUS INDICATORS
+======================================== */
+
+.document-status {
+  animation: slideInRight 0.4s ease-out;
+}
+
+.status-indicator {
+  position: relative;
+  overflow: hidden;
+}
+
+/* ========================================
+   CLEAN CARD INTERACTIONS
+======================================== */
+
+.document-card:hover .document-actions-direct {
+  opacity: 1 !important;
+  transform: translateX(0);
+}
+
+.document-card .document-actions-direct {
+  transform: translateX(5px);
+  transition: all var(--transition-smooth);
+}
+
+/* ========================================
+   RESPONSIVE ENHANCEMENTS FOR ACTIONS
+======================================== */
+
+@media (max-width: 768px) {
+  .document-actions-direct {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+    gap: var(--space-1) !important;
+  }
+  
+  .action-icon {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  
+  .action-icon i {
+    font-size: var(--font-size-xs) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .document-actions-direct {
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: var(--space-2);
+  }
+  
+  .action-icon {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  
+  .action-icon i {
+    font-size: var(--font-size-sm) !important;
+  }
+}
+
+/* ========================================
+   CLEAN EMPTY STATE
+======================================== */
+
+.empty-state {
+  position: relative;
+  overflow: hidden;
+}
+
+.empty-state::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, var(--accent-glow-subtle) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, var(--accent-glow-subtle) 0%, transparent 50%);
+  opacity: 0.2;
+  animation: gentlePulse 4s ease-in-out infinite;
+}
+
+.empty-icon {
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-smooth);
+}
+
+.empty-icon:hover {
+  transform: scale(1.05);
+}
+
+/* ========================================
+   CLEAN MODAL DESIGN
+======================================== */
+
+.modal {
+  backdrop-filter: blur(8px);
+}
+
+.modal-content {
+  position: relative;
+  overflow: hidden;
+  /* REMOVED: Heavy border effects */
+  border: 1px solid var(--border-secondary);
+}
+
+.modal-icon {
+  animation: fadeInScale 0.6s ease-out 0.2s both;
+}
+
+.modal-actions .btn {
+  min-width: 120px;
+}
+
+/* ========================================
+   CLEAN DOCUMENT COUNT BADGES
+======================================== */
+
+.document-count {
+  position: relative;
+  overflow: hidden;
+  animation: fadeInScale 0.4s ease-out;
+  transition: all var(--transition-fast);
+}
+
+.document-count:hover {
+  background: var(--accent-primary);
+  color: white;
+  transform: scale(1.05);
+}
+
+/* ========================================
+   CLEAN LOADING STATES
+======================================== */
+
+.document-card.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.document-card.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  border: 2px solid var(--accent-primary);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  z-index: 10;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========================================
+   CLEAN BUTTON ENHANCEMENTS
+======================================== */
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  /* REMOVED: Heavy glow effects */
+  background: var(--accent-hover);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-1px);
+  background: var(--bg-elevated);
+}
+
+.btn-ghost:hover {
+  background: var(--bg-elevated);
+  transform: translateY(-1px);
+}
+
+/* ========================================
+   STAGGERED ANIMATIONS
+======================================== */
+
+.document-card:nth-child(1) { animation-delay: 0.1s; }
+.document-card:nth-child(2) { animation-delay: 0.2s; }
+.document-card:nth-child(3) { animation-delay: 0.3s; }
+.document-card:nth-child(4) { animation-delay: 0.4s; }
+.document-card:nth-child(5) { animation-delay: 0.5s; }
+.document-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* ========================================
+   RESPONSIVE ENHANCEMENTS
+======================================== */
+
+@media (max-width: 768px) {
+  .documents-grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-4) !important;
+  }
+  
+  .dashboard-header {
+    flex-direction: column !important;
+    gap: var(--space-4) !important;
+    text-align: center !important;
+  }
+  
+  .section-header {
+    flex-direction: column !important;
+    gap: var(--space-3) !important;
+    text-align: center !important;
+  }
+  
+  .document-card {
+    padding: var(--space-5) !important;
+  }
+  
+  .document-card:hover {
+    transform: translateY(-2px);
+  }
+}
+
+@media (max-width: 480px) {
+  .document-actions-direct {
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: var(--space-2);
+  }
+  
+  .action-icon {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  
+  .action-icon i {
+    font-size: var(--font-size-sm) !important;
+  }
+  
+  .modal-content {
+    width: 95% !important;
+    padding: var(--space-6) !important;
+  }
+  
+  .modal-actions {
+    flex-direction: column !important;
+    gap: var(--space-3) !important;
+  }
+  
+  .modal-actions .btn {
+    width: 100%;
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY ENHANCEMENTS
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .document-card:hover {
+    transform: none;
+  }
+  
+  .empty-icon:hover {
+    transform: none;
+  }
+}
+
+/* Focus styles for keyboard navigation */
+.document-card:focus-visible,
+.dropdown-item:focus-visible,
+.delete-document-btn:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .document-card {
+    border-width: 2px;
+  }
+  
+  .document-card:hover {
+    border-width: 2px;
+  }
+  
+  .card-overlay {
+    display: none;
+  }
+}
+
+/* ========================================
+   PERFORMANCE OPTIMIZATIONS
+======================================== */
+
+.document-card,
+.modal-content {
+  will-change: transform;
+}
+
+.document-card:not(:hover) {
+  will-change: auto;
+}
+
+/* GPU acceleration for smooth animations */
+.document-card,
+.card-overlay,
+.modal {
+  transform: translateZ(0);
+}

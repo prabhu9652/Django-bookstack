@@ -1,0 +1,860 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container p-8">
+  <div class="admin-section">
+    <!-- Header -->
+    <div class="page-header mb-8">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="mb-2">Access Control Management</h1>
+          <p class="text-secondary">Manage user access requests and permissions</p>
+        </div>
+        <div class="header-stats d-flex gap-4">
+          <div class="stat-item">
+            <div class="stat-number">{{ pending_users|length }}</div>
+            <div class="stat-label">Pending</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ approved_users|length }}</div>
+            <div class="stat-label">Approved</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Pending Requests -->
+    {% if pending_requests or pending_users %}
+    <div class="section-card mb-8">
+      <div class="section-header">
+        <h2>
+          <i class="fas fa-clock text-warning"></i>
+          Pending Access Requests
+        </h2>
+        <span class="badge badge-warning">{{ pending_requests|length }} new</span>
+      </div>
+      
+      {% if pending_requests %}
+        <div class="requests-table">
+          <div class="table-header">
+            <div class="col-user">User</div>
+            <div class="col-date">Requested</div>
+            <div class="col-message">Message</div>
+            <div class="col-actions">Actions</div>
+          </div>
+          
+          {% for request in pending_requests %}
+            <div class="table-row" data-user-id="{{ request.user.id }}">
+              <div class="col-user">
+                <div class="user-info">
+                  <div class="user-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+                  <div class="user-email">{{ request.user.email }}</div>
+                </div>
+              </div>
+              <div class="col-date">
+                <div class="date-info">
+                  <div class="date">{{ request.requested_at|date:"M d, Y" }}</div>
+                  <div class="time">{{ request.requested_at|date:"g:i A" }}</div>
+                </div>
+              </div>
+              <div class="col-message">
+                {% if request.message %}
+                  <div class="message-text">{{ request.message|truncatechars:100 }}</div>
+                {% else %}
+                  <span class="text-muted">No message</span>
+                {% endif %}
+              </div>
+              <div class="col-actions">
+                <div class="action-buttons">
+                  <button class="btn btn-sm btn-success approve-btn" data-user-id="{{ request.user.id }}">
+                    <i class="fas fa-check"></i>
+                    Approve
+                  </button>
+                  <button class="btn btn-sm btn-danger reject-btn" data-user-id="{{ request.user.id }}">
+                    <i class="fas fa-times"></i>
+                    Reject
+                  </button>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <i class="fas fa-inbox"></i>
+          <p>No pending requests</p>
+        </div>
+      {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- User Status Overview -->
+    <div class="status-overview mb-8">
+      <div class="status-tabs">
+        <button class="tab-btn active" data-tab="approved">
+          Approved Users ({{ approved_users|length }})
+        </button>
+        <button class="tab-btn" data-tab="rejected">
+          Rejected Users ({{ rejected_users|length }})
+        </button>
+        <button class="tab-btn" data-tab="pending">
+          Pending Users ({{ pending_users|length }})
+        </button>
+      </div>
+      
+      <!-- Approved Users -->
+      <div class="tab-content active" id="approved-tab">
+        {% if approved_users %}
+          <div class="users-grid">
+            {% for status in approved_users %}
+              <div class="user-card approved">
+                <div class="user-header">
+                  <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  <div class="user-details">
+                    <div class="user-name">{{ status.user.get_full_name|default:status.user.username }}</div>
+                    <div class="user-email">{{ status.user.email }}</div>
+                  </div>
+                  <div class="status-badge approved">
+                    <i class="fas fa-check-circle"></i>
+                    Approved
+                  </div>
+                </div>
+                <div class="user-meta">
+                  <div class="meta-item">
+                    <strong>Approved:</strong> {{ status.approved_at|date:"M d, Y" }}
+                  </div>
+                  <div class="meta-item">
+                    <strong>By:</strong> {{ status.approved_by.username }}
+                  </div>
+                </div>
+                <div class="user-actions">
+                  <button class="btn btn-sm btn-warning suspend-btn" data-user-id="{{ status.user.id }}">
+                    <i class="fas fa-ban"></i>
+                    Suspend
+                  </button>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <i class="fas fa-users"></i>
+            <p>No approved users</p>
+          </div>
+        {% endif %}
+      </div>
+      
+      <!-- Rejected Users -->
+      <div class="tab-content" id="rejected-tab">
+        {% if rejected_users %}
+          <div class="users-grid">
+            {% for status in rejected_users %}
+              <div class="user-card rejected">
+                <div class="user-header">
+                  <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  <div class="user-details">
+                    <div class="user-name">{{ status.user.get_full_name|default:status.user.username }}</div>
+                    <div class="user-email">{{ status.user.email }}</div>
+                  </div>
+                  <div class="status-badge rejected">
+                    <i class="fas fa-times-circle"></i>
+                    Rejected
+                  </div>
+                </div>
+                {% if status.rejection_reason %}
+                  <div class="rejection-reason">
+                    <strong>Reason:</strong> {{ status.rejection_reason }}
+                  </div>
+                {% endif %}
+                <div class="user-actions">
+                  <button class="btn btn-sm btn-success approve-btn" data-user-id="{{ status.user.id }}">
+                    <i class="fas fa-check"></i>
+                    Approve
+                  </button>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <i class="fas fa-user-times"></i>
+            <p>No rejected users</p>
+          </div>
+        {% endif %}
+      </div>
+      
+      <!-- Pending Users -->
+      <div class="tab-content" id="pending-tab">
+        {% if pending_users %}
+          <div class="users-grid">
+            {% for status in pending_users %}
+              <div class="user-card pending">
+                <div class="user-header">
+                  <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  <div class="user-details">
+                    <div class="user-name">{{ status.user.get_full_name|default:status.user.username }}</div>
+                    <div class="user-email">{{ status.user.email }}</div>
+                  </div>
+                  <div class="status-badge pending">
+                    <i class="fas fa-clock"></i>
+                    Pending
+                  </div>
+                </div>
+                <div class="user-meta">
+                  <div class="meta-item">
+                    <strong>Requested:</strong> {{ status.requested_at|date:"M d, Y" }}
+                  </div>
+                </div>
+                <div class="user-actions">
+                  <button class="btn btn-sm btn-success approve-btn" data-user-id="{{ status.user.id }}">
+                    <i class="fas fa-check"></i>
+                    Approve
+                  </button>
+                  <button class="btn btn-sm btn-danger reject-btn" data-user-id="{{ status.user.id }}">
+                    <i class="fas fa-times"></i>
+                    Reject
+                  </button>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <i class="fas fa-user-clock"></i>
+            <p>No pending users</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2>
+          <i class="fas fa-history"></i>
+          Recent Activity
+        </h2>
+      </div>
+      
+      {% if recent_logs %}
+        <div class="activity-list">
+          {% for log in recent_logs %}
+            <div class="activity-item">
+              <div class="activity-icon">
+                {% if log.action == 'approved' %}
+                  <i class="fas fa-check-circle text-success"></i>
+                {% elif log.action == 'rejected' %}
+                  <i class="fas fa-times-circle text-danger"></i>
+                {% elif log.action == 'suspended' %}
+                  <i class="fas fa-ban text-warning"></i>
+                {% elif log.action == 'requested' %}
+                  <i class="fas fa-paper-plane text-info"></i>
+                {% else %}
+                  <i class="fas fa-eye text-secondary"></i>
+                {% endif %}
+              </div>
+              <div class="activity-content">
+                <div class="activity-text">
+                  <strong>{{ log.user.username }}</strong> 
+                  {{ log.get_action_display|lower }}
+                  {% if log.performed_by and log.performed_by != log.user %}
+                    by <strong>{{ log.performed_by.username }}</strong>
+                  {% endif %}
+                </div>
+                <div class="activity-time">
+                  {{ log.timestamp|timesince }} ago
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <i class="fas fa-history"></i>
+          <p>No recent activity</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Rejection Modal -->
+<div id="rejectionModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header text-center mb-6">
+      <div class="modal-icon">
+        <i class="fas fa-times-circle"></i>
+      </div>
+      <h3>Reject Access Request</h3>
+      <p>Provide a reason for rejecting this user's access.</p>
+    </div>
+    
+    <form id="rejectionForm">
+      {% csrf_token %}
+      <input type="hidden" id="rejectUserId" name="user_id">
+      <div class="form-group mb-4">
+        <label for="rejectionReason" class="form-label">
+          Rejection Reason
+        </label>
+        <textarea 
+          id="rejectionReason" 
+          name="reason" 
+          class="form-control" 
+          rows="3" 
+          placeholder="Explain why access is being rejected..."
+          required></textarea>
+      </div>
+      
+      <div class="modal-actions d-flex gap-3 justify-content-center">
+        <button type="button" id="cancelReject" class="btn btn-secondary">
+          <i class="fas fa-times"></i>
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-danger">
+          <i class="fas fa-times-circle"></i>
+          Reject Access
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+.admin-section {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-stats {
+  display: flex;
+  gap: var(--space-6);
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+.stat-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.section-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.badge {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.badge-warning {
+  background: var(--warning-subtle);
+  color: var(--warning);
+}
+
+.requests-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.table-header,
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  align-items: center;
+}
+
+.table-header {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.table-row {
+  border-bottom: 1px solid var(--border-default);
+  transition: background-color var(--transition-fast);
+}
+
+.table-row:hover {
+  background: var(--bg-elevated);
+}
+
+.user-info .user-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.user-info .user-email {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.date-info .date {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.date-info .time {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.message-text {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.action-buttons {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.status-tabs {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.tab-btn {
+  padding: var(--space-3) var(--space-4);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.tab-btn.active {
+  color: var(--accent-primary);
+  border-bottom-color: var(--accent-primary);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--space-4);
+}
+
+.user-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+.user-card.approved {
+  border-left: 4px solid var(--success);
+}
+
+.user-card.rejected {
+  border-left: 4px solid var(--error);
+}
+
+.user-card.pending {
+  border-left: 4px solid var(--warning);
+}
+
+.user-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  background: var(--accent-subtle);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.user-avatar i {
+  color: var(--accent-primary);
+}
+
+.user-details {
+  flex: 1;
+}
+
+.user-details .user-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.user-details .user-email {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.status-badge.approved {
+  background: var(--success-subtle);
+  color: var(--success);
+}
+
+.status-badge.rejected {
+  background: var(--error-subtle);
+  color: var(--error);
+}
+
+.status-badge.pending {
+  background: var(--warning-subtle);
+  color: var(--warning);
+}
+
+.user-meta {
+  margin-bottom: var(--space-3);
+}
+
+.meta-item {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-1);
+}
+
+.rejection-reason {
+  background: var(--error-subtle);
+  color: var(--error);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-3);
+}
+
+.user-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+}
+
+.activity-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-text {
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.activity-time {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--space-8);
+  color: var(--text-secondary);
+}
+
+.empty-state i {
+  font-size: var(--font-size-3xl);
+  margin-bottom: var(--space-3);
+  opacity: 0.5;
+}
+
+.modal-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--error-subtle);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-4);
+}
+
+.modal-icon i {
+  font-size: var(--font-size-3xl);
+  color: var(--error);
+}
+
+@media (max-width: 768px) {
+  .header-stats {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+  
+  .users-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .status-tabs {
+    flex-direction: column;
+  }
+  
+  .user-actions {
+    flex-direction: column;
+  }
+  
+  .modal-actions {
+    flex-direction: column !important;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Tab functionality
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+  
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const tabId = this.dataset.tab;
+      
+      // Update active tab button
+      tabBtns.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Update active tab content
+      tabContents.forEach(content => {
+        content.classList.remove('active');
+        if (content.id === `${tabId}-tab`) {
+          content.classList.add('active');
+        }
+      });
+    });
+  });
+  
+  // Approval functionality
+  const approveButtons = document.querySelectorAll('.approve-btn');
+  approveButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const userId = this.dataset.userId;
+      const originalText = this.innerHTML;
+      
+      this.disabled = true;
+      this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Approving...';
+      
+      fetch(`/accounts/admin/approve-user/${userId}/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          location.reload();
+        } else {
+          alert(data.error || 'Failed to approve user');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to approve user');
+      })
+      .finally(() => {
+        this.disabled = false;
+        this.innerHTML = originalText;
+      });
+    });
+  });
+  
+  // Rejection functionality
+  const rejectButtons = document.querySelectorAll('.reject-btn');
+  const rejectionModal = document.getElementById('rejectionModal');
+  const rejectionForm = document.getElementById('rejectionForm');
+  const rejectUserIdInput = document.getElementById('rejectUserId');
+  const cancelRejectBtn = document.getElementById('cancelReject');
+  
+  rejectButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const userId = this.dataset.userId;
+      rejectUserIdInput.value = userId;
+      
+      rejectionModal.style.display = 'block';
+      setTimeout(() => {
+        rejectionModal.style.opacity = '1';
+        rejectionModal.querySelector('.modal-content').style.transform = 'translate(-50%, -50%) scale(1)';
+      }, 10);
+    });
+  });
+  
+  function hideRejectionModal() {
+    rejectionModal.style.opacity = '0';
+    rejectionModal.querySelector('.modal-content').style.transform = 'translate(-50%, -50%) scale(0.9)';
+    setTimeout(() => {
+      rejectionModal.style.display = 'none';
+    }, 300);
+  }
+  
+  if (cancelRejectBtn) {
+    cancelRejectBtn.addEventListener('click', hideRejectionModal);
+  }
+  
+  rejectionModal.addEventListener('click', function(e) {
+    if (e.target === rejectionModal) {
+      hideRejectionModal();
+    }
+  });
+  
+  rejectionForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const userId = rejectUserIdInput.value;
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rejecting...';
+    
+    fetch(`/accounts/admin/reject-user/${userId}/`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        hideRejectionModal();
+        location.reload();
+      } else {
+        alert(data.error || 'Failed to reject user');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Failed to reject user');
+    })
+    .finally(() => {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
+    });
+  });
+  
+  // Suspension functionality
+  const suspendButtons = document.querySelectorAll('.suspend-btn');
+  suspendButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const userId = this.dataset.userId;
+      const reason = prompt('Enter reason for suspension:');
+      
+      if (reason !== null) {
+        const originalText = this.innerHTML;
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Suspending...';
+        
+        const formData = new FormData();
+        formData.append('reason', reason);
+        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+        
+        fetch(`/accounts/admin/suspend-user/${userId}/`, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            location.reload();
+          } else {
+            alert(data.error || 'Failed to suspend user');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Failed to suspend user');
+        })
+        .finally(() => {
+          this.disabled = false;
+          this.innerHTML = originalText;
+        });
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

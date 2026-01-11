@@ -1,0 +1,580 @@
+/* ========================================
+   ROADMAP ENHANCED STYLES
+   Modern UI matching Resume Builder quality
+======================================== */
+
+/* ========================================
+   KEYFRAME ANIMATIONS
+======================================== */
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 var(--accent-glow);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 20px transparent;
+  }
+}
+
+/* ========================================
+   ENHANCED SECTION ICONS
+======================================== */
+
+.section-icon {
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-smooth);
+}
+
+.section-icon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left var(--transition-smooth);
+}
+
+.section-icon:hover::before {
+  left: 100%;
+}
+
+/* ========================================
+   ENHANCED TRANSITION CARDS
+======================================== */
+
+.transition-card {
+  position: relative;
+  cursor: pointer;
+  will-change: transform;
+}
+
+.transition-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-hover));
+  transform: scaleX(0);
+  transition: transform var(--transition-smooth);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.transition-card:hover::before {
+  transform: scaleX(1);
+}
+
+.transition-card .card-overlay {
+  border-radius: var(--radius-xl);
+}
+
+.transition-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: var(--accent-primary);
+  box-shadow: 
+    var(--shadow-lg),
+    0 0 30px var(--accent-glow-subtle);
+}
+
+.transition-card:hover .card-overlay {
+  opacity: 0.1;
+}
+
+.transition-card:hover .transition-icon {
+  background: var(--accent-primary);
+  transform: scale(1.1);
+}
+
+.transition-card:hover .transition-icon i {
+  color: white;
+}
+
+/* ========================================
+   ENHANCED ROADMAP PATH CARDS
+======================================== */
+
+.roadmap-path-card {
+  position: relative;
+  cursor: pointer;
+  will-change: transform;
+}
+
+.roadmap-path-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-hover));
+  transform: scaleX(0);
+  transition: transform var(--transition-smooth);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.roadmap-path-card:hover::before {
+  transform: scaleX(1);
+}
+
+.roadmap-path-card .card-overlay {
+  border-radius: var(--radius-xl);
+}
+
+.roadmap-path-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: var(--accent-primary);
+  box-shadow: 
+    var(--shadow-lg),
+    0 0 30px var(--accent-glow-subtle);
+}
+
+.roadmap-path-card:hover .card-overlay {
+  opacity: 0.1;
+}
+
+.roadmap-path-card:hover .path-icon {
+  background: var(--accent-primary);
+  transform: scale(1.1);
+}
+
+.roadmap-path-card:hover .path-icon i {
+  color: white;
+}
+
+/* ========================================
+   ENHANCED PHASE CARDS
+======================================== */
+
+.phase-card {
+  position: relative;
+  cursor: pointer;
+  will-change: transform;
+}
+
+.phase-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-hover));
+  transform: scaleX(0);
+  transition: transform var(--transition-smooth);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.phase-card:hover::before {
+  transform: scaleX(1);
+}
+
+.phase-card .card-overlay {
+  border-radius: var(--radius-xl);
+}
+
+.phase-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.phase-card:hover .card-overlay {
+  opacity: 0.1;
+}
+
+.phase-card:hover .phase-number {
+  background: var(--accent-primary);
+  color: white;
+  transform: scale(1.1);
+}
+
+/* ========================================
+   ENHANCED SKILL ITEMS
+======================================== */
+
+.skill-item {
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.skill-item:hover {
+  border-color: var(--accent-primary);
+  background: var(--bg-surface);
+  transform: translateY(-2px);
+}
+
+.skill-item.skill-completed {
+  border-color: var(--success);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.skill-item.skill-in_progress {
+  border-color: var(--warning);
+  background: rgba(245, 158, 11, 0.05);
+}
+
+/* ========================================
+   STATUS BUTTONS
+======================================== */
+
+.status-btn {
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+  transition: all var(--transition-fast);
+}
+
+.status-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left var(--transition-fast);
+}
+
+.status-btn:hover::before {
+  left: 100%;
+}
+
+.status-btn:hover {
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  transform: scale(1.1);
+}
+
+.status-btn.active {
+  background: var(--accent-primary);
+  color: white;
+}
+
+.status-btn[data-status="completed"].active {
+  background: var(--success);
+}
+
+.status-btn[data-status="in_progress"].active {
+  background: var(--warning);
+}
+
+/* ========================================
+   ENHANCED BADGES
+======================================== */
+
+.path-count,
+.phase-count {
+  position: relative;
+  overflow: hidden;
+  animation: slideUp 0.4s ease-out;
+}
+
+.path-count::before,
+.phase-count::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left var(--transition-smooth);
+}
+
+.path-count:hover::before,
+.phase-count:hover::before {
+  left: 100%;
+}
+
+/* ========================================
+   EMPTY STATES
+======================================== */
+
+.empty-state {
+  position: relative;
+  overflow: hidden;
+}
+
+.empty-state::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, var(--accent-glow-subtle) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, var(--accent-glow-subtle) 0%, transparent 50%);
+  opacity: 0.3;
+  animation: pulse 4s ease-in-out infinite;
+}
+
+.empty-icon,
+.cta-icon {
+  position: relative;
+  overflow: hidden;
+}
+
+.empty-icon::after,
+.cta-icon::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* ========================================
+   ENHANCED BUTTONS
+======================================== */
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    var(--shadow-md),
+    0 0 20px var(--accent-glow-subtle);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-1px);
+}
+
+/* ========================================
+   STAGGERED ANIMATIONS
+======================================== */
+
+.roadmap-path-card:nth-child(1) { animation-delay: 0.1s; }
+.roadmap-path-card:nth-child(2) { animation-delay: 0.2s; }
+.roadmap-path-card:nth-child(3) { animation-delay: 0.3s; }
+
+.transition-card:nth-child(1) { animation-delay: 0.1s; }
+.transition-card:nth-child(2) { animation-delay: 0.2s; }
+.transition-card:nth-child(3) { animation-delay: 0.3s; }
+
+.phase-card:nth-child(1) { animation-delay: 0.1s; }
+.phase-card:nth-child(2) { animation-delay: 0.2s; }
+.phase-card:nth-child(3) { animation-delay: 0.3s; }
+.phase-card:nth-child(4) { animation-delay: 0.4s; }
+.phase-card:nth-child(5) { animation-delay: 0.5s; }
+
+/* ========================================
+   RESPONSIVE DESIGN
+======================================== */
+
+@media (max-width: 768px) {
+  .roadmap-paths-grid,
+  .transition-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .roadmap-header {
+    flex-direction: column !important;
+    gap: var(--space-4) !important;
+    text-align: center !important;
+  }
+  
+  .section-header {
+    flex-direction: column !important;
+    gap: var(--space-3) !important;
+    text-align: center !important;
+  }
+  
+  .path-header-content {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: var(--space-6) !important;
+  }
+  
+  .path-icon {
+    margin: 0 auto !important;
+  }
+  
+  .path-meta {
+    justify-content: center !important;
+  }
+  
+  .phase-header {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: var(--space-3) !important;
+  }
+  
+  .phase-number {
+    margin: 0 auto !important;
+  }
+  
+  .skill-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: var(--space-3) !important;
+  }
+  
+  .path-actions {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .roadmap-path-card,
+  .transition-card,
+  .phase-card {
+    padding: var(--space-5) !important;
+  }
+  
+  .path-meta {
+    flex-direction: column !important;
+    gap: var(--space-2) !important;
+  }
+  
+  .path-title {
+    font-size: var(--font-size-2xl) !important;
+  }
+  
+  .skill-item {
+    padding: var(--space-3) !important;
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY ENHANCEMENTS
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .roadmap-path-card:hover,
+  .transition-card:hover,
+  .phase-card:hover {
+    transform: none;
+  }
+  
+  .empty-icon::after,
+  .cta-icon::after {
+    display: none;
+  }
+  
+  .section-icon::before {
+    display: none;
+  }
+}
+
+/* Focus styles for keyboard navigation */
+.roadmap-path-card:focus-visible,
+.transition-card:focus-visible,
+.phase-card:focus-visible,
+.status-btn:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .roadmap-path-card,
+  .transition-card,
+  .phase-card,
+  .skill-item {
+    border-width: 2px;
+  }
+  
+  .roadmap-path-card:hover,
+  .transition-card:hover,
+  .phase-card:hover {
+    border-width: 3px;
+  }
+  
+  .card-overlay {
+    display: none;
+  }
+}
+
+/* ========================================
+   PERFORMANCE OPTIMIZATIONS
+======================================== */
+
+.roadmap-path-card,
+.transition-card,
+.phase-card,
+.skill-item {
+  will-change: transform;
+}
+
+.roadmap-path-card:not(:hover),
+.transition-card:not(:hover),
+.phase-card:not(:hover) {
+  will-change: auto;
+}
+
+/* GPU acceleration for smooth animations */
+.roadmap-path-card,
+.transition-card,
+.phase-card,
+.card-overlay {
+  transform: translateZ(0);
+}

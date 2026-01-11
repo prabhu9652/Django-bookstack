@@ -3,254 +3,268 @@
 
 {% block content %}
 <!-- Hero Section -->
-<div class="hero-section">
+<div class="home-hero-section">
+  <div class="hero-bg-effects">
+    <div class="hero-glow glow-1"></div>
+    <div class="hero-glow glow-2"></div>
+  </div>
   <div class="container">
-    <div class="hero-content">
-      <div class="hero-text">
-        <h1 class="hero-title">TechBookHub</h1>
-        <p class="hero-subtitle">
-          Professional technical books for developers and engineers. Access cutting-edge resources 
-          in DevOps, Cloud Computing, Data Science, Machine Learning, and Software Development.
-        </p>
+    <div class="hero-content-wrapper">
+      <div class="hero-text-content">
+        <div class="hero-badge"><i class="fas fa-terminal"></i><span>Engineering Platform</span></div>
+        <h1 class="hero-title">Professional Resources for <span class="gradient-text">Developers & Engineers</span></h1>
+        <p class="hero-description">Books, career tools, and technical roadmaps to accelerate your engineering journey.</p>
         <div class="hero-actions">
-          <a href="{% url 'books.index' %}" class="btn btn-primary btn-lg">
-            <i class="fas fa-code"></i>
-            Browse Technical Books
-          </a>
+          <a href="{% url 'books.index' %}" class="btn-hero-primary"><i class="fas fa-book"></i> Browse Books</a>
           {% if not user.is_authenticated %}
-            <a href="{% url 'accounts.signup' %}" class="btn btn-secondary btn-lg">
-              <i class="fas fa-user-plus"></i>
-              Get Started
-            </a>
+          <a href="{% url 'accounts.signup' %}" class="btn-hero-secondary"><i class="fas fa-user-plus"></i> Get Started</a>
           {% endif %}
         </div>
       </div>
-      <div class="hero-graphic">
-        <div class="floating-books">
-          <div class="book-icon book-1">
-            <i class="fab fa-docker"></i>
-          </div>
-          <div class="book-icon book-2">
-            <i class="fas fa-cloud"></i>
-          </div>
-          <div class="book-icon book-3">
-            <i class="fas fa-database"></i>
-          </div>
-        </div>
+      <div class="hero-visual">
+        <div class="floating-icon icon-1"><i class="fas fa-code"></i></div>
+        <div class="floating-icon icon-2"><i class="fas fa-cloud"></i></div>
+        <div class="floating-icon icon-3"><i class="fas fa-database"></i></div>
+        <div class="floating-icon icon-4"><i class="fas fa-cogs"></i></div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="container">
-  <!-- Features Section -->
-  <div class="section">
-    <h2 class="text-center mb-8">Why Choose TechBookHub</h2>
-    <div class="grid grid-3">
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-code"></i>
-        </div>
-        <h3 class="feature-title">Technical Excellence</h3>
-        <p class="feature-description">
-          Curated collection of professional technical books covering DevOps, 
-          Cloud Computing, Data Science, and Software Development.
-        </p>
-      </div>
-      
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-rocket"></i>
-        </div>
-        <h3 class="feature-title">Latest Technologies</h3>
-        <p class="feature-description">
-          Stay current with the latest tools, frameworks, and best practices 
-          in modern software engineering and infrastructure.
-        </p>
-      </div>
-      
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-users"></i>
-        </div>
-        <h3 class="feature-title">Developer Community</h3>
-        <p class="feature-description">
-          Join thousands of developers and engineers building their technical 
-          knowledge with our comprehensive library platform.
-        </p>
+<!-- Platform Features Section -->
+<div class="home-section features-section">
+  <div class="container">
+    <div class="section-header-row">
+      <div class="section-title-block">
+        <div class="section-icon-wrap"><i class="fas fa-layer-group"></i></div>
+        <div><h2>Platform Features</h2><p>Everything you need to advance your technical career</p></div>
       </div>
     </div>
-  </div>
-
-  <div class="section-divider"></div>
-
-  <!-- Recent Books Section -->
-  {% if template_data.recent_books %}
-  <div class="section">
-    <div class="flex items-center justify-between mb-8">
-      <h2>Latest Technical Books</h2>
-      <a href="{% url 'books.index' %}" class="btn btn-ghost">
-        View All Books
-        <i class="fas fa-arrow-right"></i>
+    <div class="features-grid">
+      <a href="{% url 'books.index' %}" class="feature-card">
+        <div class="feature-icon"><i class="fas fa-book-open"></i></div>
+        <h3>Books</h3>
+        <p>Curated collection of engineering books covering DevOps, development, and data science.</p>
+        <span class="feature-link">Explore <i class="fas fa-arrow-right"></i></span>
+      </a>
+      <a href="{% url 'library.index' %}" class="feature-card">
+        <div class="feature-icon"><i class="fas fa-bookmark"></i></div>
+        <h3>My Library</h3>
+        <p>Access your saved books and track your reading progress over time.</p>
+        <span class="feature-link">Explore <i class="fas fa-arrow-right"></i></span>
+      </a>
+      <a href="{% url 'resume_builder:home' %}" class="feature-card">
+        <div class="feature-icon"><i class="fas fa-file-alt"></i></div>
+        <h3>Resume Builder</h3>
+        <p>Professional resume templates tailored for tech roles and engineering positions.</p>
+        <span class="feature-link">Explore <i class="fas fa-arrow-right"></i></span>
+      </a>
+      <a href="{% url 'roadmap:home' %}" class="feature-card">
+        <div class="feature-icon"><i class="fas fa-route"></i></div>
+        <h3>Roadmap</h3>
+        <p>Structured learning paths to guide your journey from beginner to expert.</p>
+        <span class="feature-link">Explore <i class="fas fa-arrow-right"></i></span>
       </a>
     </div>
-    
-    <div class="tech-books-grid">
-      {% for book in template_data.recent_books %}
-        <div class="tech-book-card" data-book-url="{% url 'books.show' book.id %}">
-          <div class="tech-book-cover">
-            {% if book.cover %}
-              <img src="{{ book.cover.url }}" alt="{{ book.name }}" loading="lazy">
-            {% else %}
-              <div class="tech-book-placeholder">
-                <i class="fas fa-file-code"></i>
-                <div class="placeholder-text">Technical Book</div>
+  </div>
+</div>
+
+<!-- Recent Books Section -->
+<div class="home-section books-section">
+  <div class="container">
+    <div class="section-header-row">
+      <div class="section-title-block">
+        <div class="section-icon-wrap"><i class="fas fa-book"></i></div>
+        <div><h2>Recent Books</h2><p>Latest additions to our technical library</p></div>
+      </div>
+      <a href="{% url 'books.index' %}" class="view-all-link">View All <i class="fas fa-arrow-right"></i></a>
+    </div>
+    {% if template_data.recent_books %}
+    <div class="home-books-row">
+      {% for book in template_data.recent_books|slice:":4" %}
+      <div class="book-card" data-book-url="{% url 'books.show' book.id %}">
+        <div class="book-cover">
+          {% if book.cover %}
+            <img src="{{ book.cover.url }}" alt="{{ book.name }}" loading="lazy">
+          {% else %}
+            <div class="book-cover-placeholder">
+              <i class="fas fa-file-code"></i>
+              <span>Technical Book</span>
+            </div>
+          {% endif %}
+        </div>
+        <div class="book-info">
+          <div>
+            <h4 class="book-title">
+              <a href="{% url 'books.show' book.id %}">{{ book.name }}</a>
+            </h4>
+            <p class="book-author">{{ book.author|default:"Technical Author" }}</p>
+            {% if book.category %}
+              <div class="book-category">
+                {% if 'devops' in book.category.name|lower %}
+                  <i class="fas fa-cogs"></i>
+                {% elif 'cloud' in book.category.name|lower %}
+                  <i class="fas fa-cloud"></i>
+                {% elif 'data' in book.category.name|lower %}
+                  <i class="fas fa-chart-bar"></i>
+                {% elif 'machine' in book.category.name|lower %}
+                  <i class="fas fa-robot"></i>
+                {% elif 'software' in book.category.name|lower %}
+                  <i class="fas fa-code"></i>
+                {% elif 'database' in book.category.name|lower %}
+                  <i class="fas fa-database"></i>
+                {% else %}
+                  <i class="fas fa-book"></i>
+                {% endif %}
+                {{ book.category.name }}
               </div>
             {% endif %}
           </div>
-          
-          <div class="tech-book-info">
-            <div class="tech-book-content">
-              <h4 class="tech-book-title">{{ book.name }}</h4>
-              <p class="tech-book-author">{{ book.author|default:"Technical Author" }}</p>
-              
-              <div class="tech-book-meta">
-                {% if book.category %}
-                  <span class="tech-category-badge">
-                    {% if 'devops' in book.category.name|lower %}
-                      <i class="fas fa-cogs"></i>
-                    {% elif 'cloud' in book.category.name|lower %}
-                      <i class="fas fa-cloud"></i>
-                    {% elif 'data' in book.category.name|lower %}
-                      <i class="fas fa-chart-bar"></i>
-                    {% elif 'machine' in book.category.name|lower %}
-                      <i class="fas fa-robot"></i>
-                    {% elif 'software' in book.category.name|lower %}
-                      <i class="fas fa-code"></i>
-                    {% elif 'database' in book.category.name|lower %}
-                      <i class="fas fa-database"></i>
-                    {% else %}
-                      <i class="fas fa-book"></i>
-                    {% endif %}
-                    {{ book.category.name }}
-                  </span>
-                {% endif %}
-              </div>
-            </div>
-          </div>
         </div>
+      </div>
       {% endfor %}
     </div>
+    {% else %}
+    <div class="empty-state"><i class="fas fa-book-open"></i><p>No books available yet.</p></div>
+    {% endif %}
   </div>
+</div>
 
-  <div class="section-divider"></div>
-  {% endif %}
-
-  <!-- Technical Categories Section -->
-  <div class="section">
-    <h2 class="text-center mb-8">Technical Categories</h2>
-    <div class="tech-grid">
-      <div class="tech-item">
-        <i class="fas fa-cogs"></i>
-        <span>DevOps & Infrastructure</span>
-      </div>
-      <div class="tech-item">
-        <i class="fas fa-cloud"></i>
-        <span>Cloud Computing</span>
-      </div>
-      <div class="tech-item">
-        <i class="fas fa-chart-line"></i>
-        <span>Data Science & Analytics</span>
-      </div>
-      <div class="tech-item">
-        <i class="fas fa-robot"></i>
-        <span>Machine Learning & AI</span>
-      </div>
-      <div class="tech-item">
-        <i class="fas fa-code"></i>
-        <span>Software Development</span>
-      </div>
-      <div class="tech-item">
-        <i class="fas fa-database"></i>
-        <span>Database Systems</span>
-      </div>
-      <div class="tech-item">
-        <i class="fas fa-chart-bar"></i>
-        <span>Observability & Monitoring</span>
-      </div>
-      <div class="tech-item">
-        <i class="fas fa-shield-alt"></i>
-        <span>Security & Compliance</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Stats Section -->
-  <div class="section">
+<!-- Stats Section -->
+<div class="home-section stats-section">
+  <div class="container">
     <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-number">{{ template_data.total_books|default:"500+" }}</div>
-        <div class="stat-label">Technical Books</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">{{ template_data.total_categories|default:"8+" }}</div>
-        <div class="stat-label">Tech Categories</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">{{ template_data.total_users|default:"2000+" }}</div>
-        <div class="stat-label">Developers & Engineers</div>
-      </div>
+      <div class="stat-card"><div class="stat-icon"><i class="fas fa-book"></i></div><div class="stat-value">{{ template_data.total_books|default:"0" }}</div><div class="stat-label">Books</div></div>
+      <div class="stat-card"><div class="stat-icon"><i class="fas fa-folder"></i></div><div class="stat-value">{{ template_data.total_categories|default:"0" }}</div><div class="stat-label">Categories</div></div>
+      <div class="stat-card"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-value">{{ template_data.total_users|default:"0" }}</div><div class="stat-label">Users</div></div>
+      <div class="stat-card"><div class="stat-icon"><i class="fas fa-route"></i></div><div class="stat-value">3</div><div class="stat-label">Roadmaps</div></div>
     </div>
   </div>
+</div>
 
-  <!-- Call to Action -->
-  {% if not user.is_authenticated %}
-  <div class="section">
+<!-- CTA Section -->
+{% if not user.is_authenticated %}
+<div class="home-section cta-section">
+  <div class="container">
     <div class="cta-card">
+      <div class="cta-glow"></div>
       <div class="cta-content">
-        <h3 class="cta-title">Join the Developer Community</h3>
-        <p class="cta-description">
-          Access professional technical books and stay ahead in your engineering career. 
-          Join thousands of developers building their expertise with TechBookHub.
-        </p>
-        <div class="cta-actions">
-          <a href="{% url 'accounts.signup' %}" class="btn btn-primary">
-            <i class="fas fa-user-plus"></i>
-            Create Account
-          </a>
-          <a href="{% url 'accounts.login' %}" class="btn btn-secondary">
-            <i class="fas fa-sign-in-alt"></i>
-            Sign In
-          </a>
+        <div class="cta-icon"><i class="fas fa-rocket"></i></div>
+        <h3>Ready to Start Your Journey?</h3>
+        <p>Join our community of engineers and access all resources to accelerate your career growth.</p>
+        <div class="cta-buttons">
+          <a href="{% url 'accounts.signup' %}" class="btn-cta-primary"><i class="fas fa-user-plus"></i> Create Free Account</a>
+          <a href="{% url 'accounts.login' %}" class="btn-cta-secondary">Sign In</a>
         </div>
       </div>
     </div>
   </div>
-  {% endif %}
 </div>
+{% endif %}
+
+<style>
+.home-hero-section{position:relative;min-height:70vh;display:flex;align-items:center;padding:4rem 0;overflow:hidden}
+.hero-bg-effects{position:absolute;inset:0;pointer-events:none}
+.hero-glow{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.5;animation:glowPulse 8s ease-in-out infinite}
+.glow-1{width:400px;height:400px;background:rgba(74,158,255,0.15);top:-100px;left:-100px}
+.glow-2{width:350px;height:350px;background:rgba(99,102,241,0.12);bottom:-50px;right:-50px;animation-delay:4s}
+@keyframes glowPulse{0%,100%{opacity:0.4;transform:scale(1)}50%{opacity:0.6;transform:scale(1.1)}}
+.hero-content-wrapper{display:flex;align-items:center;justify-content:space-between;gap:3rem;position:relative;z-index:1}
+.hero-text-content{flex:1;max-width:600px}
+.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;padding:0.5rem 1rem;background:rgba(74,158,255,0.1);border:1px solid rgba(74,158,255,0.2);border-radius:50px;font-size:0.8125rem;font-weight:600;color:#4a9eff;margin-bottom:1.5rem}
+.hero-title{font-size:2.75rem;font-weight:800;color:var(--text-primary);line-height:1.2;margin:0 0 1.25rem;letter-spacing:-0.02em}
+.gradient-text{background:linear-gradient(135deg,#4a9eff 0%,#6366f1 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-description{font-size:1.125rem;color:var(--text-secondary);line-height:1.7;margin:0 0 2rem}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap}
+.btn-hero-primary{display:inline-flex;align-items:center;gap:0.5rem;padding:0.875rem 1.75rem;background:linear-gradient(135deg,#4a9eff 0%,#0066cc 100%);color:white;font-weight:600;font-size:0.9375rem;border-radius:10px;text-decoration:none;transition:all 0.25s ease;box-shadow:0 4px 15px rgba(74,158,255,0.3)}
+.btn-hero-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(74,158,255,0.4)}
+.btn-hero-secondary{display:inline-flex;align-items:center;gap:0.5rem;padding:0.875rem 1.75rem;background:transparent;color:var(--text-primary);font-weight:600;font-size:0.9375rem;border:1px solid var(--border-default);border-radius:10px;text-decoration:none;transition:all 0.25s ease}
+.btn-hero-secondary:hover{border-color:#4a9eff;color:#4a9eff;background:rgba(74,158,255,0.05)}
+.hero-visual{flex-shrink:0;width:280px;height:280px;position:relative}
+.floating-icon{position:absolute;width:64px;height:64px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(0,0,0,0.12);animation:float 6s ease-in-out infinite}
+.floating-icon i{font-size:1.5rem;color:#4a9eff}
+.icon-1{top:0;left:20%;animation-delay:0s}.icon-2{top:30%;right:0;animation-delay:1.5s}.icon-3{bottom:20%;left:0;animation-delay:3s}.icon-4{bottom:0;right:20%;animation-delay:4.5s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+.home-section{padding:4rem 0;position:relative}
+.section-header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem}
+.section-title-block{display:flex;align-items:center;gap:1rem}
+.section-icon-wrap{width:52px;height:52px;background:linear-gradient(135deg,rgba(74,158,255,0.15) 0%,rgba(99,102,241,0.1) 100%);border-radius:14px;display:flex;align-items:center;justify-content:center}
+.section-icon-wrap i{font-size:1.25rem;color:#4a9eff}
+.section-title-block h2{font-size:1.5rem;font-weight:700;color:var(--text-primary);margin:0 0 0.25rem}
+.section-title-block p{font-size:0.875rem;color:var(--text-secondary);margin:0}
+.view-all-link{display:inline-flex;align-items:center;gap:0.5rem;color:#4a9eff;font-weight:600;font-size:0.875rem;text-decoration:none;transition:gap 0.2s ease}
+.view-all-link:hover{gap:0.75rem}
+.features-section{background:linear-gradient(180deg,transparent 0%,rgba(74,158,255,0.02) 50%,transparent 100%)}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem}
+a.feature-card{text-decoration:none;display:block}
+.feature-card{position:relative;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:16px;padding:1.75rem;transition:all 0.3s ease;overflow:hidden;cursor:pointer}
+.feature-card:hover{transform:translateY(-4px);border-color:rgba(74,158,255,0.3);box-shadow:0 15px 35px rgba(0,0,0,0.12),0 0 25px rgba(74,158,255,0.08)}
+.feature-card:focus{outline:2px solid #4a9eff;outline-offset:2px}
+.feature-card:hover .feature-icon{background:linear-gradient(135deg,#4a9eff 0%,#0066cc 100%);transform:scale(1.05)}
+.feature-card:hover .feature-icon i{color:white}
+.feature-card:hover .feature-link{opacity:1;transform:translateX(0)}
+.feature-icon{width:52px;height:52px;background:rgba(74,158,255,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;transition:all 0.3s ease}
+.feature-icon i{font-size:1.25rem;color:#4a9eff;transition:color 0.3s ease}
+.feature-card h3{font-size:1.125rem;font-weight:700;color:var(--text-primary);margin:0 0 0.5rem}
+.feature-card p{font-size:0.875rem;color:var(--text-secondary);line-height:1.6;margin:0 0 1rem}
+.feature-link{display:inline-flex;align-items:center;gap:0.5rem;font-size:0.875rem;font-weight:600;color:#4a9eff;opacity:0;transform:translateX(-10px);transition:all 0.3s ease}
+.feature-link i{font-size:0.75rem;transition:transform 0.2s ease}
+.feature-card:hover .feature-link i{transform:translateX(3px)}
+</style>
+
+<style>
+.books-section{background:var(--bg-primary);padding:var(--space-8) 0}
+/* Home page single-row 4-book layout */
+.home-books-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}
+.home-books-row .book-card{height:400px}
+.home-books-row .book-cover{height:200px}
+.empty-state{text-align:center;padding:3rem;background:var(--bg-surface);border:1px dashed var(--border-default);border-radius:12px}
+.empty-state i{font-size:2.5rem;color:var(--text-muted);margin-bottom:1rem;display:block}
+.empty-state p{color:var(--text-secondary);margin:0}
+.stats-section{background:linear-gradient(135deg,rgba(74,158,255,0.05) 0%,rgba(99,102,241,0.03) 100%);border-top:1px solid var(--border-default);border-bottom:1px solid var(--border-default)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}
+.stat-card{text-align:center;padding:1.5rem;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:12px;transition:all 0.3s ease}
+.stat-card:hover{transform:translateY(-3px);border-color:rgba(74,158,255,0.2);box-shadow:0 10px 25px rgba(0,0,0,0.08)}
+.stat-icon{width:48px;height:48px;background:rgba(74,158,255,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+.stat-icon i{font-size:1.125rem;color:#4a9eff}
+.stat-value{font-size:2rem;font-weight:800;color:var(--text-primary);line-height:1;margin-bottom:0.375rem}
+.stat-label{font-size:0.875rem;color:var(--text-secondary)}
+.cta-section{padding:4rem 0 5rem}
+.cta-card{position:relative;background:linear-gradient(135deg,rgba(74,158,255,0.08) 0%,rgba(99,102,241,0.05) 100%);border:1px solid rgba(74,158,255,0.15);border-radius:20px;padding:3rem 2rem;text-align:center;overflow:hidden}
+.cta-glow{position:absolute;top:-50%;left:50%;transform:translateX(-50%);width:400px;height:400px;background:radial-gradient(circle,rgba(74,158,255,0.15) 0%,transparent 70%);pointer-events:none}
+.cta-content{position:relative}
+.cta-icon{width:72px;height:72px;background:linear-gradient(135deg,#4a9eff 0%,#6366f1 100%);border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;box-shadow:0 10px 30px rgba(74,158,255,0.3)}
+.cta-icon i{font-size:1.75rem;color:white}
+.cta-card h3{font-size:1.5rem;font-weight:700;color:var(--text-primary);margin:0 0 0.75rem}
+.cta-card p{font-size:1rem;color:var(--text-secondary);max-width:500px;margin:0 auto 2rem;line-height:1.6}
+.cta-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn-cta-primary{display:inline-flex;align-items:center;gap:0.5rem;padding:0.875rem 1.5rem;background:linear-gradient(135deg,#4a9eff 0%,#0066cc 100%);color:white;font-weight:600;font-size:0.9375rem;border-radius:10px;text-decoration:none;transition:all 0.25s ease}
+.btn-cta-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(74,158,255,0.4)}
+.btn-cta-secondary{display:inline-flex;align-items:center;padding:0.875rem 1.5rem;background:transparent;color:var(--text-primary);font-weight:600;font-size:0.9375rem;border:1px solid var(--border-default);border-radius:10px;text-decoration:none;transition:all 0.25s ease}
+.btn-cta-secondary:hover{border-color:#4a9eff;color:#4a9eff}
+@media(max-width:992px){.hero-content-wrapper{flex-direction:column;text-align:center}.hero-text-content{max-width:100%}.hero-actions{justify-content:center}.hero-visual{width:220px;height:220px}.stats-grid{grid-template-columns:repeat(2,1fr)}.home-books-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){.home-hero-section{min-height:auto;padding:3rem 0}.hero-title{font-size:2rem}.hero-description{font-size:1rem}.hero-visual{display:none}.section-header-row{flex-direction:column;align-items:flex-start}.features-grid{grid-template-columns:1fr}.home-books-row{grid-template-columns:repeat(2,1fr)}.home-books-row .book-card{height:360px}.home-books-row .book-cover{height:170px}.cta-card{padding:2rem 1.5rem}}
+@media(max-width:480px){.hero-actions{flex-direction:column;width:100%}.btn-hero-primary,.btn-hero-secondary{width:100%;justify-content:center}.stats-grid{grid-template-columns:1fr 1fr;gap:1rem}.stat-card{padding:1rem}.stat-value{font-size:1.5rem}.cta-buttons{flex-direction:column;width:100%}.btn-cta-primary,.btn-cta-secondary{width:100%;justify-content:center}.home-books-row{grid-template-columns:1fr 1fr;gap:1rem}.home-books-row .book-card{height:320px}.home-books-row .book-cover{height:140px}}
+@media(prefers-reduced-motion:reduce){.hero-glow,.floating-icon{animation:none}}
+</style>
 
 <script>
-// Add click handlers for book cards
 document.addEventListener('DOMContentLoaded', function() {
-  const bookCards = document.querySelectorAll('.tech-book-card[data-book-url]');
-  
+  // Book card click handling
+  const bookCards = document.querySelectorAll('.book-card[data-book-url]');
   bookCards.forEach(card => {
-    card.addEventListener('click', function() {
-      const url = this.dataset.bookUrl;
-      if (url) {
-        window.location.href = url;
-      }
+    card.addEventListener('click', function(e) {
+      if (e.target.closest('a')) return;
+      window.location.href = this.dataset.bookUrl;
     });
-    
-    // Add keyboard support
     card.setAttribute('tabindex', '0');
     card.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        this.click();
+        window.location.href = this.dataset.bookUrl;
       }
     });
   });
 });
 </script>
-{% endblock content %}
+{% endblock %}

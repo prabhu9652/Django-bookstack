@@ -1,0 +1,27 @@
+# Development Requirements
+# Install with: pip install -r requirements-dev.txt
+
+# Include production requirements
+-r requirements.txt
+
+# Development and Testing
+pytest>=7.0.0
+pytest-django>=4.5.0
+pytest-cov>=4.0.0
+factory-boy>=3.2.0
+faker>=18.0.0
+
+# Code Quality
+black>=22.0.0
+flake8>=5.0.0
+isort>=5.10.0
+mypy>=1.0.0
+
+# Development Tools
+django-debug-toolbar>=4.0.0
+django-extensions>=3.2.0
+ipython>=8.0.0
+
+# Documentation
+sphinx>=5.0.0
+sphinx-rtd-theme>=1.2.0

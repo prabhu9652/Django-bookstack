@@ -211,83 +211,9 @@ a:focus {
 }
 
 /* ========================================
-   ENTERPRISE NAVIGATION
+   ENTERPRISE NAVIGATION - REMOVED
+   Navbar styles handled by minimal-enterprise.css
 ======================================== */
-
-.navbar-enterprise {
-  background-color: var(--bg-surface);
-  border-bottom: 1px solid var(--border-primary);
-  backdrop-filter: blur(8px);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: var(--z-fixed);
-  transition: all var(--transition-normal);
-}
-
-.navbar-enterprise.scrolled {
-  background-color: rgba(15, 23, 42, 0.95);
-  box-shadow: var(--shadow-lg);
-}
-
-.navbar-brand-enterprise {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-bold);
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.navbar-brand-enterprise:hover {
-  color: var(--text-primary);
-  transform: none;
-}
-
-.navbar-brand-icon {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
-  border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: var(--font-size-lg);
-}
-
-.nav-link-enterprise {
-  color: var(--text-secondary) !important;
-  font-weight: var(--font-medium);
-  font-size: var(--font-size-sm);
-  padding: var(--space-3) var(--space-4) !important;
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
-  position: relative;
-}
-
-.nav-link-enterprise:hover {
-  color: var(--text-primary) !important;
-  background-color: var(--bg-surface-hover);
-}
-
-.nav-link-enterprise.active {
-  color: var(--primary-400) !important;
-  background-color: rgba(99, 102, 241, 0.1);
-}
-
-.nav-link-enterprise.active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 2px;
-  height: 20px;
-  background-color: var(--primary-500);
-  border-radius: var(--radius-full);
-}
 
 /* User Dropdown */
 .user-dropdown {

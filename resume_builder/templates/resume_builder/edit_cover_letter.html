@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="padding: var(--space-6) 0;">
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6); flex-wrap: wrap; gap: var(--space-4);">
+    <div>
+      <h1 style="font-size: var(--font-size-2xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-1);">
+        Edit Cover Letter
+      </h1>
+      <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">
+        {{ cover_letter.title }} • {{ cover_letter.company_name }}
+      </p>
+    </div>
+    <div style="display: flex; gap: var(--space-3);">
+      <button type="button" onclick="saveCoverLetter()" class="btn btn-primary" id="saveBtn">
+        <i class="fas fa-save"></i> Save
+      </button>
+      <a href="{% url 'resume_builder:preview_cover_letter' cover_letter.id %}" class="btn btn-secondary">
+        <i class="fas fa-eye"></i> Preview
+      </a>
+      <a href="{% url 'resume_builder:download_cover_letter' cover_letter.id %}" class="btn btn-ghost">
+        <i class="fas fa-download"></i> Download
+      </a>
+    </div>
+  </div>
+
+  <form method="post" id="coverLetterForm">
+    {% csrf_token %}
+    
+    <!-- Color Theme -->
+    <div class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+      <h2 class="section-title"><i class="fas fa-palette"></i> Color Theme</h2>
+      <div style="display: flex; gap: var(--space-3); flex-wrap: wrap;">
+        {% for color in color_options %}
+          <label class="color-option" style="cursor: pointer;">
+            <input type="radio" name="primary_color" value="{{ color.value }}" {% if cover_letter.primary_color == color.value %}checked{% endif %} style="display: none;">
+            <div class="color-swatch" style="width: 48px; height: 48px; background: {{ color.value }}; border-radius: var(--radius-lg); border: 3px solid transparent; transition: all 0.2s;" title="{{ color.name }}"></div>
+          </label>
+        {% endfor %}
+        <div style="display: flex; align-items: center; gap: var(--space-2);">
+          <input type="color" id="customColor" value="{{ cover_letter.primary_color }}" style="width: 48px; height: 48px; border: none; cursor: pointer; border-radius: var(--radius-lg);">
+          <span style="font-size: var(--font-size-sm); color: var(--text-muted);">Custom</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Your Information -->
+    <div class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+      <h2 class="section-title"><i class="fas fa-user"></i> Your Information</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" name="full_name" value="{{ cover_letter.full_name }}" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" name="email" value="{{ cover_letter.email }}" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" name="phone" value="{{ cover_letter.phone }}" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>LinkedIn</label>
+          <input type="text" name="linkedin" value="{{ cover_letter.linkedin }}" placeholder="linkedin.com/in/username" class="form-input">
+        </div>
+        <div class="form-group" style="grid-column: span 2;">
+          <label>Your Address</label>
+          <textarea name="address" rows="2" class="form-input" placeholder="Your full address">{{ cover_letter.address }}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Company Information -->
+    <div class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+      <h2 class="section-title"><i class="fas fa-building"></i> Company Information</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Company Name *</label>
+          <input type="text" name="company_name" value="{{ cover_letter.company_name }}" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Position Title *</label>
+          <input type="text" name="position_title" value="{{ cover_letter.position_title }}" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Hiring Manager Name</label>
+          <input type="text" name="hiring_manager" value="{{ cover_letter.hiring_manager }}" placeholder="Mr./Ms. Name" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Company Address</label>
+          <textarea name="company_address" rows="2" class="form-input" placeholder="Company address (optional)">{{ cover_letter.company_address }}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Letter Content -->
+    <div class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+      <h2 class="section-title"><i class="fas fa-edit"></i> Letter Content</h2>
+      
+      <div class="form-group" style="margin-bottom: var(--space-5);">
+        <label>Opening Paragraph <span style="color: var(--text-muted); font-weight: 400;">(Introduction - why you're applying)</span></label>
+        <textarea name="opening_paragraph" rows="4" class="form-input" placeholder="Dear [Hiring Manager],&#10;&#10;I am writing to express my strong interest in the [Position] role at [Company]. With my extensive experience in...">{{ cover_letter.opening_paragraph }}</textarea>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: var(--space-5);">
+        <label>Body Paragraph <span style="color: var(--text-muted); font-weight: 400;">(Your qualifications & achievements)</span></label>
+        <textarea name="body_paragraph" rows="6" class="form-input" placeholder="In my current role as [Role] at [Company], I have successfully...&#10;&#10;Key achievements include:&#10;• Implemented infrastructure automation reducing deployment time by 70%&#10;• Designed and deployed CI/CD pipelines for 50+ microservices&#10;• Led migration to Kubernetes achieving 99.9% uptime">{{ cover_letter.body_paragraph }}</textarea>
+      </div>
+      
+      <div class="form-group">
+        <label>Closing Paragraph <span style="color: var(--text-muted); font-weight: 400;">(Call to action & closing)</span></label>
+        <textarea name="closing_paragraph" rows="3" class="form-input" placeholder="I am excited about the opportunity to bring my skills and experience to [Company]. I would welcome the chance to discuss how I can contribute to your team.&#10;&#10;Thank you for considering my application.">{{ cover_letter.closing_paragraph }}</textarea>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="display: flex; gap: var(--space-4); justify-content: center; padding: var(--space-6) 0;">
+      <button type="button" onclick="saveCoverLetter()" class="btn btn-primary btn-lg">
+        <i class="fas fa-save"></i> Save Cover Letter
+      </button>
+      <a href="{% url 'resume_builder:preview_cover_letter' cover_letter.id %}" class="btn btn-secondary btn-lg">
+        <i class="fas fa-eye"></i> Preview
+      </a>
+      <a href="{% url 'resume_builder:dashboard' %}" class="btn btn-ghost btn-lg">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+    </div>
+  </form>
+</div>
+
+<style>
+.section-title {
+  font-size: var(--font-size-lg); font-weight: 600; color: var(--text-primary);
+  margin-bottom: var(--space-5); padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--border-primary);
+  display: flex; align-items: center; gap: var(--space-3);
+}
+.section-title i { color: var(--accent-primary); }
+.form-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4);
+}
+.form-group { display: flex; flex-direction: column; gap: var(--space-2); }
+.form-group label { font-weight: 600; color: var(--text-primary); font-size: var(--font-size-sm); }
+.form-input {
+  width: 100%; padding: var(--space-3); background: var(--bg-input);
+  border: 1px solid var(--border-primary); border-radius: var(--radius-md);
+  color: var(--text-primary); font-size: var(--font-size-base); transition: border-color 0.2s;
+}
+.form-input:focus {
+  outline: none; border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+.form-input::placeholder { color: var(--text-muted); }
+.color-option input:checked + .color-swatch {
+  border-color: var(--accent-primary) !important; transform: scale(1.1);
+}
+.color-swatch:hover { transform: scale(1.05); }
+</style>
+
+<script>
+const coverLetterId = {{ cover_letter.id }};
+const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+async function saveCoverLetter() {
+  const saveBtn = document.getElementById('saveBtn');
+  saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  saveBtn.disabled = true;
+  
+  try {
+    const form = document.getElementById('coverLetterForm');
+    const colorInput = form.querySelector('input[name="primary_color"]:checked');
+    const customColor = document.getElementById('customColor').value;
+    
+    const data = {
+      full_name: form.querySelector('[name="full_name"]').value,
+      email: form.querySelector('[name="email"]').value,
+      phone: form.querySelector('[name="phone"]').value,
+      linkedin: form.querySelector('[name="linkedin"]').value,
+      address: form.querySelector('[name="address"]').value,
+      company_name: form.querySelector('[name="company_name"]').value,
+      position_title: form.querySelector('[name="position_title"]').value,
+      hiring_manager: form.querySelector('[name="hiring_manager"]').value,
+      company_address: form.querySelector('[name="company_address"]').value,
+      opening_paragraph: form.querySelector('[name="opening_paragraph"]').value,
+      body_paragraph: form.querySelector('[name="body_paragraph"]').value,
+      closing_paragraph: form.querySelector('[name="closing_paragraph"]').value,
+      primary_color: colorInput ? colorInput.value : customColor,
+    };
+    
+    const response = await fetch(`/resume-builder/api/save-cover-letter/${coverLetterId}/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    
+    if (result.success) {
+      saveBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+      setTimeout(() => { saveBtn.innerHTML = '<i class="fas fa-save"></i> Save'; saveBtn.disabled = false; }, 2000);
+    } else {
+      throw new Error(result.error || 'Failed to save');
+    }
+  } catch (error) {
+    saveBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+    setTimeout(() => { saveBtn.innerHTML = '<i class="fas fa-save"></i> Save'; saveBtn.disabled = false; }, 2000);
+    alert('Error: ' + error.message);
+  }
+}
+
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveCoverLetter(); }
+});
+</script>
+{% endblock %}
