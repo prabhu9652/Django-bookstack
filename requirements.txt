@@ -1,21 +1,28 @@
 # Core Django Framework
-Django>=5.0,<6.0
-Pillow>=9.0.0
+Django>=5.0,<7.0
+Pillow>=10.0.0
 
 # Production Server
-gunicorn>=20.1.0
-whitenoise>=6.0.0
+gunicorn>=21.0.0
+whitenoise>=6.6.0
 
 # Database
 psycopg2-binary>=2.9.0
 
-# Resume Builder Dependencies
+# PDF Generation - WeasyPrint (Production-grade)
 weasyprint>=60.0
-cffi>=1.15.0
-pydyf>=0.8.0
-cssselect2>=0.7.0
-tinycss2>=1.2.0
-fonttools>=4.38.0
+# WeasyPrint dependencies (automatically installed)
+# - pydyf
+# - pyphen
+# - tinycss2
+# - cssselect2
+# - fonttools
+# - Pillow (already listed above)
 
-# Additional utilities for Resume Builder
+# Additional utilities
 python-dateutil>=2.8.0
+
+# Note: WeasyPrint may require system libraries on some platforms:
+# macOS: brew install pango libffi
+# Ubuntu/Debian: apt-get install libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
+# See: https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#installation

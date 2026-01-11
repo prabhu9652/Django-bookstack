@@ -6,8 +6,11 @@ from django.views.decorators.http import require_POST
 from django.template import Template, Context
 from django.db import transaction
 import json
+import logging
 
 from .models import Resume, CoverLetter, ResumeTemplate, CoverLetterTemplate
+
+logger = logging.getLogger(__name__)
 
 
 def home(request):
@@ -146,7 +149,13 @@ def create_cover_letter_direct(request):
             is_active=True
         )
     
-    # Create the cover letter with defaults
+    # Get role from query parameter or default
+    role = request.GET.get('role', 'devops_sre')
+    
+    # Get role-specific cover letter content
+    cover_letter_content = get_default_cover_letter_content(role)
+    
+    # Create the cover letter with role-specific defaults
     cover_letter = CoverLetter.objects.create(
         user=request.user,
         template=template,
@@ -156,15 +165,101 @@ def create_cover_letter_direct(request):
         phone='',
         address='',
         company_name='Company Name',
-        position_title='Position Title',
+        position_title=cover_letter_content['position_title'],
         hiring_manager='',
-        opening_paragraph='I am writing to express my strong interest in the [Position] role at [Company]. With my extensive experience in cloud infrastructure, DevOps practices, and site reliability engineering, I am confident in my ability to contribute significantly to your team.',
-        body_paragraph='In my current role, I have successfully:\n\n• Architected and implemented scalable cloud infrastructure on AWS\n• Designed CI/CD pipelines reducing deployment time by 70%\n• Led initiatives improving system reliability to 99.9% uptime\n• Mentored team members on DevOps best practices',
-        closing_paragraph='I am excited about the opportunity to bring my skills and experience to your organization. I would welcome the chance to discuss how I can contribute to your team\'s success.\n\nThank you for considering my application.',
+        opening_paragraph=cover_letter_content['opening_paragraph'],
+        body_paragraph=cover_letter_content['body_paragraph'],
+        closing_paragraph=cover_letter_content['closing_paragraph'],
     )
     
     messages.success(request, 'Cover letter created! Start editing below.')
     return redirect('resume_builder:edit_cover_letter', cover_letter_id=cover_letter.id)
+
+
+def get_default_cover_letter_content(role):
+    """Get industry-standard cover letter content based on role."""
+    
+    if role == 'devops_sre':
+        return {
+            'position_title': 'DevOps / SRE Engineer',
+            'opening_paragraph': 'I am writing to express my strong interest in the DevOps/SRE Engineer position at your organization. With over 5 years of hands-on experience in cloud infrastructure, CI/CD automation, and site reliability engineering, I am confident in my ability to drive operational excellence and enable your engineering teams to deliver software faster and more reliably.',
+            'body_paragraph': '''Throughout my career, I have developed deep expertise in designing and implementing scalable, resilient infrastructure solutions. My key accomplishments include:
+
+• Architected and deployed multi-region Kubernetes clusters on AWS EKS, achieving 99.99% uptime while supporting 500+ microservices in production
+
+• Designed and implemented GitOps-based CI/CD pipelines using GitHub Actions, ArgoCD, and Terraform, reducing deployment time from 2 hours to under 15 minutes
+
+• Built comprehensive observability solutions using Prometheus, Grafana, and ELK stack, reducing Mean Time to Resolution (MTTR) by 60%
+
+• Implemented Infrastructure as Code practices using Terraform and Terragrunt, managing 200+ AWS resources across multiple environments
+
+• Led security hardening initiatives including IAM policies, WAF configurations, and secrets management with HashiCorp Vault
+
+I am passionate about automation, reliability engineering, and building systems that scale. I thrive in collaborative environments where I can work closely with development teams to improve deployment velocity and system reliability.''',
+            'closing_paragraph': 'I am excited about the opportunity to bring my technical expertise and passion for DevOps practices to your team. I would welcome the chance to discuss how my experience in cloud infrastructure, automation, and reliability engineering can contribute to your organization\'s success.\n\nThank you for considering my application. I look forward to the opportunity to speak with you.'
+        }
+    
+    elif role == 'software_engineer':
+        return {
+            'position_title': 'Software Engineer',
+            'opening_paragraph': 'I am writing to express my enthusiasm for the Software Engineer position at your organization. With over 5 years of experience in full-stack development, system design, and building scalable applications, I am eager to contribute my technical skills and problem-solving abilities to your engineering team.',
+            'body_paragraph': '''Throughout my career, I have consistently delivered high-quality software solutions that drive business value. My key accomplishments include:
+
+• Designed and implemented RESTful APIs serving 10M+ daily requests with 99.9% availability, using Python, Django, and PostgreSQL
+
+• Led the migration from monolithic architecture to microservices, improving system scalability and reducing deployment complexity
+
+• Optimized database queries and implemented caching strategies using Redis, reducing API response times by 40%
+
+• Built responsive, accessible front-end applications using React and TypeScript, following modern best practices and design patterns
+
+• Implemented comprehensive test coverage achieving 85%+ code coverage, significantly reducing production bugs
+
+• Mentored junior developers through code reviews, pair programming, and technical documentation
+
+I am passionate about writing clean, maintainable code and building systems that solve real-world problems. I thrive in agile environments where collaboration and continuous improvement are valued.''',
+            'closing_paragraph': 'I am excited about the opportunity to contribute to your team and help build innovative software solutions. I would welcome the chance to discuss how my experience in software development and system design can add value to your organization.\n\nThank you for considering my application. I look forward to the opportunity to speak with you.'
+        }
+    
+    elif role == 'ds_ml':
+        return {
+            'position_title': 'Data Scientist / ML Engineer',
+            'opening_paragraph': 'I am writing to express my strong interest in the Data Scientist / ML Engineer position at your organization. With over 5 years of experience in machine learning, statistical analysis, and building production ML systems, I am excited about the opportunity to leverage data-driven insights to solve complex business problems.',
+            'body_paragraph': '''Throughout my career, I have developed and deployed machine learning solutions that deliver measurable business impact. My key accomplishments include:
+
+• Developed and deployed production ML models serving 5M+ predictions daily with 99.5% uptime, using Python, TensorFlow, and AWS SageMaker
+
+• Built end-to-end ML pipelines using Airflow and MLflow, reducing model deployment time by 70% and enabling rapid experimentation
+
+• Implemented recommendation systems that increased user engagement by 25% and drove significant revenue growth
+
+• Optimized model inference latency from 200ms to 50ms through model quantization, pruning, and efficient serving infrastructure
+
+• Designed A/B testing frameworks for ML models, enabling data-driven model selection and continuous improvement
+
+• Collaborated with product and engineering teams to translate business requirements into ML solutions, ensuring alignment with organizational goals
+
+I am passionate about applying machine learning to solve real-world problems and building scalable ML systems. I stay current with the latest research and best practices in the rapidly evolving field of AI/ML.''',
+            'closing_paragraph': 'I am excited about the opportunity to bring my expertise in machine learning and data science to your team. I would welcome the chance to discuss how my experience in building production ML systems can contribute to your organization\'s data-driven initiatives.\n\nThank you for considering my application. I look forward to the opportunity to speak with you.'
+        }
+    
+    # Default fallback
+    return {
+        'position_title': 'Position Title',
+        'opening_paragraph': 'I am writing to express my strong interest in the position at your organization. With my extensive experience and proven track record of success, I am confident in my ability to contribute significantly to your team.',
+        'body_paragraph': '''Throughout my career, I have consistently delivered results and demonstrated my commitment to excellence. My key accomplishments include:
+
+• Successfully led and delivered multiple high-impact projects on time and within budget
+
+• Collaborated effectively with cross-functional teams to achieve organizational goals
+
+• Continuously improved processes and implemented best practices
+
+• Mentored team members and contributed to a positive team culture
+
+I am passionate about my work and committed to continuous learning and professional growth.''',
+        'closing_paragraph': 'I am excited about the opportunity to bring my skills and experience to your organization. I would welcome the chance to discuss how I can contribute to your team\'s success.\n\nThank you for considering my application. I look forward to the opportunity to speak with you.'
+    }
 
 
 def cover_letter_templates(request):
@@ -437,207 +532,37 @@ def preview_resume(request, resume_id):
 
 @login_required
 def download_resume(request, resume_id):
-    """Download resume as HTML with professional styling matching the preview"""
-    resume = get_object_or_404(Resume, id=resume_id, user=request.user)
+    """Download resume as high-quality PDF using WeasyPrint."""
+    from .pdf_generator import generate_resume_pdf
     
-    # Generate professional HTML resume
-    html_content = generate_resume_html(resume, request)
-    
-    # Create response
-    response = HttpResponse(html_content, content_type='text/html')
-    filename = f"{resume.full_name.replace(' ', '_')}_Resume.html"
-    response['Content-Disposition'] = f'attachment; filename="{filename}"'
-    
-    return response
-
-
-def generate_resume_html(resume, request=None):
-    """Generate a professional HTML resume matching the preview design"""
-    
-    primary_color = resume.primary_color or '#4a9d9a'
-    
-    # Profile photo
-    photo_html = ''
-    if resume.profile_photo:
-        if request:
-            photo_url = request.build_absolute_uri(resume.profile_photo.url)
-        else:
-            photo_url = resume.profile_photo.url
-        photo_html = f'<img src="{photo_url}" alt="{resume.full_name}">'
-    else:
-        photo_html = '<div class="photo-placeholder">👤</div>'
-    
-    # Contact info
-    contact_html = ''
-    if resume.email:
-        contact_html += f'<div class="contact-item">✉ {resume.email}</div>'
-    if resume.phone:
-        contact_html += f'<div class="contact-item">📞 {resume.phone}</div>'
-    if resume.address:
-        contact_html += f'<div class="contact-item">🏠 {resume.address}</div>'
-    if resume.linkedin:
-        contact_html += f'<div class="contact-item">🔗 {resume.linkedin}</div>'
-    if resume.github:
-        contact_html += f'<div class="contact-item">💻 {resume.github}</div>'
-    
-    # Skills
-    skills_html = ''
-    if resume.skills:
-        skills_html = ''.join([f'<li>{skill}</li>' for skill in resume.skills])
-    
-    # Languages
-    languages_html = ''
-    if resume.languages:
-        languages_html = f'''
-        <section class="sidebar-section">
-            <h2 class="sidebar-heading">LANGUAGES</h2>
-            <ul class="skills-list">{''.join([f"<li>{lang}</li>" for lang in resume.languages])}</ul>
-        </section>'''
-    
-    # Education
-    education_html = ''
-    if resume.education:
-        edu_items = ''
-        for edu in resume.education:
-            field = f'<div class="edu-field">{edu.get("field", "")}</div>' if edu.get('field') else ''
-            edu_items += f'''
-            <div class="edu-item">
-                <div class="edu-degree">{edu.get('degree', '')}</div>
-                {field}
-                <div class="edu-school">{edu.get('school', '')}</div>
-                <div class="edu-year">{edu.get('graduation_date', '')}</div>
-            </div>'''
-        education_html = f'''
-        <section class="sidebar-section">
-            <h2 class="sidebar-heading">EDUCATION</h2>
-            {edu_items}
-        </section>'''
-    
-    # Summary
-    summary_html = ''
-    if resume.summary:
-        summary_html = f'''
-        <section class="main-section">
-            <h2 class="section-heading"><span class="heading-box">PROFILE</span></h2>
-            <p class="profile-text">{resume.summary}</p>
-        </section>'''
-    
-    # Experience
-    experience_html = ''
-    if resume.experience:
-        exp_entries = ''
-        for exp in resume.experience:
-            bullets_html = ''
-            if exp.get('bullets'):
-                bullets = ''.join([f'<li>{b.replace("**", "<strong>").replace("**", "</strong>")}</li>' for b in exp['bullets']])
-                bullets_html = f'<ul class="exp-bullets">{bullets}</ul>'
-            
-            exp_entries += f'''
-            <div class="exp-entry">
-                <div class="exp-header">
-                    <div class="exp-role">{exp.get('role', '')}</div>
-                    <div class="exp-date">{exp.get('start_date', '')} - {exp.get('end_date', '')}</div>
-                </div>
-                <div class="exp-company">{exp.get('company', '')}</div>
-                {bullets_html}
-            </div>'''
+    try:
+        resume = get_object_or_404(Resume, id=resume_id, user=request.user)
         
-        experience_html = f'''
-        <section class="main-section">
-            <h2 class="section-heading"><span class="heading-box">EMPLOYMENT</span></h2>
-            {exp_entries}
-        </section>'''
-    
-    html = f'''<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{resume.full_name} - Resume</title>
-    <style>
-        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-        body {{ font-family: 'Segoe UI', 'Roboto', Arial, sans-serif; font-size: 10pt; line-height: 1.4; color: #1a1a1a; background: #f5f5f5; }}
-        .resume {{ max-width: 210mm; margin: 0 auto; background: #fff; box-shadow: 0 0 20px rgba(0,0,0,0.1); }}
+        # Generate PDF
+        pdf_bytes = generate_resume_pdf(resume, request)
         
-        .header {{ background: {primary_color}; color: #fff; padding: 30px 40px; display: flex; align-items: center; gap: 30px; }}
-        .header-photo {{ width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 4px solid rgba(255,255,255,0.3); flex-shrink: 0; background: rgba(255,255,255,0.1); }}
-        .header-photo img {{ width: 100%; height: 100%; object-fit: cover; }}
-        .photo-placeholder {{ width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px; }}
-        .header-info {{ flex: 1; }}
-        .header-name {{ font-size: 32pt; font-weight: 700; margin: 0 0 4px 0; letter-spacing: 3px; }}
-        .header-role {{ font-size: 14pt; font-weight: 500; margin: 0 0 16px 0; color: rgba(255,255,255,0.9); }}
-        .contact-item {{ font-size: 9.5pt; margin-bottom: 6px; color: rgba(255,255,255,0.95); }}
+        # Return PDF response
+        response = HttpResponse(pdf_bytes, content_type='application/pdf')
+        safe_name = resume.full_name.replace(' ', '_').replace('/', '_')
+        response['Content-Disposition'] = f'attachment; filename="{safe_name}_Resume.pdf"'
+        return response
         
-        .body {{ display: flex; }}
-        .sidebar {{ width: 200px; background: #f8f9fa; padding: 24px 20px; }}
-        .sidebar-section {{ margin-bottom: 24px; }}
-        .sidebar-heading {{ font-size: 11pt; font-weight: 700; color: #4a9d9a; margin: 0 0 12px 0; letter-spacing: 1px; }}
-        .skills-list {{ list-style: none; }}
-        .skills-list li {{ font-size: 9.5pt; color: #1a1a1a; padding: 3px 0; }}
-        .edu-item {{ margin-bottom: 12px; }}
-        .edu-degree {{ font-weight: 600; font-size: 9.5pt; }}
-        .edu-field {{ font-size: 9pt; color: #555; }}
-        .edu-school {{ font-size: 9pt; color: #666; }}
-        .edu-year {{ font-size: 9pt; color: #888; }}
-        
-        .main {{ flex: 1; padding: 24px 30px; }}
-        .main-section {{ margin-bottom: 24px; }}
-        .section-heading {{ font-size: 11pt; font-weight: 700; margin: 0 0 12px 0; }}
-        .heading-box {{ background: {primary_color}; color: #fff; padding: 4px 12px; letter-spacing: 1px; }}
-        .profile-text {{ font-size: 10pt; color: #333; text-align: justify; line-height: 1.5; }}
-        
-        .exp-entry {{ margin-bottom: 20px; }}
-        .exp-header {{ display: flex; justify-content: space-between; margin-bottom: 2px; }}
-        .exp-role {{ font-weight: 700; font-size: 11pt; }}
-        .exp-date {{ font-size: 9.5pt; color: #666; }}
-        .exp-company {{ font-size: 10pt; color: {primary_color}; margin-bottom: 8px; }}
-        .exp-bullets {{ margin: 0; padding-left: 16px; }}
-        .exp-bullets li {{ font-size: 9.5pt; color: #333; margin-bottom: 6px; line-height: 1.45; text-align: justify; }}
-        .exp-bullets li strong {{ font-weight: 700; color: #1a1a1a; }}
-        
-        @media print {{ body {{ background: white; }} .resume {{ box-shadow: none; }} }}
-    </style>
-</head>
-<body>
-    <div class="resume">
-        <header class="header">
-            <div class="header-photo">{photo_html}</div>
-            <div class="header-info">
-                <h1 class="header-name">{resume.full_name.upper()}</h1>
-                <p class="header-role">{resume.role_title or resume.get_role_display()}</p>
-                <div class="header-contact">{contact_html}</div>
-            </div>
-        </header>
-        
-        <div class="body">
-            <aside class="sidebar">
-                <section class="sidebar-section">
-                    <h2 class="sidebar-heading">SKILLS</h2>
-                    <ul class="skills-list">{skills_html}</ul>
-                </section>
-                {languages_html}
-                {education_html}
-            </aside>
-            
-            <main class="main">
-                {summary_html}
-                {experience_html}
-            </main>
-        </div>
-    </div>
-</body>
-</html>'''
-    
-    return html
+    except Exception as e:
+        logger.error(f"PDF generation failed for resume {resume_id}: {str(e)}")
+        return HttpResponse(f"PDF generation failed: {str(e)}", content_type='text/plain', status=500)
 
 
 @login_required
 def create_cover_letter(request, template_id):
-    """Create a new cover letter"""
+    """Create a new cover letter with role-based default content"""
     template = get_object_or_404(CoverLetterTemplate, id=template_id, is_active=True)
     
     if request.method == 'POST':
         try:
+            # Get role from form or default
+            role = request.POST.get('role', 'devops_sre')
+            cover_letter_content = get_default_cover_letter_content(role)
+            
             with transaction.atomic():
                 cover_letter = CoverLetter.objects.create(
                     user=request.user,
@@ -648,18 +573,47 @@ def create_cover_letter(request, template_id):
                     phone=request.POST.get('phone', ''),
                     location=request.POST.get('location', ''),
                     company_name=request.POST.get('company_name', 'Company Name'),
-                    position_title=request.POST.get('position_title', 'Position Title'),
+                    position_title=request.POST.get('position_title', cover_letter_content['position_title']),
                     hiring_manager=request.POST.get('hiring_manager', ''),
-                    content=request.POST.get('content', 'Dear Hiring Manager,\n\nI am writing to express my interest in the position...\n\nSincerely,\n[Your Name]')
+                    opening_paragraph=cover_letter_content['opening_paragraph'],
+                    body_paragraph=cover_letter_content['body_paragraph'],
+                    closing_paragraph=cover_letter_content['closing_paragraph'],
                 )
                 messages.success(request, 'Cover letter created successfully!')
                 return redirect('resume_builder:edit_cover_letter', cover_letter_id=cover_letter.id)
         except Exception as e:
             messages.error(request, 'Error creating cover letter. Please try again.')
     
+    # GET request - show role selection
+    role = request.GET.get('role', 'devops_sre')
+    
+    # Role options for selection
+    role_options = [
+        {
+            'id': 'devops_sre',
+            'name': 'DevOps / SRE Engineer',
+            'icon': 'fas fa-server',
+            'description': 'Cloud infrastructure, CI/CD, Kubernetes, observability'
+        },
+        {
+            'id': 'software_engineer',
+            'name': 'Software Engineer',
+            'icon': 'fas fa-code',
+            'description': 'Full-stack development, APIs, system design'
+        },
+        {
+            'id': 'ds_ml',
+            'name': 'DS / ML Engineer',
+            'icon': 'fas fa-brain',
+            'description': 'Machine learning, data pipelines, MLOps'
+        },
+    ]
+    
     context = {
         'title': f'Create Cover Letter - {template.name}',
         'template': template,
+        'role': role,
+        'role_options': role_options,
     }
     
     return render(request, 'resume_builder/create_cover_letter.html', context)
@@ -704,105 +658,25 @@ def preview_cover_letter(request, cover_letter_id):
 
 @login_required
 def download_cover_letter(request, cover_letter_id):
-    """Download cover letter as HTML with professional styling"""
-    cover_letter = get_object_or_404(CoverLetter, id=cover_letter_id, user=request.user)
+    """Download cover letter as high-quality PDF using WeasyPrint."""
+    from .pdf_generator import generate_cover_letter_pdf
     
-    html_content = generate_cover_letter_html(cover_letter)
-    
-    response = HttpResponse(html_content, content_type='text/html')
-    filename = f"{cover_letter.full_name.replace(' ', '_')}_Cover_Letter_{cover_letter.company_name.replace(' ', '_')}.html"
-    response['Content-Disposition'] = f'attachment; filename="{filename}"'
-    
-    return response
-
-
-def generate_cover_letter_html(cover_letter):
-    """Generate professional HTML cover letter"""
-    from datetime import date
-    
-    primary_color = cover_letter.primary_color or '#4a9d9a'
-    today = date.today().strftime("%B %d, %Y")
-    
-    # Contact info
-    contact_parts = []
-    if cover_letter.email: contact_parts.append(cover_letter.email)
-    if cover_letter.phone: contact_parts.append(cover_letter.phone)
-    if cover_letter.linkedin: contact_parts.append(cover_letter.linkedin)
-    contact_html = ' | '.join(contact_parts)
-    
-    # Body content
-    body_html = ''
-    if cover_letter.opening_paragraph:
-        body_html += f'<p>{cover_letter.opening_paragraph}</p>'
-    if cover_letter.body_paragraph:
-        body_html += f'<p>{cover_letter.body_paragraph.replace(chr(10), "</p><p>")}</p>'
-    if cover_letter.closing_paragraph:
-        body_html += f'<p>{cover_letter.closing_paragraph}</p>'
-    if cover_letter.content and not cover_letter.opening_paragraph:
-        body_html = f'<div style="white-space: pre-line;">{cover_letter.content}</div>'
-    
-    hiring_manager = cover_letter.hiring_manager or 'Hiring Manager'
-    
-    html = f'''<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{cover_letter.full_name} - Cover Letter</title>
-    <style>
-        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-        body {{ font-family: Georgia, 'Times New Roman', serif; font-size: 11pt; line-height: 1.6; color: #1a1a1a; background: #f5f5f5; }}
-        .letter {{ max-width: 210mm; margin: 0 auto; background: #fff; box-shadow: 0 0 20px rgba(0,0,0,0.1); }}
-        .header-bar {{ height: 8px; background: {primary_color}; }}
-        .header-content {{ padding: 30px 50px 20px; border-bottom: 1px solid #e5e7eb; }}
-        .sender-name {{ font-size: 24pt; font-weight: 700; color: {primary_color}; margin-bottom: 8px; font-family: 'Segoe UI', Arial, sans-serif; }}
-        .sender-contact {{ font-size: 10pt; color: #555; font-family: 'Segoe UI', Arial, sans-serif; }}
-        .sender-address {{ margin-top: 8px; font-size: 10pt; color: #666; font-family: 'Segoe UI', Arial, sans-serif; }}
-        .date {{ padding: 30px 50px 0; font-size: 10.5pt; }}
-        .recipient {{ padding: 20px 50px 0; }}
-        .recipient-name {{ font-weight: 600; font-size: 11pt; }}
-        .company-name {{ font-size: 11pt; }}
-        .subject {{ padding: 24px 50px 0; font-size: 11pt; }}
-        .salutation {{ padding: 24px 50px 0; font-size: 11pt; }}
-        .body {{ padding: 20px 50px; }}
-        .body p {{ margin: 0 0 16px 0; text-align: justify; }}
-        .closing {{ padding: 24px 50px 50px; }}
-        .signature {{ font-weight: 600; font-size: 12pt; color: {primary_color}; margin-top: 30px; font-family: 'Segoe UI', Arial, sans-serif; }}
-        @media print {{ body {{ background: white; }} .letter {{ box-shadow: none; }} }}
-    </style>
-</head>
-<body>
-    <div class="letter">
-        <div class="header-bar"></div>
-        <div class="header-content">
-            <div class="sender-name">{cover_letter.full_name}</div>
-            <div class="sender-contact">{contact_html}</div>
-            {"<div class='sender-address'>" + cover_letter.address + "</div>" if cover_letter.address else ""}
-        </div>
+    try:
+        cover_letter = get_object_or_404(CoverLetter, id=cover_letter_id, user=request.user)
         
-        <div class="date">{today}</div>
+        # Generate PDF
+        pdf_bytes = generate_cover_letter_pdf(cover_letter)
         
-        <div class="recipient">
-            {"<div class='recipient-name'>" + cover_letter.hiring_manager + "</div>" if cover_letter.hiring_manager else ""}
-            <div class="company-name">{cover_letter.company_name}</div>
-            {"<div style='font-size: 10pt; color: #666; margin-top: 4px;'>" + cover_letter.company_address + "</div>" if cover_letter.company_address else ""}
-        </div>
+        # Return PDF response
+        response = HttpResponse(pdf_bytes, content_type='application/pdf')
+        safe_name = cover_letter.full_name.replace(' ', '_').replace('/', '_')
+        safe_company = cover_letter.company_name.replace(' ', '_').replace('/', '_')
+        response['Content-Disposition'] = f'attachment; filename="{safe_name}_Cover_Letter_{safe_company}.pdf"'
+        return response
         
-        <div class="subject"><strong>Re: Application for {cover_letter.position_title}</strong></div>
-        
-        <div class="salutation">Dear {hiring_manager},</div>
-        
-        <div class="body">{body_html}</div>
-        
-        <div class="closing">
-            <p>Sincerely,</p>
-            <div class="signature">{cover_letter.full_name}</div>
-        </div>
-    </div>
-</body>
-</html>'''
-    
-    return html
+    except Exception as e:
+        logger.error(f"PDF generation failed for cover letter {cover_letter_id}: {str(e)}")
+        return HttpResponse(f"PDF generation failed: {str(e)}", content_type='text/plain', status=500)
 
 
 @login_required
