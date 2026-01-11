@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/books/migrations/0003_rename_movie_to_book.py
+# hypothesis_version: 6.150.0
+
+['0002_review', 'Book', 'Movie', 'book', 'book_pdfs/', 'cover_image', 'image', 'movie', 'movies', 'pdf', 'review']

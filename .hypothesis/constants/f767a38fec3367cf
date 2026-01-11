@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/accounts/admin.py
+# hypothesis_version: 6.150.0
+
+['Access Status', 'Approval Information', 'Current Status', 'Log Information', 'Notes', 'Request Information', 'Resource Information', 'TechBookHub Admin', 'Timestamps', 'User Information', 'action', 'approve_selected', 'approve_users', 'approved', 'approved_at', 'approved_by', 'classes', 'collapse', 'date_joined', 'email', 'fields', 'first_name', 'gray', 'green', 'ip_address', 'is_staff', 'last_name', 'mark_processed', 'message', 'notes', 'orange', 'pending', 'performed_by', 'processed', 'processed_at', 'processed_by', 'purple', 'red', 'reject_selected', 'reject_users', 'rejected', 'rejection_reason', 'requested_at', 'resource_id', 'resource_type', 'status', 'suspend_selected', 'suspended', 'timestamp', 'user', 'user__access_status', 'user__email', 'user__first_name', 'user__last_name', 'user__username', 'user_agent', 'user_status', 'username']

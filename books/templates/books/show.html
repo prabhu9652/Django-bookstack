@@ -65,8 +65,8 @@
               </button>
             {% endif %}
             {% if template_data.book.pdf %}
-              <a href="{% url 'books.view' template_data.book.id %}" class="btn btn-secondary d-flex align-items-center gap-2" target="_blank">
-                <i class="fas fa-external-link-alt"></i>
+              <a href="{% url 'books.read' template_data.book.id %}" class="btn btn-secondary d-flex align-items-center gap-2">
+                <i class="fas fa-book-open"></i>
                 Read PDF
               </a>
               <a href="{% url 'books.download' template_data.book.id %}" class="btn btn-ghost d-flex align-items-center gap-2">
@@ -169,6 +169,17 @@
               </span>
             </div>
           </div>
+          
+          {% if template_data.pdf_size_display %}
+          <div class="metadata-item">
+            <div class="metadata-label" style="font-size: var(--font-size-xs); color: var(--text-tertiary); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: var(--space-2);">File Size</div>
+            <div class="metadata-value">
+              <span style="color: var(--text-secondary); display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-sm); font-weight: 600;">
+                <i class="fas fa-hdd"></i> {{ template_data.pdf_size_display }}
+              </span>
+            </div>
+          </div>
+          {% endif %}
         {% endif %}
         
         <div class="metadata-item">

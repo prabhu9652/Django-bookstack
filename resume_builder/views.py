@@ -45,6 +45,7 @@ def dashboard(request):
     return render(request, 'resume_builder/dashboard.html', context)
 
 
+@login_required
 def resume_templates(request):
     """Display available resume templates with role selection"""
     templates = ResumeTemplate.objects.filter(is_active=True)
@@ -262,6 +263,7 @@ I am passionate about my work and committed to continuous learning and professio
     }
 
 
+@login_required
 def cover_letter_templates(request):
     """Display available cover letter templates"""
     templates = CoverLetterTemplate.objects.filter(is_active=True)
@@ -282,6 +284,9 @@ def create_resume(request, template_id):
     if request.method == 'POST':
         try:
             role = request.POST.get('role', 'software_engineer')
+            
+            # Log template info for debugging
+            logger.info(f"Creating resume with template: {template.id} ({template.slug}) for user {request.user.username}")
             
             # Get default skills structure based on role
             default_skills = get_default_skills_for_role(role)
@@ -314,9 +319,14 @@ def create_resume(request, template_id):
                     languages=['English'],
                     certifications=[]
                 )
-                messages.success(request, 'Resume created successfully!')
+                
+                # Verify template was saved correctly
+                logger.info(f"Resume {resume.id} created with template: {resume.template.id} ({resume.template.slug})")
+                
+                messages.success(request, f'Resume created with {template.name} template!')
                 return redirect('resume_builder:edit_resume', resume_id=resume.id)
         except Exception as e:
+            logger.error(f"Error creating resume: {str(e)}")
             messages.error(request, f'Error creating resume: {str(e)}')
     
     context = {
@@ -563,6 +573,9 @@ def create_cover_letter(request, template_id):
             role = request.POST.get('role', 'devops_sre')
             cover_letter_content = get_default_cover_letter_content(role)
             
+            # Log template info for debugging
+            logger.info(f"Creating cover letter with template: {template.id} ({template.slug}) for user {request.user.username}")
+            
             with transaction.atomic():
                 cover_letter = CoverLetter.objects.create(
                     user=request.user,
@@ -579,9 +592,14 @@ def create_cover_letter(request, template_id):
                     body_paragraph=cover_letter_content['body_paragraph'],
                     closing_paragraph=cover_letter_content['closing_paragraph'],
                 )
-                messages.success(request, 'Cover letter created successfully!')
+                
+                # Verify template was saved correctly
+                logger.info(f"Cover letter {cover_letter.id} created with template: {cover_letter.template.id} ({cover_letter.template.slug})")
+                
+                messages.success(request, f'Cover letter created with {template.name} template!')
                 return redirect('resume_builder:edit_cover_letter', cover_letter_id=cover_letter.id)
         except Exception as e:
+            logger.error(f"Error creating cover letter: {str(e)}")
             messages.error(request, 'Error creating cover letter. Please try again.')
     
     # GET request - show role selection

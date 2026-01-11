@@ -2,107 +2,1327 @@
 {% load static %}
 
 {% block content %}
-<div class="container" style="padding: var(--space-8) 0;">
+<div class="resume-builder-page">
+  
   <!-- Hero Section -->
-  <div style="text-align: center; margin-bottom: var(--space-16);">
-    <div style="background: var(--bg-hero); padding: var(--space-16) var(--space-8); border-radius: var(--radius-xl); margin-bottom: var(--space-8);">
-      <h1 style="font-size: var(--font-size-4xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-4);">
-        Professional Resume & Cover Letter Builder
-      </h1>
-      <p style="font-size: var(--font-size-lg); color: var(--text-secondary); max-width: 600px; margin: 0 auto var(--space-8) auto;">
-        Create stunning, professional resumes and cover letters with our easy-to-use builder. Choose from multiple templates and customize to your needs.
-      </p>
+  <section class="rb-hero">
+    <div class="hero-bg-effects">
+      <div class="hero-gradient"></div>
+      <div class="hero-pattern"></div>
+    </div>
+    <div class="container">
+      <div class="hero-content-centered">
+        <h1>Build Your Professional <span class="highlight">Career Documents</span></h1>
+        <p class="hero-subtitle">Create ATS-optimized resumes and compelling cover letters that get you noticed by recruiters and land interviews at top companies.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Primary Decision Section - Three Equal Options -->
+  <section class="rb-decision-section">
+    <div class="container">
+      <div class="decision-header">
+        <h2>What would you like to do?</h2>
+        <p>Choose an option to get started</p>
+      </div>
       
-      {% if user.is_authenticated %}
-        <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
-          <a href="{% url 'resume_builder:resume_templates' %}" class="btn btn-primary btn-lg">
+      <div class="decision-cards">
+        <!-- Create Resume Card -->
+        <div class="decision-card card-resume">
+          <div class="card-accent"></div>
+          <div class="card-icon">
             <i class="fas fa-file-alt"></i>
-            Create Resume
+          </div>
+          <div class="card-content">
+            <h3>Create Resume</h3>
+            <p class="card-description">Build a professional, ATS-optimized resume that stands out</p>
+            
+            <div class="card-use-cases">
+              <span><i class="fas fa-check"></i> Job Applications</span>
+              <span><i class="fas fa-check"></i> Career Switch</span>
+              <span><i class="fas fa-check"></i> Fresh Graduates</span>
+              <span><i class="fas fa-check"></i> Promotions</span>
+            </div>
+            
+            <div class="card-meta">
+              <div class="meta-item">
+                <i class="fas fa-clock"></i>
+                <span>~10 min</span>
+              </div>
+              <div class="meta-item">
+                <i class="fas fa-robot"></i>
+                <span>ATS Score</span>
+              </div>
+            </div>
+          </div>
+          
+          {% if user.is_authenticated %}
+          <a href="{% url 'resume_builder:resume_templates' %}" class="card-cta">
+            <span>Start Resume</span>
+            <i class="fas fa-arrow-right"></i>
           </a>
-          <a href="{% url 'resume_builder:cover_letter_templates' %}" class="btn btn-secondary btn-lg">
-            <i class="fas fa-envelope"></i>
-            Create Cover Letter
+          {% else %}
+          <a href="{% url 'accounts.signup' %}?next={% url 'resume_builder:resume_templates' %}" class="card-cta">
+            <span>Start Resume</span>
+            <i class="fas fa-arrow-right"></i>
           </a>
-          <a href="{% url 'resume_builder:dashboard' %}" class="btn btn-ghost btn-lg">
-            <i class="fas fa-tachometer-alt"></i>
-            My Documents
-          </a>
+          {% endif %}
         </div>
-      {% else %}
-        <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
-          <a href="{% url 'accounts.signup' %}" class="btn btn-primary btn-lg">
-            <i class="fas fa-user-plus"></i>
-            Get Started Free
+
+        <!-- Create Cover Letter Card -->
+        <div class="decision-card card-cover-letter">
+          <div class="card-accent"></div>
+          <div class="card-icon">
+            <i class="fas fa-envelope-open-text"></i>
+          </div>
+          <div class="card-content">
+            <h3>Create Cover Letter</h3>
+            <p class="card-description">Craft a compelling letter that complements your resume</p>
+            
+            <div class="card-use-cases">
+              <span><i class="fas fa-check"></i> Job-Specific</span>
+              <span><i class="fas fa-check"></i> Cold Outreach</span>
+              <span><i class="fas fa-check"></i> Internships</span>
+              <span><i class="fas fa-check"></i> Referrals</span>
+            </div>
+            
+            <div class="card-meta">
+              <div class="meta-item">
+                <i class="fas fa-clock"></i>
+                <span>~5 min</span>
+              </div>
+              <div class="meta-item">
+                <i class="fas fa-magic"></i>
+                <span>Role-Based</span>
+              </div>
+            </div>
+          </div>
+          
+          {% if user.is_authenticated %}
+          <a href="{% url 'resume_builder:cover_letter_templates' %}" class="card-cta">
+            <span>Start Cover Letter</span>
+            <i class="fas fa-arrow-right"></i>
           </a>
-          <a href="{% url 'accounts.login' %}" class="btn btn-ghost btn-lg">
-            <i class="fas fa-sign-in-alt"></i>
-            Sign In
+          {% else %}
+          <a href="{% url 'accounts.signup' %}?next={% url 'resume_builder:cover_letter_templates' %}" class="card-cta">
+            <span>Start Cover Letter</span>
+            <i class="fas fa-arrow-right"></i>
           </a>
+          {% endif %}
         </div>
+
+        <!-- My Documents Card -->
+        <div class="decision-card card-documents">
+          <div class="card-accent"></div>
+          <div class="card-icon">
+            <i class="fas fa-folder-open"></i>
+          </div>
+          <div class="card-content">
+            <h3>My Documents</h3>
+            <p class="card-description">Access, edit, and manage your saved career documents</p>
+            
+            {% if user.is_authenticated %}
+            <div class="card-stats">
+              <div class="stat-item">
+                <span class="stat-value">{{ user_resumes|default:0 }}</span>
+                <span class="stat-label">Resumes</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{ user_cover_letters|default:0 }}</span>
+                <span class="stat-label">Cover Letters</span>
+              </div>
+            </div>
+            {% else %}
+            <div class="card-use-cases">
+              <span><i class="fas fa-check"></i> Edit Drafts</span>
+              <span><i class="fas fa-check"></i> Download PDFs</span>
+              <span><i class="fas fa-check"></i> Duplicate</span>
+              <span><i class="fas fa-check"></i> Version Control</span>
+            </div>
+            {% endif %}
+            
+            <div class="card-meta">
+              <div class="meta-item">
+                <i class="fas fa-sync-alt"></i>
+                <span>Auto-Save</span>
+              </div>
+              <div class="meta-item">
+                <i class="fas fa-history"></i>
+                <span>Version History</span>
+              </div>
+            </div>
+          </div>
+          
+          {% if user.is_authenticated %}
+          <a href="{% url 'resume_builder:dashboard' %}" class="card-cta">
+            <span>View Documents</span>
+            <i class="fas fa-arrow-right"></i>
+          </a>
+          {% else %}
+          <a href="{% url 'accounts.login' %}?next={% url 'resume_builder:dashboard' %}" class="card-cta">
+            <span>Sign In to View</span>
+            <i class="fas fa-arrow-right"></i>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+      
+      {% if not user.is_authenticated %}
+      <div class="decision-signin">
+        <p>Already have an account? <a href="{% url 'accounts.login' %}">Sign in</a> to access your documents</p>
+      </div>
       {% endif %}
     </div>
-  </div>
+  </section>
 
-  <!-- Features Grid -->
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-6); margin-bottom: var(--space-16);">
-    <div class="card" style="text-align: center; padding: var(--space-8);">
-      <div style="width: 60px; height: 60px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4) auto;">
-        <i class="fas fa-file-alt" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
+  <!-- How It Works Section -->
+  <section class="rb-how-it-works">
+    <div class="container">
+      <div class="section-header-center">
+        <span class="section-badge">Simple Process</span>
+        <h2>How It Works</h2>
+        <p>Our guided process makes document creation fast and stress-free</p>
       </div>
-      <h3 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">
-        Professional Templates
-      </h3>
-      <p style="color: var(--text-secondary);">
-        Choose from {{ resume_count }} professionally designed resume templates that make you stand out.
-      </p>
-    </div>
-
-    <div class="card" style="text-align: center; padding: var(--space-8);">
-      <div style="width: 60px; height: 60px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4) auto;">
-        <i class="fas fa-envelope" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
+      
+      <div class="process-tabs">
+        <button class="process-tab active" data-tab="resume">
+          <i class="fas fa-file-alt"></i>
+          <span>Resume Process</span>
+        </button>
+        <button class="process-tab" data-tab="cover-letter">
+          <i class="fas fa-envelope"></i>
+          <span>Cover Letter Process</span>
+        </button>
       </div>
-      <h3 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">
-        Cover Letters
-      </h3>
-      <p style="color: var(--text-secondary);">
-        Create compelling cover letters with {{ cover_letter_count }} templates tailored to different industries.
-      </p>
-    </div>
-
-    <div class="card" style="text-align: center; padding: var(--space-8);">
-      <div style="width: 60px; height: 60px; background: var(--accent-subtle); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4) auto;">
-        <i class="fas fa-download" style="font-size: var(--font-size-2xl); color: var(--accent-primary);"></i>
-      </div>
-      <h3 style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3);">
-        Easy Export
-      </h3>
-      <p style="color: var(--text-secondary);">
-        Download your documents in multiple formats. Perfect for online applications and printing.
-      </p>
-    </div>
-  </div>
-
-  {% if user.is_authenticated %}
-    <!-- User Stats -->
-    <div class="card" style="padding: var(--space-8); text-align: center;">
-      <h2 style="font-size: var(--font-size-2xl); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-6);">
-        Your Documents
-      </h2>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-6);">
-        <div>
-          <div style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--accent-primary);">
-            {{ user_resumes|default:0 }}
+      
+      <!-- Resume Process Steps -->
+      <div class="process-content active" id="resume-process">
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <div class="step-icon"><i class="fas fa-user-tie"></i></div>
+            <h4>Select Your Profile</h4>
+            <p>Choose experience level: Fresher, Experienced, Career Switcher, or Executive</p>
           </div>
-          <div style="color: var(--text-secondary);">Resumes Created</div>
-        </div>
-        <div>
-          <div style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--accent-primary);">
-            {{ user_cover_letters|default:0 }}
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <div class="step-icon"><i class="fas fa-industry"></i></div>
+            <h4>Choose Industry</h4>
+            <p>Select your target industry: Tech, Finance, Design, Marketing, or Operations</p>
           </div>
-          <div style="color: var(--text-secondary);">Cover Letters</div>
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <div class="step-icon"><i class="fas fa-palette"></i></div>
+            <h4>Pick Template</h4>
+            <p>Choose from ATS-friendly, role-specific templates designed by recruiters</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">4</div>
+            <div class="step-icon"><i class="fas fa-edit"></i></div>
+            <h4>Fill Details</h4>
+            <p>Add experience, skills, and education with smart suggestions and tips</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">5</div>
+            <div class="step-icon"><i class="fas fa-chart-line"></i></div>
+            <h4>Optimize</h4>
+            <p>Review your ATS score and get suggestions to improve your resume</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">6</div>
+            <div class="step-icon"><i class="fas fa-download"></i></div>
+            <h4>Export</h4>
+            <p>Download as PDF or DOCX, save versions for different applications</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Cover Letter Process Steps -->
+      <div class="process-content" id="cover-letter-process">
+        <div class="steps-grid steps-grid-5">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <div class="step-icon"><i class="fas fa-list-alt"></i></div>
+            <h4>Select Type</h4>
+            <p>Choose: Job-Specific, General, or Internship/Fresher letter</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <div class="step-icon"><i class="fas fa-building"></i></div>
+            <h4>Job Details</h4>
+            <p>Enter company name, role, and optionally paste the job description</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <div class="step-icon"><i class="fas fa-sliders-h"></i></div>
+            <h4>Set Tone</h4>
+            <p>Pick Professional, Conversational, or Executive tone</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">4</div>
+            <div class="step-icon"><i class="fas fa-pen-fancy"></i></div>
+            <h4>Write Sections</h4>
+            <p>Fill intro, body, and closing with role-specific suggestions</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">5</div>
+            <div class="step-icon"><i class="fas fa-file-export"></i></div>
+            <h4>Export</h4>
+            <p>Preview, edit, and download as PDF or copy text</p>
+          </div>
         </div>
       </div>
     </div>
-  {% endif %}
+  </section>
+
+  <!-- Features Section -->
+  <section class="rb-features">
+    <div class="container">
+      <div class="section-header-center">
+        <span class="section-badge">Why Choose Us</span>
+        <h2>Built for Job Seekers</h2>
+        <p>Professional tools designed by recruiters and career experts</p>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-robot"></i></div>
+          <h3>ATS-Optimized</h3>
+          <p>Templates designed to pass Applicant Tracking Systems used by 99% of Fortune 500 companies.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-palette"></i></div>
+          <h3>Professional Templates</h3>
+          <p>Role-specific layouts tailored for different industries and experience levels.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-lightbulb"></i></div>
+          <h3>Smart Suggestions</h3>
+          <p>Get role-specific content suggestions and bullet point examples to highlight achievements.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-eye"></i></div>
+          <h3>Live Preview</h3>
+          <p>See your changes in real-time as you build. No surprises when you download.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-file-pdf"></i></div>
+          <h3>PDF Export</h3>
+          <p>Download high-quality PDF files that look perfect on any device and print beautifully.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-sync-alt"></i></div>
+          <h3>Version Control</h3>
+          <p>Create multiple versions for different roles and track your document history.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Role Templates Section -->
+  <section class="rb-roles">
+    <div class="container">
+      <div class="section-header-center">
+        <span class="section-badge">Tailored for You</span>
+        <h2>Templates for Every Role</h2>
+        <p>Industry-specific templates with pre-written content suggestions</p>
+      </div>
+      
+      <div class="roles-grid">
+        <a href="{% url 'resume_builder:resume_templates' %}?role=devops_sre" class="role-card">
+          <div class="role-icon"><i class="fas fa-server"></i></div>
+          <div class="role-content">
+            <h3>DevOps / SRE</h3>
+            <p>Cloud infrastructure, CI/CD, Kubernetes, monitoring & observability</p>
+            <div class="role-skills">
+              <span>AWS</span><span>Terraform</span><span>K8s</span><span>Docker</span>
+            </div>
+          </div>
+          <span class="role-cta">Create Resume <i class="fas fa-arrow-right"></i></span>
+        </a>
+        
+        <a href="{% url 'resume_builder:resume_templates' %}?role=software_engineer" class="role-card">
+          <div class="role-icon"><i class="fas fa-code"></i></div>
+          <div class="role-content">
+            <h3>Software Engineer</h3>
+            <p>Full-stack development, APIs, databases, system design</p>
+            <div class="role-skills">
+              <span>Python</span><span>React</span><span>Node.js</span><span>SQL</span>
+            </div>
+          </div>
+          <span class="role-cta">Create Resume <i class="fas fa-arrow-right"></i></span>
+        </a>
+        
+        <a href="{% url 'resume_builder:resume_templates' %}?role=ds_ml" class="role-card">
+          <div class="role-icon"><i class="fas fa-brain"></i></div>
+          <div class="role-content">
+            <h3>Data Science / ML</h3>
+            <p>Machine learning, data pipelines, model deployment, analytics</p>
+            <div class="role-skills">
+              <span>Python</span><span>TensorFlow</span><span>PyTorch</span><span>SQL</span>
+            </div>
+          </div>
+          <span class="role-cta">Create Resume <i class="fas fa-arrow-right"></i></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="rb-cta">
+    <div class="container">
+      <div class="cta-card">
+        <div class="cta-glow"></div>
+        <div class="cta-content">
+          <div class="cta-icon"><i class="fas fa-rocket"></i></div>
+          <h2>Ready to Build Your Career Documents?</h2>
+          <p>Join thousands of job seekers who have landed their dream jobs with our tools.</p>
+          <div class="cta-buttons">
+            {% if user.is_authenticated %}
+            <a href="{% url 'resume_builder:resume_templates' %}" class="btn-cta-primary">
+              <i class="fas fa-file-alt"></i> Create Resume
+            </a>
+            <a href="{% url 'resume_builder:cover_letter_templates' %}" class="btn-cta-secondary">
+              <i class="fas fa-envelope"></i> Create Cover Letter
+            </a>
+            {% else %}
+            <a href="{% url 'accounts.signup' %}" class="btn-cta-primary">
+              <i class="fas fa-user-plus"></i> Get Started Free
+            </a>
+            <a href="{% url 'accounts.login' %}" class="btn-cta-secondary">Sign In</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </div>
+
+
+<style>
+/* ============================================
+   RESUME BUILDER PAGE - REDESIGNED
+   ============================================ */
+.resume-builder-page {
+  background: var(--bg-primary);
+}
+
+/* Hero Section */
+.rb-hero {
+  position: relative;
+  padding: 4rem 0 2rem;
+  overflow: hidden;
+}
+
+.hero-bg-effects {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-gradient {
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 150%;
+  background: radial-gradient(ellipse, rgba(74, 158, 255, 0.08) 0%, transparent 70%);
+}
+
+.hero-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(74, 158, 255, 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+.hero-content-centered {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 50px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #22c55e;
+  margin-bottom: 1.5rem;
+}
+
+.hero-content-centered h1 {
+  font-size: 2.75rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.15;
+  margin: 0 0 1rem;
+  letter-spacing: -0.02em;
+}
+
+.hero-content-centered h1 .highlight {
+  background: linear-gradient(135deg, #4a9eff 0%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Decision Section - Three Equal Cards */
+.rb-decision-section {
+  padding: 3rem 0 4rem;
+}
+
+.decision-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.decision-header h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.decision-header p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.decision-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.decision-card {
+  position: relative;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 18px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.card-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card-resume .card-accent {
+  background: linear-gradient(90deg, #4a9eff 0%, #0066cc 100%);
+}
+
+.card-cover-letter .card-accent {
+  background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
+}
+
+.card-documents .card-accent {
+  background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+}
+
+.decision-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(74, 158, 255, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.decision-card:hover .card-accent {
+  opacity: 1;
+}
+
+.card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.card-resume .card-icon {
+  background: rgba(74, 158, 255, 0.1);
+}
+
+.card-resume .card-icon i {
+  font-size: 1.5rem;
+  color: #4a9eff;
+}
+
+.card-cover-letter .card-icon {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.card-cover-letter .card-icon i {
+  font-size: 1.5rem;
+  color: #8b5cf6;
+}
+
+.card-documents .card-icon {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.card-documents .card-icon i {
+  font-size: 1.5rem;
+  color: #22c55e;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-content h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.card-description {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+
+.card-use-cases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.card-use-cases span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  background: var(--bg-elevated);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.card-use-cases span i {
+  font-size: 0.5rem;
+  color: #22c55e;
+}
+
+.card-stats {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #22c55e;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.card-meta {
+  display: flex;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-default);
+  margin-bottom: 1.25rem;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.meta-item i {
+  font-size: 0.75rem;
+}
+
+.card-resume .meta-item i { color: #4a9eff; }
+.card-cover-letter .meta-item i { color: #8b5cf6; }
+.card-documents .meta-item i { color: #22c55e; }
+
+.card-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.25rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.card-resume .card-cta {
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  color: white;
+}
+
+.card-resume .card-cta:hover {
+  box-shadow: 0 6px 20px rgba(74, 158, 255, 0.35);
+  color: white;
+}
+
+.card-cover-letter .card-cta {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  color: white;
+}
+
+.card-cover-letter .card-cta:hover {
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
+  color: white;
+}
+
+.card-documents .card-cta {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+}
+
+.card-documents .card-cta:hover {
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
+  color: white;
+}
+
+.card-cta i {
+  transition: transform 0.25s ease;
+}
+
+.card-cta:hover i {
+  transform: translateX(4px);
+}
+
+.decision-signin {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+}
+
+.decision-signin a {
+  color: #4a9eff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.decision-signin a:hover {
+  text-decoration: underline;
+}
+</style>
+
+
+<style>
+/* How It Works Section */
+.rb-how-it-works {
+  padding: 4rem 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(74, 158, 255, 0.02) 50%, transparent 100%);
+}
+
+.section-header-center {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.section-badge {
+  display: inline-block;
+  padding: 0.375rem 0.875rem;
+  background: rgba(74, 158, 255, 0.1);
+  border: 1px solid rgba(74, 158, 255, 0.2);
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4a9eff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 1rem;
+}
+
+.section-header-center h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.section-header-center p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.process-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.process-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  background: var(--bg-surface);
+  border: 2px solid var(--border-default);
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.process-tab:hover {
+  border-color: rgba(74, 158, 255, 0.3);
+  color: var(--text-primary);
+}
+
+.process-tab.active {
+  background: rgba(74, 158, 255, 0.1);
+  border-color: #4a9eff;
+  color: #4a9eff;
+}
+
+.process-content {
+  display: none;
+}
+
+.process-content.active {
+  display: block;
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.steps-grid-5 {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.step-card {
+  position: relative;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  transition: all 0.25s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(74, 158, 255, 0.3);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+.step-number {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.875rem;
+}
+
+.step-icon i {
+  font-size: 1.125rem;
+  color: #4a9eff;
+}
+
+.step-card h4 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.375rem;
+}
+
+.step-card p {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Features Section */
+.rb-features {
+  padding: 4rem 0;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.feature-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  padding: 1.75rem;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(74, 158, 255, 0.3);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+  width: 52px;
+  height: 52px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.feature-icon i {
+  font-size: 1.25rem;
+  color: #4a9eff;
+}
+
+.feature-card h3 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.feature-card p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Roles Section */
+.rb-roles {
+  padding: 4rem 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(74, 158, 255, 0.02) 50%, transparent 100%);
+}
+
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.role-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  padding: 1.75rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.role-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(74, 158, 255, 0.4);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.role-card:hover .role-cta {
+  color: #4a9eff;
+}
+
+.role-card:hover .role-cta i {
+  transform: translateX(4px);
+}
+
+.role-icon {
+  width: 52px;
+  height: 52px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.role-icon i {
+  font-size: 1.25rem;
+  color: #4a9eff;
+}
+
+.role-content {
+  flex: 1;
+}
+
+.role-card h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.375rem;
+}
+
+.role-card p {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 0.875rem;
+}
+
+.role-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+.role-skills span {
+  padding: 0.25rem 0.5rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 5px;
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+}
+
+.role-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: all 0.25s ease;
+}
+
+.role-cta i {
+  font-size: 0.75rem;
+  transition: transform 0.25s ease;
+}
+
+/* CTA Section */
+.rb-cta {
+  padding: 4rem 0 5rem;
+}
+
+.cta-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(74, 158, 255, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%);
+  border: 1px solid rgba(74, 158, 255, 0.15);
+  border-radius: 24px;
+  padding: 4rem 2rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.cta-glow {
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(74, 158, 255, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cta-content {
+  position: relative;
+}
+
+.cta-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #4a9eff 0%, #6366f1 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 10px 30px rgba(74, 158, 255, 0.3);
+}
+
+.cta-icon i {
+  font-size: 2rem;
+  color: white;
+}
+
+.cta-card h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.75rem;
+}
+
+.cta-card p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 500px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-cta-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.btn-cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(74, 158, 255, 0.4);
+  color: white;
+}
+
+.btn-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: transparent;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1rem;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.btn-cta-secondary:hover {
+  border-color: #4a9eff;
+  color: #4a9eff;
+}
+</style>
+
+
+<style>
+/* Responsive Design */
+@media (max-width: 1100px) {
+  .decision-cards {
+    grid-template-columns: 1fr;
+    max-width: 450px;
+  }
+  
+  .steps-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .steps-grid-5 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .hero-content-centered h1 {
+    font-size: 2.25rem;
+  }
+  
+  .features-grid,
+  .roles-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .rb-hero {
+    padding: 3rem 0 1.5rem;
+  }
+  
+  .hero-content-centered h1 {
+    font-size: 1.875rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .decision-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .process-tabs {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .process-tab {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+  
+  .steps-grid,
+  .steps-grid-5 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .features-grid,
+  .roles-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn-cta-primary,
+  .btn-cta-secondary {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-content-centered h1 {
+    font-size: 1.625rem;
+  }
+  
+  .decision-card {
+    padding: 1.5rem;
+  }
+  
+  .card-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .steps-grid,
+  .steps-grid-5 {
+    grid-template-columns: 1fr;
+  }
+  
+  .cta-card {
+    padding: 2.5rem 1.5rem;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .decision-card,
+  .step-card,
+  .feature-card,
+  .role-card,
+  .btn-cta-primary,
+  .card-cta {
+    transition: none;
+  }
+  
+  .decision-card:hover,
+  .step-card:hover,
+  .feature-card:hover,
+  .role-card:hover {
+    transform: none;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Process tabs functionality
+  const processTabs = document.querySelectorAll('.process-tab');
+  const processContents = document.querySelectorAll('.process-content');
+  
+  processTabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      const tabId = this.dataset.tab;
+      
+      // Update active tab
+      processTabs.forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Update active content
+      processContents.forEach(content => {
+        content.classList.remove('active');
+        if (content.id === `${tabId}-process`) {
+          content.classList.add('active');
+        }
+      });
+    });
+  });
+});
+</script>
 {% endblock %}

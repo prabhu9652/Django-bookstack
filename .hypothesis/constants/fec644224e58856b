@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/accounts/access_control.py
+# hypothesis_version: 6.150.0
+
+[403, ',', 'Error', 'HTTP_USER_AGENT', 'HTTP_X_FORWARDED_FOR', 'No Status', 'Not Authenticated', 'REMOTE_ADDR', 'X-Requested-With', 'XMLHttpRequest', 'access_status', 'can_request_access', 'content_accessed', 'download', 'error', 'has_content_access', 'id', 'is_superuser', 'pdf', 'pdf_downloaded', 'pdf_viewed', 'pending', 'rejected', 'requires_approval', 'success', 'unknown', 'user_status']

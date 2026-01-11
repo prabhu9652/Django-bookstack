@@ -32,6 +32,9 @@
     <!-- Image Optimization Styles -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/image-optimization.css' %}?v=20260111-imgopt">
     
+    <!-- Responsive Enhancements - Mobile First -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/responsive-enhancements.css' %}?v=20260112-responsive">
+    
     <!-- Shared Library Management -->
     <script src="{% static 'js/library-manager.js' %}" defer></script>
     
@@ -155,13 +158,90 @@
         </div>
         
         <!-- Mobile Menu Toggle -->
-        <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu" aria-expanded="false">
           <span class="hamburger-line"></span>
           <span class="hamburger-line"></span>
           <span class="hamburger-line"></span>
         </button>
       </div>
     </nav>
+    
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+    
+    <!-- Mobile Menu Panel -->
+    <div class="mobile-menu-panel" id="mobileMenuPanel">
+      <div class="mobile-menu-header">
+        <span style="font-weight: 600; color: var(--text-primary);">Menu</span>
+        <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <nav class="mobile-nav-links">
+        <a href="{% url 'home.index' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'home.index' %}active{% endif %}">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </a>
+        <a href="{% url 'books.index' %}" class="mobile-nav-link {% if request.resolver_match.url_name and 'books' in request.resolver_match.url_name and not request.resolver_match.namespace %}active{% endif %}">
+          <i class="fas fa-book"></i>
+          <span>Books</span>
+        </a>
+        {% if user.is_authenticated %}
+        <a href="{% url 'library.index' %}" class="mobile-nav-link {% if request.resolver_match.url_name and 'library' in request.resolver_match.url_name and not request.resolver_match.namespace %}active{% endif %}">
+          <i class="fas fa-bookmark"></i>
+          <span>My Library</span>
+        </a>
+        {% endif %}
+        <a href="{% url 'resume_builder:home' %}" class="mobile-nav-link {% if request.resolver_match.namespace == 'resume_builder' %}active{% endif %}">
+          <i class="fas fa-file-alt"></i>
+          <span>Resume Builder</span>
+        </a>
+        <a href="{% url 'roadmap:home' %}" class="mobile-nav-link {% if request.resolver_match.namespace == 'roadmap' %}active{% endif %}">
+          <i class="fas fa-route"></i>
+          <span>Roadmap</span>
+        </a>
+        <a href="{% url 'home.about' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'home.about' %}active{% endif %}">
+          <i class="fas fa-info-circle"></i>
+          <span>About</span>
+        </a>
+      </nav>
+      
+      <!-- Mobile Auth Section -->
+      <div class="mobile-auth-section">
+        {% if user.is_authenticated %}
+        <div style="padding: 0.75rem 0; border-bottom: 1px solid var(--border-default); margin-bottom: 0.75rem;">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #4a9eff, #6366f1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+              {{ user.username|slice:":1"|upper }}
+            </div>
+            <div>
+              <div style="font-weight: 600; color: var(--text-primary);">{{ user.username }}</div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary);">{{ user.email|default:"No email" }}</div>
+            </div>
+          </div>
+        </div>
+        <a href="{% url 'accounts.access_status' %}" class="mobile-nav-link">
+          <i class="fas fa-user-shield"></i>
+          <span>Access & Permissions</span>
+        </a>
+        <a href="{% url 'accounts.logout' %}" class="mobile-auth-btn secondary" style="margin-top: 0.5rem;">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Sign Out</span>
+        </a>
+        {% else %}
+        <div class="mobile-auth-buttons">
+          <a href="{% url 'accounts.login' %}" class="mobile-auth-btn secondary">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Sign In</span>
+          </a>
+          <a href="{% url 'accounts.signup' %}" class="mobile-auth-btn primary">
+            <i class="fas fa-user-plus"></i>
+            <span>Sign Up Free</span>
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
 
     <!-- Main Content -->
     <main style="padding-top: 64px;" id="main-content">
@@ -214,6 +294,60 @@
     <!-- Scripts -->
     <script src="{% static 'js/minimal-interactions.js' %}"></script>
     <script src="{% static 'js/page-transitions.js' %}"></script>
+    
+    <!-- Mobile Menu Script -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+      const mobileMenuPanel = document.getElementById('mobileMenuPanel');
+      const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+      const mobileMenuClose = document.getElementById('mobileMenuClose');
+      
+      function openMobileMenu() {
+        mobileMenuPanel.classList.add('active');
+        mobileNavOverlay.classList.add('active');
+        mobileNavOverlay.style.display = 'block';
+        mobileMenuToggle.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+      }
+      
+      function closeMobileMenu() {
+        mobileMenuPanel.classList.remove('active');
+        mobileNavOverlay.classList.remove('active');
+        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+        setTimeout(() => {
+          mobileNavOverlay.style.display = 'none';
+        }, 300);
+      }
+      
+      if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', openMobileMenu);
+      }
+      
+      if (mobileMenuClose) {
+        mobileMenuClose.addEventListener('click', closeMobileMenu);
+      }
+      
+      if (mobileNavOverlay) {
+        mobileNavOverlay.addEventListener('click', closeMobileMenu);
+      }
+      
+      // Close on escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && mobileMenuPanel.classList.contains('active')) {
+          closeMobileMenu();
+        }
+      });
+      
+      // Close menu on window resize to desktop
+      window.addEventListener('resize', function() {
+        if (window.innerWidth > 639 && mobileMenuPanel.classList.contains('active')) {
+          closeMobileMenu();
+        }
+      });
+    });
+    </script>
     
     <!-- Profile Dropdown Script -->
     <script>

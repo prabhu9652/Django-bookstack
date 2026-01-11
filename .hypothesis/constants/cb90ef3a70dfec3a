@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/resume_builder/migrations/0005_add_preview_image_to_resumetemplate.py
+# hypothesis_version: 6.150.0
+
+['preview_image', 'resume_builder', 'resumetemplate', 'template_previews/']

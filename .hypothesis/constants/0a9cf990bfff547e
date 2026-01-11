@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/roadmap/migrations/0006_populate_external_urls.py
+# hypothesis_version: 6.150.0
+
+['AKS', 'AWS', 'AWS Migration', 'AWS SageMaker', 'Airflow', 'Ansible', 'Azure', 'Bamboo', 'BigQuery', 'Bitbucket', 'CI/CD', 'DigitalOcean', 'Django', 'Docker', 'EKS', 'FastAPI', 'GCP', 'GIT', 'GKE', 'Git', 'GitHub', 'GitHub Actions', 'GitLab', 'GitLab CI/CD', 'Github', 'Go', 'GraphQL', 'Java', 'JavaScript', 'Jenkins', 'JourneySkill', 'K8s', 'Keras', 'Kubernetes', 'MLflow', 'Matplotlib', 'MongoDB', 'MySQL', 'Node.js', 'NumPy', 'Packer', 'Pandas', 'PostgreSQL', 'Puppet', 'PyTorch', 'Python', 'R', 'REST APIs', 'React', 'Redis', 'SQL', 'Scala', 'Scikit-learn', 'Seaborn', 'Shell scripting', 'Spark', 'System Design', 'Tableau', 'TensorFlow', 'Terraform', 'Terragrunt', 'TypeScript', 'Vue.js', 'https://go.dev/doc/', 'roadmap']

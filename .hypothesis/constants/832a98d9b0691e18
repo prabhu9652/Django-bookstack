@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/booksstore/middleware.py
+# hypothesis_version: 6.150.0
+
+['.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp', 'Accept-Encoding', 'Cache-Control', 'Vary']

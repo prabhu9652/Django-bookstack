@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/resume_builder/migrations/0006_add_cover_letter_templates.py
+# hypothesis_version: 6.150.0
+
+['#1a1a1a', '#2d3748', '#4a9d9a', 'Classic Professional', 'CoverLetterTemplate', 'Modern Professional', 'classic', 'creative', 'css_styles', 'description', 'formal', 'html_template', 'is_active', 'modern', 'name', 'primary_color', 'professional', 'resume_builder', 'tone']

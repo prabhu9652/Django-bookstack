@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/roadmap/admin.py
+# hypothesis_version: 6.150.0
+
+['-updated_at', 'Basic Information', 'Display Settings', 'Status', 'created_at', 'description', 'difficulty', 'display_order', 'duration', 'estimated_duration', 'fields', 'icon_class', 'is_active', 'is_core', 'name', 'order', 'phase', 'phase__order', 'phase__roadmap_path', 'roadmap_path', 'skill', 'skill__name', 'slug', 'status', 'subtitle', 'title', 'updated_at', 'user', 'user__email', 'user__username']

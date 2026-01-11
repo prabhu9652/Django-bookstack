@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/resume_builder/migrations/0004_add_cover_letter_fields.py
+# hypothesis_version: 6.150.0
+
+['#4a9d9a', 'Full address', 'Header/accent color', 'address', 'body_paragraph', 'closing_paragraph', 'company_address', 'content', 'coverletter', 'coverlettertemplate', 'linkedin', 'opening_paragraph', 'primary_color', 'resume_builder']

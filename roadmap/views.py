@@ -3,7 +3,8 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.views.decorators.vary import vary_on_headers
-from .models import RoadmapPath, RoadmapPhase, UserProgress
+from django.utils import timezone
+from .models import RoadmapPath, RoadmapPhase, UserProgress, JourneySkill
 
 
 @never_cache
@@ -55,8 +56,16 @@ def path_detail(request, slug):
     roadmap_path = get_object_or_404(RoadmapPath, slug=slug, is_active=True)
     phases = roadmap_path.phases.filter(is_active=True).prefetch_related('skills').order_by('order')
     
+    # Calculate total skills count
+    total_skills = 0
+    for phase in phases:
+        total_skills += phase.skills.count()
+    
     # Get user progress for this path if authenticated
     user_progress = {}
+    completed_count = 0
+    in_progress_count = 0
+    
     if request.user.is_authenticated:
         progress_data = UserProgress.objects.filter(
             user=request.user,
@@ -66,11 +75,28 @@ def path_detail(request, slug):
         for progress in progress_data:
             if progress.skill:
                 user_progress[progress.skill.id] = progress.status
+                if progress.status == 'completed':
+                    completed_count += 1
+                elif progress.status == 'in_progress':
+                    in_progress_count += 1
+    
+    remaining_count = total_skills - completed_count - in_progress_count
+    
+    # Get journey tools for "Start Your Journey" section (external links only)
+    journey_skills = JourneySkill.objects.filter(
+        roadmap_path=roadmap_path,
+        is_active=True
+    ).order_by('display_order')
     
     context = {
         'roadmap_path': roadmap_path,
         'phases': phases,
         'user_progress': user_progress,
+        'total_skills': total_skills,
+        'completed_count': completed_count,
+        'in_progress_count': in_progress_count,
+        'remaining_count': remaining_count,
+        'journey_skills': journey_skills,  # Dynamic tools for Start Your Journey
         'page_type': 'roadmap_detail',  # For state isolation
         'path_slug': slug,  # Explicit path identifier
     }

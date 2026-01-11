@@ -5,214 +5,402 @@
 <!-- Hidden CSRF token for form submissions -->
 {% csrf_token %}
 
-<div class="container p-8">
-  <!-- Clean Header -->
-  <div class="dashboard-header d-flex justify-content-between align-items-center mb-12 animate-slide-down">
-    <div class="header-content">
-      <h1 class="d-flex align-items-center gap-3 mb-2">
-        <div class="header-icon">
+<div class="documents-dashboard">
+  <div class="container">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header-enhanced">
+      <div class="header-left">
+        <div class="header-icon-wrapper">
           <i class="fas fa-folder-open"></i>
         </div>
-        My Documents
-      </h1>
-      <p class="text-secondary">
-        Manage your professional resumes and cover letters
-      </p>
+        <div class="header-text">
+          <h1>My Documents</h1>
+          <p>Manage your professional resumes and cover letters</p>
+        </div>
+      </div>
+      <div class="header-actions-enhanced">
+        <a href="{% url 'resume_builder:resume_templates' %}" class="action-btn-new resume-btn">
+          <i class="fas fa-file-alt"></i>
+          <span>New Resume</span>
+        </a>
+        <a href="{% url 'resume_builder:cover_letter_templates' %}" class="action-btn-new letter-btn">
+          <i class="fas fa-envelope"></i>
+          <span>New Cover Letter</span>
+        </a>
+      </div>
     </div>
-    <div class="header-actions d-flex gap-3">
-      <a href="{% url 'resume_builder:resume_templates' %}" class="btn btn-primary animate-slide-right">
-        <i class="fas fa-plus"></i>
-        New Resume
-      </a>
-      <a href="{% url 'resume_builder:cover_letter_templates' %}" class="btn btn-secondary animate-slide-right">
-        <i class="fas fa-plus"></i>
-        New Cover Letter
-      </a>
-    </div>
-  </div>
 
-  <!-- Resumes Section -->
-  <div class="documents-section mb-16 animate-slide-left">
-    <div class="section-header-enhanced mb-8">
-      <h2 class="d-flex align-items-center">
-        <div class="section-icon">
+    <!-- Stats Overview -->
+    <div class="stats-overview">
+      <div class="stat-card">
+        <div class="stat-icon resume-icon">
           <i class="fas fa-file-alt"></i>
         </div>
-        Resumes
-      </h2>
-      {% if resumes %}
-        <span class="document-count">
-          {{ resumes|length }} document{{ resumes|length|pluralize }}
-        </span>
-      {% endif %}
+        <div class="stat-info">
+          <span class="stat-number">{{ resumes|length|default:0 }}</span>
+          <span class="stat-label">Resume{{ resumes|length|pluralize }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon letter-icon">
+          <i class="fas fa-envelope"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">{{ cover_letters|length|default:0 }}</span>
+          <span class="stat-label">Cover Letter{{ cover_letters|length|pluralize }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon total-icon">
+          <i class="fas fa-layer-group"></i>
+        </div>
+        <div class="stat-info">
+          {% with total=resumes|length|default:0|add:cover_letters|length|default:0 %}
+          <span class="stat-number">{{ total }}</span>
+          <span class="stat-label">Total Document{{ total|pluralize }}</span>
+          {% endwith %}
+        </div>
+      </div>
     </div>
-    
-    {% if resumes %}
-      <div class="documents-grid-enhanced">
-        {% for resume in resumes %}
-          <div class="document-card-enhanced animate-slide-up animate-stagger-{{ forloop.counter0|add:1 }}" data-document-id="{{ resume.id }}" data-document-type="resume">
-            <!-- Card Header -->
-            <div class="card-header-section">
-              <div class="document-type-badge resume-badge">
+
+    <!-- Document Tabs -->
+    <div class="document-tabs-container">
+      <div class="document-tabs">
+        <button class="doc-tab active" data-tab="all">
+          <i class="fas fa-layer-group"></i>
+          <span>All Documents</span>
+          {% with total=resumes|length|default:0|add:cover_letters|length|default:0 %}
+          <span class="tab-count">{{ total }}</span>
+          {% endwith %}
+        </button>
+        <button class="doc-tab" data-tab="resumes">
+          <i class="fas fa-file-alt"></i>
+          <span>Resumes</span>
+          <span class="tab-count">{{ resumes|length|default:0 }}</span>
+        </button>
+        <button class="doc-tab" data-tab="cover-letters">
+          <i class="fas fa-envelope"></i>
+          <span>Cover Letters</span>
+          <span class="tab-count">{{ cover_letters|length|default:0 }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Documents Content -->
+    <div class="documents-content">
+      <!-- All Documents View -->
+      <div class="tab-content active" id="all-content">
+        {% if resumes or cover_letters %}
+          <!-- Resumes Section -->
+          {% if resumes %}
+          <div class="documents-section">
+            <div class="section-header-row">
+              <h2>
                 <i class="fas fa-file-alt"></i>
-                Resume
-              </div>
-              <div class="document-status-badge">
-                <i class="fas fa-check-circle"></i>
-                Ready
-              </div>
+                Resumes
+              </h2>
+              <span class="section-count">{{ resumes|length }} document{{ resumes|length|pluralize }}</span>
             </div>
-            
-            <!-- Card Body -->
-            <div class="card-body-section">
-              <h3 class="document-title-enhanced">{{ resume.title }}</h3>
-              <div class="document-meta-enhanced">
-                <div class="meta-row">
-                  <i class="fas fa-palette"></i>
-                  <span>{{ resume.template.name }}</span>
+            <div class="documents-grid-enhanced">
+              {% for resume in resumes %}
+              <div class="document-card-enhanced" data-document-id="{{ resume.id }}" data-document-type="resume">
+                <div class="card-header-section">
+                  <div class="document-type-badge resume-badge">
+                    <i class="fas fa-file-alt"></i>
+                    Resume
+                  </div>
+                  <div class="document-status-badge">
+                    <i class="fas fa-check-circle"></i>
+                    Ready
+                  </div>
                 </div>
-                <div class="meta-row">
-                  <i class="fas fa-clock"></i>
-                  <span>Updated {{ resume.updated_at|date:"M d, Y" }}</span>
+                <div class="card-body-section">
+                  <h3 class="document-title-enhanced">{{ resume.title }}</h3>
+                  <div class="document-meta-enhanced">
+                    <div class="meta-row">
+                      <i class="fas fa-palette"></i>
+                      <span>{{ resume.template.name }}</span>
+                    </div>
+                    <div class="meta-row">
+                      <i class="fas fa-clock"></i>
+                      <span>Updated {{ resume.updated_at|date:"M d, Y" }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-actions-section">
+                  <div class="primary-actions-row">
+                    <a href="{% url 'resume_builder:edit_resume' resume.id %}" class="action-btn-enhanced primary-action">
+                      <i class="fas fa-edit"></i>
+                      Edit
+                    </a>
+                    <a href="{% url 'resume_builder:preview_resume' resume.id %}" class="action-btn-enhanced secondary-action">
+                      <i class="fas fa-eye"></i>
+                      Preview
+                    </a>
+                  </div>
+                  <div class="secondary-actions-row">
+                    <a href="{% url 'resume_builder:download_resume' resume.id %}" class="icon-action-btn download-action" title="Download PDF">
+                      <i class="fas fa-file-pdf"></i>
+                    </a>
+                    <button type="button" class="icon-action-btn delete-action delete-document-btn" 
+                            data-document-id="{{ resume.id }}" 
+                            data-document-type="resume" 
+                            data-document-title="{{ resume.title }}"
+                            title="Delete Resume">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <!-- Card Actions -->
-            <div class="card-actions-section">
-              <div class="primary-actions-row">
-                <a href="{% url 'resume_builder:edit_resume' resume.id %}" class="action-btn-enhanced primary-action">
-                  <i class="fas fa-edit"></i>
-                  Edit
-                </a>
-                <a href="{% url 'resume_builder:preview_resume' resume.id %}" class="action-btn-enhanced secondary-action">
-                  <i class="fas fa-eye"></i>
-                  Preview
-                </a>
-              </div>
-              <div class="secondary-actions-row">
-                <a href="{% url 'resume_builder:download_resume' resume.id %}" class="icon-action-btn download-action" title="Download PDF">
-                  <i class="fas fa-file-pdf"></i>
-                </a>
-                <button type="button" class="icon-action-btn delete-action delete-document-btn" 
-                        data-document-id="{{ resume.id }}" 
-                        data-document-type="resume" 
-                        data-document-title="{{ resume.title }}"
-                        title="Delete Resume">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
+              {% endfor %}
             </div>
           </div>
-        {% endfor %}
-      </div>
-    {% else %}
-      <div class="empty-state">
-        <div class="empty-icon animate-pulse">
-          <i class="fas fa-file-alt"></i>
-        </div>
-        <h3>No resumes yet</h3>
-        <p>Create your first professional resume to get started on your career journey.</p>
-        <a href="{% url 'resume_builder:resume_templates' %}" class="btn btn-primary btn-lg">
-          <i class="fas fa-plus"></i>
-          Create Your First Resume
-        </a>
-      </div>
-    {% endif %}
-  </div>
+          {% endif %}
 
-  <!-- Cover Letters Section -->
-  <div class="documents-section animate-slide-right">
-    <div class="section-header-enhanced mb-8">
-      <h2 class="d-flex align-items-center">
-        <div class="section-icon">
-          <i class="fas fa-envelope"></i>
-        </div>
-        Cover Letters
-      </h2>
-      {% if cover_letters %}
-        <span class="document-count">
-          {{ cover_letters|length }} document{{ cover_letters|length|pluralize }}
-        </span>
-      {% endif %}
-    </div>
-    
-    {% if cover_letters %}
-      <div class="documents-grid-enhanced">
-        {% for cover_letter in cover_letters %}
-          <div class="document-card-enhanced animate-slide-up animate-stagger-{{ forloop.counter0|add:1 }}" data-document-id="{{ cover_letter.id }}" data-document-type="cover_letter">
-            <!-- Card Header -->
-            <div class="card-header-section">
-              <div class="document-type-badge letter-badge">
+          <!-- Cover Letters Section -->
+          {% if cover_letters %}
+          <div class="documents-section">
+            <div class="section-header-row">
+              <h2>
                 <i class="fas fa-envelope"></i>
-                Cover Letter
-              </div>
-              <div class="document-status-badge">
-                <i class="fas fa-check-circle"></i>
-                Ready
-              </div>
+                Cover Letters
+              </h2>
+              <span class="section-count">{{ cover_letters|length }} document{{ cover_letters|length|pluralize }}</span>
             </div>
-            
-            <!-- Card Body -->
-            <div class="card-body-section">
-              <h3 class="document-title-enhanced">{{ cover_letter.title }}</h3>
-              <div class="document-meta-enhanced">
-                <div class="meta-row">
-                  <i class="fas fa-building"></i>
-                  <span>{{ cover_letter.company_name }}</span>
+            <div class="documents-grid-enhanced">
+              {% for cover_letter in cover_letters %}
+              <div class="document-card-enhanced" data-document-id="{{ cover_letter.id }}" data-document-type="cover_letter">
+                <div class="card-header-section">
+                  <div class="document-type-badge letter-badge">
+                    <i class="fas fa-envelope"></i>
+                    Cover Letter
+                  </div>
+                  <div class="document-status-badge">
+                    <i class="fas fa-check-circle"></i>
+                    Ready
+                  </div>
                 </div>
-                <div class="meta-row">
-                  <i class="fas fa-palette"></i>
-                  <span>{{ cover_letter.template.name }}</span>
+                <div class="card-body-section">
+                  <h3 class="document-title-enhanced">{{ cover_letter.title }}</h3>
+                  <div class="document-meta-enhanced">
+                    <div class="meta-row">
+                      <i class="fas fa-building"></i>
+                      <span>{{ cover_letter.company_name }}</span>
+                    </div>
+                    <div class="meta-row">
+                      <i class="fas fa-palette"></i>
+                      <span>{{ cover_letter.template.name }}</span>
+                    </div>
+                    <div class="meta-row">
+                      <i class="fas fa-clock"></i>
+                      <span>Updated {{ cover_letter.updated_at|date:"M d, Y" }}</span>
+                    </div>
+                  </div>
                 </div>
-                <div class="meta-row">
-                  <i class="fas fa-clock"></i>
-                  <span>Updated {{ cover_letter.updated_at|date:"M d, Y" }}</span>
+                <div class="card-actions-section">
+                  <div class="primary-actions-row">
+                    <a href="{% url 'resume_builder:edit_cover_letter' cover_letter.id %}" class="action-btn-enhanced primary-action">
+                      <i class="fas fa-edit"></i>
+                      Edit
+                    </a>
+                    <a href="{% url 'resume_builder:preview_cover_letter' cover_letter.id %}" class="action-btn-enhanced secondary-action">
+                      <i class="fas fa-eye"></i>
+                      Preview
+                    </a>
+                  </div>
+                  <div class="secondary-actions-row">
+                    <a href="{% url 'resume_builder:download_cover_letter' cover_letter.id %}" class="icon-action-btn download-action" title="Download PDF">
+                      <i class="fas fa-file-pdf"></i>
+                    </a>
+                    <button type="button" class="icon-action-btn delete-action delete-document-btn" 
+                            data-document-id="{{ cover_letter.id }}" 
+                            data-document-type="cover_letter" 
+                            data-document-title="{{ cover_letter.title }}"
+                            title="Delete Cover Letter">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <!-- Card Actions -->
-            <div class="card-actions-section">
-              <div class="primary-actions-row">
-                <a href="{% url 'resume_builder:edit_cover_letter' cover_letter.id %}" class="action-btn-enhanced primary-action">
-                  <i class="fas fa-edit"></i>
-                  Edit
-                </a>
-                <a href="{% url 'resume_builder:preview_cover_letter' cover_letter.id %}" class="action-btn-enhanced secondary-action">
-                  <i class="fas fa-eye"></i>
-                  Preview
-                </a>
-              </div>
-              <div class="secondary-actions-row">
-                <a href="{% url 'resume_builder:download_cover_letter' cover_letter.id %}" class="icon-action-btn download-action" title="Download PDF">
-                  <i class="fas fa-file-pdf"></i>
-                </a>
-                <button type="button" class="icon-action-btn delete-action delete-document-btn" 
-                        data-document-id="{{ cover_letter.id }}" 
-                        data-document-type="cover_letter" 
-                        data-document-title="{{ cover_letter.title }}"
-                        title="Delete Cover Letter">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
+              {% endfor %}
             </div>
           </div>
-        {% endfor %}
+          {% endif %}
+        {% else %}
+          <div class="empty-state-enhanced">
+            <div class="empty-icon-wrapper">
+              <i class="fas fa-folder-open"></i>
+            </div>
+            <h3>No documents yet</h3>
+            <p>Create your first resume or cover letter to get started on your career journey.</p>
+            <div class="empty-actions">
+              <a href="{% url 'resume_builder:resume_templates' %}" class="empty-btn primary">
+                <i class="fas fa-file-alt"></i>
+                Create Resume
+              </a>
+              <a href="{% url 'resume_builder:cover_letter_templates' %}" class="empty-btn secondary">
+                <i class="fas fa-envelope"></i>
+                Create Cover Letter
+              </a>
+            </div>
+          </div>
+        {% endif %}
       </div>
-    {% else %}
-      <div class="empty-state">
-        <div class="empty-icon animate-pulse">
-          <i class="fas fa-envelope"></i>
-        </div>
-        <h3>No cover letters yet</h3>
-        <p>Create your first cover letter to complement your resume and make a great impression.</p>
-        <a href="{% url 'resume_builder:cover_letter_templates' %}" class="btn btn-primary btn-lg">
-          <i class="fas fa-plus"></i>
-          Create Your First Cover Letter
-        </a>
+
+      <!-- Resumes Only View -->
+      <div class="tab-content" id="resumes-content">
+        {% if resumes %}
+          <div class="documents-grid-enhanced">
+            {% for resume in resumes %}
+            <div class="document-card-enhanced" data-document-id="{{ resume.id }}" data-document-type="resume">
+              <div class="card-header-section">
+                <div class="document-type-badge resume-badge">
+                  <i class="fas fa-file-alt"></i>
+                  Resume
+                </div>
+                <div class="document-status-badge">
+                  <i class="fas fa-check-circle"></i>
+                  Ready
+                </div>
+              </div>
+              <div class="card-body-section">
+                <h3 class="document-title-enhanced">{{ resume.title }}</h3>
+                <div class="document-meta-enhanced">
+                  <div class="meta-row">
+                    <i class="fas fa-palette"></i>
+                    <span>{{ resume.template.name }}</span>
+                  </div>
+                  <div class="meta-row">
+                    <i class="fas fa-clock"></i>
+                    <span>Updated {{ resume.updated_at|date:"M d, Y" }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-actions-section">
+                <div class="primary-actions-row">
+                  <a href="{% url 'resume_builder:edit_resume' resume.id %}" class="action-btn-enhanced primary-action">
+                    <i class="fas fa-edit"></i>
+                    Edit
+                  </a>
+                  <a href="{% url 'resume_builder:preview_resume' resume.id %}" class="action-btn-enhanced secondary-action">
+                    <i class="fas fa-eye"></i>
+                    Preview
+                  </a>
+                </div>
+                <div class="secondary-actions-row">
+                  <a href="{% url 'resume_builder:download_resume' resume.id %}" class="icon-action-btn download-action" title="Download PDF">
+                    <i class="fas fa-file-pdf"></i>
+                  </a>
+                  <button type="button" class="icon-action-btn delete-action delete-document-btn" 
+                          data-document-id="{{ resume.id }}" 
+                          data-document-type="resume" 
+                          data-document-title="{{ resume.title }}"
+                          title="Delete Resume">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state-enhanced">
+            <div class="empty-icon-wrapper resume-empty">
+              <i class="fas fa-file-alt"></i>
+            </div>
+            <h3>No resumes yet</h3>
+            <p>Create your first professional resume to get started on your career journey.</p>
+            <a href="{% url 'resume_builder:resume_templates' %}" class="empty-btn primary">
+              <i class="fas fa-plus"></i>
+              Create Your First Resume
+            </a>
+          </div>
+        {% endif %}
       </div>
-    {% endif %}
+
+      <!-- Cover Letters Only View -->
+      <div class="tab-content" id="cover-letters-content">
+        {% if cover_letters %}
+          <div class="documents-grid-enhanced">
+            {% for cover_letter in cover_letters %}
+            <div class="document-card-enhanced" data-document-id="{{ cover_letter.id }}" data-document-type="cover_letter">
+              <div class="card-header-section">
+                <div class="document-type-badge letter-badge">
+                  <i class="fas fa-envelope"></i>
+                  Cover Letter
+                </div>
+                <div class="document-status-badge">
+                  <i class="fas fa-check-circle"></i>
+                  Ready
+                </div>
+              </div>
+              <div class="card-body-section">
+                <h3 class="document-title-enhanced">{{ cover_letter.title }}</h3>
+                <div class="document-meta-enhanced">
+                  <div class="meta-row">
+                    <i class="fas fa-building"></i>
+                    <span>{{ cover_letter.company_name }}</span>
+                  </div>
+                  <div class="meta-row">
+                    <i class="fas fa-palette"></i>
+                    <span>{{ cover_letter.template.name }}</span>
+                  </div>
+                  <div class="meta-row">
+                    <i class="fas fa-clock"></i>
+                    <span>Updated {{ cover_letter.updated_at|date:"M d, Y" }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-actions-section">
+                <div class="primary-actions-row">
+                  <a href="{% url 'resume_builder:edit_cover_letter' cover_letter.id %}" class="action-btn-enhanced primary-action">
+                    <i class="fas fa-edit"></i>
+                    Edit
+                  </a>
+                  <a href="{% url 'resume_builder:preview_cover_letter' cover_letter.id %}" class="action-btn-enhanced secondary-action">
+                    <i class="fas fa-eye"></i>
+                    Preview
+                  </a>
+                </div>
+                <div class="secondary-actions-row">
+                  <a href="{% url 'resume_builder:download_cover_letter' cover_letter.id %}" class="icon-action-btn download-action" title="Download PDF">
+                    <i class="fas fa-file-pdf"></i>
+                  </a>
+                  <button type="button" class="icon-action-btn delete-action delete-document-btn" 
+                          data-document-id="{{ cover_letter.id }}" 
+                          data-document-type="cover_letter" 
+                          data-document-title="{{ cover_letter.title }}"
+                          title="Delete Cover Letter">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state-enhanced">
+            <div class="empty-icon-wrapper letter-empty">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <h3>No cover letters yet</h3>
+            <p>Create your first cover letter to complement your resume and make a great impression.</p>
+            <a href="{% url 'resume_builder:cover_letter_templates' %}" class="empty-btn primary">
+              <i class="fas fa-plus"></i>
+              Create Your First Cover Letter
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Back to Resume Builder Link -->
+    <div class="back-link-section">
+      <a href="{% url 'resume_builder:home' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back to Resume Builder</span>
+      </a>
+    </div>
   </div>
 </div>
 
@@ -242,6 +430,28 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // Tab switching functionality
+  const docTabs = document.querySelectorAll('.doc-tab');
+  const tabContents = document.querySelectorAll('.tab-content');
+  
+  docTabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      const tabId = this.dataset.tab;
+      
+      // Update active tab
+      docTabs.forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Update active content
+      tabContents.forEach(content => {
+        content.classList.remove('active');
+        if (content.id === `${tabId}-content`) {
+          content.classList.add('active');
+        }
+      });
+    });
+  });
+  
   // Enhanced card hover effects
   function setupCardEffects() {
     const cards = document.querySelectorAll('.document-card-enhanced');
@@ -283,35 +493,35 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function deleteDocument(documentData) {
-      const card = document.querySelector(`[data-document-id="${documentData.id}"][data-document-type="${documentData.type}"]`);
+      const cards = document.querySelectorAll(`[data-document-id="${documentData.id}"][data-document-type="${documentData.type}"]`);
       
-      if (card) {
+      cards.forEach(card => {
         card.style.transform = 'scale(0.9)';
         card.style.opacity = '0';
         card.style.transition = 'all 0.2s ease-out';
+      });
+      
+      setTimeout(() => {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = documentData.type === 'resume' 
+          ? `/resume-builder/delete-resume/${documentData.id}/`
+          : `/resume-builder/delete-cover-letter/${documentData.id}/`;
         
-        setTimeout(() => {
-          const form = document.createElement('form');
-          form.method = 'POST';
-          form.action = documentData.type === 'resume' 
-            ? `/resume-builder/delete-resume/${documentData.id}/`
-            : `/resume-builder/delete-cover-letter/${documentData.id}/`;
-          
-          const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                           document.querySelector('meta[name=csrf-token]')?.content;
-          
-          if (csrfToken) {
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = 'csrfmiddlewaretoken';
-            csrfInput.value = csrfToken;
-            form.appendChild(csrfInput);
-          }
-          
-          document.body.appendChild(form);
-          form.submit();
-        }, 200);
-      }
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                         document.querySelector('meta[name=csrf-token]')?.content;
+        
+        if (csrfToken) {
+          const csrfInput = document.createElement('input');
+          csrfInput.type = 'hidden';
+          csrfInput.name = 'csrfmiddlewaretoken';
+          csrfInput.value = csrfToken;
+          form.appendChild(csrfInput);
+        }
+        
+        document.body.appendChild(form);
+        form.submit();
+      }, 200);
     }
     
     document.addEventListener('click', (e) => {
@@ -357,78 +567,306 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-/* Enhanced Document Card Styles */
-.header-icon {
+/* ============================================
+   DOCUMENTS DASHBOARD - ENHANCED DESIGN
+   ============================================ */
+.documents-dashboard {
+  background: var(--bg-primary);
+  min-height: 100vh;
+  padding: 2rem 0 4rem;
+}
+
+.documents-dashboard .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Dashboard Header */
+.dashboard-header-enhanced {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-icon-wrapper {
   width: 56px;
   height: 56px;
-  background: var(--accent-subtle);
-  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(74, 158, 255, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+  border: 1px solid rgba(74, 158, 255, 0.2);
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.header-icon i {
-  color: var(--accent-primary);
-  font-size: var(--font-size-xl);
+.header-icon-wrapper i {
+  font-size: 1.5rem;
+  color: #4a9eff;
 }
 
-.section-header-enhanced {
+.header-text h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.header-text p {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.header-actions-enhanced {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.action-btn-new {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.action-btn-new.resume-btn {
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  color: white;
+}
+
+.action-btn-new.resume-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 158, 255, 0.35);
+  color: white;
+}
+
+.action-btn-new.letter-btn {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+}
+
+.action-btn-new.letter-btn:hover {
+  border-color: #8b5cf6;
+  color: #8b5cf6;
+}
+
+/* Stats Overview */
+.stats-overview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  transition: all 0.25s ease;
 }
 
-.section-icon {
+.stat-card:hover {
+  border-color: rgba(74, 158, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.stat-icon {
   width: 48px;
   height: 48px;
-  background: var(--accent-subtle);
-  border-radius: var(--radius-lg);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: var(--space-4);
 }
 
-.section-icon i {
-  color: var(--accent-primary);
-  font-size: var(--font-size-lg);
+.stat-icon.resume-icon {
+  background: rgba(74, 158, 255, 0.1);
 }
 
-.document-count {
-  background: var(--accent-subtle);
-  color: var(--accent-primary);
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-sm);
+.stat-icon.resume-icon i {
+  color: #4a9eff;
+  font-size: 1.25rem;
+}
+
+.stat-icon.letter-icon {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.stat-icon.letter-icon i {
+  color: #8b5cf6;
+  font-size: 1.25rem;
+}
+
+.stat-icon.total-icon {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.stat-icon.total-icon i {
+  color: #22c55e;
+  font-size: 1.25rem;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+/* Document Tabs */
+.document-tabs-container {
+  margin-bottom: 2rem;
+}
+
+.document-tabs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.375rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.doc-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.doc-tab:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface);
+}
+
+.doc-tab.active {
+  background: var(--bg-surface);
+  color: #4a9eff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tab-count {
+  padding: 0.125rem 0.5rem;
+  background: var(--bg-elevated);
+  border-radius: 50px;
+  font-size: 0.75rem;
   font-weight: 600;
 }
 
-.documents-grid-enhanced {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: var(--space-6);
+.doc-tab.active .tab-count {
+  background: rgba(74, 158, 255, 0.1);
+  color: #4a9eff;
 }
 
-/* Enhanced Document Card */
+/* Tab Content */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Documents Section */
+.documents-section {
+  margin-bottom: 2.5rem;
+}
+
+.section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.section-header-row h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.section-header-row h2 i {
+  color: #4a9eff;
+}
+
+.section-count {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  padding: 0.375rem 0.75rem;
+  background: var(--bg-elevated);
+  border-radius: 50px;
+}
+
+/* Documents Grid */
+.documents-grid-enhanced {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Document Card */
 .document-card-enhanced {
   background: var(--bg-surface);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-xl);
+  border-radius: 16px;
   overflow: hidden;
-  transition: all 0.3s ease-out;
+  transition: all 0.3s ease;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .document-card-enhanced:hover {
-  border-color: var(--accent-primary);
+  border-color: rgba(74, 158, 255, 0.4);
 }
 
 .card-header-section {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-4) var(--space-5);
+  padding: 1rem 1.25rem;
   background: var(--bg-elevated);
   border-bottom: 1px solid var(--border-default);
 }
@@ -436,18 +874,18 @@ document.addEventListener('DOMContentLoaded', function() {
 .document-type-badge {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-xs);
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 .document-type-badge.resume-badge {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
+  background: rgba(74, 158, 255, 0.1);
+  color: #4a9eff;
 }
 
 .document-type-badge.letter-badge {
@@ -458,56 +896,57 @@ document.addEventListener('DOMContentLoaded', function() {
 .document-status-badge {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-3);
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
   background: rgba(34, 197, 94, 0.1);
   color: #22c55e;
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
+  border-radius: 50px;
+  font-size: 0.6875rem;
   font-weight: 600;
 }
 
 .card-body-section {
-  padding: var(--space-5);
+  padding: 1.25rem;
 }
 
 .document-title-enhanced {
-  font-size: var(--font-size-lg);
+  font-size: 1.0625rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: var(--space-4);
+  margin: 0 0 0.875rem;
   line-height: 1.3;
 }
 
 .document-meta-enhanced {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: 0.5rem;
 }
 
 .meta-row {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 0.5rem;
+  font-size: 0.8125rem;
   color: var(--text-secondary);
-  font-size: var(--font-size-sm);
 }
 
 .meta-row i {
-  width: 16px;
+  width: 14px;
   color: var(--text-muted);
+  font-size: 0.75rem;
 }
 
 .card-actions-section {
-  padding: var(--space-4) var(--space-5);
+  padding: 1rem 1.25rem;
   background: var(--bg-elevated);
   border-top: 1px solid var(--border-default);
 }
 
 .primary-actions-row {
   display: flex;
-  gap: var(--space-3);
-  margin-bottom: var(--space-4);
+  gap: 0.75rem;
+  margin-bottom: 0.875rem;
 }
 
 .action-btn-enhanced {
@@ -515,25 +954,25 @@ document.addEventListener('DOMContentLoaded', function() {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-lg);
-  font-size: var(--font-size-sm);
+  gap: 0.375rem;
+  padding: 0.625rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.2s ease-out;
+  transition: all 0.2s ease;
   cursor: pointer;
   border: none;
 }
 
 .action-btn-enhanced.primary-action {
-  background: linear-gradient(135deg, var(--accent-primary), #2563eb);
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
   color: white;
 }
 
 .action-btn-enhanced.primary-action:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
 }
 
 .action-btn-enhanced.secondary-action {
@@ -543,15 +982,15 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .action-btn-enhanced.secondary-action:hover {
-  background: var(--bg-elevated);
-  border-color: var(--accent-primary);
+  border-color: #4a9eff;
+  color: #4a9eff;
 }
 
 .secondary-actions-row {
   display: flex;
   justify-content: flex-end;
-  gap: var(--space-2);
-  padding-top: var(--space-3);
+  gap: 0.5rem;
+  padding-top: 0.75rem;
   border-top: 1px solid var(--border-default);
 }
 
@@ -559,14 +998,14 @@ document.addEventListener('DOMContentLoaded', function() {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-lg);
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
   background: var(--bg-surface);
   border: 1px solid var(--border-default);
   color: var(--text-secondary);
   text-decoration: none;
-  transition: all 0.2s ease-out;
+  transition: all 0.2s ease;
   cursor: pointer;
 }
 
@@ -574,20 +1013,145 @@ document.addEventListener('DOMContentLoaded', function() {
   background: rgba(34, 197, 94, 0.1);
   border-color: #22c55e;
   color: #22c55e;
-  transform: translateY(-2px);
 }
 
 .icon-action-btn.delete-action {
-  color: var(--error);
+  color: var(--text-muted);
 }
 
 .icon-action-btn.delete-action:hover {
   background: rgba(239, 68, 68, 0.1);
-  border-color: var(--error);
-  transform: translateY(-2px);
+  border-color: #ef4444;
+  color: #ef4444;
 }
 
-/* Delete Modal Styles */
+/* Empty State */
+.empty-state-enhanced {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-default);
+  border-radius: 16px;
+}
+
+.empty-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.empty-icon-wrapper i {
+  font-size: 2rem;
+  color: #4a9eff;
+}
+
+.empty-icon-wrapper.resume-empty {
+  background: rgba(74, 158, 255, 0.1);
+}
+
+.empty-icon-wrapper.resume-empty i {
+  color: #4a9eff;
+}
+
+.empty-icon-wrapper.letter-empty {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.empty-icon-wrapper.letter-empty i {
+  color: #8b5cf6;
+}
+
+.empty-state-enhanced h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.empty-state-enhanced p {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  max-width: 400px;
+  margin: 0 auto 1.5rem;
+  line-height: 1.6;
+}
+
+.empty-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.empty-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.empty-btn.primary {
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  color: white;
+}
+
+.empty-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 158, 255, 0.35);
+  color: white;
+}
+
+.empty-btn.secondary {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+}
+
+.empty-btn.secondary:hover {
+  border-color: #8b5cf6;
+  color: #8b5cf6;
+}
+
+/* Back Link */
+.back-link-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-default);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.back-link:hover {
+  color: #4a9eff;
+}
+
+.back-link i {
+  transition: transform 0.2s ease;
+}
+
+.back-link:hover i {
+  transform: translateX(-4px);
+}
+
+/* Delete Modal */
 .delete-modal-overlay {
   position: fixed;
   top: 0;
@@ -613,8 +1177,8 @@ document.addEventListener('DOMContentLoaded', function() {
 .delete-modal-content {
   background: var(--bg-surface);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-2xl);
-  padding: var(--space-8);
+  border-radius: 20px;
+  padding: 2rem;
   max-width: 420px;
   width: 90%;
   transform: scale(0.95) translateY(10px);
@@ -627,41 +1191,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .delete-modal-header {
   text-align: center;
-  margin-bottom: var(--space-6);
+  margin-bottom: 1.5rem;
 }
 
 .delete-modal-icon {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   background: rgba(239, 68, 68, 0.1);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto var(--space-4);
+  margin: 0 auto 1rem;
 }
 
 .delete-modal-icon i {
-  font-size: var(--font-size-2xl);
-  color: var(--error);
+  font-size: 1.5rem;
+  color: #ef4444;
 }
 
 .delete-modal-header h3 {
-  font-size: var(--font-size-xl);
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: var(--space-3);
+  margin: 0 0 0.5rem;
 }
 
 .delete-modal-header p {
   color: var(--text-secondary);
-  font-size: var(--font-size-sm);
+  font-size: 0.875rem;
   line-height: 1.5;
+  margin: 0;
 }
 
 .delete-modal-actions {
   display: flex;
-  gap: var(--space-3);
+  gap: 0.75rem;
 }
 
 .modal-btn {
@@ -669,13 +1234,13 @@ document.addEventListener('DOMContentLoaded', function() {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
-  padding: var(--space-4);
-  border-radius: var(--radius-lg);
-  font-size: var(--font-size-sm);
+  gap: 0.5rem;
+  padding: 0.875rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease-out;
+  transition: all 0.2s ease;
   border: none;
 }
 
@@ -699,26 +1264,47 @@ document.addEventListener('DOMContentLoaded', function() {
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
-/* Responsive */
+/* Responsive Design */
 @media (max-width: 768px) {
+  .dashboard-header-enhanced {
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+  }
+  
+  .header-left {
+    flex-direction: column;
+  }
+  
+  .header-actions-enhanced {
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .action-btn-new {
+    justify-content: center;
+  }
+  
+  .stats-overview {
+    grid-template-columns: 1fr;
+  }
+  
+  .document-tabs {
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .doc-tab {
+    justify-content: center;
+  }
+  
   .documents-grid-enhanced {
     grid-template-columns: 1fr;
   }
   
-  .dashboard-header {
+  .section-header-row {
     flex-direction: column;
-    gap: var(--space-4);
-    text-align: center;
-  }
-  
-  .header-actions {
-    flex-direction: column;
-    width: 100%;
-  }
-  
-  .section-header-enhanced {
-    flex-direction: column;
-    gap: var(--space-3);
+    gap: 0.75rem;
     text-align: center;
   }
   
@@ -726,8 +1312,46 @@ document.addEventListener('DOMContentLoaded', function() {
     flex-direction: column;
   }
   
+  .empty-actions {
+    flex-direction: column;
+  }
+  
   .delete-modal-actions {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .documents-dashboard {
+    padding: 1.5rem 0 3rem;
+  }
+  
+  .header-text h1 {
+    font-size: 1.5rem;
+  }
+  
+  .stat-card {
+    padding: 1rem;
+  }
+  
+  .stat-number {
+    font-size: 1.25rem;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .document-card-enhanced,
+  .action-btn-new,
+  .action-btn-enhanced,
+  .icon-action-btn,
+  .empty-btn,
+  .back-link {
+    transition: none;
+  }
+  
+  .document-card-enhanced:hover {
+    transform: none;
   }
 }
 </style>

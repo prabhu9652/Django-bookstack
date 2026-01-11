@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/books/migrations/0006_add_initial_categories.py
+# hypothesis_version: 6.150.0
+
+['Book', 'Category', 'Elasticsearch', 'JavaScript', 'Kubernetes', 'Nginx', 'Node.js', 'TypeScript', 'Windows', 'elasticsearch', 'javascript', 'kubernetes', 'movies', 'nginx', 'node-js', 'typescript', 'windows']

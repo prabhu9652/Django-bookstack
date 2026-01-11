@@ -4,10 +4,28 @@ from .models import ResumeTemplate, CoverLetterTemplate, Resume, CoverLetter
 
 @admin.register(ResumeTemplate)
 class ResumeTemplateAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category', 'is_active', 'created_at']
+    list_display = ['name', 'category', 'is_active', 'has_preview', 'created_at']
     list_filter = ['category', 'is_active']
     search_fields = ['name', 'description']
     prepopulated_fields = {'slug': ('name',)}
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'slug', 'category', 'description', 'is_active')
+        }),
+        ('Template Content', {
+            'fields': ('html_template', 'css_styles'),
+            'classes': ('collapse',)
+        }),
+        ('Appearance', {
+            'fields': ('primary_color', 'preview_image'),
+            'description': 'Upload a high-quality preview image (recommended: 850x1100px) for the template selection screen.'
+        }),
+    )
+    
+    def has_preview(self, obj):
+        return bool(obj.preview_image)
+    has_preview.boolean = True
+    has_preview.short_description = 'Preview Image'
 
 
 @admin.register(CoverLetterTemplate)

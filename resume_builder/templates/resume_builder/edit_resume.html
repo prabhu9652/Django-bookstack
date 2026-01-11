@@ -10,7 +10,7 @@
         Edit Resume
       </h1>
       <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">
-        {{ resume.title }} • {{ resume.get_role_display }}
+        {{ resume.title }} • {{ resume.get_role_display }} • Template: <strong style="color: var(--accent-primary);">{{ resume.template.name }}</strong>
       </p>
     </div>
     <div style="display: flex; gap: var(--space-3);">
@@ -31,10 +31,11 @@
     
     <!-- Profile Photo & Color Theme -->
     <div class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
-      <h2 class="section-title"><i class="fas fa-palette"></i> Profile & Theme</h2>
+      <h2 class="section-title"><i class="fas fa-palette"></i> {% if resume.template.slug == 'professional' %}Profile & Theme{% else %}Color Theme{% endif %}</h2>
       
-      <div style="display: grid; grid-template-columns: auto 1fr; gap: var(--space-8); align-items: start;">
-        <!-- Photo Upload -->
+      <div style="display: grid; grid-template-columns: {% if resume.template.slug == 'professional' %}auto 1fr{% else %}1fr{% endif %}; gap: var(--space-8); align-items: start;">
+        {% if resume.template.slug == 'professional' %}
+        <!-- Photo Upload - Only for Professional template -->
         <div style="text-align: center;">
           <div id="photoPreview" style="width: 140px; height: 140px; border-radius: 50%; background: var(--bg-elevated); border: 3px solid var(--border-primary); display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: var(--space-3);">
             {% if resume.profile_photo %}
@@ -48,6 +49,7 @@
             <input type="file" name="profile_photo" id="photoInput" accept="image/*" style="display: none;" onchange="previewPhoto(this)">
           </label>
         </div>
+        {% endif %}
         
         <!-- Color Theme -->
         <div>
@@ -326,10 +328,13 @@ const resumeId = {{ resume.id }};
 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
 function previewPhoto(input) {
-  if (input.files && input.files[0]) {
+  if (input && input.files && input.files[0]) {
     const reader = new FileReader();
     reader.onload = function(e) {
-      document.getElementById('photoPreview').innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">`;
+      const photoPreview = document.getElementById('photoPreview');
+      if (photoPreview) {
+        photoPreview.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">`;
+      }
     };
     reader.readAsDataURL(input.files[0]);
     

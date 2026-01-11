@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/resume_builder/migrations/0002_add_role_based_resume_fields.py
+# hypothesis_version: 6.150.0
+
+[100, '0001_initial', 'DS / ML Engineer', 'Software Engineer', 'certifications', 'devops_sre', 'ds_ml', 'github', 'languages', 'projects', 'resume', 'resume_builder', 'role', 'role_title', 'skills', 'software_engineer']

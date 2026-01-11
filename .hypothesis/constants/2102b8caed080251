@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/accounts/urls.py
+# hypothesis_version: 6.150.0
+
+['access-denied/', 'access-status/', 'accounts.login', 'accounts.logout', 'accounts.signup', 'login/', 'logout/', 'password-reset/', 'password-reset/done/', 'password_reset', 'password_reset_done', 'request-access/', 'reset/done/', 'signup/']
