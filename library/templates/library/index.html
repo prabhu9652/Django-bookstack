@@ -6,6 +6,22 @@
 {% csrf_token %}
 
 <div class="library-page">
+  <!-- Books/Library Tab Navigation -->
+  <div class="library-tabs-nav">
+    <div class="container">
+      <div class="tabs-wrapper">
+        <a href="{% url 'books.index' %}" class="tab-item">
+          <i class="fas fa-book-open"></i>
+          <span>Browse Books</span>
+        </a>
+        <a href="{% url 'library.index' %}" class="tab-item active">
+          <i class="fas fa-bookmark"></i>
+          <span>My Library</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
   <!-- Page Header Section -->
   <div class="library-page-header">
     <div class="header-bg-effects">
@@ -335,6 +351,71 @@
 </div>
 
 <style>
+/* ============================================
+   BOOKS/LIBRARY TAB NAVIGATION
+   ============================================ */
+.library-tabs-nav {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-default);
+  position: sticky;
+  top: 64px;
+  z-index: 50;
+}
+
+.library-tabs-nav .container {
+  max-width: 1280px;
+}
+
+.tabs-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tab-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.tab-item:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.tab-item.active {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.tab-item.active i {
+  color: #22c55e;
+}
+
+@media (max-width: 640px) {
+  .tabs-wrapper {
+    padding: 0.5rem 0;
+  }
+  
+  .tab-item {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+  }
+}
+
 /* ============================================
    MY LIBRARY PAGE - INDUSTRY-GRADE LAYOUT
    ============================================ */

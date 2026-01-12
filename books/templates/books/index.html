@@ -6,6 +6,30 @@
 {% csrf_token %}
 
 <div class="books-page">
+  <!-- Books/Library Tab Navigation -->
+  <div class="books-tabs-nav">
+    <div class="container">
+      <div class="tabs-wrapper">
+        <a href="{% url 'books.index' %}" class="tab-item active">
+          <i class="fas fa-book-open"></i>
+          <span>Browse Books</span>
+        </a>
+        {% if user.is_authenticated %}
+        <a href="{% url 'library.index' %}" class="tab-item">
+          <i class="fas fa-bookmark"></i>
+          <span>My Library</span>
+        </a>
+        {% else %}
+        <a href="{% url 'accounts.login' %}?next={% url 'library.index' %}" class="tab-item tab-disabled" title="Sign in to access your library">
+          <i class="fas fa-bookmark"></i>
+          <span>My Library</span>
+          <i class="fas fa-lock tab-lock-icon"></i>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
   <!-- Page Header Section -->
   <div class="books-page-header">
     <div class="header-bg-effects">
@@ -326,6 +350,87 @@
 </div>
 
 <style>
+/* ============================================
+   BOOKS/LIBRARY TAB NAVIGATION
+   ============================================ */
+.books-tabs-nav {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-default);
+  position: sticky;
+  top: 64px;
+  z-index: 50;
+}
+
+.books-tabs-nav .container {
+  max-width: 1280px;
+}
+
+.tabs-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tab-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.tab-item:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.tab-item.active {
+  background: rgba(74, 158, 255, 0.1);
+  border-color: rgba(74, 158, 255, 0.2);
+  color: #4a9eff;
+}
+
+.tab-item.active i {
+  color: #4a9eff;
+}
+
+.tab-item.tab-disabled {
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.tab-item.tab-disabled:hover {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+}
+
+.tab-lock-icon {
+  font-size: 0.6875rem;
+  margin-left: 0.25rem;
+  opacity: 0.7;
+}
+
+@media (max-width: 640px) {
+  .tabs-wrapper {
+    padding: 0.5rem 0;
+  }
+  
+  .tab-item {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+  }
+}
+
 /* ============================================
    BOOKS PAGE - INDUSTRY-GRADE LAYOUT
    ============================================ */
