@@ -199,7 +199,13 @@
       <header class="resume-header">
         <div class="header-photo">
           {% if resume.profile_photo %}
-            <img src="{{ resume.profile_photo.url }}" alt="{{ resume.full_name }}">
+            {% with photo_url=resume.profile_photo.url %}
+              {% if photo_url %}
+                <img src="{{ photo_url }}" alt="{{ resume.full_name }}">
+              {% else %}
+                <div class="photo-placeholder"><i class="fas fa-user"></i></div>
+              {% endif %}
+            {% endwith %}
           {% else %}
             <div class="photo-placeholder"><i class="fas fa-user"></i></div>
           {% endif %}
@@ -323,9 +329,17 @@
   width: 120px; height: 120px; border-radius: 50%; overflow: hidden;
   border: 4px solid rgba(255,255,255,0.3); flex-shrink: 0;
   background: rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.header-photo img { width: 100%; height: 100%; object-fit: cover; }
+.header-photo img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover;
+  display: block;
+}
 
 .photo-placeholder {
   width: 100%; height: 100%; display: flex; align-items: center;

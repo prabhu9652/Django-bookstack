@@ -535,6 +535,12 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // Show the dashboard content (prevents flash of unstyled content)
+  const dashboard = document.querySelector('.documents-dashboard');
+  if (dashboard) {
+    dashboard.classList.add('loaded');
+  }
+  
   // Tab switching functionality
   const docTabs = document.querySelectorAll('.doc-tab');
   const tabContents = document.querySelectorAll('.tab-content');
@@ -1022,6 +1028,17 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
+/* Prevent flash of unstyled content */
+.documents-dashboard {
+  opacity: 0;
+}
+
+/* Show content if JS is disabled */
+noscript + .documents-dashboard,
+.documents-dashboard.loaded {
+  opacity: 1;
+}
+
 /* ============================================
    DOCUMENTS DASHBOARD - ENHANCED DESIGN
    ============================================ */
@@ -1029,6 +1046,7 @@ document.addEventListener('DOMContentLoaded', function() {
   background: var(--bg-primary);
   min-height: 100vh;
   padding: 2rem 0 4rem;
+  transition: opacity 0.15s ease-in;
 }
 
 .documents-dashboard .container {
