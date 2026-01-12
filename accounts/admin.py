@@ -19,25 +19,28 @@ class UserAccessStatusInline(admin.StackedInline):
 class UserAdmin(BaseUserAdmin):
     inlines = (UserAccessStatusInline,)
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'access_status_display', 'date_joined')
-    list_filter = BaseUserAdmin.list_filter + ('access_status__status',)
+    list_filter = BaseUserAdmin.list_filter
+    list_per_page = 100
     
     def access_status_display(self, obj):
         try:
-            status = obj.access_status
-            color_map = {
-                'pending': 'orange',
-                'approved': 'green',
-                'rejected': 'red',
-                'suspended': 'purple'
-            }
-            color = color_map.get(status.status, 'gray')
-            return format_html(
-                '<span style="color: {}; font-weight: bold;">{}</span>',
-                color,
-                status.get_status_display()
-            )
-        except UserAccessStatus.DoesNotExist:
-            return format_html('<span style="color: gray;">No Status</span>')
+            if hasattr(obj, 'access_status') and obj.access_status:
+                status = obj.access_status
+                color_map = {
+                    'pending': 'orange',
+                    'approved': 'green',
+                    'rejected': 'red',
+                    'suspended': 'purple'
+                }
+                color = color_map.get(status.status, 'gray')
+                return format_html(
+                    '<span style="color: {}; font-weight: bold;">{}</span>',
+                    color,
+                    status.get_status_display()
+                )
+            return mark_safe('<span style="color: gray;">No Status</span>')
+        except Exception:
+            return mark_safe('<span style="color: gray;">No Status</span>')
     
     access_status_display.short_description = 'Access Status'
 
@@ -122,21 +125,23 @@ class AccessRequestAdmin(admin.ModelAdmin):
     
     def user_status(self, obj):
         try:
-            status = obj.user.access_status
-            color_map = {
-                'pending': 'orange',
-                'approved': 'green',
-                'rejected': 'red',
-                'suspended': 'purple'
-            }
-            color = color_map.get(status.status, 'gray')
-            return format_html(
-                '<span style="color: {}; font-weight: bold;">{}</span>',
-                color,
-                status.get_status_display()
-            )
-        except UserAccessStatus.DoesNotExist:
-            return format_html('<span style="color: gray;">No Status</span>')
+            if hasattr(obj.user, 'access_status') and obj.user.access_status:
+                status = obj.user.access_status
+                color_map = {
+                    'pending': 'orange',
+                    'approved': 'green',
+                    'rejected': 'red',
+                    'suspended': 'purple'
+                }
+                color = color_map.get(status.status, 'gray')
+                return format_html(
+                    '<span style="color: {}; font-weight: bold;">{}</span>',
+                    color,
+                    status.get_status_display()
+                )
+            return mark_safe('<span style="color: gray;">No Status</span>')
+        except Exception:
+            return mark_safe('<span style="color: gray;">No Status</span>')
     
     user_status.short_description = 'Current Status'
     
