@@ -11,15 +11,56 @@
       <div class="header-pattern"></div>
     </div>
     <div class="container">
-      <!-- Breadcrumb Navigation -->
-      <nav class="breadcrumb-nav" aria-label="Breadcrumb">
-        <a href="{% url 'roadmap:home' %}">
-          <i class="fas fa-route"></i>
-          <span>Roadmaps</span>
-        </a>
-        <i class="fas fa-chevron-right" aria-hidden="true"></i>
-        <span class="current">{{ roadmap_path.name }}</span>
-      </nav>
+      <!-- Top Action Bar with Breadcrumb and Actions -->
+      <div class="header-action-bar">
+        <!-- Breadcrumb Navigation -->
+        <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+          <a href="{% url 'roadmap:home' %}">
+            <i class="fas fa-route"></i>
+            <span>Roadmaps</span>
+          </a>
+          <i class="fas fa-chevron-right" aria-hidden="true"></i>
+          <span class="current">{{ roadmap_path.name }}</span>
+        </nav>
+        
+        <!-- Page Actions (Moved to Top) -->
+        <div class="header-actions">
+          <a href="{% url 'roadmap:home' %}" class="btn-header-action btn-back">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back</span>
+          </a>
+          {% if user.is_authenticated %}
+          <button class="btn-header-action btn-reset" id="reset-progress">
+            <i class="fas fa-redo"></i>
+            <span>Reset Progress</span>
+          </button>
+          {% endif %}
+        </div>
+      </div>
+
+<!-- Reset Progress Confirmation Modal -->
+{% if user.is_authenticated %}
+<div class="reset-modal-overlay" id="resetProgressModal">
+  <div class="reset-modal">
+    <div class="reset-modal-icon">
+      <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    <h3 class="reset-modal-title">Reset All Progress?</h3>
+    <p class="reset-modal-text">
+      This will reset all your progress for <strong>{{ roadmap_path.name }}</strong>. All skills will be marked as "Not Started".
+    </p>
+    <p class="reset-modal-subtext">This action cannot be undone.</p>
+    <div class="reset-modal-actions">
+      <button type="button" class="reset-modal-btn cancel" id="resetModalCancel">
+        Cancel
+      </button>
+      <button type="button" class="reset-modal-btn confirm" id="resetModalConfirm">
+        <i class="fas fa-redo"></i> Reset Progress
+      </button>
+    </div>
+  </div>
+</div>
+{% endif %}
       
       <!-- Header Content -->
       <div class="header-content">
@@ -342,25 +383,6 @@
           {% endif %}
         </aside>
       </div>
-
-      <!-- Page Actions -->
-      <div class="page-actions">
-        <a href="{% url 'roadmap:home' %}" class="btn-action-secondary">
-          <i class="fas fa-arrow-left"></i>
-          Back to Roadmaps
-        </a>
-        {% if user.is_authenticated %}
-        <button class="btn-action-primary" id="reset-progress">
-          <i class="fas fa-redo"></i>
-          Reset Progress
-        </button>
-        {% else %}
-        <a href="{% url 'accounts.signup' %}" class="btn-action-primary">
-          <i class="fas fa-user-plus"></i>
-          Sign Up to Track Progress
-        </a>
-        {% endif %}
-      </div>
     </div>
   </div>
 </div>
@@ -411,14 +433,21 @@
   background-size: 24px 24px;
 }
 
+/* Header Action Bar - Top Navigation */
+.header-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
 /* Breadcrumb */
 .breadcrumb-nav {
   display: flex;
   align-items: center;
   gap: 0.625rem;
   font-size: 0.875rem;
-  margin-bottom: 2rem;
-  position: relative;
 }
 
 .breadcrumb-nav a {
@@ -442,6 +471,191 @@
 .breadcrumb-nav .current {
   color: var(--text-primary);
   font-weight: 600;
+}
+
+/* Header Actions (Back & Reset) */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-header-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-header-action.btn-back {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+}
+
+.btn-header-action.btn-back:hover {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border-color: rgba(74, 158, 255, 0.3);
+}
+
+.btn-header-action.btn-reset {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.btn-header-action.btn-reset:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+/* Reset Progress Modal */
+.reset-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 120px;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s ease;
+}
+
+.reset-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.reset-modal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  transform: translateY(-20px) scale(0.95);
+  transition: transform 0.25s ease;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.reset-modal-overlay.active .reset-modal {
+  transform: translateY(0) scale(1);
+}
+
+.reset-modal-icon {
+  width: 64px;
+  height: 64px;
+  background: rgba(239, 68, 68, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+}
+
+.reset-modal-icon i {
+  font-size: 1.75rem;
+  color: #ef4444;
+}
+
+.reset-modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.75rem;
+}
+
+.reset-modal-text {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 0.5rem;
+}
+
+.reset-modal-subtext {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin: 0 0 1.5rem;
+}
+
+.reset-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.reset-modal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.reset-modal-btn.cancel {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+}
+
+.reset-modal-btn.cancel:hover {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.reset-modal-btn.confirm {
+  background: #ef4444;
+  color: white;
+}
+
+.reset-modal-btn.confirm:hover {
+  background: #dc2626;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+
+/* Reset Toast Notification */
+.reset-toast {
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: #22c55e;
+  color: white;
+  padding: 0.875rem 1.5rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  box-shadow: 0 8px 30px rgba(34, 197, 94, 0.3);
+  z-index: 1001;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.reset-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* Header Content */
@@ -1559,53 +1773,6 @@
 
 <style>
 /* ============================================
-   PAGE ACTIONS
-   ============================================ */
-.page-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  padding: 2.5rem 0 0;
-  margin-top: 2.5rem;
-  border-top: 1px solid var(--border-default);
-}
-
-.btn-action-primary, .btn-action-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1.5rem;
-  border-radius: 10px;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.25s ease;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-action-primary {
-  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
-  color: white;
-}
-
-.btn-action-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(74, 158, 255, 0.4);
-}
-
-.btn-action-secondary {
-  background: transparent;
-  color: var(--text-primary);
-  border: 1px solid var(--border-default);
-}
-
-.btn-action-secondary:hover {
-  border-color: #4a9eff;
-  color: #4a9eff;
-}
-
-/* ============================================
    RESPONSIVE DESIGN
    ============================================ */
 @media (max-width: 1200px) {
@@ -1668,6 +1835,27 @@
     padding: 2rem 0 2.5rem;
   }
   
+  .header-action-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .btn-header-action span {
+    display: none;
+  }
+  
+  .btn-header-action {
+    padding: 0.625rem;
+    min-width: 40px;
+    justify-content: center;
+  }
+  
   .path-icon-badge {
     width: 64px;
     height: 64px;
@@ -1717,17 +1905,6 @@
     margin-left: 16px;
     padding-left: 1.5rem;
   }
-  
-  .page-actions {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .btn-action-primary, .btn-action-secondary {
-    width: 100%;
-    max-width: 280px;
-    justify-content: center;
-  }
 }
 
 @media (max-width: 480px) {
@@ -1773,7 +1950,7 @@
     transform: none;
   }
   
-  .btn-action-primary:hover, .btn-sidebar-cta:hover {
+  .btn-header-action:hover, .btn-sidebar-cta:hover {
     transform: none;
   }
 }
@@ -1851,18 +2028,70 @@ document.addEventListener('DOMContentLoaded', function() {
     if (progressFill) progressFill.setAttribute('stroke-dasharray', `${percent}, 100`);
   }
   
-  // Reset progress button - PRESERVED LOGIC
+  // Reset progress button - Using Modal
   const resetBtn = document.getElementById('reset-progress');
-  if (resetBtn) {
+  const resetModal = document.getElementById('resetProgressModal');
+  const resetModalCancel = document.getElementById('resetModalCancel');
+  const resetModalConfirm = document.getElementById('resetModalConfirm');
+  
+  if (resetBtn && resetModal) {
+    // Open modal
     resetBtn.addEventListener('click', function() {
-      if (confirm('Are you sure you want to reset all progress for this roadmap?')) {
-        // Reset all skill nodes visually
-        skillNodes.forEach(node => {
-          node.className = 'skill-node skill-not-started';
-        });
-        updateProgressStats();
+      resetModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+    
+    // Close modal on cancel
+    resetModalCancel.addEventListener('click', function() {
+      resetModal.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+    
+    // Close modal on overlay click
+    resetModal.addEventListener('click', function(e) {
+      if (e.target === resetModal) {
+        resetModal.classList.remove('active');
+        document.body.style.overflow = '';
       }
     });
+    
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && resetModal.classList.contains('active')) {
+        resetModal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+    
+    // Confirm reset
+    resetModalConfirm.addEventListener('click', function() {
+      // Reset all skill nodes visually
+      skillNodes.forEach(node => {
+        node.className = 'skill-node skill-not-started';
+      });
+      updateProgressStats();
+      
+      // Close modal
+      resetModal.classList.remove('active');
+      document.body.style.overflow = '';
+      
+      // Show success feedback (optional toast)
+      showResetToast();
+    });
+  }
+  
+  // Toast notification for reset
+  function showResetToast() {
+    const toast = document.createElement('div');
+    toast.className = 'reset-toast';
+    toast.innerHTML = '<i class="fas fa-check-circle"></i> Progress has been reset';
+    document.body.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
   }
   
   // Smooth scroll for section navigation
