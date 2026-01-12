@@ -57,6 +57,10 @@
   <!-- Fixed Action Bar -->
   <div class="editor-action-bar">
     <div class="action-bar-left">
+      <button type="button" class="btn btn-ghost btn-back" onclick="goBack()">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back</span>
+      </button>
       <div class="draft-indicator">
         <i class="fas fa-file-alt"></i>
         <span>Draft</span>
@@ -119,6 +123,63 @@
               <i class="fas fa-camera"></i> Upload Photo
               <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="previewPhoto(this)">
             </label>
+            
+            <!-- Photo Customization Options -->
+            <div class="photo-options">
+              <div class="photo-option-group">
+                <label class="option-label">Shape</label>
+                <div class="shape-options">
+                  <label class="shape-option" title="Circle">
+                    <input type="radio" name="photo_shape" value="circle" checked>
+                    <div class="shape-preview circle"></div>
+                  </label>
+                  <label class="shape-option" title="Rounded Square">
+                    <input type="radio" name="photo_shape" value="rounded">
+                    <div class="shape-preview rounded"></div>
+                  </label>
+                  <label class="shape-option" title="Square">
+                    <input type="radio" name="photo_shape" value="square">
+                    <div class="shape-preview square"></div>
+                  </label>
+                </div>
+              </div>
+              
+              <div class="photo-option-group">
+                <label class="option-label">Size</label>
+                <div class="size-options">
+                  <label class="size-option">
+                    <input type="radio" name="photo_size" value="small">
+                    <span>S</span>
+                  </label>
+                  <label class="size-option">
+                    <input type="radio" name="photo_size" value="medium" checked>
+                    <span>M</span>
+                  </label>
+                  <label class="size-option">
+                    <input type="radio" name="photo_size" value="large">
+                    <span>L</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div class="photo-option-group">
+                <label class="option-label">Position</label>
+                <div class="position-options">
+                  <label class="position-option" title="Top">
+                    <input type="radio" name="photo_position" value="top" checked>
+                    <span>Top</span>
+                  </label>
+                  <label class="position-option" title="Center">
+                    <input type="radio" name="photo_position" value="center">
+                    <span>Center</span>
+                  </label>
+                  <label class="position-option" title="Bottom">
+                    <input type="radio" name="photo_position" value="bottom">
+                    <span>Bottom</span>
+                  </label>
+                </div>
+              </div>
+            </div>
           </div>
           {% endif %}
           
@@ -329,6 +390,21 @@
 
 .btn-action i { font-size: 0.875rem; }
 
+.btn-back {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  border-radius: 6px;
+}
+
+.btn-back:hover {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+}
+
 /* Mobile Action Bar */
 .mobile-action-bar {
   display: none;
@@ -436,10 +512,86 @@
   justify-content: center;
   overflow: hidden;
   margin-bottom: 0.75rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .photo-preview i { font-size: 40px; color: var(--text-muted); }
 .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Photo Customization Options */
+.photo-options {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-default);
+}
+
+.photo-option-group {
+  margin-bottom: 0.75rem;
+}
+
+.photo-option-group .option-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.shape-options, .size-options, .position-options {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.shape-option, .size-option, .position-option {
+  cursor: pointer;
+}
+
+.shape-option input, .size-option input, .position-option input {
+  display: none;
+}
+
+.shape-preview {
+  width: 32px;
+  height: 32px;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-default);
+  transition: all 0.2s;
+}
+
+.shape-preview.circle { border-radius: 50%; }
+.shape-preview.rounded { border-radius: 6px; }
+.shape-preview.square { border-radius: 0; }
+
+.shape-option input:checked + .shape-preview {
+  border-color: #4a9eff;
+  background: rgba(74, 158, 255, 0.15);
+}
+
+.size-option span, .position-option span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 28px;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-default);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+
+.size-option input:checked + span,
+.position-option input:checked + span {
+  border-color: #4a9eff;
+  background: rgba(74, 158, 255, 0.15);
+  color: #4a9eff;
+}
 
 .color-theme-section { flex: 1; }
 .theme-label { display: block; font-weight: 500; color: var(--text-primary); margin-bottom: 0.75rem; font-size: 0.875rem; }
@@ -875,7 +1027,17 @@ function collectFormData() {
   const colorInput = form.querySelector('input[name="primary_color"]:checked');
   const customColor = document.getElementById('customColor').value;
   
-  return {
+  // Get photo options
+  const photoShapeInput = form.querySelector('input[name="photo_shape"]:checked');
+  const photoSizeInput = form.querySelector('input[name="photo_size"]:checked');
+  const photoPositionInput = form.querySelector('input[name="photo_position"]:checked');
+  
+  // Get photo data (base64)
+  const photoPreview = document.getElementById('photoPreview');
+  const photoImg = photoPreview ? photoPreview.querySelector('img') : null;
+  const photoBase64 = photoImg ? photoImg.src : null;
+  
+  const data = {
     template_id: templateId,
     template_slug: draftData.template_slug || 'professional',
     title: 'My Resume',
@@ -889,6 +1051,9 @@ function collectFormData() {
     github: document.getElementById('github').value,
     summary: document.getElementById('summary').value,
     primary_color: colorInput ? colorInput.value : customColor,
+    photo_shape: photoShapeInput ? photoShapeInput.value : 'circle',
+    photo_size: photoSizeInput ? photoSizeInput.value : 'medium',
+    photo_position: photoPositionInput ? photoPositionInput.value : 'top',
     skills: document.getElementById('skillsInput').value.split('\n').map(s => s.trim()).filter(s => s),
     experience: collectExperience(),
     education: collectEducation(),
@@ -896,6 +1061,13 @@ function collectFormData() {
     projects: [],
     certifications: [],
   };
+  
+  // Include photo base64 data if available (only for new photos, not server URLs)
+  if (photoBase64 && photoBase64.startsWith('data:')) {
+    data.profile_photo_base64 = photoBase64;
+  }
+  
+  return data;
 }
 
 function collectExperience() {
@@ -1133,6 +1305,35 @@ function generatePreviewHtml(data) {
 
 // PROFESSIONAL TEMPLATE - Sidebar left, photo in header
 function generateProfessionalPreview(data, primaryColor, photoSrc) {
+  // Photo customization options
+  const photoShape = data.photo_shape || 'circle';
+  const photoSize = data.photo_size || 'medium';
+  const photoPosition = data.photo_position || 'top';
+  
+  // Size mapping
+  const sizeMap = {
+    small: { width: '90px', height: '90px' },
+    medium: { width: '120px', height: '120px' },
+    large: { width: '150px', height: '150px' }
+  };
+  const size = sizeMap[photoSize] || sizeMap.medium;
+  
+  // Shape mapping
+  const shapeMap = {
+    circle: '50%',
+    rounded: '12px',
+    square: '0'
+  };
+  const borderRadius = shapeMap[photoShape] || '50%';
+  
+  // Position mapping
+  const positionMap = {
+    top: 'top center',
+    center: 'center center',
+    bottom: 'bottom center'
+  };
+  const objectPosition = positionMap[photoPosition] || 'top center';
+  
   let photoHtml = '';
   if (photoSrc) {
     photoHtml = `<div class="header-photo"><img src="${photoSrc}" alt="Profile"></div>`;
@@ -1150,8 +1351,8 @@ function generateProfessionalPreview(data, primaryColor, photoSrc) {
     body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; line-height: 1.4; color: #333; background: white; }
     .resume { max-width: 850px; margin: 0 auto; }
     .header { background: ${primaryColor}; color: white; padding: 24px 32px; display: flex; gap: 20px; align-items: center; }
-    .header-photo { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 3px solid rgba(255,255,255,0.3); flex-shrink: 0; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; }
-    .header-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .header-photo { width: ${size.width}; height: ${size.height}; border-radius: ${borderRadius}; overflow: hidden; border: 3px solid rgba(255,255,255,0.3); flex-shrink: 0; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; }
+    .header-photo img { width: 100%; height: 100%; object-fit: cover; object-position: ${objectPosition}; }
     .photo-placeholder { font-size: 40px; opacity: 0.5; }
     .header-text { flex: 1; }
     .header-text h1 { font-size: 24pt; font-weight: 700; margin-bottom: 4px; letter-spacing: 2px; }
@@ -1438,6 +1639,16 @@ function goToMyDocuments() {
     document.getElementById('unsavedChangesModal').style.display = 'flex';
   } else {
     window.location.href = '/resume-builder/dashboard/';
+  }
+}
+
+// Go back to template selection
+function goBack() {
+  if (hasUnsavedChanges && !isSaved) {
+    pendingNavigation = '/resume-builder/resume-templates/';
+    document.getElementById('unsavedChangesModal').style.display = 'flex';
+  } else {
+    window.location.href = '/resume-builder/resume-templates/';
   }
 }
 
