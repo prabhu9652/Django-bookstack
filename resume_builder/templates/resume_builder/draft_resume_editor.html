@@ -877,6 +877,7 @@ function collectFormData() {
   
   return {
     template_id: templateId,
+    template_slug: draftData.template_slug || 'professional',
     title: 'My Resume',
     role: draftData.role,
     full_name: document.getElementById('full_name').value,
@@ -1113,6 +1114,31 @@ function closePreview() {
 
 function generatePreviewHtml(data) {
   const primaryColor = data.primary_color || '#4a9d9a';
+  const templateSlug = data.template_slug || 'professional';
+  
+  // Get profile photo if available (only for professional template)
+  const photoPreview = document.getElementById('photoPreview');
+  const photoImg = photoPreview ? photoPreview.querySelector('img') : null;
+  const photoSrc = photoImg ? photoImg.src : null;
+  
+  // Route to correct template generator
+  if (templateSlug === 'modern') {
+    return generateModernPreview(data, primaryColor);
+  } else if (templateSlug === 'executive') {
+    return generateExecutivePreview(data, primaryColor);
+  } else {
+    return generateProfessionalPreview(data, primaryColor, photoSrc);
+  }
+}
+
+// PROFESSIONAL TEMPLATE - Sidebar left, photo in header
+function generateProfessionalPreview(data, primaryColor, photoSrc) {
+  let photoHtml = '';
+  if (photoSrc) {
+    photoHtml = `<div class="header-photo"><img src="${photoSrc}" alt="Profile"></div>`;
+  } else {
+    photoHtml = `<div class="header-photo"><div class="photo-placeholder">👤</div></div>`;
+  }
   
   return `
 <!DOCTYPE html>
@@ -1124,33 +1150,39 @@ function generatePreviewHtml(data) {
     body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; line-height: 1.4; color: #333; background: white; }
     .resume { max-width: 850px; margin: 0 auto; }
     .header { background: ${primaryColor}; color: white; padding: 24px 32px; display: flex; gap: 20px; align-items: center; }
-    .header-text h1 { font-size: 24pt; font-weight: 700; margin-bottom: 4px; }
+    .header-photo { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 3px solid rgba(255,255,255,0.3); flex-shrink: 0; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; }
+    .header-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-placeholder { font-size: 40px; opacity: 0.5; }
+    .header-text { flex: 1; }
+    .header-text h1 { font-size: 24pt; font-weight: 700; margin-bottom: 4px; letter-spacing: 2px; }
     .header-text .role { font-size: 12pt; opacity: 0.9; margin-bottom: 8px; }
     .header-text .contact { font-size: 9pt; opacity: 0.85; }
     .body { display: grid; grid-template-columns: 200px 1fr; }
     .sidebar { background: #f8f9fa; padding: 20px; }
     .main { padding: 20px 24px; }
     .section-title { font-size: 11pt; font-weight: 700; color: ${primaryColor}; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid ${primaryColor}; }
+    .section-badge { background: ${primaryColor}; color: white; padding: 4px 10px; font-size: 10pt; font-weight: 600; letter-spacing: 1px; display: inline-block; margin-bottom: 12px; }
     .section { margin-bottom: 20px; }
     .skill-item { font-size: 9pt; padding: 4px 0; border-bottom: 1px solid #e5e7eb; }
     .job { margin-bottom: 16px; }
     .job-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
     .job-title { font-weight: 600; font-size: 10pt; }
-    .job-company { font-size: 9pt; color: #666; }
+    .job-company { font-size: 9pt; color: ${primaryColor}; }
     .job-date { font-size: 9pt; color: #888; }
     .bullet { font-size: 9pt; padding-left: 12px; margin-bottom: 4px; position: relative; }
     .bullet::before { content: "•"; position: absolute; left: 0; color: ${primaryColor}; }
     .summary { font-size: 9.5pt; line-height: 1.5; color: #444; }
     .edu-item { margin-bottom: 8px; }
-    .edu-degree { font-weight: 600; font-size: 9pt; }
+    .edu-degree { font-weight: 600; font-size: 9pt; color: ${primaryColor}; }
     .edu-school { font-size: 9pt; color: #666; }
   </style>
 </head>
 <body>
   <div class="resume">
     <div class="header">
+      ${photoHtml}
       <div class="header-text">
-        <h1>${data.full_name || 'Your Name'}</h1>
+        <h1>${(data.full_name || 'Your Name').toUpperCase()}</h1>
         <div class="role">${data.role_title || 'Professional Title'}</div>
         <div class="contact">${data.email || ''} ${data.phone ? '• ' + data.phone : ''} ${data.linkedin ? '• LinkedIn' : ''}</div>
       </div>
@@ -1162,26 +1194,27 @@ function generatePreviewHtml(data) {
           ${(data.skills || []).map(s => `<div class="skill-item">${s}</div>`).join('')}
         </div>
         <div class="section">
+          <div class="section-title">Languages</div>
+          ${(data.languages || []).map(l => `<div class="skill-item">${l}</div>`).join('')}
+        </div>
+        <div class="section">
           <div class="section-title">Education</div>
           ${(data.education || []).map(e => `
             <div class="edu-item">
               <div class="edu-degree">${e.degree || ''}</div>
-              <div class="edu-school">${e.school || ''} ${e.graduation_date ? '(' + e.graduation_date + ')' : ''}</div>
+              <div class="edu-school">${e.school || ''}</div>
+              <div style="font-size: 8pt; color: #888;">${e.graduation_date || ''}</div>
             </div>
           `).join('')}
-        </div>
-        <div class="section">
-          <div class="section-title">Languages</div>
-          ${(data.languages || []).map(l => `<div class="skill-item">${l}</div>`).join('')}
         </div>
       </div>
       <div class="main">
         <div class="section">
-          <div class="section-title">Profile</div>
+          <div class="section-badge">PROFILE</div>
           <p class="summary">${data.summary || ''}</p>
         </div>
         <div class="section">
-          <div class="section-title">Employment</div>
+          <div class="section-badge">EMPLOYMENT</div>
           ${(data.experience || []).map(exp => `
             <div class="job">
               <div class="job-header">
@@ -1191,6 +1224,202 @@ function generatePreviewHtml(data) {
                 </div>
                 <div class="job-date">${exp.start_date || ''} - ${exp.end_date || ''}</div>
               </div>
+              ${(exp.bullets || []).map(b => `<div class="bullet">${b}</div>`).join('')}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+// MODERN TEMPLATE - Main content left, skills sidebar right, no photo
+function generateModernPreview(data, primaryColor) {
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; line-height: 1.4; color: #333; background: white; }
+    .resume { max-width: 850px; margin: 0 auto; }
+    .header { background: ${primaryColor}; color: white; padding: 24px 32px; }
+    .header h1 { font-size: 22pt; font-weight: 400; margin-bottom: 4px; }
+    .header .role { font-size: 11pt; opacity: 0.85; margin-bottom: 10px; }
+    .header .contact { font-size: 9pt; opacity: 0.8; display: flex; gap: 16px; }
+    .body { display: grid; grid-template-columns: 1fr 180px; }
+    .main { padding: 20px 24px; border-right: 1px solid #e5e7eb; }
+    .sidebar { background: #f8f9fa; padding: 20px 16px; }
+    .section { margin-bottom: 20px; }
+    .section-title { font-size: 13pt; font-weight: 400; color: #333; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid ${primaryColor}; }
+    .sidebar-title { font-size: 11pt; font-weight: 400; color: ${primaryColor}; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #dee2e6; }
+    .skill-item { font-size: 9pt; padding: 5px 0; border-bottom: 1px solid #e9ecef; color: #444; }
+    .job { margin-bottom: 14px; }
+    .job-header { display: flex; justify-content: space-between; margin-bottom: 2px; }
+    .job-title { font-weight: 600; font-size: 10pt; }
+    .job-company { font-size: 9pt; color: ${primaryColor}; margin-bottom: 6px; }
+    .job-date { font-size: 9pt; color: #666; }
+    .bullet { font-size: 9pt; padding-left: 12px; margin-bottom: 3px; position: relative; color: #444; }
+    .bullet::before { content: "•"; position: absolute; left: 0; }
+    .summary { font-size: 9.5pt; line-height: 1.6; color: #444; }
+    .edu-item { margin-bottom: 10px; }
+    .edu-degree { font-weight: 600; font-size: 9.5pt; }
+    .edu-school { font-size: 9pt; color: ${primaryColor}; }
+  </style>
+</head>
+<body>
+  <div class="resume">
+    <div class="header">
+      <h1>${data.full_name || 'Your Name'}</h1>
+      <div class="role">${data.role_title || 'Professional Title'}</div>
+      <div class="contact">
+        ${data.email ? `<span>✉ ${data.email}</span>` : ''}
+        ${data.phone ? `<span>✆ ${data.phone}</span>` : ''}
+        ${data.address ? `<span>⌂ ${data.address}</span>` : ''}
+      </div>
+    </div>
+    <div class="body">
+      <div class="main">
+        <div class="section">
+          <div class="section-title">Summary</div>
+          <p class="summary">${data.summary || ''}</p>
+        </div>
+        <div class="section">
+          <div class="section-title">Education</div>
+          ${(data.education || []).map(e => `
+            <div class="edu-item">
+              <div style="display: flex; justify-content: space-between;">
+                <div class="edu-degree">${e.degree || ''}${e.field ? ', ' + e.field : ''}</div>
+                <div style="font-size: 9pt; color: #666;">${e.graduation_date || ''}</div>
+              </div>
+              <div class="edu-school">${e.school || ''}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="section">
+          <div class="section-title">Employment</div>
+          ${(data.experience || []).map(exp => `
+            <div class="job">
+              <div class="job-header">
+                <div class="job-title">${exp.role || ''}</div>
+                <div class="job-date">${exp.start_date || ''} - ${exp.end_date || ''}</div>
+              </div>
+              <div class="job-company">${exp.company || ''}</div>
+              ${(exp.bullets || []).map(b => `<div class="bullet">${b}</div>`).join('')}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="sidebar">
+        ${data.linkedin ? `
+        <div class="section">
+          <div class="sidebar-title">LinkedIn</div>
+          <div style="font-size: 8pt; color: #666; word-break: break-all;">${data.linkedin}</div>
+        </div>
+        ` : ''}
+        <div class="section">
+          <div class="sidebar-title">Skills</div>
+          ${(data.skills || []).map(s => `<div class="skill-item">${s}</div>`).join('')}
+        </div>
+        <div class="section">
+          <div class="sidebar-title">Languages</div>
+          ${(data.languages || []).map(l => `<div class="skill-item">${l}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+// EXECUTIVE TEMPLATE - Sidebar left with accent bars, badges for sections
+function generateExecutivePreview(data, primaryColor) {
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; line-height: 1.4; color: #333; background: white; }
+    .resume { max-width: 850px; margin: 0 auto; }
+    .header { background: ${primaryColor}; color: white; padding: 24px 32px; }
+    .header h1 { font-size: 26pt; font-weight: 700; letter-spacing: 3px; margin-bottom: 4px; }
+    .header .role { font-size: 11pt; margin-bottom: 12px; }
+    .header .contact { font-size: 9pt; opacity: 0.9; display: flex; flex-direction: column; gap: 3px; }
+    .body { display: grid; grid-template-columns: 180px 1fr; }
+    .sidebar { background: #f5f5f5; padding: 20px 16px; }
+    .main { padding: 20px 24px; }
+    .section { margin-bottom: 20px; }
+    .sidebar-heading { font-size: 10pt; font-weight: 700; color: #333; letter-spacing: 1px; margin-bottom: 12px; text-transform: uppercase; }
+    .skill-item { display: flex; align-items: center; gap: 8px; font-size: 9pt; margin-bottom: 6px; color: #333; }
+    .skill-bar { width: 8px; height: 8px; background: ${primaryColor}; flex-shrink: 0; }
+    .section-badge { background: ${primaryColor}; color: white; padding: 4px 10px; font-size: 10pt; font-weight: 600; letter-spacing: 1px; display: inline-block; margin-bottom: 12px; }
+    .job { margin-bottom: 14px; }
+    .job-header { display: flex; justify-content: space-between; margin-bottom: 2px; }
+    .job-title { font-weight: 700; font-size: 10pt; }
+    .job-company { font-size: 9pt; color: #555; margin-bottom: 6px; }
+    .job-date { font-size: 9pt; color: #555; }
+    .bullet { font-size: 9pt; padding-left: 12px; margin-bottom: 3px; position: relative; }
+    .bullet::before { content: "•"; position: absolute; left: 0; }
+    .summary { font-size: 9.5pt; line-height: 1.55; color: #333; }
+    .edu-item { margin-bottom: 10px; }
+    .edu-degree { font-weight: 600; font-size: 9.5pt; }
+    .edu-school { font-size: 9pt; color: ${primaryColor}; }
+  </style>
+</head>
+<body>
+  <div class="resume">
+    <div class="header">
+      <h1>${(data.full_name || 'Your Name').toUpperCase()}</h1>
+      <div class="role">${data.role_title || 'Professional Title'}</div>
+      <div class="contact">
+        ${data.email ? `<span>✉ ${data.email}</span>` : ''}
+        ${data.phone ? `<span>✆ ${data.phone}</span>` : ''}
+        ${data.address ? `<span>⌂ ${data.address}</span>` : ''}
+        ${data.linkedin ? `<span>in ${data.linkedin}</span>` : ''}
+      </div>
+    </div>
+    <div class="body">
+      <div class="sidebar">
+        <div class="section">
+          <div class="sidebar-heading">Skills</div>
+          ${(data.skills || []).map(s => `<div class="skill-item"><span class="skill-bar"></span>${s}</div>`).join('')}
+        </div>
+        <div class="section">
+          <div class="sidebar-heading">Languages</div>
+          ${(data.languages || []).map(l => `<div class="skill-item"><span class="skill-bar"></span>${l}</div>`).join('')}
+        </div>
+      </div>
+      <div class="main">
+        <div class="section">
+          <div class="section-badge">SUMMARY</div>
+          <p class="summary">${data.summary || ''}</p>
+        </div>
+        <div class="section">
+          <div class="section-badge">EDUCATION</div>
+          ${(data.education || []).map(e => `
+            <div class="edu-item">
+              <div style="display: flex; justify-content: space-between;">
+                <div class="edu-degree">${e.degree || ''}${e.field ? ', ' + e.field : ''}</div>
+                <div style="font-size: 9pt; color: #666;">${e.graduation_date || ''}</div>
+              </div>
+              <div class="edu-school">${e.school || ''}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="section">
+          <div class="section-badge">EMPLOYMENT</div>
+          ${(data.experience || []).map(exp => `
+            <div class="job">
+              <div class="job-header">
+                <div class="job-title">${exp.role || ''}</div>
+                <div class="job-date">${exp.start_date || ''} - ${exp.end_date || ''}</div>
+              </div>
+              <div class="job-company">${exp.company || ''}</div>
               ${(exp.bullets || []).map(b => `<div class="bullet">${b}</div>`).join('')}
             </div>
           `).join('')}
@@ -1243,6 +1472,7 @@ function leaveWithoutSaving() {
 
 function closeUnsavedModal() {
   document.getElementById('unsavedChangesModal').style.display = 'none';
+  window.navigateAfterSave = false;
   pendingNavigation = null;
 }
 
