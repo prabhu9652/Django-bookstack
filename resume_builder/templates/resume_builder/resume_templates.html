@@ -2342,7 +2342,7 @@ function updateLivePreview(wrapper, templateSlug) {
 
 function createResume() {
   const btn = document.getElementById('continueBtn');
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading Editor...';
   btn.disabled = true;
   
   const role = document.querySelector('input[name="role"]:checked')?.value || 'devops_sre';
@@ -2357,12 +2357,8 @@ function createResume() {
     return;
   }
   
-  document.getElementById('selectedRole').value = role;
-  document.getElementById('selectedTemplateId').value = templateId;
-  
-  const form = document.getElementById('createResumeForm');
-  form.action = `/resume-builder/create-resume/${templateId}/`;
-  form.submit();
+  // Redirect to draft editor (NO auto-save to My Documents)
+  window.location.href = `/resume-builder/draft-resume/${templateId}/?role=${role}`;
 }
 </script>
 {% endblock %}
