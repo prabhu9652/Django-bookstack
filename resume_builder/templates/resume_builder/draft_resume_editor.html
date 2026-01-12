@@ -992,6 +992,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function closeSaveModal() {
   document.getElementById('saveModal').style.display = 'none';
+  // Reset navigation flag if user cancels
+  window.navigateAfterSave = false;
+  pendingNavigation = null;
 }
 
 async function confirmSave() {
@@ -1036,6 +1039,11 @@ async function performSave(documentName = null) {
         hasUnsavedChanges = false;
         isSaved = true;
         updateUnsavedBadge();
+        
+        // Navigate if requested
+        if (window.navigateAfterSave && pendingNavigation) {
+          window.location.href = pendingNavigation;
+        }
       } else {
         throw new Error(result.error || 'Failed to save');
       }
@@ -1055,14 +1063,20 @@ async function performSave(documentName = null) {
         isSaved = true;
         updateUnsavedBadge();
         
-        // Update URL without reload (so user can continue editing)
-        history.replaceState(null, '', result.redirect_url);
+        // Navigate if requested, otherwise update URL
+        if (window.navigateAfterSave && pendingNavigation) {
+          window.location.href = pendingNavigation;
+        } else {
+          // Update URL without reload (so user can continue editing)
+          history.replaceState(null, '', result.redirect_url);
+        }
       } else {
         throw new Error(result.error || 'Failed to save');
       }
     }
   } catch (error) {
     alert('Error saving: ' + error.message);
+    window.navigateAfterSave = false;
   } finally {
     saveBtn.innerHTML = '<i class="fas fa-save"></i> <span>Save to My Documents</span>';
     saveBtn.disabled = false;
@@ -1198,15 +1212,29 @@ function goToMyDocuments() {
   }
 }
 
-function saveAndNavigate() {
-  saveToMyDocuments().then(() => {
+// Save and then navigate - handles the naming modal flow properly
+async function saveAndNavigate() {
+  // Close the unsaved changes modal first
+  closeUnsavedModal();
+  
+  // If already saved, just update and navigate
+  if (savedResumeId) {
+    await performSave();
     if (pendingNavigation) {
       window.location.href = pendingNavigation;
     }
-  });
+    return;
+  }
+  
+  // For first save, show naming modal
+  // Store that we want to navigate after save
+  window.navigateAfterSave = true;
+  saveToMyDocuments();
 }
 
 function leaveWithoutSaving() {
+  // Close modal and navigate without saving
+  closeUnsavedModal();
   hasUnsavedChanges = false; // Prevent beforeunload
   if (pendingNavigation) {
     window.location.href = pendingNavigation;
