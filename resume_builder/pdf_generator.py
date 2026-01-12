@@ -429,18 +429,27 @@ body {{
 .body-table {{
     width: 100%;
     border-collapse: collapse;
+    border-spacing: 0;
+    margin: 0;
+    padding: 0;
+}}
+
+.body-table tr {{
+    margin: 0;
+    padding: 0;
 }}
 
 .body-table > tr > td {{
     vertical-align: top;
     border: none;
+    margin: 0;
 }}
 
 /* ==================== SIDEBAR ==================== */
 .sidebar {{
     width: 52mm;
     background-color: #f7f7f7;
-    padding: 10mm 8mm 15mm 10mm;
+    padding: 8mm 8mm 15mm 10mm;
 }}
 
 .sidebar-section {{
@@ -497,12 +506,17 @@ body {{
 
 /* ==================== MAIN CONTENT ==================== */
 .main-content {{
-    padding: 10mm 15mm 15mm 12mm;
+    padding: 8mm 15mm 15mm 12mm;
     background-color: #ffffff;
 }}
 
 .content-section {{
     margin-bottom: 8mm;
+}}
+
+.content-section:first-child {{
+    margin-top: 0;
+    padding-top: 0;
 }}
 
 .section-label-wrapper {{
@@ -851,7 +865,7 @@ body {{
 }}
 
 .closing-text {{
-    margin-bottom: 25px;
+    margin-bottom: 8px;
     color: #333333;
 }}
 
@@ -1041,6 +1055,11 @@ def _get_modern_resume_css(primary_color: str) -> str:
     box-sizing: border-box;
 }}
 
+html, body {{
+    margin: 0;
+    padding: 0;
+}}
+
 body {{
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 10pt;
@@ -1083,17 +1102,26 @@ body {{
 .body-table {{
     width: 100%;
     border-collapse: collapse;
+    border-spacing: 0;
+    margin: 0;
+    padding: 0;
+}}
+
+.body-table tr {{
+    margin: 0;
+    padding: 0;
 }}
 
 .body-table > tr > td {{
     vertical-align: top;
     border: none;
+    margin: 0;
 }}
 
 /* ==================== MAIN CONTENT ==================== */
 .main-content {{
     width: 65%;
-    padding: 10mm 8mm 15mm 15mm;
+    padding: 8mm 8mm 15mm 15mm;
     background-color: #ffffff;
 }}
 
@@ -1101,11 +1129,16 @@ body {{
     margin-bottom: 8mm;
 }}
 
+.section:first-child {{
+    margin-top: 0;
+    padding-top: 0;
+}}
+
 .section-title {{
     font-size: 13pt;
     font-weight: 400;
     color: #333333;
-    margin-bottom: 4mm;
+    margin: 0 0 4mm 0;
     padding-bottom: 2mm;
     border-bottom: 2px solid {primary_color};
 }}
@@ -1195,7 +1228,7 @@ body {{
 .sidebar {{
     width: 35%;
     background-color: #f8f9fa;
-    padding: 10mm 12mm 15mm 8mm;
+    padding: 8mm 12mm 15mm 8mm;
     border-left: 1px solid #e9ecef;
 }}
 
@@ -1466,18 +1499,27 @@ body {{
 .body-table {{
     width: 100%;
     border-collapse: collapse;
+    border-spacing: 0;
+    margin: 0;
+    padding: 0;
+}}
+
+.body-table tr {{
+    margin: 0;
+    padding: 0;
 }}
 
 .body-table > tr > td {{
     vertical-align: top;
     border: none;
+    margin: 0;
 }}
 
 /* ==================== SIDEBAR ==================== */
 .sidebar {{
     width: 55mm;
     background-color: #f5f5f5;
-    padding: 10mm 8mm 15mm 10mm;
+    padding: 8mm 8mm 15mm 10mm;
 }}
 
 .sidebar-section {{
@@ -1514,12 +1556,17 @@ body {{
 
 /* ==================== MAIN CONTENT ==================== */
 .main-content {{
-    padding: 10mm 15mm 15mm 10mm;
+    padding: 8mm 15mm 15mm 10mm;
     background-color: #ffffff;
 }}
 
 .content-section {{
     margin-bottom: 8mm;
+}}
+
+.content-section:first-child {{
+    margin-top: 0;
+    padding-top: 0;
 }}
 
 .section-label-wrapper {{
@@ -1768,7 +1815,7 @@ body {{
 .body .achievements li {{ margin-bottom: 6px; text-align: justify; padding-left: 4px; }}
 
 .closing {{ margin-top: 24px; }}
-.closing-text {{ margin-bottom: 20px; }}
+.closing-text {{ margin-bottom: 8px; }}
 .signature {{ font-weight: 600; font-size: 12pt; color: {primary_color}; }}
 '''
 
@@ -1913,7 +1960,7 @@ body {{
 .body .achievements li {{ margin-bottom: 6px; text-align: justify; padding-left: 4px; }}
 
 .closing {{ margin-top: 24px; }}
-.closing-text {{ margin-bottom: 20px; }}
+.closing-text {{ margin-bottom: 8px; }}
 .signature {{ font-weight: 700; font-size: 13pt; color: {primary_color}; }}
 '''
 

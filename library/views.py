@@ -19,11 +19,27 @@ logger = logging.getLogger(__name__)
 
 @require_content_access(redirect_url='accounts.access_denied')
 def index(request):
-    """User's personal library with category organization"""
-    category_slug = request.GET.get('category')
+    """User's personal library with search, filter, and sort capabilities"""
+    from django.db.models import Q
     
-    # Get user's library books
+    # Get query parameters
+    search_query = request.GET.get('q', '').strip()
+    category_slug = request.GET.get('category', '')
+    sort_by = request.GET.get('sort', 'recent')
+    
+    # Get user's library books with optimized queries
     library_books = UserLibrary.objects.filter(user=request.user).select_related('book', 'book__category')
+    
+    # Store total count before filtering
+    total_in_library = library_books.count()
+    
+    # Apply search filter (title, author, category name)
+    if search_query:
+        library_books = library_books.filter(
+            Q(book__name__icontains=search_query) |
+            Q(book__author__icontains=search_query) |
+            Q(book__category__name__icontains=search_query)
+        )
     
     # Filter by category if specified
     if category_slug:
@@ -33,16 +49,37 @@ def index(request):
             category = get_object_or_404(Category, slug=category_slug)
             library_books = library_books.filter(book__category=category)
     
-    # Get categories that have books in user's library
+    # Apply sorting
+    if sort_by == 'title':
+        library_books = library_books.order_by('book__name')
+    elif sort_by == 'title-desc':
+        library_books = library_books.order_by('-book__name')
+    elif sort_by == 'author':
+        library_books = library_books.order_by('book__author', 'book__name')
+    elif sort_by == 'oldest':
+        library_books = library_books.order_by('added_date')
+    else:  # 'recent' is default
+        library_books = library_books.order_by('-added_date')
+    
+    # Get categories that have books in user's library (with counts)
+    from django.db.models import Count
     categories_with_books = Category.objects.filter(
         books__userlibrary__user=request.user
+    ).annotate(
+        book_count=Count('books__userlibrary', filter=Q(books__userlibrary__user=request.user))
     ).distinct().order_by('name')
     
     # Count uncategorized books
-    uncategorized_count = library_books.filter(book__category__isnull=True).count()
+    uncategorized_count = UserLibrary.objects.filter(
+        user=request.user, 
+        book__category__isnull=True
+    ).count()
     
     # Get access context
     access_context = get_user_access_context(request.user)
+    
+    # Count filtered results
+    filtered_count = library_books.count()
     
     template_data = {
         'title': 'My Library',
@@ -50,7 +87,10 @@ def index(request):
         'categories': categories_with_books,
         'uncategorized_count': uncategorized_count,
         'current_category': category_slug,
-        'total_books': library_books.count(),
+        'total_books': total_in_library,
+        'filtered_count': filtered_count,
+        'search_query': search_query,
+        'sort_by': sort_by,
         'access_context': access_context
     }
     

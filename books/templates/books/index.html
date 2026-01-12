@@ -5,444 +5,422 @@
 <!-- Hidden CSRF token for AJAX requests -->
 {% csrf_token %}
 
-<div class="books-page">
-  <!-- Books/Library Tab Navigation -->
-  <div class="books-tabs-nav">
-    <div class="container">
-      <div class="tabs-wrapper">
-        <a href="{% url 'books.index' %}" class="tab-item active">
-          <i class="fas fa-book-open"></i>
-          <span>Browse Books</span>
-        </a>
-        {% if user.is_authenticated %}
-        <a href="{% url 'library.index' %}" class="tab-item">
-          <i class="fas fa-bookmark"></i>
-          <span>My Library</span>
-        </a>
-        {% else %}
-        <a href="{% url 'accounts.login' %}?next={% url 'library.index' %}" class="tab-item tab-disabled" title="Sign in to access your library">
-          <i class="fas fa-bookmark"></i>
-          <span>My Library</span>
-          <i class="fas fa-lock tab-lock-icon"></i>
-        </a>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-
-  <!-- Page Header Section -->
-  <div class="books-page-header">
+<div class="books-unified-page browse-view">
+  <!-- Unified Page Header with Section Switcher -->
+  <div class="unified-page-header">
     <div class="header-bg-effects">
       <div class="header-gradient"></div>
       <div class="header-pattern"></div>
     </div>
     <div class="container">
-      <div class="header-content">
-        <h1>Explore Books</h1>
-        <p class="header-subtitle">
-          {% if template_data.category %}
-            {{ template_data.category.name }} • Curated learning resources by industry experts
+      <!-- Page Title -->
+      <div class="page-title-row">
+        <h1>Books</h1>
+        <p class="page-subtitle">Discover technical resources and build your personal library</p>
+      </div>
+      
+      <!-- Section Switcher -->
+      <div class="section-switcher-container">
+        <div class="section-switcher" role="tablist">
+          <a href="{% url 'books.index' %}" class="switcher-tab active" role="tab" aria-selected="true">
+            <div class="tab-icon-wrap">
+              <i class="fas fa-compass"></i>
+            </div>
+            <div class="tab-content">
+              <span class="tab-label">Browse Books</span>
+              <span class="tab-desc">Explore our collection</span>
+            </div>
+            {% if template_data.total_books %}
+            <span class="tab-count">{{ template_data.total_books }}</span>
+            {% endif %}
+          </a>
+          {% if user.is_authenticated %}
+          <a href="{% url 'library.index' %}" class="switcher-tab" role="tab" aria-selected="false">
+            <div class="tab-icon-wrap library-icon">
+              <i class="fas fa-bookmark"></i>
+            </div>
+            <div class="tab-content">
+              <span class="tab-label">My Library</span>
+              <span class="tab-desc">Your saved books</span>
+            </div>
+          </a>
           {% else %}
-            Curated technical books on DevOps, Cloud, Data Science & Software Development
+          <a href="{% url 'accounts.login' %}?next={% url 'library.index' %}" class="switcher-tab tab-locked" role="tab" aria-selected="false" title="Sign in to access your library">
+            <div class="tab-icon-wrap library-icon">
+              <i class="fas fa-bookmark"></i>
+            </div>
+            <div class="tab-content">
+              <span class="tab-label">My Library</span>
+              <span class="tab-desc">Sign in to access</span>
+            </div>
+            <span class="tab-lock"><i class="fas fa-lock"></i></span>
+          </a>
           {% endif %}
-        </p>
-        
-        <!-- Metadata Row -->
-        <div class="header-meta">
-          <div class="meta-item">
-            <i class="fas fa-layer-group"></i>
-            <span>{{ template_data.categories|length }} Categories</span>
-          </div>
-          <div class="meta-divider"></div>
-          <div class="meta-item">
-            <i class="fas fa-file-pdf"></i>
-            <span>PDF Format</span>
-          </div>
-          <div class="meta-divider"></div>
-          <div class="meta-item">
-            <i class="fas fa-graduation-cap"></i>
-            <span>All Skill Levels</span>
-          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Main Content Area -->
-  <div class="books-main-content">
+  <!-- Books Command Bar - Search, Filter, Sort (Matching My Library) -->
+  <div class="books-command-bar">
     <div class="container">
-      <div class="content-layout">
-        <!-- Left Sidebar - Filters (Desktop) -->
-        <aside class="books-sidebar sidebar-left">
-          <!-- Search Card -->
-          <div class="sidebar-card search-card">
-            <div class="sidebar-card-header">
-              <i class="fas fa-search"></i>
-              <span>Search</span>
-            </div>
-            <div class="sidebar-card-body">
-              <form method="GET" class="search-form">
-                <div class="search-input-wrap">
-                  <input type="text" name="search" placeholder="Search books..." 
-                         value="{{ template_data.search_term|default:'' }}">
-                  <button type="submit"><i class="fas fa-arrow-right"></i></button>
-                </div>
-                <span class="search-hint">Press / to focus</span>
-              </form>
-            </div>
-          </div>
-          
-          <!-- Categories Filter -->
-          <div class="sidebar-card filter-card">
-            <div class="sidebar-card-header">
-              <i class="fas fa-folder"></i>
-              <span>Categories</span>
-            </div>
-            <div class="sidebar-card-body">
-              <ul class="filter-list">
-                <li>
-                  <a href="{% url 'books.index' %}" class="filter-item {% if not template_data.category %}active{% endif %}">
-                    <i class="fas fa-th-large"></i>
-                    <span>All Books</span>
-                  </a>
-                </li>
-                {% for category in template_data.categories %}
-                <li>
-                  <a href="{% url 'books.category' category.slug %}" 
-                     class="filter-item {% if template_data.category.id == category.id %}active{% endif %}">
-                    {% if 'devops' in category.name|lower or 'ops' in category.name|lower %}
-                      <i class="fas fa-cogs"></i>
-                    {% elif 'cloud' in category.name|lower %}
-                      <i class="fas fa-cloud"></i>
-                    {% elif 'data' in category.name|lower %}
-                      <i class="fas fa-chart-bar"></i>
-                    {% elif 'machine' in category.name|lower or 'ml' in category.name|lower %}
-                      <i class="fas fa-robot"></i>
-                    {% elif 'software' in category.name|lower or 'development' in category.name|lower %}
-                      <i class="fas fa-code"></i>
-                    {% elif 'database' in category.name|lower %}
-                      <i class="fas fa-database"></i>
-                    {% else %}
-                      <i class="fas fa-book"></i>
-                    {% endif %}
-                    <span>{{ category.name }}</span>
-                  </a>
-                </li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
-          
-          <!-- Quick Tips -->
-          <div class="sidebar-card tips-card">
-            <div class="sidebar-card-header">
-              <i class="fas fa-lightbulb"></i>
-              <span>Quick Tips</span>
-            </div>
-            <div class="sidebar-card-body">
-              <ul class="tips-list">
-                <li><i class="fas fa-mouse-pointer"></i> Click any book to view details</li>
-                <li><i class="fas fa-plus"></i> Add books to your library</li>
-                <li><i class="fas fa-download"></i> Download PDFs for offline reading</li>
-              </ul>
-            </div>
-          </div>
-        </aside>
-
-        <!-- Center Content - Books Grid -->
-        <main class="books-center">
-          <!-- Access Control Status -->
-          {% if user.is_authenticated and not template_data.access_context.has_content_access %}
-          <div class="access-banner access-required">
-            <div class="access-icon"><i class="fas fa-lock"></i></div>
-            <div class="access-content">
-              <h4>Content Access Required</h4>
-              <p>You can browse books, but viewing details and downloading PDFs requires admin approval.</p>
-            </div>
-            {% if template_data.access_context.can_request_access %}
-            <a href="{% url 'accounts.access_status' %}" class="access-btn">
-              <i class="fas fa-key"></i> Request Access
-            </a>
+      <div class="command-bar-inner">
+        <!-- Search Box - Prominent -->
+        <div class="books-search-box">
+          <form method="GET" class="search-form" id="booksSearchForm">
+            <!-- Preserve other params -->
+            {% if template_data.current_category %}
+            <input type="hidden" name="category" value="{{ template_data.current_category }}">
             {% endif %}
-          </div>
-          {% elif user.is_authenticated and template_data.access_context.has_content_access %}
-          <div class="access-banner access-granted">
-            <div class="access-icon"><i class="fas fa-check-circle"></i></div>
-            <div class="access-content">
-              <h4>Full Access Granted</h4>
-              <p>You have full access to view, preview, and download all technical content.</p>
+            {% if template_data.sort_by and template_data.sort_by != 'name' %}
+            <input type="hidden" name="sort" value="{{ template_data.sort_by }}">
+            {% endif %}
+            <div class="search-input-container">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" 
+                     name="search" 
+                     id="booksSearchInput"
+                     placeholder="Search books by title, author, or category..." 
+                     value="{{ template_data.search_term|default:'' }}"
+                     autocomplete="off"
+                     aria-label="Search books">
+              {% if template_data.search_term %}
+              <a href="{% url 'books.index' %}{% if template_data.current_category %}?category={{ template_data.current_category }}{% endif %}" 
+                 class="search-clear" title="Clear search">
+                <i class="fas fa-times"></i>
+              </a>
+              {% endif %}
             </div>
-          </div>
-          {% endif %}
-
-          <!-- Mobile Category Navigation -->
-          {% if template_data.categories %}
-          <div class="mobile-category-nav">
-            <div class="category-scroll">
-              <a href="{% url 'books.index' %}" class="category-chip {% if not template_data.category %}active{% endif %}">
+          </form>
+        </div>
+        
+        <!-- Filter & Sort Controls -->
+        <div class="command-controls">
+          <!-- Category Filter Dropdown -->
+          <div class="filter-dropdown" id="categoryFilter">
+            <button class="filter-btn" type="button" aria-expanded="false">
+              <i class="fas fa-folder"></i>
+              <span>{% if template_data.current_category %}{% for cat in template_data.categories %}{% if cat.slug == template_data.current_category %}{{ cat.name }}{% endif %}{% endfor %}{% else %}All Categories{% endif %}</span>
+              <i class="fas fa-chevron-down filter-arrow"></i>
+            </button>
+            <div class="filter-menu">
+              <a href="{% url 'books.index' %}{% if template_data.search_term %}?search={{ template_data.search_term }}{% endif %}{% if template_data.sort_by and template_data.sort_by != 'name' %}{% if template_data.search_term %}&{% else %}?{% endif %}sort={{ template_data.sort_by }}{% endif %}" 
+                 class="filter-option {% if not template_data.current_category %}active{% endif %}">
                 <i class="fas fa-th-large"></i>
-                <span>All</span>
+                <span>All Categories</span>
+                <span class="filter-count">{{ template_data.total_books }}</span>
               </a>
               {% for category in template_data.categories %}
-              <a href="{% url 'books.category' category.slug %}" 
-                 class="category-chip {% if template_data.category.id == category.id %}active{% endif %}">
+              <a href="{% url 'books.index' %}?category={{ category.slug }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}{% if template_data.sort_by and template_data.sort_by != 'name' %}&sort={{ template_data.sort_by }}{% endif %}" 
+                 class="filter-option {% if template_data.current_category == category.slug %}active{% endif %}">
                 {% if 'devops' in category.name|lower %}<i class="fas fa-cogs"></i>
                 {% elif 'cloud' in category.name|lower %}<i class="fas fa-cloud"></i>
                 {% elif 'data' in category.name|lower %}<i class="fas fa-chart-bar"></i>
                 {% elif 'machine' in category.name|lower %}<i class="fas fa-robot"></i>
+                {% elif 'software' in category.name|lower %}<i class="fas fa-code"></i>
+                {% elif 'html' in category.name|lower or 'css' in category.name|lower %}<i class="fas fa-code"></i>
+                {% elif 'react' in category.name|lower or 'javascript' in category.name|lower %}<i class="fab fa-react"></i>
                 {% else %}<i class="fas fa-book"></i>{% endif %}
                 <span>{{ category.name }}</span>
+                <span class="filter-count">{{ category.book_count }}</span>
               </a>
               {% endfor %}
             </div>
           </div>
-          {% endif %}
-
-          <!-- Section Header with Sort -->
-          <div class="books-section-header">
-            <div class="section-title-group">
-              <h2>{% if template_data.category %}{{ template_data.category.name }}{% else %}All Books{% endif %}</h2>
-              <p>{% if template_data.search_term %}Results for "{{ template_data.search_term }}"{% else %}Browse our collection{% endif %}</p>
-            </div>
-            <div class="section-controls">
-              {% if template_data.books %}
-              <div class="results-count">
-                <span class="count-number">{{ template_data.books.paginator.count }}</span>
-                <span class="count-label">book{{ template_data.books.paginator.count|pluralize }}</span>
-              </div>
-              {% endif %}
-              <div class="sort-dropdown">
-                <button class="sort-btn" id="sortToggle">
-                  <i class="fas fa-sort-amount-down"></i>
-                  <span>Sort</span>
-                  <i class="fas fa-chevron-down sort-arrow"></i>
-                </button>
-                <div class="sort-menu" id="sortMenu">
-                  <a href="?sort=name{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}" class="sort-option {% if not request.GET.sort or request.GET.sort == 'name' %}active{% endif %}">
-                    <i class="fas fa-sort-alpha-down"></i> Title A-Z
-                  </a>
-                  <a href="?sort=-name{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}" class="sort-option {% if request.GET.sort == '-name' %}active{% endif %}">
-                    <i class="fas fa-sort-alpha-up"></i> Title Z-A
-                  </a>
-                  <a href="?sort=-created{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}" class="sort-option {% if request.GET.sort == '-created' %}active{% endif %}">
-                    <i class="fas fa-clock"></i> Newest First
-                  </a>
-                  <a href="?sort=created{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}" class="sort-option {% if request.GET.sort == 'created' %}active{% endif %}">
-                    <i class="fas fa-history"></i> Oldest First
-                  </a>
-                </div>
-              </div>
+          
+          <!-- Sort Dropdown -->
+          <div class="filter-dropdown" id="sortFilter">
+            <button class="filter-btn" type="button" aria-expanded="false">
+              <i class="fas fa-sort-amount-down"></i>
+              <span>{% if template_data.sort_by == '-name' %}Z-A{% elif template_data.sort_by == 'author' %}Author{% elif template_data.sort_by == '-created' %}Newest{% elif template_data.sort_by == 'created' %}Oldest{% else %}A-Z{% endif %}</span>
+              <i class="fas fa-chevron-down filter-arrow"></i>
+            </button>
+            <div class="filter-menu">
+              <a href="{% url 'books.index' %}?sort=name{% if template_data.current_category %}&category={{ template_data.current_category }}{% endif %}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}" 
+                 class="filter-option {% if template_data.sort_by == 'name' or not template_data.sort_by %}active{% endif %}">
+                <i class="fas fa-sort-alpha-down"></i>
+                <span>Title A-Z</span>
+              </a>
+              <a href="{% url 'books.index' %}?sort=-name{% if template_data.current_category %}&category={{ template_data.current_category }}{% endif %}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}" 
+                 class="filter-option {% if template_data.sort_by == '-name' %}active{% endif %}">
+                <i class="fas fa-sort-alpha-up"></i>
+                <span>Title Z-A</span>
+              </a>
+              <a href="{% url 'books.index' %}?sort=author{% if template_data.current_category %}&category={{ template_data.current_category }}{% endif %}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}" 
+                 class="filter-option {% if template_data.sort_by == 'author' %}active{% endif %}">
+                <i class="fas fa-user"></i>
+                <span>Author</span>
+              </a>
+              <a href="{% url 'books.index' %}?sort=-created{% if template_data.current_category %}&category={{ template_data.current_category }}{% endif %}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}" 
+                 class="filter-option {% if template_data.sort_by == '-created' %}active{% endif %}">
+                <i class="fas fa-clock"></i>
+                <span>Newest First</span>
+              </a>
+              <a href="{% url 'books.index' %}?sort=created{% if template_data.current_category %}&category={{ template_data.current_category }}{% endif %}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}" 
+                 class="filter-option {% if template_data.sort_by == 'created' %}active{% endif %}">
+                <i class="fas fa-history"></i>
+                <span>Oldest First</span>
+              </a>
             </div>
           </div>
-
-          <!-- Books Container Card -->
-          <div class="books-container-card">
-            <!-- PRESERVED: Books Grid Content -->
-            <div class="books-section">
-              {% if template_data.books %}
-              <div class="books-grid">
-                {% for book in template_data.books %}
-                <div class="book-card" data-book-url="{% url 'books.show' book.id %}">
-                  <!-- Book Cover -->
-                  <div class="book-cover">
-                    {% if book.cover %}
-                    <img src="{{ book.cover.url }}" alt="{{ book.name }}" loading="lazy" decoding="async"
-                         fetchpriority="{% if forloop.counter <= 4 %}high{% else %}low{% endif %}">
-                    {% else %}
-                    <div class="book-cover-placeholder">
-                      <i class="fas fa-file-code"></i>
-                      <span>Technical Book</span>
-                    </div>
-                    {% endif %}
-                  </div>
-                  
-                  <!-- Book Info -->
-                  <div class="book-info">
-                    <div>
-                      <h4 class="book-title">
-                        <a href="{% url 'books.show' book.id %}">{{ book.name }}</a>
-                      </h4>
-                      <p class="book-author">{{ book.author|default:"Technical Author" }}</p>
-                      
-                      {% if book.category %}
-                      <div class="book-category">
-                        {% if 'devops' in book.category.name|lower %}<i class="fas fa-cogs"></i>
-                        {% elif 'cloud' in book.category.name|lower %}<i class="fas fa-cloud"></i>
-                        {% elif 'data' in book.category.name|lower %}<i class="fas fa-chart-bar"></i>
-                        {% elif 'machine' in book.category.name|lower %}<i class="fas fa-robot"></i>
-                        {% elif 'software' in book.category.name|lower %}<i class="fas fa-code"></i>
-                        {% elif 'database' in book.category.name|lower %}<i class="fas fa-database"></i>
-                        {% else %}<i class="fas fa-book"></i>{% endif %}
-                        {{ book.category.name }}
-                      </div>
-                      {% endif %}
-                    </div>
-                    
-                    <!-- Action Button -->
-                    {% if user.is_authenticated %}
-                    <div class="book-actions">
-                      {% if template_data.access_context.has_content_access %}
-                        {% if book.id in template_data.user_library_book_ids %}
-                        <button class="library-toggle-btn in-library remove-from-library" data-book-id="{{ book.id }}" data-book-title="{{ book.name }}">
-                          <i class="fas fa-check-circle"></i>
-                          <span>In Library</span>
-                        </button>
-                        {% else %}
-                        <button class="library-toggle-btn add-to-library" data-book-id="{{ book.id }}" data-book-title="{{ book.name }}">
-                          <i class="fas fa-plus-circle"></i>
-                          <span>Add to Library</span>
-                        </button>
-                        {% endif %}
-                      {% else %}
-                      <button class="library-toggle-btn disabled" disabled title="Access approval required">
-                        <i class="fas fa-lock"></i>
-                        <span>Access Required</span>
-                      </button>
-                      {% endif %}
-                    </div>
-                    {% else %}
-                    <div class="book-actions">
-                      <a href="{% url 'accounts.login' %}" class="library-toggle-btn signin-btn">
-                        <i class="fas fa-sign-in-alt"></i>
-                        <span>Sign In to Add</span>
-                      </a>
-                    </div>
-                    {% endif %}
-                  </div>
-                </div>
-                {% endfor %}
-              </div>
-
-              <!-- Pagination -->
-              {% if template_data.books.has_other_pages %}
-              <div class="pagination-wrapper">
-                {% if template_data.books.has_previous %}
-                <a href="?page={{ template_data.books.previous_page_number }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}" class="pagination-btn">
-                  <i class="fas fa-chevron-left"></i> Previous
-                </a>
-                {% endif %}
-                <span class="pagination-info">Page {{ template_data.books.number }} of {{ template_data.books.paginator.num_pages }}</span>
-                {% if template_data.books.has_next %}
-                <a href="?page={{ template_data.books.next_page_number }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}" class="pagination-btn">
-                  Next <i class="fas fa-chevron-right"></i>
-                </a>
-                {% endif %}
-              </div>
-              {% endif %}
-              {% else %}
-              <!-- Empty State -->
-              <div class="empty-state">
-                <div class="empty-icon"><i class="fas fa-search"></i></div>
-                <h3>No Books Found</h3>
-                <p>{% if template_data.search_term %}No books match "{{ template_data.search_term }}". Try different keywords.{% else %}No books available in this category yet.{% endif %}</p>
-                {% if template_data.search_term %}
-                <a href="{% url 'books.index' %}" class="btn-empty-action"><i class="fas fa-arrow-left"></i> View All Books</a>
-                {% endif %}
-              </div>
-              {% endif %}
-            </div>
-            <!-- END PRESERVED Content -->
-          </div>
-        </main>
+        </div>
       </div>
+      
+      <!-- Active Filters & Results Summary -->
+      {% if template_data.search_term or template_data.current_category %}
+      <div class="active-filters-bar">
+        <div class="results-summary">
+          <span class="results-count">{{ template_data.filtered_count }}</span>
+          <span class="results-label">book{{ template_data.filtered_count|pluralize }} found</span>
+          {% if template_data.search_term %}
+          <span class="results-query">for "{{ template_data.search_term }}"</span>
+          {% endif %}
+        </div>
+        <div class="active-filters">
+          {% if template_data.current_category %}
+          <span class="filter-tag">
+            <i class="fas fa-folder"></i>
+            {% for cat in template_data.categories %}{% if cat.slug == template_data.current_category %}{{ cat.name }}{% endif %}{% endfor %}
+            <a href="{% url 'books.index' %}{% if template_data.search_term %}?search={{ template_data.search_term }}{% endif %}{% if template_data.sort_by and template_data.sort_by != 'name' %}{% if template_data.search_term %}&{% else %}?{% endif %}sort={{ template_data.sort_by }}{% endif %}" class="filter-tag-remove">
+              <i class="fas fa-times"></i>
+            </a>
+          </span>
+          {% endif %}
+          {% if template_data.search_term %}
+          <span class="filter-tag">
+            <i class="fas fa-search"></i>
+            "{{ template_data.search_term }}"
+            <a href="{% url 'books.index' %}{% if template_data.current_category %}?category={{ template_data.current_category }}{% endif %}{% if template_data.sort_by and template_data.sort_by != 'name' %}{% if template_data.current_category %}&{% else %}?{% endif %}sort={{ template_data.sort_by }}{% endif %}" class="filter-tag-remove">
+              <i class="fas fa-times"></i>
+            </a>
+          </span>
+          {% endif %}
+          <a href="{% url 'books.index' %}" class="clear-all-filters">Clear all</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Access Control Banner -->
+  {% if user.is_authenticated and not template_data.access_context.has_content_access %}
+  <div class="access-banner-container">
+    <div class="container">
+      <div class="access-banner access-required">
+        <div class="access-icon"><i class="fas fa-lock"></i></div>
+        <div class="access-content">
+          <h4>Content Access Required</h4>
+          <p>You can browse books, but viewing details and downloading PDFs requires admin approval.</p>
+        </div>
+        {% if template_data.access_context.can_request_access %}
+        <a href="{% url 'accounts.access_status' %}" class="access-btn">
+          <i class="fas fa-key"></i> Request Access
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Main Books Content -->
+  <div class="books-main-content">
+    <div class="container">
+      {% if template_data.books %}
+      <!-- Books Grid -->
+      <div class="books-grid" id="booksGrid">
+        {% for book in template_data.books %}
+        <div class="book-card" 
+             data-book-id="{{ book.id }}"
+             data-book-url="{% url 'books.show' book.id %}"
+             data-title="{{ book.name|lower }}"
+             data-author="{{ book.author|default:''|lower }}"
+             data-category="{{ book.category.name|default:''|lower }}">
+          
+          <!-- Book Cover -->
+          <div class="book-cover-wrap">
+            {% if book.cover %}
+            <img src="{{ book.cover.url }}" 
+                 alt="{{ book.name }}" 
+                 loading="lazy"
+                 decoding="async"
+                 class="book-cover-img">
+            {% else %}
+            <div class="book-cover-placeholder">
+              <i class="fas fa-book"></i>
+            </div>
+            {% endif %}
+            
+            <!-- Quick Actions Overlay -->
+            <div class="book-quick-actions">
+              <a href="{% url 'books.show' book.id %}" class="quick-action-btn" title="View Details">
+                <i class="fas fa-eye"></i>
+              </a>
+              {% if book.pdf and user.is_authenticated and template_data.access_context.has_content_access %}
+              <a href="{% url 'books.read' book.id %}" class="quick-action-btn" title="Read Book">
+                <i class="fas fa-book-open"></i>
+              </a>
+              {% endif %}
+              {% if user.is_authenticated and template_data.access_context.has_content_access %}
+              {% if book.id in template_data.user_library_book_ids %}
+              <button type="button" class="quick-action-btn in-library-btn remove-from-library" 
+                      data-book-id="{{ book.id }}" 
+                      data-book-title="{{ book.name }}"
+                      title="Remove from Library">
+                <i class="fas fa-bookmark"></i>
+              </button>
+              {% else %}
+              <button type="button" class="quick-action-btn add-to-library" 
+                      data-book-id="{{ book.id }}" 
+                      data-book-title="{{ book.name }}"
+                      title="Add to Library">
+                <i class="far fa-bookmark"></i>
+              </button>
+              {% endif %}
+              {% endif %}
+            </div>
+            
+            <!-- In Library Badge -->
+            {% if book.id in template_data.user_library_book_ids %}
+            <div class="in-library-badge">
+              <i class="fas fa-bookmark"></i>
+            </div>
+            {% endif %}
+          </div>
+          
+          <!-- Book Info -->
+          <div class="book-card-body">
+            <!-- Category Badge -->
+            {% if book.category %}
+            <div class="book-category-badge">
+              {% if 'devops' in book.category.name|lower %}<i class="fas fa-cogs"></i>
+              {% elif 'cloud' in book.category.name|lower %}<i class="fas fa-cloud"></i>
+              {% elif 'data' in book.category.name|lower %}<i class="fas fa-chart-bar"></i>
+              {% elif 'machine' in book.category.name|lower %}<i class="fas fa-robot"></i>
+              {% elif 'software' in book.category.name|lower %}<i class="fas fa-code"></i>
+              {% elif 'html' in book.category.name|lower or 'css' in book.category.name|lower %}<i class="fas fa-code"></i>
+              {% elif 'react' in book.category.name|lower %}<i class="fab fa-react"></i>
+              {% else %}<i class="fas fa-folder"></i>{% endif %}
+              {{ book.category.name }}
+            </div>
+            {% endif %}
+            
+            <!-- Title -->
+            <h3 class="book-card-title">
+              <a href="{% url 'books.show' book.id %}">{{ book.name }}</a>
+            </h3>
+            
+            <!-- Author -->
+            {% if book.author %}
+            <p class="book-card-author">{{ book.author }}</p>
+            {% endif %}
+            
+            <!-- PDF Badge -->
+            {% if book.pdf %}
+            <div class="book-card-meta">
+              <i class="fas fa-file-pdf"></i>
+              <span>PDF Available</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      
+      <!-- Pagination -->
+      {% if template_data.books.has_other_pages %}
+      <div class="pagination-wrapper">
+        <div class="pagination-info-text">
+          Showing {{ template_data.books.start_index }}-{{ template_data.books.end_index }} of {{ template_data.books.paginator.count }} books
+        </div>
+        <div class="pagination-controls">
+          {% if template_data.books.has_previous %}
+          <a href="?page={{ template_data.books.previous_page_number }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}{% if template_data.current_category %}&category={{ template_data.current_category }}{% endif %}{% if template_data.sort_by %}&sort={{ template_data.sort_by }}{% endif %}" class="pagination-btn">
+            <i class="fas fa-chevron-left"></i>
+          </a>
+          {% endif %}
+          
+          <div class="pagination-pages">
+            {% for num in template_data.books.paginator.page_range %}
+              {% if num == template_data.books.number %}
+              <span class="pagination-page active">{{ num }}</span>
+              {% elif num == 1 or num == template_data.books.paginator.num_pages or num >= template_data.books.number|add:"-2" and num <= template_data.books.number|add:"2" %}
+              <a href="?page={{ num }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}{% if template_data.current_category %}&category={{ template_data.current_category }}{% endif %}{% if template_data.sort_by %}&sort={{ template_data.sort_by }}{% endif %}" class="pagination-page">{{ num }}</a>
+              {% elif num == template_data.books.number|add:"-3" or num == template_data.books.number|add:"3" %}
+              <span class="pagination-ellipsis">...</span>
+              {% endif %}
+            {% endfor %}
+          </div>
+          
+          {% if template_data.books.has_next %}
+          <a href="?page={{ template_data.books.next_page_number }}{% if template_data.search_term %}&search={{ template_data.search_term }}{% endif %}{% if template_data.current_category %}&category={{ template_data.current_category }}{% endif %}{% if template_data.sort_by %}&sort={{ template_data.sort_by }}{% endif %}" class="pagination-btn">
+            <i class="fas fa-chevron-right"></i>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+      
+      {% else %}
+      <!-- Empty State -->
+      <div class="books-empty-state">
+        {% if template_data.search_term or template_data.current_category %}
+        <!-- No Results State -->
+        <div class="empty-icon-wrap">
+          <i class="fas fa-search"></i>
+        </div>
+        <h3>No books found</h3>
+        <p>
+          {% if template_data.search_term %}
+          No books match "{{ template_data.search_term }}"{% if template_data.current_category %} in this category{% endif %}.
+          {% else %}
+          No books in this category yet.
+          {% endif %}
+        </p>
+        <div class="empty-actions">
+          <a href="{% url 'books.index' %}" class="btn-secondary">
+            <i class="fas fa-arrow-left"></i> View All Books
+          </a>
+        </div>
+        {% else %}
+        <!-- No Books Available State -->
+        <div class="empty-illustration">
+          <div class="empty-icon-stack">
+            <div class="empty-icon-bg"></div>
+            <div class="empty-icon"><i class="fas fa-book"></i></div>
+          </div>
+        </div>
+        <h3>No books available</h3>
+        <p class="empty-description">
+          Check back soon for new technical resources.
+        </p>
+        {% endif %}
+      </div>
+      {% endif %}
     </div>
   </div>
 </div>
 
+<!-- Toast Notification -->
+<div class="books-toast" id="booksToast">
+  <div class="toast-icon">
+    <i class="fas fa-check"></i>
+  </div>
+  <span class="toast-message" id="toastMessage">Added to library</span>
+</div>
+
+
 <style>
 /* ============================================
-   BOOKS/LIBRARY TAB NAVIGATION
+   UNIFIED BOOKS PAGE - BASE STYLES
    ============================================ */
-.books-tabs-nav {
-  background: var(--bg-surface);
-  border-bottom: 1px solid var(--border-default);
-  position: sticky;
-  top: 64px;
-  z-index: 50;
-}
-
-.books-tabs-nav .container {
-  max-width: 1280px;
-}
-
-.tabs-wrapper {
-  display: flex;
-  gap: 0.5rem;
-  padding: 0.75rem 0;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.tab-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: all 0.2s;
-}
-
-.tab-item:hover {
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-}
-
-.tab-item.active {
-  background: rgba(74, 158, 255, 0.1);
-  border-color: rgba(74, 158, 255, 0.2);
-  color: #4a9eff;
-}
-
-.tab-item.active i {
-  color: #4a9eff;
-}
-
-.tab-item.tab-disabled {
-  color: var(--text-muted);
-  cursor: pointer;
-}
-
-.tab-item.tab-disabled:hover {
-  background: var(--bg-elevated);
-  color: var(--text-secondary);
-}
-
-.tab-lock-icon {
-  font-size: 0.6875rem;
-  margin-left: 0.25rem;
-  opacity: 0.7;
-}
-
-@media (max-width: 640px) {
-  .tabs-wrapper {
-    padding: 0.5rem 0;
-  }
-  
-  .tab-item {
-    padding: 0.5rem 1rem;
-    font-size: 0.8125rem;
-  }
-}
-
-/* ============================================
-   BOOKS PAGE - INDUSTRY-GRADE LAYOUT
-   ============================================ */
-.books-page {
+.books-unified-page {
   min-height: 100vh;
   background: var(--bg-primary);
 }
 
-/* Page Header */
-.books-page-header {
+.unified-page-header {
   position: relative;
-  padding: 2.5rem 0 3rem;
+  padding: 2rem 0 2.5rem;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border-default);
   overflow: hidden;
@@ -454,7 +432,7 @@
   pointer-events: none;
 }
 
-.header-gradient {
+.browse-view .header-gradient {
   position: absolute;
   top: -50%;
   left: -20%;
@@ -463,295 +441,547 @@
   background: radial-gradient(ellipse, rgba(74, 158, 255, 0.06) 0%, transparent 70%);
 }
 
-.header-pattern {
+.browse-view .header-pattern {
   position: absolute;
   inset: 0;
   background-image: radial-gradient(rgba(74, 158, 255, 0.03) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
-.books-page-header .container {
+.unified-page-header .container {
   position: relative;
   max-width: 1280px;
 }
 
-.header-content {
+.page-title-row {
   text-align: center;
-  max-width: 700px;
-  margin: 0 auto;
+  margin-bottom: 2rem;
 }
 
-.header-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: rgba(74, 158, 255, 0.1);
-  border: 1px solid rgba(74, 158, 255, 0.2);
-  border-radius: 50px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #4a9eff;
-  margin-bottom: 1.25rem;
-}
-
-.header-content h1 {
-  font-size: 2.25rem;
+.page-title-row h1 {
+  font-size: 2.5rem;
   font-weight: 800;
   color: var(--text-primary);
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.5rem;
   letter-spacing: -0.02em;
 }
 
-.header-subtitle {
-  font-size: 1rem;
+.page-subtitle {
+  font-size: 1.0625rem;
   color: var(--text-secondary);
-  line-height: 1.6;
-  margin: 0 0 1.5rem;
+  margin: 0;
 }
 
-.header-meta {
+/* Section Switcher */
+.section-switcher-container {
+  display: flex;
+  justify-content: center;
+}
+
+.section-switcher {
   display: inline-flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem 1.25rem;
+  gap: 0.75rem;
+  padding: 0.5rem;
   background: var(--bg-elevated);
   border: 1px solid var(--border-default);
-  border-radius: 12px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
-.meta-item {
+.switcher-tab {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-}
-
-.meta-item i {
-  color: #4a9eff;
-  font-size: 0.875rem;
-}
-
-.meta-divider {
-  width: 1px;
-  height: 20px;
-  background: var(--border-default);
-}
-
-/* Main Content Layout */
-.books-main-content {
-  padding: 2rem 0 4rem;
-}
-
-.books-main-content > .container {
-  max-width: 1280px;
-}
-
-.content-layout {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 2rem;
-  align-items: start;
-}
-
-/* Sidebar */
-.books-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  position: sticky;
-  top: 100px;
-}
-
-.sidebar-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-.sidebar-card-header {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 1rem 1.25rem;
-  background: var(--bg-elevated);
-  border-bottom: 1px solid var(--border-default);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.sidebar-card-header i {
-  color: #4a9eff;
-}
-
-.sidebar-card-body {
-  padding: 1rem 1.25rem;
-}
-
-/* Search Card */
-.search-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.search-input-wrap {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 0.875rem;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-default);
-  border-radius: 10px;
-  transition: border-color 0.2s;
-}
-
-.search-input-wrap:focus-within {
-  border-color: #4a9eff;
-}
-
-.search-input-wrap input {
-  flex: 1;
+  gap: 0.875rem;
+  padding: 0.875rem 1.5rem;
   background: transparent;
-  border: none;
-  outline: none;
-  font-size: 0.875rem;
-  color: var(--text-primary);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  position: relative;
+  min-width: 200px;
 }
 
-.search-input-wrap button {
-  background: #4a9eff;
-  border: none;
-  color: white;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  cursor: pointer;
+.switcher-tab:hover {
+  background: var(--bg-surface);
+}
+
+.switcher-tab.active {
+  background: linear-gradient(135deg, rgba(74, 158, 255, 0.12), rgba(74, 158, 255, 0.06));
+  border-color: rgba(74, 158, 255, 0.4);
+  box-shadow: 0 2px 8px rgba(74, 158, 255, 0.15);
+}
+
+.tab-icon-wrap {
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 10px;
+  flex-shrink: 0;
+  transition: all 0.25s ease;
 }
 
-.search-input-wrap button:hover {
-  background: #0066cc;
+.tab-icon-wrap i {
+  font-size: 1.125rem;
+  color: #4a9eff;
 }
 
-.search-hint {
+.switcher-tab.active .tab-icon-wrap {
+  background: linear-gradient(135deg, #4a9eff, #6366f1);
+  box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+}
+
+.switcher-tab.active .tab-icon-wrap i {
+  color: white;
+}
+
+.tab-icon-wrap.library-icon {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.tab-icon-wrap.library-icon i {
+  color: #22c55e;
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  text-align: left;
+}
+
+.tab-label {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.tab-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+.switcher-tab.active .tab-label {
+  color: #4a9eff;
+}
+
+.tab-count {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
   font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.125rem 0.5rem;
+  background: rgba(74, 158, 255, 0.15);
+  color: #4a9eff;
+  border-radius: 10px;
+}
+
+.tab-lock {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  font-size: 0.625rem;
   color: var(--text-muted);
 }
 
-/* Filter List */
-.filter-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  max-height: 280px;
-  overflow-y: auto;
-}
-
-/* Custom scrollbar for filter list */
-.filter-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.filter-list::-webkit-scrollbar-track {
-  background: var(--bg-elevated);
-  border-radius: 3px;
-}
-
-.filter-list::-webkit-scrollbar-thumb {
-  background: var(--border-default);
-  border-radius: 3px;
-}
-
-.filter-list::-webkit-scrollbar-thumb:hover {
-  background: #4a9eff;
-}
-
-.filter-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.625rem 0.875rem;
-  border-radius: 8px;
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-  text-decoration: none;
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-
-.filter-item:hover {
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-}
-
-.filter-item.active {
-  background: rgba(74, 158, 255, 0.1);
-  color: #4a9eff;
-}
-
-.filter-item i {
-  width: 16px;
-  font-size: 0.75rem;
-}
-
-/* Tips List */
-.tips-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.tips-list li {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.625rem;
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-  padding: 0.5rem 0;
-  line-height: 1.4;
-}
-
-.tips-list li i {
-  color: #4a9eff;
-  font-size: 0.75rem;
-  margin-top: 0.125rem;
+.switcher-tab.tab-locked {
+  opacity: 0.7;
 }
 </style>
 
 <style>
-/* Center Content */
-.books-center {
-  min-width: 0;
+/* ============================================
+   BOOKS COMMAND BAR - Premium Control Bar
+   ============================================ */
+.books-command-bar {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-default);
+  padding: 1.25rem 0;
+  position: sticky;
+  top: 64px;
+  z-index: 40;
+  overflow: visible;
 }
 
-/* Access Banner */
+.books-command-bar .container {
+  max-width: 1280px;
+  overflow: visible;
+}
+
+/* Main Control Bar Layout - Single Row */
+.command-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 48px;
+  overflow: visible;
+}
+
+/* ============================================
+   SEARCH BOX - PRIMARY (Dominant)
+   ============================================ */
+.books-search-box {
+  flex: 1;
+  max-width: 480px;
+  min-width: 200px;
+}
+
+.books-search-box .search-form {
+  height: 100%;
+}
+
+.search-input-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: 48px;
+  padding: 0 1.25rem;
+  background: var(--bg-primary);
+  border: 2px solid var(--border-default);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.search-input-container:hover {
+  border-color: rgba(74, 158, 255, 0.3);
+}
+
+.search-input-container:focus-within {
+  border-color: #4a9eff;
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 4px rgba(74, 158, 255, 0.1);
+}
+
+.search-icon {
+  color: var(--text-muted);
+  font-size: 1.125rem;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.search-input-container:focus-within .search-icon {
+  color: #4a9eff;
+}
+
+.search-input-container input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.search-input-container input::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.search-clear:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+/* ============================================
+   FILTER & SORT CONTROLS
+   ============================================ */
+.command-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  overflow: visible;
+}
+
+.filter-dropdown {
+  position: relative;
+  overflow: visible;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 40px;
+  padding: 0 1rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.filter-btn:hover {
+  background: var(--bg-surface);
+  border-color: rgba(74, 158, 255, 0.4);
+  color: var(--text-primary);
+}
+
+.filter-btn i:first-child {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.filter-btn:hover i:first-child {
+  color: #4a9eff;
+}
+
+.filter-arrow {
+  font-size: 0.5rem;
+  color: var(--text-muted);
+  margin-left: 0.25rem;
+  transition: transform 0.2s;
+}
+
+.filter-dropdown.open .filter-arrow {
+  transform: rotate(180deg);
+}
+
+.filter-dropdown.open .filter-btn {
+  background: var(--bg-surface);
+  border-color: #4a9eff;
+  color: var(--text-primary);
+}
+
+.filter-dropdown.open .filter-btn i:first-child {
+  color: #4a9eff;
+}
+
+#categoryFilter .filter-btn {
+  min-width: 140px;
+}
+
+#sortFilter .filter-btn {
+  background: transparent;
+  border-color: transparent;
+  min-width: auto;
+}
+
+#sortFilter .filter-btn:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border-default);
+}
+
+#sortFilter.open .filter-btn {
+  background: var(--bg-elevated);
+  border-color: var(--border-default);
+}
+
+/* Dropdown Menu */
+.filter-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px) scale(0.98);
+  transform-origin: top right;
+  transition: all 0.2s ease;
+  z-index: 100;
+  overflow: hidden;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.filter-dropdown.open .filter-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.filter-option:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.filter-option.active {
+  background: rgba(74, 158, 255, 0.08);
+  color: #4a9eff;
+}
+
+.filter-option i {
+  width: 18px;
+  font-size: 0.8125rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.filter-option span {
+  flex: 1;
+}
+
+.filter-count {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.125rem 0.5rem;
+  background: var(--bg-primary);
+  border-radius: 8px;
+  color: var(--text-muted);
+}
+
+.filter-option.active .filter-count {
+  background: rgba(74, 158, 255, 0.12);
+  color: #4a9eff;
+}
+
+/* Active Filters Bar */
+.active-filters-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-default);
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.results-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+}
+
+.results-count {
+  font-weight: 700;
+  color: #4a9eff;
+}
+
+.results-label {
+  color: var(--text-secondary);
+}
+
+.results-query {
+  color: var(--text-muted);
+}
+
+.active-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  background: rgba(74, 158, 255, 0.08);
+  border: 1px solid rgba(74, 158, 255, 0.15);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #4a9eff;
+}
+
+.filter-tag i {
+  font-size: 0.625rem;
+}
+
+.filter-tag-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 0.25rem;
+  border-radius: 4px;
+  color: #4a9eff;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.filter-tag-remove:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.clear-all-filters {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.clear-all-filters:hover {
+  color: #ef4444;
+}
+</style>
+
+
+<style>
+/* ============================================
+   ACCESS BANNER
+   ============================================ */
+.access-banner-container {
+  padding: 1rem 0;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.access-banner-container .container {
+  max-width: 1280px;
+}
+
 .access-banner {
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.25rem;
   border-radius: 12px;
-  margin-bottom: 1.5rem;
 }
 
 .access-banner.access-required {
   background: rgba(245, 158, 11, 0.1);
   border: 1px solid rgba(245, 158, 11, 0.2);
-}
-
-.access-banner.access-granted {
-  background: rgba(34, 197, 94, 0.1);
-  border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
 .access-icon {
@@ -762,16 +992,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-}
-
-.access-required .access-icon {
   background: rgba(245, 158, 11, 0.15);
   color: #f59e0b;
-}
-
-.access-granted .access-icon {
-  background: rgba(34, 197, 94, 0.15);
-  color: #22c55e;
 }
 
 .access-content {
@@ -811,225 +1033,56 @@
   color: white;
 }
 
-/* Mobile Category Nav */
-.mobile-category-nav {
-  display: none;
-  margin-bottom: 1.5rem;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+/* ============================================
+   BOOKS MAIN CONTENT - Books Grid
+   ============================================ */
+.books-main-content {
+  padding: 2rem 0 4rem;
 }
 
-.category-scroll {
-  display: flex;
-  gap: 0.5rem;
-  padding-bottom: 0.5rem;
+.books-main-content .container {
+  max-width: 1280px;
 }
 
-.category-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.5rem 0.875rem;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: 50px;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: all 0.2s;
-}
-
-.category-chip:hover {
-  border-color: #4a9eff;
-  color: #4a9eff;
-}
-
-.category-chip.active {
-  background: #4a9eff;
-  border-color: #4a9eff;
-  color: white;
-}
-
-/* Section Header */
-.books-section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.section-title-group h2 {
-  font-size: 1.375rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0 0 0.25rem;
-}
-
-.section-title-group p {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-.results-count {
-  display: flex;
-  align-items: baseline;
-  gap: 0.375rem;
-  padding: 0.5rem 1rem;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: 10px;
-}
-
-.count-number {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #4a9eff;
-}
-
-.count-label {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-}
-
-/* Section Controls */
-.section-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-/* Sort Dropdown */
-.sort-dropdown {
-  position: relative;
-}
-
-.sort-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.875rem;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: 10px;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.sort-btn:hover {
-  border-color: #4a9eff;
-  color: #4a9eff;
-}
-
-.sort-arrow {
-  font-size: 0.625rem;
-  transition: transform 0.2s;
-}
-
-.sort-dropdown.open .sort-arrow {
-  transform: rotate(180deg);
-}
-
-.sort-menu {
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  right: 0;
-  min-width: 180px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-8px);
-  transition: all 0.2s;
-  z-index: 100;
-  overflow: hidden;
-}
-
-.sort-dropdown.open .sort-menu {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-.sort-option {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 0.75rem 1rem;
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-  text-decoration: none;
-  transition: all 0.15s;
-}
-
-.sort-option:hover {
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-}
-
-.sort-option.active {
-  background: rgba(74, 158, 255, 0.1);
-  color: #4a9eff;
-}
-
-.sort-option i {
-  width: 16px;
-  font-size: 0.75rem;
-}
-
-/* Books Container Card */
-.books-container-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: 16px;
-  padding: 1.5rem;
-}
-
-/* Books Grid - Preserved Styles */
+/* Books Grid - Premium Layout */
 .books-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
 }
 
+/* Book Card - Clean & Premium */
 .book-card {
-  background: var(--bg-elevated);
+  background: var(--bg-surface);
   border: 1px solid var(--border-default);
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
+  transition: all 0.3s ease;
   cursor: pointer;
-  transition: all 0.25s ease;
 }
 
 .book-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
   border-color: rgba(74, 158, 255, 0.3);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
 }
 
-.book-cover {
+/* Book Cover */
+.book-cover-wrap {
+  position: relative;
   aspect-ratio: 3/4;
-  background: var(--bg-primary);
+  background: var(--bg-elevated);
   overflow: hidden;
 }
 
-.book-cover img {
+.book-cover-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s ease;
 }
 
-.book-card:hover .book-cover img {
+.book-card:hover .book-cover-img {
   transform: scale(1.05);
 }
 
@@ -1037,141 +1090,187 @@
   width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  color: var(--text-muted);
+  background: linear-gradient(135deg, var(--bg-elevated), var(--bg-primary));
 }
 
 .book-cover-placeholder i {
-  font-size: 2rem;
+  font-size: 3rem;
+  color: var(--text-muted);
+  opacity: 0.5;
 }
 
-.book-cover-placeholder span {
-  font-size: 0.75rem;
-}
-
-.book-info {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.book-title {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  margin: 0;
-  line-height: 1.4;
-}
-
-.book-title a {
-  color: var(--text-primary);
-  text-decoration: none;
-}
-
-.book-title a:hover {
-  color: #4a9eff;
-}
-
-.book-author {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-.book-category {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.75rem;
-  color: #4a9eff;
-  background: rgba(74, 158, 255, 0.1);
-  padding: 0.25rem 0.625rem;
-  border-radius: 4px;
-  width: fit-content;
-}
-
-.book-actions {
-  margin-top: auto;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--border-default);
-}
-
-.library-toggle-btn {
+/* In Library Badge */
+.in-library-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 28px;
+  height: 28px;
+  background: #22c55e;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: white;
+  font-size: 0.75rem;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+}
+
+/* Quick Actions Overlay */
+.book-quick-actions {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
   gap: 0.5rem;
-  width: 100%;
-  padding: 0.625rem;
-  border-radius: 8px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  border: none;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.book-card:hover .book-quick-actions {
+  opacity: 1;
+}
+
+.quick-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: white;
+  text-decoration: none;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.library-toggle-btn.add-to-library {
-  background: rgba(74, 158, 255, 0.1);
-  color: #4a9eff;
-}
-
-.library-toggle-btn.add-to-library:hover {
+.quick-action-btn:hover {
   background: #4a9eff;
-  color: white;
+  border-color: #4a9eff;
+  transform: translateY(-2px);
 }
 
-.library-toggle-btn.in-library {
-  background: rgba(34, 197, 94, 0.1);
-  color: #22c55e;
+.quick-action-btn.in-library-btn {
+  background: rgba(34, 197, 94, 0.3);
+  border-color: rgba(34, 197, 94, 0.5);
 }
 
-.library-toggle-btn.in-library:hover {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+.quick-action-btn.in-library-btn:hover {
+  background: #ef4444;
+  border-color: #ef4444;
 }
 
-.library-toggle-btn.disabled {
-  background: var(--bg-primary);
-  color: var(--text-muted);
-  cursor: not-allowed;
+/* Book Card Body */
+.book-card-body {
+  padding: 1rem;
 }
 
-.library-toggle-btn.signin-btn {
-  background: var(--bg-primary);
-  color: var(--text-secondary);
-  text-decoration: none;
-}
-
-.library-toggle-btn.signin-btn:hover {
+.book-category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
   background: rgba(74, 158, 255, 0.1);
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #4a9eff;
+  margin-bottom: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.book-category-badge i {
+  font-size: 0.625rem;
+}
+
+.book-card-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 0 0 0.375rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.book-card-title a {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.book-card-title a:hover {
   color: #4a9eff;
 }
 
-/* Pagination */
-.pagination-wrapper {
+.book-card-author {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.book-card-meta {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.375rem;
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+.book-card-meta i {
+  color: #ef4444;
+  font-size: 0.625rem;
+}
+</style>
+
+<style>
+/* ============================================
+   PAGINATION
+   ============================================ */
+.pagination-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
   border-top: 1px solid var(--border-default);
 }
 
-.pagination-btn {
-  display: inline-flex;
+.pagination-info-text {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.pagination-controls {
+  display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.625rem 1rem;
-  background: var(--bg-elevated);
+}
+
+.pagination-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--bg-surface);
   border: 1px solid var(--border-default);
-  border-radius: 8px;
-  font-size: 0.8125rem;
-  font-weight: 600;
+  border-radius: 10px;
   color: var(--text-primary);
   text-decoration: none;
   transition: all 0.2s;
@@ -1183,56 +1282,148 @@
   color: white;
 }
 
-.pagination-info {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
-/* Empty State */
-.empty-state {
+.pagination-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 0.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.pagination-page:hover {
+  border-color: #4a9eff;
+  color: #4a9eff;
+}
+
+.pagination-page.active {
+  background: #4a9eff;
+  border-color: #4a9eff;
+  color: white;
+}
+
+.pagination-ellipsis {
+  padding: 0 0.5rem;
+  color: var(--text-muted);
+}
+
+/* ============================================
+   EMPTY STATES
+   ============================================ */
+.books-empty-state {
   text-align: center;
   padding: 4rem 2rem;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
-.empty-icon {
+.empty-icon-wrap {
   width: 80px;
   height: 80px;
   margin: 0 auto 1.5rem;
-  background: var(--bg-elevated);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.empty-icon i {
+.empty-icon-wrap i {
   font-size: 2rem;
   color: var(--text-muted);
 }
 
-.empty-state h3 {
-  font-size: 1.25rem;
+.empty-illustration {
+  margin-bottom: 1.5rem;
+}
+
+.empty-icon-stack {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+}
+
+.empty-icon-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(74, 158, 255, 0.1), rgba(74, 158, 255, 0.05));
+  border-radius: 50%;
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+.empty-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-surface);
+  border: 2px solid var(--border-default);
+  border-radius: 50%;
+}
+
+.empty-icon i {
+  font-size: 2.5rem;
+  color: #4a9eff;
+}
+
+.books-empty-state h3 {
+  font-size: 1.375rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0 0 0.75rem;
 }
 
-.empty-state p {
+.books-empty-state p {
   font-size: 0.9375rem;
   color: var(--text-secondary);
   margin: 0 0 1.5rem;
-  max-width: 400px;
+  line-height: 1.6;
+}
+
+.empty-description {
+  max-width: 380px;
   margin-left: auto;
   margin-right: auto;
 }
 
-.btn-empty-action {
+.empty-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Buttons */
+.btn-secondary {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: #4a9eff;
-  color: white;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
   font-size: 0.875rem;
   font-weight: 600;
   border-radius: 10px;
@@ -1240,235 +1431,539 @@
   transition: all 0.2s;
 }
 
-.btn-empty-action:hover {
-  background: #0066cc;
-  color: white;
+.btn-secondary:hover {
+  border-color: #4a9eff;
+  color: #4a9eff;
 }
 
-/* Responsive Design */
+/* ============================================
+   TOAST NOTIFICATION
+   ============================================ */
+.books-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  padding: 0.875rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 10000;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.books-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.books-toast.success .toast-icon {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+.books-toast.error .toast-icon {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.toast-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.toast-icon i {
+  font-size: 0.875rem;
+}
+
+.toast-message {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+</style>
+
+<style>
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
 @media (max-width: 1024px) {
-  .content-layout {
-    grid-template-columns: 1fr;
-  }
-  
-  .books-sidebar {
-    display: none;
-  }
-  
-  .mobile-category-nav {
-    display: block;
+  .books-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.25rem;
   }
 }
 
 @media (max-width: 768px) {
-  .books-page-header {
-    padding: 2rem 0;
+  .unified-page-header {
+    padding: 1.5rem 0 2rem;
   }
   
-  .header-content h1 {
+  .page-title-row h1 {
     font-size: 1.75rem;
   }
   
-  .header-meta {
-    flex-wrap: wrap;
-    justify-content: center;
+  .page-subtitle {
+    font-size: 0.9375rem;
   }
   
-  .meta-divider {
+  .section-switcher {
+    flex-direction: column;
+    width: 100%;
+    max-width: 400px;
+    gap: 0.5rem;
+    padding: 0.375rem;
+  }
+  
+  .switcher-tab {
+    min-width: unset;
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+  
+  .tab-icon-wrap {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .books-command-bar {
+    padding: 1rem 0;
+  }
+  
+  .command-bar-inner {
+    flex-wrap: wrap;
+    height: auto;
+    gap: 0.75rem;
+  }
+  
+  .books-search-box {
+    flex: 1 1 100%;
+    max-width: none;
+    order: 1;
+  }
+  
+  .search-input-container {
+    height: 44px;
+  }
+  
+  .command-controls {
+    flex: 1 1 100%;
+    order: 2;
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+  
+  .filter-btn {
+    height: 36px;
+    padding: 0 0.75rem;
+    font-size: 0.75rem;
+  }
+  
+  .filter-btn span {
     display: none;
   }
   
-  .books-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  #categoryFilter .filter-btn,
+  #sortFilter .filter-btn {
+    min-width: auto;
+    background: var(--bg-elevated);
+    border-color: var(--border-default);
   }
   
-  .books-container-card {
-    padding: 1rem;
+  .filter-btn i:first-child {
+    font-size: 1rem;
+  }
+  
+  .filter-arrow {
+    display: none;
+  }
+  
+  .filter-menu {
+    min-width: 180px;
+  }
+  
+  .active-filters-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
   
   .access-banner {
     flex-direction: column;
     text-align: center;
+    gap: 0.75rem;
   }
   
-  .pagination-wrapper {
+  .books-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+  
+  .book-card-body {
+    padding: 0.75rem;
+  }
+  
+  .book-card-title {
+    font-size: 0.875rem;
+  }
+  
+  .book-card-author {
+    font-size: 0.75rem;
+  }
+  
+  .pagination-controls {
     flex-wrap: wrap;
+    justify-content: center;
   }
 }
 
 @media (max-width: 480px) {
+  .page-title-row {
+    margin-bottom: 1.5rem;
+  }
+  
+  .page-title-row h1 {
+    font-size: 1.5rem;
+  }
+  
+  .switcher-tab {
+    gap: 0.625rem;
+    padding: 0.625rem 0.875rem;
+  }
+  
+  .tab-icon-wrap {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .command-controls {
+    gap: 0.5rem;
+  }
+  
+  .filter-btn {
+    height: 36px;
+    width: 36px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 8px;
+  }
+  
+  .filter-btn i:first-child {
+    margin: 0;
+  }
+  
   .books-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
   }
   
-  .header-badge {
-    font-size: 0.75rem;
+  .book-cover-wrap {
+    aspect-ratio: 2/3;
   }
   
-  .books-section-header {
+  .quick-action-btn {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .empty-actions {
     flex-direction: column;
-    align-items: flex-start;
   }
   
-  .section-controls {
+  .btn-secondary {
     width: 100%;
-    justify-content: space-between;
+    justify-content: center;
   }
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-  .book-card,
-  .book-cover img,
-  .library-toggle-btn,
-  .filter-item,
-  .category-chip,
+  
+  .pagination-page {
+    min-width: 36px;
+    height: 36px;
+    font-size: 0.8125rem;
+  }
+  
   .pagination-btn {
-    transition: none;
-  }
-  
-  .book-card:hover {
-    transform: none;
-  }
-  
-  .book-card:hover .book-cover img {
-    transform: none;
+    width: 36px;
+    height: 36px;
   }
 }
 </style>
 
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Sort dropdown toggle
-  const sortToggle = document.getElementById('sortToggle');
-  const sortDropdown = sortToggle?.closest('.sort-dropdown');
+  // Filter dropdown toggles
+  const dropdowns = document.querySelectorAll('.filter-dropdown');
   
-  if (sortToggle && sortDropdown) {
-    sortToggle.addEventListener('click', function(e) {
-      e.stopPropagation();
-      sortDropdown.classList.toggle('open');
-    });
+  dropdowns.forEach(dropdown => {
+    const btn = dropdown.querySelector('.filter-btn');
     
-    document.addEventListener('click', function(e) {
-      if (!sortDropdown.contains(e.target)) {
-        sortDropdown.classList.remove('open');
+    if (btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        
+        // Close other dropdowns
+        document.querySelectorAll('.filter-dropdown.open').forEach(d => {
+          if (d !== dropdown) {
+            d.classList.remove('open');
+          }
+        });
+        
+        // Toggle this dropdown
+        dropdown.classList.toggle('open');
+        const isOpen = dropdown.classList.contains('open');
+        btn.setAttribute('aria-expanded', isOpen);
+      });
+    }
+  });
+  
+  // Close dropdowns on outside click
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.filter-dropdown')) {
+      document.querySelectorAll('.filter-dropdown.open').forEach(d => {
+        d.classList.remove('open');
+        const btn = d.querySelector('.filter-btn');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+      });
+    }
+  });
+  
+  // Close dropdowns on escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.filter-dropdown.open').forEach(d => {
+        d.classList.remove('open');
+        const btn = d.querySelector('.filter-btn');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+      });
+    }
+  });
+  
+  // Focus search on / key
+  const searchInput = document.getElementById('booksSearchInput');
+  if (searchInput) {
+    document.addEventListener('keydown', function(e) {
+      if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.select();
       }
     });
   }
   
-  // Search focus with / key
-  document.addEventListener('keydown', function(e) {
-    if (e.key === '/' && !e.target.matches('input, textarea')) {
-      e.preventDefault();
-      const searchInput = document.querySelector('.search-input-wrap input');
-      if (searchInput) {
-        searchInput.focus();
-      }
-    }
-  });
-  
   // Book card click navigation
-  const bookCards = document.querySelectorAll('.book-card');
-  bookCards.forEach(card => {
+  document.querySelectorAll('.book-card').forEach(card => {
     card.addEventListener('click', function(e) {
-      if (e.target.closest('.library-toggle-btn') || e.target.closest('.book-actions')) {
-        return;
-      }
+      if (e.target.closest('button') || e.target.closest('a')) return;
       const url = this.dataset.bookUrl;
-      if (url) {
-        window.location.href = url;
-      }
-    });
-    
-    card.setAttribute('tabindex', '0');
-    card.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        this.click();
-      }
+      if (url) window.location.href = url;
     });
   });
   
-  // Library toggle functionality - only for add/remove buttons (not signin or disabled)
-  document.addEventListener('click', function(e) {
-    const btn = e.target.closest('.library-toggle-btn');
-    if (!btn) return;
+  // Toast notification
+  const booksToast = document.getElementById('booksToast');
+  const toastMessage = document.getElementById('toastMessage');
+  
+  function showToast(message, type = 'success') {
+    if (!booksToast || !toastMessage) return;
+    toastMessage.textContent = message;
+    booksToast.className = 'books-toast ' + type;
+    booksToast.classList.add('show');
     
-    // Skip if it's a signin link, disabled button, or already processing
-    if (btn.classList.contains('signin-btn') || 
-        btn.classList.contains('disabled') || 
-        btn.hasAttribute('disabled') ||
-        btn.dataset.processing === 'true') {
-      return;
-    }
-    
-    // Only handle add-to-library or remove-from-library buttons
-    const isAdding = btn.classList.contains('add-to-library');
-    const isRemoving = btn.classList.contains('remove-from-library');
-    
-    if (!isAdding && !isRemoving) return;
-    
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const bookId = btn.dataset.bookId;
-    if (!bookId) {
-      console.error('No book ID found on button');
-      return;
-    }
-    
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    if (!csrfToken) {
-      console.error('No CSRF token found');
-      alert('Authentication error. Please refresh the page.');
-      return;
-    }
-    
-    // Mark as processing
-    btn.dataset.processing = 'true';
-    const originalHTML = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Loading...</span>';
-    
-    const url = isAdding ? '/library/add/' : '/library/remove/';
-    
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrfToken,
-      },
-      body: JSON.stringify({ book_id: parseInt(bookId, 10) })
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      if (data.success) {
-        if (isAdding) {
-          btn.classList.remove('add-to-library');
-          btn.classList.add('in-library', 'remove-from-library');
-          btn.innerHTML = '<i class="fas fa-check-circle"></i><span>In Library</span>';
-        } else {
-          btn.classList.remove('in-library', 'remove-from-library');
-          btn.classList.add('add-to-library');
-          btn.innerHTML = '<i class="fas fa-plus-circle"></i><span>Add to Library</span>';
+    setTimeout(() => {
+      booksToast.classList.remove('show');
+    }, 3000);
+  }
+  
+  // Library toggle buttons
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+  
+  // Add to library
+  document.querySelectorAll('.add-to-library').forEach(btn => {
+    btn.addEventListener('click', async function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      
+      const bookId = this.dataset.bookId;
+      const bookTitle = this.dataset.bookTitle;
+      const card = this.closest('.book-card');
+      
+      this.disabled = true;
+      const originalHtml = this.innerHTML;
+      this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      
+      try {
+        const response = await fetch('/library/add/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+          },
+          body: JSON.stringify({ book_id: bookId })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || errorData.message || 'Server error');
         }
-      } else {
-        btn.innerHTML = originalHTML;
-        alert('Error: ' + (data.message || 'Unknown error'));
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Update button
+          this.classList.remove('add-to-library');
+          this.classList.add('in-library-btn', 'remove-from-library');
+          this.innerHTML = '<i class="fas fa-bookmark"></i>';
+          this.title = 'Remove from Library';
+          
+          // Add badge
+          const coverWrap = card.querySelector('.book-cover-wrap');
+          if (coverWrap && !coverWrap.querySelector('.in-library-badge')) {
+            const badge = document.createElement('div');
+            badge.className = 'in-library-badge';
+            badge.innerHTML = '<i class="fas fa-bookmark"></i>';
+            coverWrap.appendChild(badge);
+          }
+          
+          showToast(`"${bookTitle}" added to library`, 'success');
+          
+          // Re-attach remove handler
+          attachRemoveHandler(this);
+        } else {
+          this.innerHTML = originalHtml;
+          showToast(data.message || 'Failed to add book', 'error');
+        }
+      } catch (error) {
+        console.error('Add to library error:', error);
+        this.innerHTML = originalHtml;
+        showToast(error.message || 'Failed to add book', 'error');
       }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      btn.innerHTML = originalHTML;
-      alert('Error updating library: ' + error.message);
-    })
-    .finally(() => {
-      btn.dataset.processing = 'false';
+      
+      this.disabled = false;
     });
+  });
+  
+  // Remove from library
+  function attachRemoveHandler(btn) {
+    btn.addEventListener('click', handleRemove);
+  }
+  
+  async function handleRemove(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    const btn = e.currentTarget;
+    const bookId = btn.dataset.bookId;
+    const bookTitle = btn.dataset.bookTitle;
+    const card = btn.closest('.book-card');
+    
+    btn.disabled = true;
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    
+    try {
+      const response = await fetch('/library/remove/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({ book_id: bookId })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.message || 'Server error');
+      }
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Update button
+        btn.classList.remove('in-library-btn', 'remove-from-library');
+        btn.classList.add('add-to-library');
+        btn.innerHTML = '<i class="far fa-bookmark"></i>';
+        btn.title = 'Add to Library';
+        btn.removeEventListener('click', handleRemove);
+        
+        // Remove badge
+        const badge = card.querySelector('.in-library-badge');
+        if (badge) badge.remove();
+        
+        showToast(`"${bookTitle}" removed from library`, 'success');
+        
+        // Re-attach add handler
+        btn.addEventListener('click', async function addHandler(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+          
+          try {
+            const resp = await fetch('/library/add/', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+              },
+              body: JSON.stringify({ book_id: bookId })
+            });
+            
+            if (!resp.ok) throw new Error('Server error');
+            
+            const d = await resp.json();
+            
+            if (d.success) {
+              btn.classList.remove('add-to-library');
+              btn.classList.add('in-library-btn', 'remove-from-library');
+              btn.innerHTML = '<i class="fas fa-bookmark"></i>';
+              btn.title = 'Remove from Library';
+              btn.removeEventListener('click', addHandler);
+              
+              const coverWrap = card.querySelector('.book-cover-wrap');
+              if (coverWrap && !coverWrap.querySelector('.in-library-badge')) {
+                const badge = document.createElement('div');
+                badge.className = 'in-library-badge';
+                badge.innerHTML = '<i class="fas fa-bookmark"></i>';
+                coverWrap.appendChild(badge);
+              }
+              
+              showToast(`"${bookTitle}" added to library`, 'success');
+              attachRemoveHandler(btn);
+            }
+          } catch (err) {
+            btn.innerHTML = '<i class="far fa-bookmark"></i>';
+          }
+          
+          btn.disabled = false;
+        });
+      } else {
+        btn.innerHTML = originalHtml;
+        showToast(data.message || 'Failed to remove book', 'error');
+      }
+    } catch (error) {
+      console.error('Remove from library error:', error);
+      btn.innerHTML = originalHtml;
+      showToast(error.message || 'Failed to remove book', 'error');
+    }
+    
+    btn.disabled = false;
+  }
+  
+  // Attach remove handlers to existing buttons
+  document.querySelectorAll('.remove-from-library').forEach(btn => {
+    attachRemoveHandler(btn);
   });
 });
 </script>
