@@ -181,7 +181,7 @@
       <div class="section-header-center">
         <span class="section-badge">Simple Process</span>
         <h2>How It Works</h2>
-        <p>Our guided process makes document creation fast and stress-free</p>
+        <p>Create professional documents in minutes with our streamlined workflow</p>
       </div>
       
       <div class="process-tabs">
@@ -197,78 +197,60 @@
       
       <!-- Resume Process Steps -->
       <div class="process-content active" id="resume-process">
-        <div class="steps-grid">
+        <div class="steps-grid steps-grid-4">
           <div class="step-card">
             <div class="step-number">1</div>
-            <div class="step-icon"><i class="fas fa-user-tie"></i></div>
-            <h4>Select Your Profile</h4>
-            <p>Choose experience level: Fresher, Experienced, Career Switcher, or Executive</p>
+            <div class="step-icon"><i class="fas fa-briefcase"></i></div>
+            <h4>Select Your Role</h4>
+            <p>Choose your target role: DevOps/SRE, Software Engineer, or Data Science/ML Engineer</p>
           </div>
           <div class="step-card">
             <div class="step-number">2</div>
-            <div class="step-icon"><i class="fas fa-industry"></i></div>
-            <h4>Choose Industry</h4>
-            <p>Select your target industry: Tech, Finance, Design, Marketing, or Operations</p>
+            <div class="step-icon"><i class="fas fa-palette"></i></div>
+            <h4>Pick a Template</h4>
+            <p>Choose from Professional (with photo), Modern, or Executive templates</p>
           </div>
           <div class="step-card">
             <div class="step-number">3</div>
-            <div class="step-icon"><i class="fas fa-palette"></i></div>
-            <h4>Pick Template</h4>
-            <p>Choose from ATS-friendly, role-specific templates designed by recruiters</p>
+            <div class="step-icon"><i class="fas fa-edit"></i></div>
+            <h4>Fill Your Details</h4>
+            <p>Add your info, experience, skills, and education. Preview in real-time as you type</p>
           </div>
           <div class="step-card">
             <div class="step-number">4</div>
-            <div class="step-icon"><i class="fas fa-edit"></i></div>
-            <h4>Fill Details</h4>
-            <p>Add experience, skills, and education with smart suggestions and tips</p>
-          </div>
-          <div class="step-card">
-            <div class="step-number">5</div>
-            <div class="step-icon"><i class="fas fa-chart-line"></i></div>
-            <h4>Optimize</h4>
-            <p>Review your ATS score and get suggestions to improve your resume</p>
-          </div>
-          <div class="step-card">
-            <div class="step-number">6</div>
             <div class="step-icon"><i class="fas fa-download"></i></div>
-            <h4>Export</h4>
-            <p>Download as PDF or DOCX, save versions for different applications</p>
+            <h4>Save & Download</h4>
+            <p>Save to My Documents and download as a professional PDF ready for applications</p>
           </div>
         </div>
       </div>
       
       <!-- Cover Letter Process Steps -->
       <div class="process-content" id="cover-letter-process">
-        <div class="steps-grid steps-grid-5">
+        <div class="steps-grid steps-grid-4">
           <div class="step-card">
             <div class="step-number">1</div>
-            <div class="step-icon"><i class="fas fa-list-alt"></i></div>
-            <h4>Select Type</h4>
-            <p>Choose: Job-Specific, General, or Internship/Fresher letter</p>
+            <div class="step-icon"><i class="fas fa-file-signature"></i></div>
+            <h4>Choose Template</h4>
+            <p>Select from Classic (formal), Modern (clean), or Creative (bold) styles</p>
           </div>
           <div class="step-card">
             <div class="step-number">2</div>
             <div class="step-icon"><i class="fas fa-building"></i></div>
-            <h4>Job Details</h4>
-            <p>Enter company name, role, and optionally paste the job description</p>
+            <h4>Add Company Info</h4>
+            <p>Enter company name, position title, and hiring manager details</p>
           </div>
           <div class="step-card">
             <div class="step-number">3</div>
-            <div class="step-icon"><i class="fas fa-sliders-h"></i></div>
-            <h4>Set Tone</h4>
-            <p>Pick Professional, Conversational, or Executive tone</p>
+            <div class="step-icon"><i class="fas fa-pen-fancy"></i></div>
+            <h4>Write Your Letter</h4>
+            <p>Fill opening, body, and closing paragraphs with role-specific starter content</p>
           </div>
           <div class="step-card">
             <div class="step-number">4</div>
-            <div class="step-icon"><i class="fas fa-pen-fancy"></i></div>
-            <h4>Write Sections</h4>
-            <p>Fill intro, body, and closing with role-specific suggestions</p>
-          </div>
-          <div class="step-card">
-            <div class="step-number">5</div>
-            <div class="step-icon"><i class="fas fa-file-export"></i></div>
-            <h4>Export</h4>
-            <p>Preview, edit, and download as PDF or copy text</p>
+            <div class="step-icon"><i class="fas fa-file-pdf"></i></div>
+            <h4>Save & Download</h4>
+            <p>Preview your letter, save to My Documents, and export as PDF</p>
           </div>
         </div>
       </div>
@@ -842,6 +824,10 @@
   margin: 0 auto;
 }
 
+.steps-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
 .steps-grid-5 {
   grid-template-columns: repeat(5, 1fr);
 }
@@ -1189,8 +1175,9 @@
     grid-template-columns: repeat(3, 1fr);
   }
   
+  .steps-grid-4,
   .steps-grid-5 {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -1234,6 +1221,7 @@
   }
   
   .steps-grid,
+  .steps-grid-4,
   .steps-grid-5 {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1271,6 +1259,7 @@
   }
   
   .steps-grid,
+  .steps-grid-4,
   .steps-grid-5 {
     grid-template-columns: 1fr;
   }
