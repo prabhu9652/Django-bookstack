@@ -5,13 +5,48 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from django.template import Template, Context
 from django.db import transaction
+from django.core.files.base import ContentFile
 import json
 import logging
 import uuid
+import base64
 
 from .models import Resume, CoverLetter, ResumeTemplate, CoverLetterTemplate
 
 logger = logging.getLogger(__name__)
+
+
+def _save_base64_photo(resume, photo_data):
+    """Save a base64 encoded photo to the resume's profile_photo field."""
+    try:
+        # Handle data URL format: data:image/jpeg;base64,/9j/4AAQ...
+        if ',' in photo_data:
+            header, data = photo_data.split(',', 1)
+            # Extract format from header
+            if 'png' in header.lower():
+                ext = 'png'
+            elif 'gif' in header.lower():
+                ext = 'gif'
+            elif 'webp' in header.lower():
+                ext = 'webp'
+            else:
+                ext = 'jpg'
+        else:
+            data = photo_data
+            ext = 'jpg'
+        
+        # Decode base64 data
+        image_data = base64.b64decode(data)
+        
+        # Create filename
+        filename = f"resume_{resume.id}_photo.{ext}"
+        
+        # Save to model
+        resume.profile_photo.save(filename, ContentFile(image_data), save=True)
+        logger.info(f"Photo saved for resume {resume.id}")
+        
+    except Exception as e:
+        logger.error(f"Error saving base64 photo: {str(e)}")
 
 
 # ============================================
@@ -184,7 +219,15 @@ def api_save_draft_resume(request):
                 languages=data.get('languages', []),
                 certifications=data.get('certifications', []),
                 primary_color=data.get('primary_color', '#4a9d9a'),
+                photo_shape=data.get('photo_shape', 'circle'),
+                photo_size=data.get('photo_size', 'medium'),
+                photo_position=data.get('photo_position', 'top'),
             )
+            
+            # Handle base64 photo data
+            photo_data = data.get('profile_photo_base64')
+            if photo_data:
+                _save_base64_photo(resume, photo_data)
         
         logger.info(f"Resume {resume.id} saved to My Documents for user {request.user.username}")
         
@@ -982,6 +1025,14 @@ def api_save_resume(request, resume_id):
         resume.website = data.get('website', resume.website)
         resume.summary = data.get('summary', resume.summary)
         
+        # Update photo options
+        if 'photo_shape' in data:
+            resume.photo_shape = data.get('photo_shape', resume.photo_shape)
+        if 'photo_size' in data:
+            resume.photo_size = data.get('photo_size', resume.photo_size)
+        if 'photo_position' in data:
+            resume.photo_position = data.get('photo_position', resume.photo_position)
+        
         # Update JSON fields
         if 'skills' in data:
             resume.skills = data.get('skills', resume.skills)
@@ -997,6 +1048,11 @@ def api_save_resume(request, resume_id):
             resume.certifications = data.get('certifications', resume.certifications)
         
         resume.save()
+        
+        # Handle base64 photo data
+        photo_data = data.get('profile_photo_base64')
+        if photo_data:
+            _save_base64_photo(resume, photo_data)
         
         return JsonResponse({
             'success': True,

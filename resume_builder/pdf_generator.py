@@ -34,9 +34,12 @@ def generate_resume_pdf(resume, request=None) -> bytes:
         html_content = _generate_executive_resume_html(resume, primary_color)
         css_content = _get_executive_resume_css(primary_color)
     else:
-        # Default to professional template
+        # Default to professional template - pass photo options
+        photo_shape = getattr(resume, 'photo_shape', 'circle') or 'circle'
+        photo_size = getattr(resume, 'photo_size', 'medium') or 'medium'
+        photo_position = getattr(resume, 'photo_position', 'top') or 'top'
         html_content = _generate_resume_html(resume)
-        css_content = _get_resume_css(primary_color)
+        css_content = _get_resume_css(primary_color, photo_shape, photo_size, photo_position)
     
     html_doc = HTML(string=html_content)
     css_doc = CSS(string=css_content)
@@ -319,8 +322,32 @@ def _generate_resume_html(resume) -> str:
 </html>'''
 
 
-def _get_resume_css(primary_color: str) -> str:
+def _get_resume_css(primary_color: str, photo_shape: str = 'circle', photo_size: str = 'medium', photo_position: str = 'top') -> str:
     """CSS matching the reference image exactly."""
+    
+    # Size mapping (in mm)
+    size_map = {
+        'small': {'width': '28mm', 'height': '28mm', 'cell_width': '32mm'},
+        'medium': {'width': '35mm', 'height': '35mm', 'cell_width': '38mm'},
+        'large': {'width': '42mm', 'height': '42mm', 'cell_width': '46mm'}
+    }
+    size = size_map.get(photo_size, size_map['medium'])
+    
+    # Shape mapping
+    shape_map = {
+        'circle': '50%',
+        'rounded': '4mm',
+        'square': '0'
+    }
+    border_radius = shape_map.get(photo_shape, '50%')
+    
+    # Position mapping
+    position_map = {
+        'top': 'top center',
+        'center': 'center center',
+        'bottom': 'bottom center'
+    }
+    object_position = position_map.get(photo_position, 'top center')
     
     return f'''
 @page {{
@@ -363,23 +390,24 @@ body {{
 }}
 
 .photo-cell {{
-    width: 35mm;
+    width: {size['cell_width']};
     padding-right: 12mm;
 }}
 
 .photo {{
-    width: 32mm;
-    height: 32mm;
-    border-radius: 50%;
+    width: {size['width']};
+    height: {size['height']};
+    border-radius: {border_radius};
     object-fit: cover;
+    object-position: {object_position};
     border: 2.5px solid rgba(255, 255, 255, 0.3);
     display: block;
 }}
 
 .photo-placeholder {{
-    width: 32mm;
-    height: 32mm;
-    border-radius: 50%;
+    width: {size['width']};
+    height: {size['height']};
+    border-radius: {border_radius};
     background-color: #5fb3b0;
     border: 2.5px solid rgba(255, 255, 255, 0.3);
 }}

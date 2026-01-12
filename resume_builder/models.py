@@ -96,6 +96,9 @@ class Resume(models.Model):
     
     # Profile Photo
     profile_photo = models.ImageField(upload_to='resume_photos/', blank=True, null=True)
+    photo_shape = models.CharField(max_length=20, default='circle', help_text='circle, rounded, or square')
+    photo_size = models.CharField(max_length=20, default='medium', help_text='small, medium, or large')
+    photo_position = models.CharField(max_length=20, default='top', help_text='top, center, or bottom')
     
     # Color Theme
     primary_color = models.CharField(max_length=7, default='#4a9d9a', help_text='Header/accent color')
