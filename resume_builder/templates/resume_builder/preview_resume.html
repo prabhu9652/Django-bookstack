@@ -358,7 +358,7 @@
 
 /* LEFT SIDEBAR */
 .resume-sidebar {
-  width: 200px; background: #f8f9fa; padding: 24px 20px;
+  width: 200px; background: #f8f9fa; padding: 30px 20px 24px 20px;
   border-right: 1px solid #e5e7eb;
 }
 
@@ -384,9 +384,11 @@
 .edu-year { font-size: 9pt; color: #888; }
 
 /* RIGHT MAIN CONTENT */
-.resume-main { flex: 1; padding: 24px 30px; }
+.resume-main { flex: 1; padding: 30px 30px 24px 30px; }
 
 .main-section { margin-bottom: 24px; }
+
+.main-section:first-child { margin-top: 0; padding-top: 0; }
 
 .section-heading {
   font-size: 11pt; font-weight: 700; margin: 0 0 12px 0;
@@ -489,12 +491,17 @@
 
 .resume-modern .modern-main {
   flex: 1;
-  padding: 24px 28px;
+  padding: 30px 28px 24px 28px;
   border-right: 1px solid #e5e7eb;
 }
 
 .resume-modern .modern-section {
   margin-bottom: 24px;
+}
+
+.resume-modern .modern-section:first-child {
+  margin-top: 0;
+  padding-top: 0;
 }
 
 .resume-modern .modern-section-title {
@@ -583,7 +590,7 @@
 .resume-modern .modern-sidebar {
   width: 180px;
   background: #f8f9fa;
-  padding: 24px 18px;
+  padding: 30px 18px 24px 18px;
 }
 
 .resume-modern .modern-sidebar-section {
@@ -661,7 +668,7 @@
 .resume-executive .exec-sidebar {
   width: 180px;
   background: #f5f5f5;
-  padding: 24px 18px;
+  padding: 30px 18px 24px 18px;
 }
 
 .resume-executive .exec-sidebar-section {
@@ -700,11 +707,16 @@
 
 .resume-executive .exec-main {
   flex: 1;
-  padding: 24px 28px;
+  padding: 30px 28px 24px 28px;
 }
 
 .resume-executive .exec-section {
   margin-bottom: 24px;
+}
+
+.resume-executive .exec-section:first-child {
+  margin-top: 0;
+  padding-top: 0;
 }
 
 .resume-executive .exec-section-heading {

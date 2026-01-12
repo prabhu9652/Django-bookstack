@@ -5,348 +5,380 @@
 <!-- Hidden CSRF token for AJAX requests -->
 {% csrf_token %}
 
-<div class="library-page">
-  <!-- Page Header Section -->
-  <div class="library-page-header">
+<div class="books-unified-page library-view">
+  <!-- Unified Page Header with Section Switcher -->
+  <div class="unified-page-header">
     <div class="header-bg-effects">
       <div class="header-gradient"></div>
       <div class="header-pattern"></div>
     </div>
     <div class="container">
-      <div class="header-content">
-        <h1>My Library</h1>
-        <p class="header-subtitle">
-          {% if template_data.current_category %}
-            {{ template_data.current_category|title }} • Your saved technical resources
-          {% else %}
-            Your curated collection of technical books and learning resources
-          {% endif %}
-        </p>
-        
-        <!-- Stats Row -->
-        <div class="header-stats">
-          <div class="stat-item">
-            <span class="stat-number">{{ template_data.total_books|default:0 }}</span>
-            <span class="stat-label">Book{{ template_data.total_books|pluralize }}</span>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-item">
-            <span class="stat-number">{{ template_data.categories|length|default:0 }}</span>
-            <span class="stat-label">Categor{{ template_data.categories|length|pluralize:"y,ies" }}</span>
-          </div>
+      <!-- Page Title -->
+      <div class="page-title-row">
+        <h1>Books</h1>
+        <p class="page-subtitle">Discover technical resources and build your personal library</p>
+      </div>
+      
+      <!-- Section Switcher -->
+      <div class="section-switcher-container">
+        <div class="section-switcher" role="tablist">
+          <a href="{% url 'books.index' %}" class="switcher-tab" role="tab" aria-selected="false">
+            <div class="tab-icon-wrap">
+              <i class="fas fa-compass"></i>
+            </div>
+            <div class="tab-content">
+              <span class="tab-label">Browse Books</span>
+              <span class="tab-desc">Explore our collection</span>
+            </div>
+          </a>
+          <a href="{% url 'library.index' %}" class="switcher-tab active" role="tab" aria-selected="true">
+            <div class="tab-icon-wrap library-icon">
+              <i class="fas fa-bookmark"></i>
+            </div>
+            <div class="tab-content">
+              <span class="tab-label">My Library</span>
+              <span class="tab-desc">Your saved books</span>
+            </div>
+            {% if template_data.total_books %}
+            <span class="tab-count library-count">{{ template_data.total_books }}</span>
+            {% endif %}
+          </a>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Main Content Area -->
-  <div class="library-main-content">
+  <!-- Library Command Bar - Search, Filter, Sort -->
+  <div class="library-command-bar">
     <div class="container">
-      <div class="content-layout">
-        <!-- Left Sidebar (Desktop) -->
-        <aside class="library-sidebar sidebar-left">
-          <!-- Quick Actions Card -->
-          <div class="sidebar-card actions-card">
-            <div class="sidebar-card-header">
-              <i class="fas fa-bolt"></i>
-              <span>Quick Actions</span>
-            </div>
-            <div class="sidebar-card-body">
-              <a href="{% url 'books.index' %}" class="action-btn primary">
-                <i class="fas fa-plus-circle"></i>
-                <span>Browse & Add Books</span>
+      <div class="command-bar-inner">
+        <!-- Search Box - Prominent -->
+        <div class="library-search-box">
+          <form method="GET" class="search-form" id="librarySearchForm">
+            <!-- Preserve other params -->
+            {% if template_data.current_category %}
+            <input type="hidden" name="category" value="{{ template_data.current_category }}">
+            {% endif %}
+            {% if template_data.sort_by and template_data.sort_by != 'recent' %}
+            <input type="hidden" name="sort" value="{{ template_data.sort_by }}">
+            {% endif %}
+            <div class="search-input-container">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" 
+                     name="q" 
+                     id="librarySearchInput"
+                     placeholder="Search your library by title, author, or category..." 
+                     value="{{ template_data.search_query|default:'' }}"
+                     autocomplete="off"
+                     aria-label="Search library">
+              {% if template_data.search_query %}
+              <a href="{% url 'library.index' %}{% if template_data.current_category %}?category={{ template_data.current_category }}{% endif %}" 
+                 class="search-clear" title="Clear search">
+                <i class="fas fa-times"></i>
               </a>
+              {% endif %}
             </div>
-          </div>
-          
-          <!-- Categories Filter -->
-          <div class="sidebar-card filter-card">
-            <div class="sidebar-card-header">
+          </form>
+        </div>
+        
+        <!-- Filter & Sort Controls -->
+        <div class="command-controls">
+          <!-- Category Filter Dropdown -->
+          <div class="filter-dropdown" id="categoryFilter">
+            <button class="filter-btn" type="button" aria-expanded="false">
               <i class="fas fa-folder"></i>
-              <span>Categories</span>
-            </div>
-            <div class="sidebar-card-body">
-              <ul class="filter-list">
-                <li>
-                  <a href="{% url 'library.index' %}" class="filter-item {% if not template_data.current_category %}active{% endif %}">
-                    <i class="fas fa-th-large"></i>
-                    <span>All Books</span>
-                    <span class="filter-count">{{ template_data.total_books }}</span>
-                  </a>
-                </li>
-                {% for category in template_data.categories %}
-                <li>
-                  <a href="{% url 'library.index' %}?category={{ category.slug }}" 
-                     class="filter-item {% if template_data.current_category == category.slug %}active{% endif %}">
-                    {% if category.slug == 'devops' %}
-                      <i class="fas fa-cogs"></i>
-                    {% elif category.slug == 'cloud-computing' %}
-                      <i class="fas fa-cloud"></i>
-                    {% elif category.slug == 'data-science' %}
-                      <i class="fas fa-chart-bar"></i>
-                    {% elif category.slug == 'machine-learning' %}
-                      <i class="fas fa-robot"></i>
-                    {% elif category.slug == 'software-development' %}
-                      <i class="fas fa-code"></i>
-                    {% elif category.slug == 'observability' %}
-                      <i class="fas fa-eye"></i>
-                    {% elif category.slug == 'databases' %}
-                      <i class="fas fa-database"></i>
-                    {% else %}
-                      <i class="fas fa-book"></i>
-                    {% endif %}
-                    <span>{{ category.name }}</span>
-                    <span class="filter-count">{{ category.books.count }}</span>
-                  </a>
-                </li>
-                {% endfor %}
-                {% if template_data.uncategorized_count > 0 %}
-                <li>
-                  <a href="{% url 'library.index' %}?category=uncategorized" 
-                     class="filter-item {% if template_data.current_category == 'uncategorized' %}active{% endif %}">
-                    <i class="fas fa-question-circle"></i>
-                    <span>Uncategorized</span>
-                    <span class="filter-count">{{ template_data.uncategorized_count }}</span>
-                  </a>
-                </li>
-                {% endif %}
-              </ul>
-            </div>
-          </div>
-          
-          <!-- Tips Card -->
-          <div class="sidebar-card tips-card">
-            <div class="sidebar-card-header">
-              <i class="fas fa-lightbulb"></i>
-              <span>Quick Tips</span>
-            </div>
-            <div class="sidebar-card-body">
-              <ul class="tips-list">
-                <li><i class="fas fa-eye"></i> Click any book to view details</li>
-                <li><i class="fas fa-book-open"></i> Read PDFs directly in browser</li>
-                <li><i class="fas fa-trash-alt"></i> Remove books you no longer need</li>
-              </ul>
-            </div>
-          </div>
-        </aside>
-
-        <!-- Center Content - Books Grid -->
-        <main class="library-center">
-          <!-- Mobile Category Navigation -->
-          <div class="mobile-category-nav">
-            <div class="category-scroll">
-              <a href="{% url 'library.index' %}" class="category-chip {% if not template_data.current_category %}active{% endif %}">
+              <span>{% if template_data.current_category %}{{ template_data.current_category|title }}{% else %}All Categories{% endif %}</span>
+              <i class="fas fa-chevron-down filter-arrow"></i>
+            </button>
+            <div class="filter-menu">
+              <a href="{% url 'library.index' %}{% if template_data.search_query %}?q={{ template_data.search_query }}{% endif %}{% if template_data.sort_by and template_data.sort_by != 'recent' %}{% if template_data.search_query %}&{% else %}?{% endif %}sort={{ template_data.sort_by }}{% endif %}" 
+                 class="filter-option {% if not template_data.current_category %}active{% endif %}">
                 <i class="fas fa-th-large"></i>
-                <span>All ({{ template_data.total_books }})</span>
+                <span>All Categories</span>
+                <span class="filter-count">{{ template_data.total_books }}</span>
               </a>
               {% for category in template_data.categories %}
-              <a href="{% url 'library.index' %}?category={{ category.slug }}" 
-                 class="category-chip {% if template_data.current_category == category.slug %}active{% endif %}">
+              <a href="{% url 'library.index' %}?category={{ category.slug }}{% if template_data.search_query %}&q={{ template_data.search_query }}{% endif %}{% if template_data.sort_by and template_data.sort_by != 'recent' %}&sort={{ template_data.sort_by }}{% endif %}" 
+                 class="filter-option {% if template_data.current_category == category.slug %}active{% endif %}">
                 {% if category.slug == 'devops' %}<i class="fas fa-cogs"></i>
                 {% elif category.slug == 'cloud-computing' %}<i class="fas fa-cloud"></i>
                 {% elif category.slug == 'data-science' %}<i class="fas fa-chart-bar"></i>
                 {% elif category.slug == 'machine-learning' %}<i class="fas fa-robot"></i>
+                {% elif category.slug == 'software-development' %}<i class="fas fa-code"></i>
                 {% else %}<i class="fas fa-book"></i>{% endif %}
                 <span>{{ category.name }}</span>
+                <span class="filter-count">{{ category.book_count }}</span>
               </a>
               {% endfor %}
-            </div>
-          </div>
-
-          <!-- Section Header with Tabs and Sort -->
-          <div class="library-section-header">
-            <div class="section-title-group">
-              <h2>{% if template_data.current_category %}{{ template_data.current_category|title }}{% else %}All Books{% endif %}</h2>
-              <p>Your saved collection</p>
-            </div>
-            <div class="section-controls">
-              {% if template_data.library_books %}
-              <div class="results-count">
-                <span class="count-number">{{ template_data.library_books|length }}</span>
-                <span class="count-label">book{{ template_data.library_books|length|pluralize }}</span>
-              </div>
-              {% endif %}
-              <div class="sort-dropdown">
-                <button class="sort-btn" id="sortToggle">
-                  <i class="fas fa-sort-amount-down"></i>
-                  <span>Sort</span>
-                  <i class="fas fa-chevron-down sort-arrow"></i>
-                </button>
-                <div class="sort-menu" id="sortMenu">
-                  <a href="?sort=recent{% if template_data.current_category %}&category={{ template_data.current_category }}{% endif %}" class="sort-option {% if not request.GET.sort or request.GET.sort == 'recent' %}active{% endif %}">
-                    <i class="fas fa-clock"></i> Recently Added
-                  </a>
-                  <a href="?sort=oldest{% if template_data.current_category %}&category={{ template_data.current_category }}{% endif %}" class="sort-option {% if request.GET.sort == 'oldest' %}active{% endif %}">
-                    <i class="fas fa-history"></i> Oldest First
-                  </a>
-                  <a href="?sort=title{% if template_data.current_category %}&category={{ template_data.current_category }}{% endif %}" class="sort-option {% if request.GET.sort == 'title' %}active{% endif %}">
-                    <i class="fas fa-sort-alpha-down"></i> Title A-Z
-                  </a>
-                  <a href="?sort=-title{% if template_data.current_category %}&category={{ template_data.current_category }}{% endif %}" class="sort-option {% if request.GET.sort == '-title' %}active{% endif %}">
-                    <i class="fas fa-sort-alpha-up"></i> Title Z-A
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Books Container Card -->
-          <div class="library-container-card">
-            <!-- PRESERVED: Books Grid Content -->
-            <div class="books-section">
-              {% if template_data.library_books %}
-              <div class="books-grid">
-                {% for library_item in template_data.library_books %}
-                <div class="book-card library-book-card" 
-                     data-category="{{ library_item.book.category.slug|default:'uncategorized' }}" 
-                     data-book-id="{{ library_item.book.id }}"
-                     data-book-url="{% url 'books.show' library_item.book.id %}">
-                  
-                  <!-- Book Cover -->
-                  <div class="book-cover">
-                    {% if library_item.book.cover %}
-                    <img src="{{ library_item.book.cover.url }}" 
-                         alt="{{ library_item.book.name }}" 
-                         loading="lazy"
-                         decoding="async"
-                         fetchpriority="{% if forloop.counter <= 4 %}high{% else %}low{% endif %}">
-                    {% else %}
-                    <div class="book-cover-placeholder">
-                      <i class="fas fa-file-pdf"></i>
-                      <span>Technical Book</span>
-                    </div>
-                    {% endif %}
-                  </div>
-                  
-                  <!-- Book Info -->
-                  <div class="book-info">
-                    <div>
-                      <!-- Category Badge -->
-                      {% if library_item.book.category %}
-                      <div class="book-category">
-                        {% if library_item.book.category.slug == 'devops' %}
-                          <i class="fas fa-cogs"></i>
-                        {% elif library_item.book.category.slug == 'cloud-computing' %}
-                          <i class="fas fa-cloud"></i>
-                        {% elif library_item.book.category.slug == 'data-science' %}
-                          <i class="fas fa-chart-bar"></i>
-                        {% elif library_item.book.category.slug == 'machine-learning' %}
-                          <i class="fas fa-robot"></i>
-                        {% elif library_item.book.category.slug == 'software-development' %}
-                          <i class="fas fa-code"></i>
-                        {% elif library_item.book.category.slug == 'observability' %}
-                          <i class="fas fa-eye"></i>
-                        {% elif library_item.book.category.slug == 'databases' %}
-                          <i class="fas fa-database"></i>
-                        {% else %}
-                          <i class="fas fa-folder"></i>
-                        {% endif %}
-                        {{ library_item.book.category.name }}
-                      </div>
-                      {% endif %}
-                      
-                      <!-- Book Title -->
-                      <h4 class="book-title">
-                        <a href="{% url 'books.show' library_item.book.id %}">
-                          {{ library_item.book.name }}
-                        </a>
-                      </h4>
-                      
-                      <!-- Author -->
-                      <p class="book-author">
-                        {{ library_item.book.author|default:"Technical Author" }}
-                      </p>
-                      
-                      <!-- Added Date -->
-                      <div class="book-added-date">
-                        <i class="fas fa-calendar-plus"></i>
-                        <span>Added {{ library_item.added_date|date:"M d, Y" }}</span>
-                      </div>
-                    </div>
-                    
-                    <!-- Action Buttons -->
-                    <div class="book-actions">
-                      <div class="action-buttons-row">
-                        <a href="{% url 'books.show' library_item.book.id %}" class="action-btn-small view-btn">
-                          <i class="fas fa-eye"></i>
-                          <span>View</span>
-                        </a>
-                        {% if library_item.book.pdf %}
-                        <a href="{% url 'books.read' library_item.book.id %}" class="action-btn-small read-btn">
-                          <i class="fas fa-book-open"></i>
-                          <span>Read</span>
-                        </a>
-                        {% endif %}
-                      </div>
-                      <button type="button" class="remove-btn" 
-                              data-book-id="{{ library_item.book.id }}" 
-                              data-book-title="{{ library_item.book.name }}"
-                              title="Remove from library">
-                        <i class="fas fa-trash-alt"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                {% endfor %}
-              </div>
-              {% else %}
-              <!-- Empty State - First Time User Experience -->
-              <div class="empty-state">
-                <div class="empty-illustration">
-                  <div class="empty-icon-stack">
-                    <div class="empty-icon-bg"></div>
-                    <div class="empty-icon"><i class="fas fa-bookmark"></i></div>
-                  </div>
-                </div>
-                <h3>Your library is empty</h3>
-                <p class="empty-description">
-                  {% if template_data.current_category %}
-                    No books in this category yet. Browse our collection to add books to your library.
-                  {% else %}
-                    Start building your personal technical library. Save books you want to read, track your progress, and access them anytime.
-                  {% endif %}
-                </p>
-                <div class="empty-features">
-                  <div class="empty-feature">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Save books for later</span>
-                  </div>
-                  <div class="empty-feature">
-                    <i class="fas fa-book-open"></i>
-                    <span>Read PDFs in browser</span>
-                  </div>
-                  <div class="empty-feature">
-                    <i class="fas fa-folder"></i>
-                    <span>Organize by category</span>
-                  </div>
-                </div>
-                <a href="{% url 'books.index' %}" class="btn-empty-action">
-                  <i class="fas fa-search"></i> Browse Technical Books
-                </a>
-              </div>
+              {% if template_data.uncategorized_count > 0 %}
+              <a href="{% url 'library.index' %}?category=uncategorized{% if template_data.search_query %}&q={{ template_data.search_query }}{% endif %}{% if template_data.sort_by and template_data.sort_by != 'recent' %}&sort={{ template_data.sort_by }}{% endif %}" 
+                 class="filter-option {% if template_data.current_category == 'uncategorized' %}active{% endif %}">
+                <i class="fas fa-question-circle"></i>
+                <span>Uncategorized</span>
+                <span class="filter-count">{{ template_data.uncategorized_count }}</span>
+              </a>
               {% endif %}
             </div>
-            <!-- END PRESERVED Content -->
           </div>
-        </main>
+          
+          <!-- Sort Dropdown -->
+          <div class="filter-dropdown" id="sortFilter">
+            <button class="filter-btn" type="button" aria-expanded="false">
+              <i class="fas fa-sort-amount-down"></i>
+              <span>{% if template_data.sort_by == 'title' %}A-Z{% elif template_data.sort_by == 'title-desc' %}Z-A{% elif template_data.sort_by == 'author' %}Author{% elif template_data.sort_by == 'oldest' %}Oldest{% else %}Recent{% endif %}</span>
+              <i class="fas fa-chevron-down filter-arrow"></i>
+            </button>
+            <div class="filter-menu">
+              <a href="{% url 'library.index' %}?sort=recent{% if template_data.current_category %}&category={{ template_data.current_category }}{% endif %}{% if template_data.search_query %}&q={{ template_data.search_query }}{% endif %}" 
+                 class="filter-option {% if template_data.sort_by == 'recent' or not template_data.sort_by %}active{% endif %}">
+                <i class="fas fa-clock"></i>
+                <span>Recently Added</span>
+              </a>
+              <a href="{% url 'library.index' %}?sort=oldest{% if template_data.current_category %}&category={{ template_data.current_category }}{% endif %}{% if template_data.search_query %}&q={{ template_data.search_query }}{% endif %}" 
+                 class="filter-option {% if template_data.sort_by == 'oldest' %}active{% endif %}">
+                <i class="fas fa-history"></i>
+                <span>Oldest First</span>
+              </a>
+              <a href="{% url 'library.index' %}?sort=title{% if template_data.current_category %}&category={{ template_data.current_category }}{% endif %}{% if template_data.search_query %}&q={{ template_data.search_query }}{% endif %}" 
+                 class="filter-option {% if template_data.sort_by == 'title' %}active{% endif %}">
+                <i class="fas fa-sort-alpha-down"></i>
+                <span>Title A-Z</span>
+              </a>
+              <a href="{% url 'library.index' %}?sort=title-desc{% if template_data.current_category %}&category={{ template_data.current_category }}{% endif %}{% if template_data.search_query %}&q={{ template_data.search_query }}{% endif %}" 
+                 class="filter-option {% if template_data.sort_by == 'title-desc' %}active{% endif %}">
+                <i class="fas fa-sort-alpha-up"></i>
+                <span>Title Z-A</span>
+              </a>
+              <a href="{% url 'library.index' %}?sort=author{% if template_data.current_category %}&category={{ template_data.current_category }}{% endif %}{% if template_data.search_query %}&q={{ template_data.search_query }}{% endif %}" 
+                 class="filter-option {% if template_data.sort_by == 'author' %}active{% endif %}">
+                <i class="fas fa-user"></i>
+                <span>Author</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
+      
+      <!-- Active Filters & Results Summary -->
+      {% if template_data.search_query or template_data.current_category %}
+      <div class="active-filters-bar">
+        <div class="results-summary">
+          <span class="results-count">{{ template_data.filtered_count }}</span>
+          <span class="results-label">book{{ template_data.filtered_count|pluralize }} found</span>
+          {% if template_data.search_query %}
+          <span class="results-query">for "{{ template_data.search_query }}"</span>
+          {% endif %}
+        </div>
+        <div class="active-filters">
+          {% if template_data.current_category %}
+          <span class="filter-tag">
+            <i class="fas fa-folder"></i>
+            {{ template_data.current_category|title }}
+            <a href="{% url 'library.index' %}{% if template_data.search_query %}?q={{ template_data.search_query }}{% endif %}{% if template_data.sort_by and template_data.sort_by != 'recent' %}{% if template_data.search_query %}&{% else %}?{% endif %}sort={{ template_data.sort_by }}{% endif %}" class="filter-tag-remove">
+              <i class="fas fa-times"></i>
+            </a>
+          </span>
+          {% endif %}
+          {% if template_data.search_query %}
+          <span class="filter-tag">
+            <i class="fas fa-search"></i>
+            "{{ template_data.search_query }}"
+            <a href="{% url 'library.index' %}{% if template_data.current_category %}?category={{ template_data.current_category }}{% endif %}{% if template_data.sort_by and template_data.sort_by != 'recent' %}{% if template_data.current_category %}&{% else %}?{% endif %}sort={{ template_data.sort_by }}{% endif %}" class="filter-tag-remove">
+              <i class="fas fa-times"></i>
+            </a>
+          </span>
+          {% endif %}
+          <a href="{% url 'library.index' %}" class="clear-all-filters">Clear all</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Main Library Content -->
+  <div class="library-main-content">
+    <div class="container">
+      {% if template_data.library_books %}
+      <!-- Books Grid -->
+      <div class="library-books-grid" id="libraryGrid">
+        {% for library_item in template_data.library_books %}
+        <div class="library-book-card" 
+             data-book-id="{{ library_item.book.id }}"
+             data-book-url="{% url 'books.show' library_item.book.id %}"
+             data-title="{{ library_item.book.name|lower }}"
+             data-author="{{ library_item.book.author|default:''|lower }}"
+             data-category="{{ library_item.book.category.name|default:''|lower }}">
+          
+          <!-- Book Cover -->
+          <div class="book-cover-wrap">
+            {% if library_item.book.cover %}
+            <img src="{{ library_item.book.cover.url }}" 
+                 alt="{{ library_item.book.name }}" 
+                 loading="lazy"
+                 decoding="async"
+                 class="book-cover-img">
+            {% else %}
+            <div class="book-cover-placeholder">
+              <i class="fas fa-book"></i>
+            </div>
+            {% endif %}
+            
+            <!-- Quick Actions Overlay -->
+            <div class="book-quick-actions">
+              <a href="{% url 'books.show' library_item.book.id %}" class="quick-action-btn" title="View Details">
+                <i class="fas fa-eye"></i>
+              </a>
+              {% if library_item.book.pdf %}
+              <a href="{% url 'books.read' library_item.book.id %}" class="quick-action-btn" title="Read Book">
+                <i class="fas fa-book-open"></i>
+              </a>
+              {% endif %}
+              <button type="button" class="quick-action-btn remove-btn" 
+                      data-book-id="{{ library_item.book.id }}" 
+                      data-book-title="{{ library_item.book.name }}"
+                      title="Remove from Library">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Book Info -->
+          <div class="book-card-body">
+            <!-- Category Badge -->
+            {% if library_item.book.category %}
+            <div class="book-category-badge">
+              {% if library_item.book.category.slug == 'devops' %}<i class="fas fa-cogs"></i>
+              {% elif library_item.book.category.slug == 'cloud-computing' %}<i class="fas fa-cloud"></i>
+              {% elif library_item.book.category.slug == 'data-science' %}<i class="fas fa-chart-bar"></i>
+              {% elif library_item.book.category.slug == 'machine-learning' %}<i class="fas fa-robot"></i>
+              {% elif library_item.book.category.slug == 'software-development' %}<i class="fas fa-code"></i>
+              {% else %}<i class="fas fa-folder"></i>{% endif %}
+              {{ library_item.book.category.name }}
+            </div>
+            {% endif %}
+            
+            <!-- Title -->
+            <h3 class="book-card-title">
+              <a href="{% url 'books.show' library_item.book.id %}">{{ library_item.book.name }}</a>
+            </h3>
+            
+            <!-- Author -->
+            {% if library_item.book.author %}
+            <p class="book-card-author">{{ library_item.book.author }}</p>
+            {% endif %}
+            
+            <!-- Added Date -->
+            <div class="book-card-meta">
+              <i class="fas fa-calendar-plus"></i>
+              <span>Added {{ library_item.added_date|date:"M d, Y" }}</span>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      
+      {% else %}
+      <!-- Empty State -->
+      <div class="library-empty-state">
+        {% if template_data.search_query or template_data.current_category %}
+        <!-- No Results State -->
+        <div class="empty-icon-wrap">
+          <i class="fas fa-search"></i>
+        </div>
+        <h3>No books found</h3>
+        <p>
+          {% if template_data.search_query %}
+          No books match "{{ template_data.search_query }}"{% if template_data.current_category %} in {{ template_data.current_category|title }}{% endif %}.
+          {% else %}
+          No books in this category yet.
+          {% endif %}
+        </p>
+        <div class="empty-actions">
+          <a href="{% url 'library.index' %}" class="btn-secondary">
+            <i class="fas fa-arrow-left"></i> View All Books
+          </a>
+          <a href="{% url 'books.index' %}" class="btn-primary">
+            <i class="fas fa-plus"></i> Browse & Add Books
+          </a>
+        </div>
+        {% else %}
+        <!-- First Time User State -->
+        <div class="empty-illustration">
+          <div class="empty-icon-stack">
+            <div class="empty-icon-bg"></div>
+            <div class="empty-icon"><i class="fas fa-bookmark"></i></div>
+          </div>
+        </div>
+        <h3>Your library is empty</h3>
+        <p class="empty-description">
+          Start building your personal technical library. Save books you want to read, track your progress, and access them anytime.
+        </p>
+        <div class="empty-features">
+          <div class="empty-feature">
+            <i class="fas fa-plus-circle"></i>
+            <span>Save books for later</span>
+          </div>
+          <div class="empty-feature">
+            <i class="fas fa-book-open"></i>
+            <span>Read PDFs in browser</span>
+          </div>
+          <div class="empty-feature">
+            <i class="fas fa-folder"></i>
+            <span>Organize by category</span>
+          </div>
+        </div>
+        <a href="{% url 'books.index' %}" class="btn-primary btn-lg">
+          <i class="fas fa-compass"></i> Browse Technical Books
+        </a>
+        {% endif %}
+      </div>
+      {% endif %}
     </div>
   </div>
 </div>
 
+<!-- Remove Book Confirmation Modal -->
+<div class="remove-modal-overlay" id="removeBookModal">
+  <div class="remove-modal">
+    <div class="remove-modal-icon">
+      <i class="fas fa-trash-alt"></i>
+    </div>
+    <h3 class="remove-modal-title">Remove from Library?</h3>
+    <p class="remove-modal-text">
+      Are you sure you want to remove <strong id="removeBookTitle"></strong> from your library?
+    </p>
+    <p class="remove-modal-subtext">You can always add it back later from Browse Books.</p>
+    <div class="remove-modal-actions">
+      <button type="button" class="remove-modal-btn cancel" id="removeModalCancel">
+        Cancel
+      </button>
+      <button type="button" class="remove-modal-btn confirm" id="removeModalConfirm">
+        <i class="fas fa-trash-alt"></i> Remove
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Success Toast -->
+<div class="library-toast" id="libraryToast">
+  <div class="toast-icon">
+    <i class="fas fa-check"></i>
+  </div>
+  <span class="toast-message" id="toastMessage">Book removed from library</span>
+</div>
+
 <style>
 /* ============================================
-   MY LIBRARY PAGE - INDUSTRY-GRADE LAYOUT
+   UNIFIED BOOKS PAGE - BASE STYLES
    ============================================ */
-.library-page {
+.books-unified-page {
   min-height: 100vh;
   background: var(--bg-primary);
 }
 
-/* Page Header */
-.library-page-header {
+.unified-page-header {
   position: relative;
-  padding: 2.5rem 0 3rem;
+  padding: 2rem 0 2.5rem;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border-default);
   overflow: hidden;
@@ -358,7 +390,7 @@
   pointer-events: none;
 }
 
-.header-gradient {
+.library-view .header-gradient {
   position: absolute;
   top: -50%;
   right: -20%;
@@ -367,468 +399,657 @@
   background: radial-gradient(ellipse, rgba(34, 197, 94, 0.06) 0%, transparent 70%);
 }
 
-.header-pattern {
+.library-view .header-pattern {
   position: absolute;
   inset: 0;
   background-image: radial-gradient(rgba(34, 197, 94, 0.03) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
-.library-page-header .container {
+.unified-page-header .container {
   position: relative;
   max-width: 1280px;
 }
 
-.header-content {
+.page-title-row {
   text-align: center;
-  max-width: 700px;
-  margin: 0 auto;
+  margin-bottom: 2rem;
 }
 
-.header-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: rgba(34, 197, 94, 0.1);
-  border: 1px solid rgba(34, 197, 94, 0.2);
-  border-radius: 50px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #22c55e;
-  margin-bottom: 1.25rem;
-}
-
-.header-content h1 {
-  font-size: 2.25rem;
+.page-title-row h1 {
+  font-size: 2.5rem;
   font-weight: 800;
   color: var(--text-primary);
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.5rem;
   letter-spacing: -0.02em;
 }
 
-.header-subtitle {
-  font-size: 1rem;
+.page-subtitle {
+  font-size: 1.0625rem;
   color: var(--text-secondary);
-  line-height: 1.6;
-  margin: 0 0 1.5rem;
+  margin: 0;
 }
 
-.header-stats {
+/* Section Switcher */
+.section-switcher-container {
+  display: flex;
+  justify-content: center;
+}
+
+.section-switcher {
   display: inline-flex;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.switcher-tab {
+  display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.875rem;
   padding: 0.875rem 1.5rem;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-default);
+  background: transparent;
+  border: 2px solid transparent;
   border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  position: relative;
+  min-width: 200px;
 }
 
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.stat-number {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #22c55e;
-}
-
-.stat-label {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.stat-divider {
-  width: 1px;
-  height: 40px;
-  background: var(--border-default);
-}
-
-/* Main Content Layout */
-.library-main-content {
-  padding: 2rem 0 4rem;
-}
-
-.library-main-content > .container {
-  max-width: 1280px;
-}
-
-.content-layout {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 2rem;
-  align-items: start;
-}
-
-/* Sidebar */
-.library-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  position: sticky;
-  top: 100px;
-}
-
-.sidebar-card {
+.switcher-tab:hover {
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: 14px;
-  overflow: hidden;
 }
 
-.sidebar-card-header {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 1rem 1.25rem;
-  background: var(--bg-elevated);
-  border-bottom: 1px solid var(--border-default);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--text-primary);
+.switcher-tab.active {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(34, 197, 94, 0.06));
+  border-color: rgba(34, 197, 94, 0.4);
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
 }
 
-.sidebar-card-header i {
-  color: #22c55e;
-}
-
-.sidebar-card-body {
-  padding: 1rem 1.25rem;
-}
-
-/* Actions Card */
-.action-btn.primary {
+.tab-icon-wrap {
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: white;
-  font-size: 0.8125rem;
-  font-weight: 600;
+  background: rgba(74, 158, 255, 0.1);
   border-radius: 10px;
-  text-decoration: none;
-  transition: all 0.2s;
+  flex-shrink: 0;
+  transition: all 0.25s ease;
 }
 
-.action-btn.primary:hover {
-  transform: translateY(-2px);
+.tab-icon-wrap i {
+  font-size: 1.125rem;
+  color: #4a9eff;
+}
+
+.tab-icon-wrap.library-icon {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.tab-icon-wrap.library-icon i {
+  color: #22c55e;
+}
+
+.switcher-tab.active .tab-icon-wrap.library-icon {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
   box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.switcher-tab.active .tab-icon-wrap.library-icon i {
   color: white;
 }
 
-/* Filter List */
-.filter-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.tab-content {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.125rem;
+  text-align: left;
 }
 
-.filter-item {
+.tab-label {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.tab-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+.switcher-tab.active .tab-icon-wrap.library-icon + .tab-content .tab-label {
+  color: #22c55e;
+}
+
+.tab-count {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.125rem 0.5rem;
+  border-radius: 10px;
+}
+
+.tab-count.library-count {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+</style>
+
+<style>
+/* ============================================
+   LIBRARY COMMAND BAR - Premium Control Bar
+   ============================================ */
+.library-command-bar {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-default);
+  padding: 1.25rem 0;
+  position: sticky;
+  top: 64px;
+  z-index: 40;
+  overflow: visible;
+}
+
+.library-command-bar .container {
+  max-width: 1280px;
+  overflow: visible;
+}
+
+/* Main Control Bar Layout - Single Row */
+.command-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 48px; /* Consistent height for all controls */
+  overflow: visible;
+}
+
+/* ============================================
+   SEARCH BOX - PRIMARY (Dominant)
+   ============================================ */
+.library-search-box {
+  flex: 1;
+  max-width: 480px;
+  min-width: 200px;
+}
+
+.library-search-box .search-form {
+  height: 100%;
+}
+
+.search-input-container {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.625rem 0.875rem;
-  border-radius: 8px;
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
+  height: 48px;
+  padding: 0 1.25rem;
+  background: var(--bg-primary);
+  border: 2px solid var(--border-default);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.search-input-container:hover {
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.search-input-container:focus-within {
+  border-color: #22c55e;
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+}
+
+.search-icon {
+  color: var(--text-muted);
+  font-size: 1.125rem;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.search-input-container:focus-within .search-icon {
+  color: #22c55e;
+}
+
+.search-input-container input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.search-input-container input::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--bg-elevated);
+  color: var(--text-muted);
   text-decoration: none;
+  flex-shrink: 0;
   transition: all 0.2s;
 }
 
-.filter-item:hover {
+.search-clear:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+/* ============================================
+   FILTER & SORT CONTROLS - SECONDARY/TERTIARY
+   ============================================ */
+.command-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto; /* Push to right */
+  overflow: visible;
+}
+
+/* Filter Dropdown Base */
+.filter-dropdown {
+  position: relative;
+  overflow: visible;
+}
+
+/* Shared Button Style - Consistent Height */
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 40px;
+  padding: 0 1rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.filter-btn:hover {
+  background: var(--bg-surface);
+  border-color: rgba(34, 197, 94, 0.4);
+  color: var(--text-primary);
+}
+
+.filter-btn i:first-child {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.filter-btn:hover i:first-child {
+  color: #22c55e;
+}
+
+.filter-arrow {
+  font-size: 0.5rem;
+  color: var(--text-muted);
+  margin-left: 0.25rem;
+  transition: transform 0.2s;
+}
+
+.filter-dropdown.open .filter-arrow {
+  transform: rotate(180deg);
+}
+
+.filter-dropdown.open .filter-btn {
+  background: var(--bg-surface);
+  border-color: #22c55e;
+  color: var(--text-primary);
+}
+
+.filter-dropdown.open .filter-btn i:first-child {
+  color: #22c55e;
+}
+
+/* Category Filter - Secondary (slightly more prominent) */
+#categoryFilter .filter-btn {
+  min-width: 140px;
+}
+
+/* Sort Filter - Tertiary (subtle) */
+#sortFilter .filter-btn {
+  background: transparent;
+  border-color: transparent;
+  min-width: auto;
+}
+
+#sortFilter .filter-btn:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border-default);
+}
+
+#sortFilter.open .filter-btn {
+  background: var(--bg-elevated);
+  border-color: var(--border-default);
+}
+
+/* Dropdown Menu */
+.filter-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px) scale(0.98);
+  transform-origin: top right;
+  transition: all 0.2s ease;
+  z-index: 100;
+  overflow: hidden;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.filter-dropdown.open .filter-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+/* Dropdown Options */
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.filter-option:hover {
   background: var(--bg-elevated);
   color: var(--text-primary);
 }
 
-.filter-item.active {
-  background: rgba(34, 197, 94, 0.1);
+.filter-option.active {
+  background: rgba(34, 197, 94, 0.08);
   color: #22c55e;
 }
 
-.filter-item i {
-  width: 16px;
-  font-size: 0.75rem;
+.filter-option i {
+  width: 18px;
+  font-size: 0.8125rem;
+  text-align: center;
+  flex-shrink: 0;
 }
 
-.filter-item span {
+.filter-option span {
   flex: 1;
 }
 
 .filter-count {
   font-size: 0.6875rem;
-  font-weight: 600;
+  font-weight: 700;
   padding: 0.125rem 0.5rem;
-  background: var(--bg-elevated);
-  border-radius: 10px;
+  background: var(--bg-primary);
+  border-radius: 8px;
   color: var(--text-muted);
 }
 
-.filter-item.active .filter-count {
-  background: rgba(34, 197, 94, 0.15);
+.filter-option.active .filter-count {
+  background: rgba(34, 197, 94, 0.12);
   color: #22c55e;
 }
 
-/* Tips List */
-.tips-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.tips-list li {
+/* ============================================
+   ACTIVE FILTERS BAR
+   ============================================ */
+.active-filters-bar {
   display: flex;
-  align-items: flex-start;
-  gap: 0.625rem;
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-  padding: 0.5rem 0;
-  line-height: 1.4;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-default);
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
-.tips-list li i {
+.results-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+}
+
+.results-count {
+  font-weight: 700;
   color: #22c55e;
+}
+
+.results-label {
+  color: var(--text-secondary);
+}
+
+.results-query {
+  color: var(--text-muted);
+}
+
+.active-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.15);
+  border-radius: 6px;
   font-size: 0.75rem;
-  margin-top: 0.125rem;
+  font-weight: 500;
+  color: #22c55e;
+}
+
+.filter-tag i {
+  font-size: 0.625rem;
+}
+
+.filter-tag-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 0.25rem;
+  border-radius: 4px;
+  color: #22c55e;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.filter-tag-remove:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.clear-all-filters {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.clear-all-filters:hover {
+  color: #ef4444;
+}
+
+/* ============================================
+   RESPONSIVE - Command Bar
+   ============================================ */
+@media (max-width: 768px) {
+  .library-command-bar {
+    padding: 1rem 0;
+  }
+  
+  .command-bar-inner {
+    flex-wrap: wrap;
+    height: auto;
+    gap: 0.75rem;
+  }
+  
+  /* Search takes full width on mobile */
+  .library-search-box {
+    flex: 1 1 100%;
+    max-width: none;
+    order: 1;
+  }
+  
+  .search-input-container {
+    height: 44px;
+  }
+  
+  /* Controls row below search */
+  .command-controls {
+    flex: 1 1 100%;
+    order: 2;
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+  
+  .filter-btn {
+    height: 36px;
+    padding: 0 0.75rem;
+    font-size: 0.75rem;
+  }
+  
+  .filter-btn span {
+    display: none;
+  }
+  
+  #categoryFilter .filter-btn,
+  #sortFilter .filter-btn {
+    min-width: auto;
+    background: var(--bg-elevated);
+    border-color: var(--border-default);
+  }
+  
+  .filter-btn i:first-child {
+    font-size: 1rem;
+  }
+  
+  .filter-arrow {
+    display: none;
+  }
+  
+  .filter-menu {
+    min-width: 180px;
+  }
+  
+  .active-filters-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .command-controls {
+    gap: 0.5rem;
+  }
+  
+  .filter-btn {
+    height: 36px;
+    width: 36px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 8px;
+  }
+  
+  .filter-btn i:first-child {
+    margin: 0;
+  }
 }
 </style>
 
 <style>
-/* Center Content */
-.library-center {
-  min-width: 0;
+/* ============================================
+   LIBRARY MAIN CONTENT - Books Grid
+   ============================================ */
+.library-main-content {
+  padding: 2rem 0 4rem;
 }
 
-/* Mobile Category Nav */
-.mobile-category-nav {
-  display: none;
-  margin-bottom: 1.5rem;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+.library-main-content .container {
+  max-width: 1280px;
 }
 
-.category-scroll {
-  display: flex;
-  gap: 0.5rem;
-  padding-bottom: 0.5rem;
-}
-
-.category-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.5rem 0.875rem;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: 50px;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: all 0.2s;
-}
-
-.category-chip:hover {
-  border-color: #22c55e;
-  color: #22c55e;
-}
-
-.category-chip.active {
-  background: #22c55e;
-  border-color: #22c55e;
-  color: white;
-}
-
-/* Section Header */
-.library-section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.section-title-group h2 {
-  font-size: 1.375rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0 0 0.25rem;
-}
-
-.section-title-group p {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-.results-count {
-  display: flex;
-  align-items: baseline;
-  gap: 0.375rem;
-  padding: 0.5rem 1rem;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: 10px;
-}
-
-.count-number {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #22c55e;
-}
-
-.count-label {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-}
-
-/* Section Controls */
-.section-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-/* Sort Dropdown */
-.sort-dropdown {
-  position: relative;
-}
-
-.sort-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.875rem;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: 10px;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.sort-btn:hover {
-  border-color: #22c55e;
-  color: #22c55e;
-}
-
-.sort-arrow {
-  font-size: 0.625rem;
-  transition: transform 0.2s;
-}
-
-.sort-dropdown.open .sort-arrow {
-  transform: rotate(180deg);
-}
-
-.sort-menu {
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  right: 0;
-  min-width: 180px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-8px);
-  transition: all 0.2s;
-  z-index: 100;
-  overflow: hidden;
-}
-
-.sort-dropdown.open .sort-menu {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-.sort-option {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 0.75rem 1rem;
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-  text-decoration: none;
-  transition: all 0.15s;
-}
-
-.sort-option:hover {
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-}
-
-.sort-option.active {
-  background: rgba(34, 197, 94, 0.1);
-  color: #22c55e;
-}
-
-.sort-option i {
-  width: 16px;
-  font-size: 0.75rem;
-}
-
-/* Library Container Card */
-.library-container-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: 16px;
-  padding: 1.5rem;
-}
-
-/* Books Grid */
-.books-grid {
+/* Books Grid - Premium Layout */
+.library-books-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
 }
 
-.book-card {
-  background: var(--bg-elevated);
+/* Book Card - Clean & Premium */
+.library-book-card {
+  background: var(--bg-surface);
   border: 1px solid var(--border-default);
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
+  transition: all 0.3s ease;
   cursor: pointer;
-  transition: all 0.25s ease;
 }
 
-.book-card:hover {
-  transform: translateY(-4px);
+.library-book-card:hover {
+  transform: translateY(-6px);
   border-color: rgba(34, 197, 94, 0.3);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
 }
 
-.book-cover {
+/* Book Cover */
+.book-cover-wrap {
+  position: relative;
   aspect-ratio: 3/4;
-  background: var(--bg-primary);
+  background: var(--bg-elevated);
   overflow: hidden;
 }
 
-.book-cover img {
+.book-cover-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s ease;
 }
 
-.book-card:hover .book-cover img {
+.library-book-card:hover .book-cover-img {
   transform: scale(1.05);
 }
 
@@ -836,161 +1057,211 @@
   width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  color: var(--text-muted);
+  background: linear-gradient(135deg, var(--bg-elevated), var(--bg-primary));
 }
 
 .book-cover-placeholder i {
-  font-size: 2rem;
-}
-
-.book-cover-placeholder span {
-  font-size: 0.75rem;
-}
-
-.book-info {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.book-category {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.75rem;
-  color: #22c55e;
-  background: rgba(34, 197, 94, 0.1);
-  padding: 0.25rem 0.625rem;
-  border-radius: 4px;
-  width: fit-content;
-  margin-bottom: 0.25rem;
-}
-
-.book-title {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  margin: 0;
-  line-height: 1.4;
-}
-
-.book-title a {
-  color: var(--text-primary);
-  text-decoration: none;
-}
-
-.book-title a:hover {
-  color: #22c55e;
-}
-
-.book-author {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-.book-added-date {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.75rem;
+  font-size: 3rem;
   color: var(--text-muted);
-  margin-top: 0.25rem;
+  opacity: 0.5;
 }
 
-.book-added-date i {
-  color: #22c55e;
-  font-size: 0.6875rem;
-}
-
-/* Book Actions */
-.book-actions {
+/* Quick Actions Overlay */
+.book-quick-actions {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-top: auto;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--border-default);
-}
-
-.action-buttons-row {
-  display: flex;
+  align-items: flex-end;
+  justify-content: center;
   gap: 0.5rem;
-  flex: 1;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-.action-btn-small {
-  display: inline-flex;
+.library-book-card:hover .book-quick-actions {
+  opacity: 1;
+}
+
+.quick-action-btn {
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.375rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: white;
   text-decoration: none;
+  cursor: pointer;
   transition: all 0.2s;
-  flex: 1;
 }
 
-.action-btn-small.view-btn {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: white;
+.quick-action-btn:hover {
+  background: #22c55e;
+  border-color: #22c55e;
+  transform: translateY(-2px);
 }
 
-.action-btn-small.view-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
-  color: white;
+.quick-action-btn.remove-btn:hover {
+  background: #ef4444;
+  border-color: #ef4444;
 }
 
-.action-btn-small.read-btn {
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  border: 1px solid var(--border-default);
+/* Book Card Body */
+.book-card-body {
+  padding: 1rem;
 }
 
-.action-btn-small.read-btn:hover {
+.book-category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
   background: rgba(34, 197, 94, 0.1);
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #22c55e;
+  margin-bottom: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.book-category-badge i {
+  font-size: 0.625rem;
+}
+
+.book-card-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 0 0 0.375rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.book-card-title a {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.book-card-title a:hover {
+  color: #22c55e;
+}
+
+.book-card-author {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.book-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+.book-card-meta i {
+  color: #22c55e;
+  font-size: 0.625rem;
+}
+</style>
+
+<style>
+/* ============================================
+   INSTANT SEARCH NO RESULTS
+   ============================================ */
+.instant-search-no-results {
+  text-align: center;
+  padding: 3rem 2rem;
+  display: none;
+}
+
+.instant-search-no-results .no-results-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.instant-search-no-results .no-results-icon i {
+  font-size: 1.5rem;
+  color: var(--text-muted);
+}
+
+.instant-search-no-results p {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin: 0 0 1rem;
+}
+
+.instant-search-no-results .search-term {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.instant-search-no-results .clear-search-btn {
+  padding: 0.5rem 1rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.instant-search-no-results .clear-search-btn:hover {
   border-color: #22c55e;
   color: #22c55e;
 }
 
-.remove-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: transparent;
-  border: 1px solid var(--border-default);
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-
-.remove-btn:hover {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: #ef4444;
-  color: #ef4444;
-}
-
-.remove-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Empty State - Enhanced First Time Experience */
-.empty-state {
+/* ============================================
+   EMPTY STATES
+   ============================================ */
+.library-empty-state {
   text-align: center;
   padding: 4rem 2rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.empty-icon-wrap {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-icon-wrap i {
+  font-size: 2rem;
+  color: var(--text-muted);
 }
 
 .empty-illustration {
@@ -1023,7 +1294,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-elevated);
+  background: var(--bg-surface);
   border: 2px solid var(--border-default);
   border-radius: 50%;
 }
@@ -1033,27 +1304,30 @@
   color: #22c55e;
 }
 
-.empty-state h3 {
+.library-empty-state h3 {
   font-size: 1.375rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0 0 0.75rem;
 }
 
-.empty-description {
+.library-empty-state p {
   font-size: 0.9375rem;
   color: var(--text-secondary);
-  margin: 0 0 2rem;
-  max-width: 420px;
+  margin: 0 0 1.5rem;
+  line-height: 1.6;
+}
+
+.empty-description {
+  max-width: 380px;
   margin-left: auto;
   margin-right: auto;
-  line-height: 1.6;
 }
 
 .empty-features {
   display: flex;
   justify-content: center;
-  gap: 2rem;
+  gap: 1.5rem;
   margin-bottom: 2rem;
   flex-wrap: wrap;
 }
@@ -1071,176 +1345,259 @@
   font-size: 0.875rem;
 }
 
-.btn-empty-action {
+.empty-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Buttons */
+.btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.875rem 1.75rem;
+  padding: 0.75rem 1.5rem;
   background: linear-gradient(135deg, #22c55e, #16a34a);
   color: white;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-weight: 600;
-  border-radius: 12px;
+  border-radius: 10px;
   text-decoration: none;
   transition: all 0.2s;
   box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
 }
 
-.btn-empty-action:hover {
+.btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
   color: white;
 }
 
-/* Responsive Design */
+.btn-primary.btn-lg {
+  padding: 0.875rem 1.75rem;
+  font-size: 0.9375rem;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  border-color: #22c55e;
+  color: #22c55e;
+}
+</style>
+
+<style>
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
 @media (max-width: 1024px) {
-  .content-layout {
-    grid-template-columns: 1fr;
-  }
-  
-  .library-sidebar {
-    display: none;
-  }
-  
-  .mobile-category-nav {
-    display: block;
+  .library-books-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.25rem;
   }
 }
 
 @media (max-width: 768px) {
-  .library-page-header {
-    padding: 2rem 0;
+  .unified-page-header {
+    padding: 1.5rem 0 2rem;
   }
   
-  .header-content h1 {
+  .page-title-row h1 {
     font-size: 1.75rem;
   }
   
-  .header-stats {
-    flex-wrap: wrap;
-    justify-content: center;
+  .page-subtitle {
+    font-size: 0.9375rem;
   }
   
-  .stat-divider {
-    display: none;
-  }
-  
-  .books-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  }
-  
-  .library-container-card {
-    padding: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .books-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .header-badge {
-    font-size: 0.75rem;
-  }
-  
-  .library-section-header {
+  .section-switcher {
     flex-direction: column;
-    align-items: flex-start;
+    width: 100%;
+    max-width: 400px;
+    gap: 0.5rem;
+    padding: 0.375rem;
   }
   
-  .section-controls {
+  .switcher-tab {
+    min-width: unset;
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+  
+  .tab-icon-wrap {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .command-bar-inner {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .library-search-box {
+    max-width: none;
+    width: 100%;
+  }
+  
+  .command-controls {
     width: 100%;
     justify-content: space-between;
   }
   
-  .action-buttons-row {
-    flex-direction: column;
+  .filter-btn span {
+    display: none;
   }
   
-  .remove-btn {
-    width: 100%;
-    height: auto;
-    padding: 0.5rem;
+  .filter-btn {
+    padding: 0.625rem 0.875rem;
+  }
+  
+  .active-filters-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .library-books-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+  
+  .book-card-body {
+    padding: 0.75rem;
+  }
+  
+  .book-card-title {
+    font-size: 0.875rem;
+  }
+  
+  .book-card-author {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title-row {
+    margin-bottom: 1.5rem;
+  }
+  
+  .page-title-row h1 {
+    font-size: 1.5rem;
+  }
+  
+  .switcher-tab {
+    gap: 0.625rem;
+    padding: 0.625rem 0.875rem;
+  }
+  
+  .tab-icon-wrap {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .library-books-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  
+  .book-cover-wrap {
+    aspect-ratio: 2/3;
+  }
+  
+  .quick-action-btn {
+    width: 36px;
+    height: 36px;
   }
   
   .empty-features {
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.75rem;
+  }
+  
+  .empty-actions {
+    flex-direction: column;
+  }
+  
+  .btn-primary, .btn-secondary {
+    width: 100%;
+    justify-content: center;
   }
 }
 
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-  .book-card,
-  .book-cover img,
-  .action-btn-small,
-  .remove-btn,
-  .filter-item,
-  .category-chip {
-    transition: none;
-  }
-  
-  .book-card:hover {
-    transform: none;
-  }
-  
-  .book-card:hover .book-cover img {
-    transform: none;
-  }
+/* Skeleton Loading (for future lazy loading) */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--bg-surface) 50%, var(--bg-elevated) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
 }
 
-/* Remove Modal */
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ============================================
+   REMOVE BOOK MODAL - Premium Confirmation
+   ============================================ */
 .remove-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  padding-top: 15vh;
   z-index: 9999;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.15s ease-out;
+  transition: all 0.25s ease;
 }
 
-.remove-modal-overlay.show {
+.remove-modal-overlay.active {
   opacity: 1;
   visibility: visible;
 }
 
-.remove-modal-content {
+.remove-modal {
   background: var(--bg-surface);
   border: 1px solid var(--border-default);
   border-radius: 16px;
   padding: 2rem;
-  max-width: 420px;
+  max-width: 400px;
   width: 90%;
-  transform: scale(0.95) translateY(10px);
-  transition: all 0.15s ease-out;
-}
-
-.remove-modal-overlay.show .remove-modal-content {
-  transform: scale(1) translateY(0);
-}
-
-.remove-modal-header {
   text-align: center;
-  margin-bottom: 1.5rem;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+  transform: translateY(-20px) scale(0.95);
+  transition: all 0.25s ease;
+}
+
+.remove-modal-overlay.active .remove-modal {
+  transform: translateY(0) scale(1);
 }
 
 .remove-modal-icon {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.25rem;
   background: rgba(239, 68, 68, 0.1);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1rem;
 }
 
 .remove-modal-icon i {
@@ -1248,247 +1605,545 @@
   color: #ef4444;
 }
 
-.remove-modal-header h3 {
+.remove-modal-title {
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0 0 0.75rem;
 }
 
-.remove-modal-header p {
+.remove-modal-text {
+  font-size: 0.9375rem;
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  margin: 0 0 0.5rem;
   line-height: 1.5;
-  margin: 0;
+}
+
+.remove-modal-text strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.remove-modal-subtext {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin: 0 0 1.5rem;
 }
 
 .remove-modal-actions {
   display: flex;
   gap: 0.75rem;
+  justify-content: center;
 }
 
 .remove-modal-btn {
   flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
+  max-width: 140px;
+  padding: 0.75rem 1.25rem;
   border-radius: 10px;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
-  border: none;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
-.remove-modal-btn.cancel-btn {
+.remove-modal-btn.cancel {
   background: var(--bg-elevated);
-  color: var(--text-primary);
   border: 1px solid var(--border-default);
+  color: var(--text-secondary);
 }
 
-.remove-modal-btn.cancel-btn:hover {
-  background: var(--bg-surface);
+.remove-modal-btn.cancel:hover {
+  background: var(--bg-primary);
+  border-color: var(--text-muted);
+  color: var(--text-primary);
 }
 
-.remove-modal-btn.confirm-btn {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
+.remove-modal-btn.confirm {
+  background: #ef4444;
+  border: 1px solid #ef4444;
   color: white;
 }
 
-.remove-modal-btn.confirm-btn:hover {
+.remove-modal-btn.confirm:hover {
+  background: #dc2626;
+  border-color: #dc2626;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.remove-modal-btn.confirm:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ============================================
+   LIBRARY TOAST - Success/Error Notifications
+   ============================================ */
+.library-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  padding: 0.875rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 10000;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.library-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.library-toast.success .toast-icon {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+.library-toast.error .toast-icon {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.toast-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.toast-icon i {
+  font-size: 0.875rem;
+}
+
+.toast-message {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+@media (max-width: 480px) {
+  .remove-modal {
+    padding: 1.5rem;
+    margin: 0 1rem;
+  }
+  
+  .remove-modal-icon {
+    width: 56px;
+    height: 56px;
+  }
+  
+  .remove-modal-icon i {
+    font-size: 1.25rem;
+  }
+  
+  .remove-modal-title {
+    font-size: 1.125rem;
+  }
+  
+  .remove-modal-actions {
+    flex-direction: column;
+  }
+  
+  .remove-modal-btn {
+    max-width: none;
+  }
 }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Sort dropdown toggle
-  const sortToggle = document.getElementById('sortToggle');
-  const sortDropdown = sortToggle?.closest('.sort-dropdown');
+  // Filter dropdown toggles
+  const dropdowns = document.querySelectorAll('.filter-dropdown');
   
-  if (sortToggle && sortDropdown) {
-    sortToggle.addEventListener('click', function(e) {
-      e.stopPropagation();
-      sortDropdown.classList.toggle('open');
-    });
+  dropdowns.forEach(dropdown => {
+    const btn = dropdown.querySelector('.filter-btn');
     
-    document.addEventListener('click', function(e) {
-      if (!sortDropdown.contains(e.target)) {
-        sortDropdown.classList.remove('open');
-      }
-    });
-  }
-  
-  // Create and append modal to body
-  const modalHTML = `
-    <div id="removeBookModal" class="remove-modal-overlay">
-      <div class="remove-modal-content">
-        <div class="remove-modal-header">
-          <div class="remove-modal-icon">
-            <i class="fas fa-bookmark-slash"></i>
-          </div>
-          <h3>Remove from Library</h3>
-          <p id="removeBookMessage">Are you sure you want to remove this book from your library?</p>
-        </div>
-        <div class="remove-modal-actions">
-          <button id="cancelRemove" class="remove-modal-btn cancel-btn">
-            <i class="fas fa-times"></i>
-            Cancel
-          </button>
-          <button id="confirmRemove" class="remove-modal-btn confirm-btn">
-            <i class="fas fa-trash-alt"></i>
-            Remove
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.insertAdjacentHTML('beforeend', modalHTML);
-  
-  // Remove book modal functionality
-  const modal = document.getElementById('removeBookModal');
-  const removeMessage = document.getElementById('removeBookMessage');
-  const cancelBtn = document.getElementById('cancelRemove');
-  const confirmBtn = document.getElementById('confirmRemove');
-  let currentRemoveData = null;
-  
-  function showModal(bookData) {
-    currentRemoveData = bookData;
-    removeMessage.textContent = `Are you sure you want to remove "${bookData.title}" from your library? You can always add it back later.`;
-    modal.classList.add('show');
-    document.body.style.overflow = 'hidden';
-  }
-  
-  function hideModal() {
-    modal.classList.remove('show');
-    document.body.style.overflow = '';
-    currentRemoveData = null;
-  }
-  
-  function removeBook(bookData) {
-    const bookCard = document.querySelector(`.book-card[data-book-id="${bookData.id}"]`);
-    const removeBtn = bookCard?.querySelector('.remove-btn');
-    
-    if (removeBtn) {
-      removeBtn.disabled = true;
-      removeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    if (btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        
+        // Close other dropdowns
+        document.querySelectorAll('.filter-dropdown.open').forEach(d => {
+          if (d !== dropdown) {
+            d.classList.remove('open');
+          }
+        });
+        
+        // Toggle this dropdown
+        dropdown.classList.toggle('open');
+        const isOpen = dropdown.classList.contains('open');
+        btn.setAttribute('aria-expanded', isOpen);
+      });
     }
+  });
+  
+  // Close dropdowns on outside click
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.filter-dropdown')) {
+      document.querySelectorAll('.filter-dropdown.open').forEach(d => {
+        d.classList.remove('open');
+        const btn = d.querySelector('.filter-btn');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+      });
+    }
+  });
+  
+  // Close dropdowns on escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.filter-dropdown.open').forEach(d => {
+        d.classList.remove('open');
+        const btn = d.querySelector('.filter-btn');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+      });
+    }
+  });
+  
+  // Instant Search - Client-side filtering
+  const searchInput = document.getElementById('librarySearchInput');
+  const libraryGrid = document.getElementById('libraryGrid');
+  const bookCards = libraryGrid ? Array.from(libraryGrid.querySelectorAll('.library-book-card')) : [];
+  let searchTimeout = null;
+  
+  if (searchInput && bookCards.length > 0) {
+    // Build search index from data attributes
+    bookCards.forEach(card => {
+      const title = card.dataset.title || '';
+      const author = card.dataset.author || '';
+      const category = card.dataset.category || '';
+      card.dataset.searchText = `${title} ${author} ${category}`;
+    });
     
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    
-    fetch('/library/remove/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrfToken,
-      },
-      body: JSON.stringify({ book_id: parseInt(bookData.id, 10) })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        if (bookCard) {
-          bookCard.style.transform = 'scale(0.9)';
-          bookCard.style.opacity = '0';
-          bookCard.style.transition = 'all 0.2s ease-out';
+    // Instant search as-you-type
+    searchInput.addEventListener('input', function(e) {
+      const query = e.target.value.toLowerCase().trim();
+      
+      // Clear previous timeout
+      if (searchTimeout) clearTimeout(searchTimeout);
+      
+      // Debounce for performance (50ms for instant feel)
+      searchTimeout = setTimeout(() => {
+        let visibleCount = 0;
+        
+        bookCards.forEach(card => {
+          const searchText = card.dataset.searchText;
+          const matches = !query || searchText.includes(query);
           
-          setTimeout(() => {
-            bookCard.remove();
-            const remainingBooks = document.querySelectorAll('.book-card');
-            if (remainingBooks.length === 0) {
-              location.reload();
+          if (matches) {
+            card.style.display = '';
+            card.classList.remove('search-hidden');
+            visibleCount++;
+          } else {
+            card.classList.add('search-hidden');
+            card.style.display = 'none';
+          }
+        });
+        
+        // Update results count in command bar
+        updateResultsDisplay(visibleCount, query);
+        
+        // Show/hide no results message
+        toggleNoResultsMessage(visibleCount, query);
+        
+      }, 50);
+    });
+    
+    function updateResultsDisplay(count, query) {
+      // Update or create results summary
+      let resultsBar = document.querySelector('.active-filters-bar');
+      let resultsCount = document.querySelector('.results-count');
+      let resultsLabel = document.querySelector('.results-label');
+      let resultsQuery = document.querySelector('.results-query');
+      
+      if (query) {
+        if (!resultsBar) {
+          // Create results bar if it doesn't exist
+          const commandBar = document.querySelector('.library-command-bar .container');
+          resultsBar = document.createElement('div');
+          resultsBar.className = 'active-filters-bar instant-results';
+          resultsBar.innerHTML = `
+            <div class="results-summary">
+              <span class="results-count">${count}</span>
+              <span class="results-label">book${count !== 1 ? 's' : ''} found</span>
+              <span class="results-query">for "${query}"</span>
+            </div>
+          `;
+          commandBar.appendChild(resultsBar);
+        } else {
+          if (resultsCount) resultsCount.textContent = count;
+          if (resultsLabel) resultsLabel.textContent = count === 1 ? 'book found' : 'books found';
+          if (resultsQuery) resultsQuery.textContent = `for "${query}"`;
+          else {
+            const summary = resultsBar.querySelector('.results-summary');
+            if (summary && !summary.querySelector('.results-query')) {
+              const querySpan = document.createElement('span');
+              querySpan.className = 'results-query';
+              querySpan.textContent = `for "${query}"`;
+              summary.appendChild(querySpan);
             }
-          }, 200);
+          }
         }
       } else {
-        alert('Error removing book: ' + (data.message || 'Unknown error'));
-        if (removeBtn) {
-          removeBtn.disabled = false;
-          removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
-        }
+        // Remove instant results bar if no query
+        const instantResults = document.querySelector('.instant-results');
+        if (instantResults) instantResults.remove();
       }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('Error removing book from library');
-      if (removeBtn) {
-        removeBtn.disabled = false;
-        removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+    }
+    
+    function toggleNoResultsMessage(count, query) {
+      let noResultsMsg = document.getElementById('instantSearchNoResults');
+      
+      if (count === 0 && query) {
+        if (!noResultsMsg) {
+          noResultsMsg = document.createElement('div');
+          noResultsMsg.id = 'instantSearchNoResults';
+          noResultsMsg.className = 'instant-search-no-results';
+          noResultsMsg.innerHTML = `
+            <div class="no-results-icon"><i class="fas fa-search"></i></div>
+            <p>No books match "<span class="search-term"></span>"</p>
+            <button type="button" class="clear-search-btn">Clear search</button>
+          `;
+          libraryGrid.parentNode.insertBefore(noResultsMsg, libraryGrid.nextSibling);
+          
+          noResultsMsg.querySelector('.clear-search-btn').addEventListener('click', () => {
+            searchInput.value = '';
+            searchInput.dispatchEvent(new Event('input'));
+            searchInput.focus();
+          });
+        }
+        noResultsMsg.querySelector('.search-term').textContent = query;
+        noResultsMsg.style.display = 'block';
+        libraryGrid.style.display = 'none';
+      } else {
+        if (noResultsMsg) noResultsMsg.style.display = 'none';
+        libraryGrid.style.display = '';
+      }
+    }
+    
+    // Focus search on / key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.select();
+      }
+      // Clear search on Escape when focused
+      if (e.key === 'Escape' && document.activeElement === searchInput) {
+        searchInput.value = '';
+        searchInput.dispatchEvent(new Event('input'));
+        searchInput.blur();
+      }
+    });
+    
+    // Prevent form submit - use client-side search only
+    const searchForm = document.getElementById('librarySearchForm');
+    if (searchForm) {
+      searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+      });
+    }
+  } else if (searchInput) {
+    // Fallback: Focus search on / key when no cards
+    document.addEventListener('keydown', function(e) {
+      if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault();
+        searchInput.focus();
       }
     });
   }
   
-  // Attach click handlers directly to remove buttons FIRST (before card handlers)
-  // This ensures they capture the event before it bubbles
+  // Book card click navigation
+  document.querySelectorAll('.library-book-card').forEach(card => {
+    card.addEventListener('click', function(e) {
+      if (e.target.closest('button') || e.target.closest('a')) return;
+      const url = this.dataset.bookUrl;
+      if (url) window.location.href = url;
+    });
+  });
+  
+  // Remove Book Modal & Toast Elements
+  const removeModal = document.getElementById('removeBookModal');
+  const removeBookTitle = document.getElementById('removeBookTitle');
+  const removeModalCancel = document.getElementById('removeModalCancel');
+  const removeModalConfirm = document.getElementById('removeModalConfirm');
+  const libraryToast = document.getElementById('libraryToast');
+  const toastMessage = document.getElementById('toastMessage');
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+  
+  let currentRemoveBtn = null;
+  let currentBookId = null;
+  let currentCard = null;
+  
+  // Show toast notification
+  function showToast(message, type = 'success') {
+    toastMessage.textContent = message;
+    libraryToast.className = 'library-toast ' + type;
+    libraryToast.classList.add('show');
+    
+    setTimeout(() => {
+      libraryToast.classList.remove('show');
+    }, 3000);
+  }
+  
+  // Open remove modal
+  function openRemoveModal(btn) {
+    currentRemoveBtn = btn;
+    currentBookId = btn.dataset.bookId;
+    currentCard = btn.closest('.library-book-card');
+    const bookTitle = btn.dataset.bookTitle;
+    
+    removeBookTitle.textContent = bookTitle;
+    removeModal.classList.add('active');
+    removeModalConfirm.focus();
+  }
+  
+  // Close remove modal
+  function closeRemoveModal() {
+    removeModal.classList.remove('active');
+    currentRemoveBtn = null;
+    currentBookId = null;
+    currentCard = null;
+  }
+  
+  // Handle remove confirmation
+  async function confirmRemove() {
+    if (!currentBookId || !currentCard || !currentRemoveBtn) return;
+    
+    const bookTitle = currentRemoveBtn.dataset.bookTitle;
+    const cardToRemove = currentCard; // Store reference before closing modal
+    const bookIdToRemove = currentBookId;
+    
+    // Update button state
+    removeModalConfirm.disabled = true;
+    removeModalConfirm.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Removing...';
+    
+    try {
+      const response = await fetch('/library/remove/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({ book_id: bookIdToRemove })
+      });
+      
+      // Check if response is ok (status 200-299)
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.message || `Server error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Reset button first
+        removeModalConfirm.disabled = false;
+        removeModalConfirm.innerHTML = '<i class="fas fa-trash-alt"></i> Remove';
+        
+        // Close modal
+        closeRemoveModal();
+        
+        // Animate card removal
+        cardToRemove.style.opacity = '0';
+        cardToRemove.style.transform = 'scale(0.9)';
+        cardToRemove.style.transition = 'all 0.3s ease';
+        
+        // Show success toast
+        showToast(`"${bookTitle}" removed from library`, 'success');
+        
+        setTimeout(() => {
+          cardToRemove.remove();
+          
+          // Update counts in UI
+          const tabCount = document.querySelector('.tab-count.library-count');
+          if (tabCount) {
+            const newCount = parseInt(tabCount.textContent) - 1;
+            tabCount.textContent = newCount;
+            if (newCount === 0) tabCount.style.display = 'none';
+          }
+          
+          const resultsCount = document.querySelector('.results-count');
+          if (resultsCount) {
+            const newCount = parseInt(resultsCount.textContent) - 1;
+            resultsCount.textContent = newCount;
+            const label = document.querySelector('.results-label');
+            if (label) label.textContent = newCount === 1 ? 'book found' : 'books found';
+          }
+          
+          // Check if grid is empty
+          const grid = document.getElementById('libraryGrid');
+          if (grid && grid.children.length === 0) {
+            location.reload();
+          }
+        }, 300);
+      } else {
+        // Reset button
+        removeModalConfirm.disabled = false;
+        removeModalConfirm.innerHTML = '<i class="fas fa-trash-alt"></i> Remove';
+        closeRemoveModal();
+        showToast(data.message || 'Failed to remove book', 'error');
+      }
+    } catch (error) {
+      console.error('Error removing book:', error);
+      // Reset button
+      removeModalConfirm.disabled = false;
+      removeModalConfirm.innerHTML = '<i class="fas fa-trash-alt"></i> Remove';
+      closeRemoveModal();
+      showToast(error.message || 'Failed to remove book. Please try again.', 'error');
+    }
+  }
+  
+  // Event listeners for modal
+  if (removeModalCancel) {
+    removeModalCancel.addEventListener('click', closeRemoveModal);
+  }
+  
+  if (removeModalConfirm) {
+    removeModalConfirm.addEventListener('click', confirmRemove);
+  }
+  
+  // Close modal on overlay click
+  if (removeModal) {
+    removeModal.addEventListener('click', function(e) {
+      if (e.target === removeModal) {
+        closeRemoveModal();
+      }
+    });
+  }
+  
+  // Close modal on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && removeModal.classList.contains('active')) {
+      closeRemoveModal();
+    }
+  });
+  
+  // Remove from library buttons - open modal
   document.querySelectorAll('.remove-btn').forEach(btn => {
     btn.addEventListener('click', function(e) {
-      e.preventDefault();
       e.stopPropagation();
-      e.stopImmediatePropagation();
-      
-      const bookData = {
-        id: this.dataset.bookId,
-        title: this.dataset.bookTitle
-      };
-      showModal(bookData);
+      e.preventDefault();
+      openRemoveModal(this);
     });
-  });
-  
-  // Book card click navigation - attached AFTER remove button handlers
-  document.querySelectorAll('.book-card').forEach(card => {
-    card.addEventListener('click', function(e) {
-      // Double-check: don't navigate if clicking on remove button or any action
-      if (e.target.closest('.remove-btn') || 
-          e.target.closest('.book-actions') ||
-          e.target.closest('a') ||
-          e.target.closest('button')) {
-        return;
-      }
-      const url = this.dataset.bookUrl;
-      if (url) {
-        window.location.href = url;
-      }
-    });
-    
-    card.setAttribute('tabindex', '0');
-    card.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        // Don't trigger if focus is on a button or link
-        if (e.target.closest('button') || e.target.closest('a')) {
-          return;
-        }
-        e.preventDefault();
-        const url = this.dataset.bookUrl;
-        if (url) {
-          window.location.href = url;
-        }
-      }
-    });
-  });
-  
-  cancelBtn.addEventListener('click', hideModal);
-  
-  confirmBtn.addEventListener('click', () => {
-    if (currentRemoveData) {
-      const dataToRemove = {...currentRemoveData};
-      hideModal();
-      setTimeout(() => removeBook(dataToRemove), 50);
-    }
-  });
-  
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.classList.contains('show')) {
-      hideModal();
-    }
-  });
-  
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      hideModal();
-    }
   });
 });
 </script>

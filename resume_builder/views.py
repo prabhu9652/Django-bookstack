@@ -7,10 +7,251 @@ from django.template import Template, Context
 from django.db import transaction
 import json
 import logging
+import uuid
 
 from .models import Resume, CoverLetter, ResumeTemplate, CoverLetterTemplate
 
 logger = logging.getLogger(__name__)
+
+
+# ============================================
+# DRAFT EDITOR VIEWS (No auto-save to My Documents)
+# ============================================
+
+@login_required
+def draft_resume_editor(request, template_id):
+    """
+    Open resume editor in DRAFT mode - nothing saved to My Documents yet.
+    Document only saves when user explicitly clicks Save.
+    """
+    template = get_object_or_404(ResumeTemplate, id=template_id, is_active=True)
+    role = request.GET.get('role', 'devops_sre')
+    
+    # Generate a unique draft ID for this session
+    draft_id = str(uuid.uuid4())[:8]
+    
+    # Prepare default data based on role (NOT saved to database)
+    draft_data = {
+        'template_id': template.id,
+        'template_name': template.name,
+        'template_slug': template.slug,
+        'role': role,
+        'title': 'My Resume',
+        'full_name': f'{request.user.first_name} {request.user.last_name}'.strip() or request.user.username,
+        'role_title': get_default_role_title(role),
+        'email': request.user.email or '',
+        'phone': '',
+        'address': '',
+        'location': '',
+        'linkedin': '',
+        'github': '',
+        'website': '',
+        'summary': get_default_summary_for_role(role),
+        'skills': get_default_skills_for_role(role),
+        'experience': [get_default_experience_for_role(role)],
+        'education': [{
+            'degree': 'Bachelor of Technology',
+            'field': 'Computer Science',
+            'school': 'University Name',
+            'location': 'City, Country',
+            'graduation_date': '2020'
+        }],
+        'projects': [],
+        'languages': ['English'],
+        'certifications': [],
+        'primary_color': template.primary_color,
+    }
+    
+    # Color options for the theme picker
+    color_options = [
+        {'name': 'Teal', 'value': '#4a9d9a'},
+        {'name': 'Navy', 'value': '#1e3a5f'},
+        {'name': 'Forest', 'value': '#2d5a3d'},
+        {'name': 'Burgundy', 'value': '#722f37'},
+        {'name': 'Slate', 'value': '#475569'},
+        {'name': 'Purple', 'value': '#5b21b6'},
+    ]
+    
+    context = {
+        'title': f'Create Resume - {template.name}',
+        'template': template,
+        'draft_id': draft_id,
+        'draft_data': json.dumps(draft_data),
+        'is_draft': True,
+        'color_options': color_options,
+        'role_options': [
+            ('devops_sre', 'DevOps / SRE Engineer'),
+            ('software_engineer', 'Software Engineer'),
+            ('ds_ml', 'DS / ML Engineer'),
+        ],
+    }
+    
+    return render(request, 'resume_builder/draft_resume_editor.html', context)
+
+
+@login_required
+def draft_cover_letter_editor(request, template_id):
+    """
+    Open cover letter editor in DRAFT mode - nothing saved to My Documents yet.
+    Document only saves when user explicitly clicks Save.
+    """
+    template = get_object_or_404(CoverLetterTemplate, id=template_id, is_active=True)
+    role = request.GET.get('role', 'devops_sre')
+    
+    # Generate a unique draft ID for this session
+    draft_id = str(uuid.uuid4())[:8]
+    
+    # Get role-specific content
+    cover_letter_content = get_default_cover_letter_content(role)
+    
+    # Prepare default data based on role (NOT saved to database)
+    draft_data = {
+        'template_id': template.id,
+        'template_name': template.name,
+        'template_slug': template.slug,
+        'title': 'My Cover Letter',
+        'full_name': f'{request.user.first_name} {request.user.last_name}'.strip() or request.user.username,
+        'email': request.user.email or '',
+        'phone': '',
+        'address': '',
+        'location': '',
+        'linkedin': '',
+        'company_name': 'Company Name',
+        'company_address': '',
+        'position_title': cover_letter_content['position_title'],
+        'hiring_manager': '',
+        'opening_paragraph': cover_letter_content['opening_paragraph'],
+        'body_paragraph': cover_letter_content['body_paragraph'],
+        'closing_paragraph': cover_letter_content['closing_paragraph'],
+        'primary_color': template.primary_color,
+    }
+    
+    # Color options for the theme picker
+    color_options = [
+        {'name': 'Teal', 'value': '#4a9d9a'},
+        {'name': 'Navy', 'value': '#1e3a5f'},
+        {'name': 'Forest', 'value': '#2d5a3d'},
+        {'name': 'Burgundy', 'value': '#722f37'},
+        {'name': 'Slate', 'value': '#475569'},
+        {'name': 'Purple', 'value': '#5b21b6'},
+    ]
+    
+    context = {
+        'title': f'Create Cover Letter - {template.name}',
+        'template': template,
+        'draft_id': draft_id,
+        'draft_data': json.dumps(draft_data),
+        'is_draft': True,
+        'color_options': color_options,
+    }
+    
+    return render(request, 'resume_builder/draft_cover_letter_editor.html', context)
+
+
+@login_required
+@require_POST
+def api_save_draft_resume(request):
+    """
+    API endpoint to save a draft resume to My Documents.
+    This is the ONLY way a resume gets added to My Documents.
+    """
+    try:
+        data = json.loads(request.body)
+        template_id = data.get('template_id')
+        
+        template = get_object_or_404(ResumeTemplate, id=template_id, is_active=True)
+        
+        with transaction.atomic():
+            resume = Resume.objects.create(
+                user=request.user,
+                template=template,
+                title=data.get('title', 'My Resume'),
+                role=data.get('role', 'software_engineer'),
+                full_name=data.get('full_name', request.user.username),
+                role_title=data.get('role_title', ''),
+                email=data.get('email', request.user.email),
+                phone=data.get('phone', ''),
+                address=data.get('address', ''),
+                location=data.get('location', ''),
+                linkedin=data.get('linkedin', ''),
+                github=data.get('github', ''),
+                website=data.get('website', ''),
+                summary=data.get('summary', ''),
+                skills=data.get('skills', []),
+                experience=data.get('experience', []),
+                education=data.get('education', []),
+                projects=data.get('projects', []),
+                languages=data.get('languages', []),
+                certifications=data.get('certifications', []),
+                primary_color=data.get('primary_color', '#4a9d9a'),
+            )
+        
+        logger.info(f"Resume {resume.id} saved to My Documents for user {request.user.username}")
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Document saved to My Documents',
+            'resume_id': resume.id,
+            'redirect_url': f'/resume-builder/edit-resume/{resume.id}/'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error saving draft resume: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+@login_required
+@require_POST
+def api_save_draft_cover_letter(request):
+    """
+    API endpoint to save a draft cover letter to My Documents.
+    This is the ONLY way a cover letter gets added to My Documents.
+    """
+    try:
+        data = json.loads(request.body)
+        template_id = data.get('template_id')
+        
+        template = get_object_or_404(CoverLetterTemplate, id=template_id, is_active=True)
+        
+        with transaction.atomic():
+            cover_letter = CoverLetter.objects.create(
+                user=request.user,
+                template=template,
+                title=data.get('title', 'My Cover Letter'),
+                full_name=data.get('full_name', request.user.username),
+                email=data.get('email', request.user.email),
+                phone=data.get('phone', ''),
+                address=data.get('address', ''),
+                location=data.get('location', ''),
+                linkedin=data.get('linkedin', ''),
+                company_name=data.get('company_name', ''),
+                company_address=data.get('company_address', ''),
+                position_title=data.get('position_title', ''),
+                hiring_manager=data.get('hiring_manager', ''),
+                opening_paragraph=data.get('opening_paragraph', ''),
+                body_paragraph=data.get('body_paragraph', ''),
+                closing_paragraph=data.get('closing_paragraph', ''),
+                primary_color=data.get('primary_color', '#4a9d9a'),
+            )
+        
+        logger.info(f"Cover letter {cover_letter.id} saved to My Documents for user {request.user.username}")
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Document saved to My Documents',
+            'cover_letter_id': cover_letter.id,
+            'redirect_url': f'/resume-builder/edit-cover-letter/{cover_letter.id}/'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error saving draft cover letter: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
 
 
 def home(request):
@@ -838,3 +1079,88 @@ def api_save_cover_letter(request, cover_letter_id):
             'error': str(e)
         }, status=400)
 
+
+# ============================================
+# RENAME API ENDPOINTS
+# ============================================
+
+@login_required
+@require_POST
+def api_rename_resume(request, resume_id):
+    """API endpoint for renaming a resume"""
+    resume = get_object_or_404(Resume, id=resume_id, user=request.user)
+    
+    try:
+        data = json.loads(request.body)
+        new_title = data.get('title', '').strip()
+        
+        if not new_title:
+            return JsonResponse({
+                'success': False,
+                'error': 'Document name is required'
+            }, status=400)
+        
+        if len(new_title) > 100:
+            return JsonResponse({
+                'success': False,
+                'error': 'Document name must be 100 characters or less'
+            }, status=400)
+        
+        resume.title = new_title
+        resume.save()
+        
+        logger.info(f"Resume {resume.id} renamed to '{new_title}' by user {request.user.username}")
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Document renamed successfully',
+            'title': new_title
+        })
+        
+    except Exception as e:
+        logger.error(f"Error renaming resume {resume_id}: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+@login_required
+@require_POST
+def api_rename_cover_letter(request, cover_letter_id):
+    """API endpoint for renaming a cover letter"""
+    cover_letter = get_object_or_404(CoverLetter, id=cover_letter_id, user=request.user)
+    
+    try:
+        data = json.loads(request.body)
+        new_title = data.get('title', '').strip()
+        
+        if not new_title:
+            return JsonResponse({
+                'success': False,
+                'error': 'Document name is required'
+            }, status=400)
+        
+        if len(new_title) > 100:
+            return JsonResponse({
+                'success': False,
+                'error': 'Document name must be 100 characters or less'
+            }, status=400)
+        
+        cover_letter.title = new_title
+        cover_letter.save()
+        
+        logger.info(f"Cover letter {cover_letter.id} renamed to '{new_title}' by user {request.user.username}")
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Document renamed successfully',
+            'title': new_title
+        })
+        
+    except Exception as e:
+        logger.error(f"Error renaming cover letter {cover_letter_id}: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)

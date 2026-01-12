@@ -92,17 +92,57 @@ def read_pdf(request, id):
     return render(request, 'books/read_pdf.html', {'template_data': template_data})
 
 def index(request):
-    search_term = request.GET.get('search')
+    from django.db.models import Q, Count
+    
+    # Get query parameters
+    search_term = request.GET.get('search', '').strip()
+    category_slug = request.GET.get('category', '')
+    sort_by = request.GET.get('sort', 'name')
+    
+    # Base queryset with optimized loading
+    books = Book.objects.select_related('category').all()
+    
+    # Store total count before filtering
+    total_books = books.count()
+    
+    # Apply search filter (title, author)
     if search_term:
-        books = Book.objects.filter(name__icontains=search_term).order_by('name')
+        books = books.filter(
+            Q(name__icontains=search_term) |
+            Q(author__icontains=search_term) |
+            Q(category__name__icontains=search_term)
+        )
+    
+    # Filter by category if specified
+    if category_slug:
+        books = books.filter(category__slug=category_slug)
+    
+    # Apply sorting
+    if sort_by == 'name':
+        books = books.order_by('name')
+    elif sort_by == '-name':
+        books = books.order_by('-name')
+    elif sort_by == 'author':
+        books = books.order_by('author', 'name')
+    elif sort_by == '-created':
+        books = books.order_by('-id')  # Using id as proxy for created date
+    elif sort_by == 'created':
+        books = books.order_by('id')
     else:
-        books = Book.objects.all().order_by('name')
+        books = books.order_by('name')
+    
+    # Count filtered results
+    filtered_count = books.count()
 
-    paginator = Paginator(books, 8)  # Show 8 books per page
+    # Pagination
+    paginator = Paginator(books, 12)  # Show 12 books per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    categories = Category.objects.filter(parent=None).order_by('name')
+    # Get categories with book counts
+    categories = Category.objects.filter(parent=None).annotate(
+        book_count=Count('books')
+    ).order_by('name')
 
     # Get user's library books if authenticated and has access
     user_library_book_ids = []
@@ -118,21 +158,58 @@ def index(request):
     # Get access context for template
     access_context = get_user_access_context(request.user)
 
-    template_data = {}
-    template_data['title'] = 'Books'
-    template_data['books'] = page_obj
-    template_data['categories'] = categories
-    template_data['search_term'] = search_term
-    template_data['user_library_book_ids'] = user_library_book_ids
-    template_data['access_context'] = access_context
+    template_data = {
+        'title': 'Books',
+        'books': page_obj,
+        'categories': categories,
+        'search_term': search_term,
+        'current_category': category_slug,
+        'sort_by': sort_by,
+        'total_books': total_books,
+        'filtered_count': filtered_count,
+        'user_library_book_ids': user_library_book_ids,
+        'access_context': access_context,
+    }
     return render(request, 'books/index.html', {'template_data': template_data})
 
 
 def category(request, slug):
+    from django.db.models import Q, Count
+    
     cat = get_object_or_404(Category, slug=slug)
-    books = cat.books.all().order_by('name')
+    
+    # Get query parameters
+    search_term = request.GET.get('search', '').strip()
+    sort_by = request.GET.get('sort', 'name')
+    
+    # Base queryset
+    books = cat.books.select_related('category').all()
+    
+    # Apply search filter
+    if search_term:
+        books = books.filter(
+            Q(name__icontains=search_term) |
+            Q(author__icontains=search_term)
+        )
+    
+    # Apply sorting
+    if sort_by == 'name':
+        books = books.order_by('name')
+    elif sort_by == '-name':
+        books = books.order_by('-name')
+    elif sort_by == 'author':
+        books = books.order_by('author', 'name')
+    elif sort_by == '-created':
+        books = books.order_by('-id')
+    elif sort_by == 'created':
+        books = books.order_by('id')
+    else:
+        books = books.order_by('name')
+    
+    # Count filtered results
+    filtered_count = books.count()
 
-    paginator = Paginator(books, 8)  # Show 8 books per page
+    paginator = Paginator(books, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -149,14 +226,28 @@ def category(request, slug):
 
     # Get access context for template
     access_context = get_user_access_context(request.user)
+    
+    # Get all categories with counts
+    categories = Category.objects.filter(parent=None).annotate(
+        book_count=Count('books')
+    ).order_by('name')
+    
+    # Total books in this category
+    total_books = cat.books.count()
 
-    template_data = {}
-    template_data['title'] = f"Category: {cat.name}"
-    template_data['books'] = page_obj
-    template_data['category'] = cat
-    template_data['categories'] = Category.objects.filter(parent=None).order_by('name')
-    template_data['user_library_book_ids'] = user_library_book_ids
-    template_data['access_context'] = access_context
+    template_data = {
+        'title': f"Category: {cat.name}",
+        'books': page_obj,
+        'category': cat,
+        'categories': categories,
+        'search_term': search_term,
+        'current_category': slug,
+        'sort_by': sort_by,
+        'total_books': total_books,
+        'filtered_count': filtered_count,
+        'user_library_book_ids': user_library_book_ids,
+        'access_context': access_context,
+    }
     return render(request, 'books/index.html', {'template_data': template_data})
 
 def show(request, id):
