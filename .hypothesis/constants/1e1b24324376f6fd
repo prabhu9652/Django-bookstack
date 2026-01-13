@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/roadmap/migrations/0007_add_journey_skill_progress.py
+# hypothesis_version: 6.150.0
+
+['Completed', 'ID', 'In Progress', 'JourneySkillProgress', 'Not Started', 'completed', 'completed_at', 'created_at', 'id', 'in_progress', 'journey_skill', 'not_started', 'roadmap', 'roadmap.journeyskill', 'started_at', 'status', 'unique_together', 'updated_at', 'user', 'user_progress', 'verbose_name', 'verbose_name_plural']

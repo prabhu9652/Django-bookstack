@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="max-width: 1000px; margin: 0 auto; padding: var(--space-6) var(--space-4);">
+    
+    <!-- Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-4); margin-bottom: var(--space-6);">
+        <div>
+            <h1 style="font-size: 1.75rem; font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-2);">
+                My Applications
+            </h1>
+            <p style="color: var(--text-secondary);">
+                Track the status of your job applications
+            </p>
+        </div>
+        <a href="{% url 'careers:careers_home' %}" class="btn btn-primary">
+            <i class="fas fa-search"></i> Browse Jobs
+        </a>
+    </div>
+    
+    <!-- Status Filter -->
+    <div class="card" style="margin-bottom: var(--space-4);">
+        <div class="card-body" style="padding: var(--space-3) var(--space-4);">
+            <form method="get" action="{% url 'careers:my_applications' %}" style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
+                <label style="font-size: var(--font-size-sm); color: var(--text-secondary);">Filter by status:</label>
+                <select name="status" onchange="this.form.submit()" style="padding: var(--space-2) var(--space-3); background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+                    <option value="">All Applications</option>
+                    {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if current_status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Applications List -->
+    {% if applications %}
+    <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+        {% for application in applications %}
+        <div class="card application-card" style="transition: transform 0.2s ease;">
+            <div class="card-body" style="padding: var(--space-5);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: var(--space-4);">
+                    <!-- Job Info -->
+                    <div style="flex: 1; min-width: 250px;">
+                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">
+                            {{ application.job.title }}
+                        </h3>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-3);">
+                            {{ application.job.department }} · {{ application.job.location }}
+                        </p>
+                        <div style="display: flex; flex-wrap: wrap; gap: var(--space-3); font-size: var(--font-size-sm); color: var(--text-tertiary);">
+                            <span>
+                                <i class="fas fa-calendar-alt" style="margin-right: 4px;"></i>
+                                Applied {{ application.applied_at|date:"M d, Y" }}
+                            </span>
+                            {% if application.resume %}
+                            <span>
+                                <i class="fas fa-file-alt" style="margin-right: 4px;"></i>
+                                {{ application.resume.title }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Status & Actions -->
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: var(--space-3);">
+                        {% include 'careers/partials/status_badge.html' with status=application.status %}
+                        <a href="{% url 'careers:application_detail' application_id=application.id %}" class="btn btn-ghost btn-sm">
+                            View Details <i class="fas fa-arrow-right" style="margin-left: 4px;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="card" style="text-align: center; padding: var(--space-8);">
+        <i class="fas fa-inbox" style="font-size: 3rem; color: var(--text-tertiary); margin-bottom: var(--space-4);"></i>
+        <h3 style="color: var(--text-primary); margin-bottom: var(--space-2);">No applications yet</h3>
+        <p style="color: var(--text-secondary); margin-bottom: var(--space-4);">
+            {% if current_status %}
+            No applications with status "{{ current_status }}".
+            {% else %}
+            Start your job search by browsing our open positions.
+            {% endif %}
+        </p>
+        <a href="{% url 'careers:careers_home' %}" class="btn btn-primary">
+            <i class="fas fa-search"></i> Browse Jobs
+        </a>
+    </div>
+    {% endif %}
+    
+</div>
+
+<style>
+.application-card:hover {
+    transform: translateX(4px);
+}
+</style>
+{% endblock content %}

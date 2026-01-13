@@ -264,3 +264,32 @@ def update_journey_skill_progress(request, skill_id):
         })
     
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+
+@login_required
+def reset_progress(request, slug):
+    """
+    Reset all user progress for a specific roadmap path.
+    Resets both skill progress and journey skill progress.
+    """
+    if request.method == 'POST':
+        roadmap_path = get_object_or_404(RoadmapPath, slug=slug, is_active=True)
+        
+        # Delete all skill progress for this path
+        UserProgress.objects.filter(
+            user=request.user,
+            roadmap_path=roadmap_path
+        ).delete()
+        
+        # Delete all journey skill progress for this path
+        JourneySkillProgress.objects.filter(
+            user=request.user,
+            journey_skill__roadmap_path=roadmap_path
+        ).delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'All progress has been reset'
+        })
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})

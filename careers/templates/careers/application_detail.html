@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="max-width: 800px; margin: 0 auto; padding: var(--space-6) var(--space-4);">
+    
+    <!-- Back Link -->
+    <a href="{% url 'careers:my_applications' %}" style="display: inline-flex; align-items: center; gap: var(--space-2); color: var(--text-secondary); text-decoration: none; margin-bottom: var(--space-4); font-size: var(--font-size-sm);">
+        <i class="fas fa-arrow-left"></i>
+        Back to My Applications
+    </a>
+    
+    <!-- Header Card -->
+    <div class="card" style="margin-bottom: var(--space-4);">
+        <div class="card-body" style="padding: var(--space-6);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: var(--space-4);">
+                <div>
+                    <h1 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-2);">
+                        {{ application.job.title }}
+                    </h1>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--space-3);">
+                        {{ application.job.department }} · {{ application.job.location }}
+                    </p>
+                    <div style="display: flex; flex-wrap: wrap; gap: var(--space-3); font-size: var(--font-size-sm); color: var(--text-tertiary);">
+                        <span>
+                            <i class="fas fa-calendar-alt" style="margin-right: 4px;"></i>
+                            Applied {{ application.applied_at|date:"F d, Y" }}
+                        </span>
+                        <span>
+                            <i class="fas fa-clock" style="margin-right: 4px;"></i>
+                            Last updated {{ application.updated_at|timesince }} ago
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    {% include 'careers/partials/status_badge.html' with status=application.status %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Application Details -->
+    <div class="card">
+        <div class="card-body" style="padding: var(--space-6);">
+            
+            <!-- Submitted Documents -->
+            <section style="margin-bottom: var(--space-6);">
+                <h3 style="font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4);">
+                    <i class="fas fa-file-alt" style="margin-right: var(--space-2); color: var(--accent-primary);"></i>
+                    Submitted Documents
+                </h3>
+                
+                <div style="display: grid; gap: var(--space-3);">
+                    <!-- Resume -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--space-3); background: var(--bg-tertiary); border-radius: var(--radius-md);">
+                        <div style="display: flex; align-items: center; gap: var(--space-3);">
+                            <i class="fas fa-file-pdf" style="font-size: 1.25rem; color: #ef4444;"></i>
+                            <div>
+                                <p style="font-weight: 500; color: var(--text-primary);">
+                                    {% if application.resume %}{{ application.resume.title }}{% else %}Resume{% endif %}
+                                </p>
+                                <p style="font-size: var(--font-size-sm); color: var(--text-tertiary);">Resume</p>
+                            </div>
+                        </div>
+                        {% if application.resume %}
+                        <a href="{% url 'resume_builder:download_resume' resume_id=application.resume.id %}" class="btn btn-ghost btn-sm">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                        {% else %}
+                        <span style="font-size: var(--font-size-sm); color: var(--text-tertiary);">Not available</span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Cover Letter -->
+                    {% if application.cover_letter %}
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--space-3); background: var(--bg-tertiary); border-radius: var(--radius-md);">
+                        <div style="display: flex; align-items: center; gap: var(--space-3);">
+                            <i class="fas fa-file-alt" style="font-size: 1.25rem; color: #3b82f6;"></i>
+                            <div>
+                                <p style="font-weight: 500; color: var(--text-primary);">{{ application.cover_letter.title }}</p>
+                                <p style="font-size: var(--font-size-sm); color: var(--text-tertiary);">Cover Letter</p>
+                            </div>
+                        </div>
+                        <a href="{% url 'resume_builder:download_cover_letter' cover_letter_id=application.cover_letter.id %}" class="btn btn-ghost btn-sm">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+            
+            <!-- Links -->
+            {% if application.portfolio_url or application.linkedin_url or application.github_url %}
+            <section style="margin-bottom: var(--space-6);">
+                <h3 style="font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4);">
+                    <i class="fas fa-link" style="margin-right: var(--space-2); color: var(--accent-primary);"></i>
+                    Links
+                </h3>
+                
+                <div style="display: flex; flex-wrap: wrap; gap: var(--space-3);">
+                    {% if application.portfolio_url %}
+                    <a href="{{ application.portfolio_url }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">
+                        <i class="fas fa-globe"></i> Portfolio
+                    </a>
+                    {% endif %}
+                    {% if application.linkedin_url %}
+                    <a href="{{ application.linkedin_url }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">
+                        <i class="fab fa-linkedin"></i> LinkedIn
+                    </a>
+                    {% endif %}
+                    {% if application.github_url %}
+                    <a href="{{ application.github_url }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                    {% endif %}
+                </div>
+            </section>
+            {% endif %}
+            
+            <!-- Additional Notes -->
+            {% if application.additional_notes %}
+            <section>
+                <h3 style="font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4);">
+                    <i class="fas fa-sticky-note" style="margin-right: var(--space-2); color: var(--accent-primary);"></i>
+                    Additional Notes
+                </h3>
+                <div style="padding: var(--space-4); background: var(--bg-tertiary); border-radius: var(--radius-md); color: var(--text-secondary); line-height: 1.6;">
+                    {{ application.additional_notes|linebreaks }}
+                </div>
+            </section>
+            {% endif %}
+            
+        </div>
+    </div>
+    
+    <!-- View Job Link -->
+    <div style="text-align: center; margin-top: var(--space-4);">
+        <a href="{% url 'careers:job_detail' slug=application.job.slug %}" style="color: var(--accent-primary); text-decoration: none; font-size: var(--font-size-sm);">
+            <i class="fas fa-external-link-alt" style="margin-right: 4px;"></i>
+            View Original Job Posting
+        </a>
+    </div>
+    
+</div>
+{% endblock content %}

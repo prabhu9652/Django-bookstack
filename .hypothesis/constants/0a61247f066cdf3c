@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/roadmap/models.py
+# hypothesis_version: 6.150.0
+
+[100, 200, 500, 'Advanced', 'Beginner', 'Completed', 'In Progress', 'Intermediate', 'Journey Tool', 'Journey Tools', 'Not Started', 'Overall', 'Roadmap Highlight', 'Roadmap Highlights', 'Roadmap Path', 'Roadmap Paths', 'Roadmap Phase', 'Roadmap Phases', 'Roadmap Skill', 'Roadmap Skills', 'Skipped', 'User Progress', 'advanced', 'beginner', 'completed', 'display_order', 'fas fa-check', 'fas fa-code', 'fas fa-route', 'highlights', 'in_progress', 'intermediate', 'journey_skill', 'journey_skills', 'name', 'not_started', 'order', 'phase', 'phases', 'roadmap:path_detail', 'roadmap_path', 'roadmap_progress', 'skill', 'skills', 'skipped', 'slug', 'user', 'user_progress']

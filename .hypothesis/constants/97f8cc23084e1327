@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/booksstore/settings.py
+# hypothesis_version: 6.150.0
+
+[',', '/', '/accounts/login/', '/media/', '1', 'ALLOWED_HOSTS', 'APP_DIRS', 'BACKEND', 'DEBUG', 'DIRS', 'ENGINE', 'NAME', 'OPTIONS', 'SECRET_KEY', 'True', 'UTC', 'accounts', 'books', 'booksstore.urls', 'booksstore/static/', 'booksstore/templates', 'careers', 'context_processors', 'db/db.sqlite3', 'default', 'django.contrib.admin', 'django.contrib.auth', 'en-us', 'home', 'https://', 'library', 'media', 'resume_builder', 'roadmap', 'static/', 'staticfiles', 'testserver', 'true']

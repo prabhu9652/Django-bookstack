@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- TechBookHub Icon - Minimal Version -->
+  <!-- Optimized for small sizes (48x48, 96x96) -->
+  
+  <defs>
+    <linearGradient id="minGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a9eff"/>
+      <stop offset="100%" style="stop-color:#6366f1"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Rounded square background -->
+  <rect x="64" y="64" width="384" height="384" rx="80" fill="url(#minGradient)"/>
+  
+  <!-- Simplified Book Shape -->
+  <g fill="#ffffff">
+    <!-- Left page -->
+    <path d="M160 140 L160 372 L256 352 L256 120 Z" opacity="0.95"/>
+    <!-- Right page -->
+    <path d="M352 140 L352 372 L256 352 L256 120 Z" opacity="0.7"/>
+  </g>
+  
+  <!-- Simple circuit node -->
+  <circle cx="304" cy="200" r="12" fill="#ffffff" opacity="0.9"/>
+  <circle cx="304" cy="280" r="8" fill="#ffffff" opacity="0.9"/>
+  <path d="M304 212 L304 272" stroke="#ffffff" stroke-width="4" opacity="0.9"/>
+  
+  <!-- Text lines (simplified) -->
+  <g fill="url(#minGradient)" opacity="0.6">
+    <rect x="180" y="180" width="50" height="8" rx="4"/>
+    <rect x="180" y="210" width="40" height="8" rx="4"/>
+    <rect x="180" y="260" width="45" height="8" rx="4"/>
+    <rect x="180" y="290" width="35" height="8" rx="4"/>
+  </g>
+</svg>

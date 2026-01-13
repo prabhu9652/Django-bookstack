@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/careers/tests.py
+# hypothesis_version: 6.150.0
+
+[100, 'Changed', 'Closed Job', 'Engineering', 'Future Close Job', 'Inactive Job', 'Name', 'Open Job', 'Remote', 'Test', 'Test Resume', 'Test Template', 'Test User', 'Test description', 'Test description 2', 'Test requirements', 'Test template', 'User', '^[a-z0-9-]+$', 'applied', 'category', 'changed@example.com', 'css_styles', 'description', 'full_time', 'hired', 'html_template', 'interview', 'is_active', 'job2', 'name', 'professional', 'rejected', 'remote', 'status@example.com', 'test-template', 'test-template-app', 'test@example.com', 'testpass123', 'under_review']

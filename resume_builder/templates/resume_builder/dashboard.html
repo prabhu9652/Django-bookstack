@@ -61,6 +61,17 @@
           {% endwith %}
         </div>
       </div>
+      <!-- Apply to Jobs Quick Action -->
+      <a href="{% url 'careers:careers_home' %}" class="stat-card stat-card-action">
+        <div class="stat-icon careers-icon">
+          <i class="fas fa-briefcase"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-action-text">Apply to Jobs</span>
+          <span class="stat-label">Use your documents</span>
+        </div>
+        <i class="fas fa-arrow-right stat-arrow"></i>
+      </a>
     </div>
 
     <!-- Document Tabs -->
@@ -1197,6 +1208,56 @@ noscript + .documents-dashboard,
 .stat-icon.total-icon i {
   color: #22c55e;
   font-size: 1.25rem;
+}
+
+.stat-icon.careers-icon {
+  background: rgba(249, 115, 22, 0.1);
+}
+
+.stat-icon.careers-icon i {
+  color: #f97316;
+  font-size: 1.25rem;
+}
+
+/* Careers Quick Action Card */
+.stat-card-action {
+  text-decoration: none;
+  position: relative;
+  cursor: pointer;
+  border: 1px dashed var(--border-default);
+  background: transparent;
+}
+
+.stat-card-action:hover {
+  border-color: #f97316;
+  border-style: solid;
+  background: rgba(249, 115, 22, 0.05);
+}
+
+.stat-card-action .stat-action-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.stat-card-action .stat-label {
+  font-size: 0.75rem;
+}
+
+.stat-card-action .stat-arrow {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-tertiary);
+  font-size: 0.875rem;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.stat-card-action:hover .stat-arrow {
+  transform: translateY(-50%) translateX(4px);
+  color: #f97316;
 }
 
 .stat-info {

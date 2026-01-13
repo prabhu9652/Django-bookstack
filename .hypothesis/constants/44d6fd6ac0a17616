@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/books/views.py
+# hypothesis_version: 6.150.0
+
+[1024, '-created', '-id', '-name', 'Book not found', 'Books', 'Content-Disposition', 'Edit Review', 'GET', 'PDF file not found', 'PDF not found', 'POST', 'SAMEORIGIN', 'X-Frame-Options', 'access_context', 'application/pdf', 'author', 'book', 'book_id', 'books', 'books.show', 'books/index.html', 'books/read_pdf.html', 'books/show.html', 'categories', 'category', 'comment', 'created', 'current_category', 'filtered_count', 'id', 'is_in_library', 'name', 'page', 'pdf_size', 'pdf_size_display', 'rb', 'review', 'reviews', 'search', 'search_term', 'sort', 'sort_by', 'template_data', 'title', 'total_books', 'user']

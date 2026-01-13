@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/careers/migrations/0003_add_file_uploads.py
+# hypothesis_version: 6.150.0
+
+[255, 'application', 'careers', 'job_applications', 'resume', 'resume_builder', 'uploaded_resume', 'uploaded_resume_name']

@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/careers/models.py
+# hypothesis_version: 6.150.0
+
+[100, 200, 220, '-applied_at', '-created_at', 'Application', 'Application Note', 'Application Notes', 'Applications', 'Applied', 'Contract', 'Full job description', 'Full-time', 'Hired', 'Hybrid', 'Internship', 'Interview', 'Job Posting', 'Job Postings', 'List of technologies', 'On-site', 'Part-time', 'Rejected', 'Remote', 'Under Review', 'application_notes', 'applications', 'applied', 'blue', 'contract', 'e.g., 3-5 years', 'full_time', 'gray', 'green', 'hired', 'hybrid', 'internship', 'interview', 'job', 'job_applications', 'notes', 'onsite', 'part_time', 'purple', 'red', 'rejected', 'remote', 'under_review', 'user', 'yellow']

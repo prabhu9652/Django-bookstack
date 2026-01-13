@@ -371,6 +371,30 @@
     </div>
   </div>
 
+  <!-- Get App Promo -->
+  <div class="home-section app-promo-section">
+    <div class="container">
+      <a href="{% url 'home.app' %}" class="app-promo-card">
+        <div class="app-promo-icon">
+          <i class="fas fa-mobile-alt"></i>
+        </div>
+        <div class="app-promo-content">
+          <div class="app-promo-badge">Available Now</div>
+          <h3>Get the TechBookHub App</h3>
+          <p>Install our app for offline access, faster loading, and a native experience on any device.</p>
+          <div class="app-promo-features">
+            <span><i class="fas fa-check"></i> Works offline</span>
+            <span><i class="fas fa-check"></i> No app store</span>
+            <span><i class="fas fa-check"></i> All platforms</span>
+          </div>
+        </div>
+        <div class="app-promo-action">
+          <span class="btn-app-promo"><i class="fas fa-download"></i> Get App</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
   <!-- CTA Section -->
   {% if not user.is_authenticated %}
   <div class="home-section cta-section">
@@ -1957,6 +1981,140 @@
   .book-card:hover,
   .stat-card:hover {
     transform: none;
+  }
+}
+
+/* ============================================
+   APP PROMO SECTION (Compact)
+   ============================================ */
+.app-promo-section {
+  padding: 3rem 0;
+}
+
+.app-promo-card {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(74, 158, 255, 0.05) 100%);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.app-promo-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(34, 197, 94, 0.4);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+.app-promo-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.app-promo-icon i {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.app-promo-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-promo-badge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  background: rgba(34, 197, 94, 0.15);
+  border-radius: 4px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #22c55e;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.375rem;
+}
+
+.app-promo-content h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.app-promo-content p {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.625rem;
+  line-height: 1.4;
+}
+
+.app-promo-features {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.app-promo-features span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
+}
+
+.app-promo-features span i {
+  color: #22c55e;
+  font-size: 0.625rem;
+}
+
+.app-promo-action {
+  flex-shrink: 0;
+}
+
+.btn-app-promo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.app-promo-card:hover .btn-app-promo {
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+}
+
+/* App Promo Responsive */
+@media (max-width: 640px) {
+  .app-promo-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+  
+  .app-promo-features {
+    justify-content: center;
+  }
+  
+  .btn-app-promo {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>

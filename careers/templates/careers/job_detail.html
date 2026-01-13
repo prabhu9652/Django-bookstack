@@ -1,0 +1,536 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="job-detail-page">
+    <div class="container" style="max-width: 900px; margin: 0 auto; padding: var(--space-6) var(--space-4);">
+        
+        <!-- Back Link -->
+        <a href="{% url 'careers:careers_home' %}" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+            Back to All Jobs
+        </a>
+        
+        <!-- Job Header Card -->
+        <div class="job-header-card">
+            <div class="job-header-content">
+                <div class="job-header-main">
+                    <h1 class="job-title">{{ job.title }}</h1>
+                    <p class="job-department">{{ job.department }}</p>
+                    
+                    <!-- Meta Info -->
+                    <div class="job-meta">
+                        <span class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ job.location }}
+                        </span>
+                        <span class="meta-item">
+                            {% if job.location_type == 'remote' %}
+                            <i class="fas fa-globe"></i>
+                            {% elif job.location_type == 'hybrid' %}
+                            <i class="fas fa-building"></i>
+                            {% else %}
+                            <i class="fas fa-map-pin"></i>
+                            {% endif %}
+                            {{ job.get_location_type_display }}
+                        </span>
+                        <span class="meta-item">
+                            <i class="fas fa-briefcase"></i>
+                            {{ job.get_employment_type_display }}
+                        </span>
+                        {% if job.experience_range %}
+                        <span class="meta-item">
+                            <i class="fas fa-user-clock"></i>
+                            {{ job.experience_range }}
+                        </span>
+                        {% endif %}
+                        <span class="meta-item">
+                            <i class="fas fa-clock"></i>
+                            Posted {{ job.created_at|timesince }} ago
+                        </span>
+                    </div>
+                    
+                    {% if job.salary_range %}
+                    <div class="salary-badge">
+                        <i class="fas fa-money-bill-wave"></i>
+                        {{ job.salary_range }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Apply Button -->
+                <div class="job-header-action">
+                    {% if not is_open %}
+                    <div class="apply-status closed">
+                        <button class="btn btn-ghost" disabled>
+                            <i class="fas fa-times-circle"></i> Position Closed
+                        </button>
+                        <p class="status-text">This position is no longer accepting applications.</p>
+                    </div>
+                    {% elif has_applied %}
+                    <div class="apply-status applied">
+                        <button class="btn btn-success-outline" disabled>
+                            <i class="fas fa-check-circle"></i> Already Applied
+                        </button>
+                        <p class="status-text">You've submitted your application.</p>
+                    </div>
+                    {% elif user.is_authenticated %}
+                    <a href="{% url 'careers:apply_job' slug=job.slug %}" class="btn btn-primary btn-lg apply-btn">
+                        <i class="fas fa-paper-plane"></i> Apply Now
+                    </a>
+                    {% else %}
+                    <a href="{% url 'accounts.login' %}?next={% url 'careers:apply_job' slug=job.slug %}" class="btn btn-primary btn-lg apply-btn">
+                        <i class="fas fa-sign-in-alt"></i> Sign In to Apply
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Job Content -->
+        <div class="job-content-card">
+            
+            <!-- About the Role -->
+            <section class="job-section">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle"></i>
+                    About the Role
+                </h2>
+                <div class="section-content description-content">
+                    {{ job.description|linebreaks }}
+                </div>
+            </section>
+            
+            <!-- Responsibilities -->
+            {% if job.get_responsibilities_list %}
+            <section class="job-section">
+                <h2 class="section-title">
+                    <i class="fas fa-tasks"></i>
+                    Responsibilities
+                </h2>
+                <ul class="job-list">
+                    {% for item in job.get_responsibilities_list %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endif %}
+            
+            <!-- Required Skills -->
+            {% if job.get_requirements_list %}
+            <section class="job-section">
+                <h2 class="section-title">
+                    <i class="fas fa-check-circle"></i>
+                    Required Skills
+                </h2>
+                <ul class="job-list requirements-list">
+                    {% for item in job.get_requirements_list %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endif %}
+            
+            <!-- Nice to Have -->
+            {% if job.get_nice_to_have_list %}
+            <section class="job-section">
+                <h2 class="section-title">
+                    <i class="fas fa-star"></i>
+                    Nice to Have
+                </h2>
+                <ul class="job-list nice-to-have-list">
+                    {% for item in job.get_nice_to_have_list %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endif %}
+            
+            <!-- Tech Stack -->
+            {% if job.tech_stack %}
+            <section class="job-section">
+                <h2 class="section-title">
+                    <i class="fas fa-code"></i>
+                    Tech Stack
+                </h2>
+                <div class="tech-stack-grid">
+                    {% for tech in job.tech_stack %}
+                    <span class="tech-tag">{{ tech }}</span>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+            
+            <!-- What We Offer -->
+            {% if job.get_benefits_list %}
+            <section class="job-section benefits-section">
+                <h2 class="section-title">
+                    <i class="fas fa-gift"></i>
+                    What We Offer
+                </h2>
+                <ul class="job-list benefits-list">
+                    {% for item in job.get_benefits_list %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endif %}
+            
+            <!-- Apply CTA -->
+            {% if is_open and not has_applied %}
+            <div class="apply-cta-section">
+                <div class="cta-content">
+                    <h3>Ready to join our team?</h3>
+                    <p>Take the next step in your career and apply for this position.</p>
+                </div>
+                {% if user.is_authenticated %}
+                <a href="{% url 'careers:apply_job' slug=job.slug %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-paper-plane"></i> Apply for this Position
+                </a>
+                {% else %}
+                <a href="{% url 'accounts.login' %}?next={% url 'careers:apply_job' slug=job.slug %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-sign-in-alt"></i> Sign In to Apply
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+        </div>
+        
+    </div>
+</div>
+
+<style>
+.job-detail-page {
+    min-height: calc(100vh - 64px);
+    background: var(--bg-primary);
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin-bottom: var(--space-4);
+    font-size: var(--font-size-sm);
+    transition: color 0.2s ease;
+}
+
+.back-link:hover {
+    color: var(--accent-primary);
+}
+
+/* Job Header Card */
+.job-header-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    margin-bottom: var(--space-4);
+}
+
+.job-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-6);
+}
+
+.job-header-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.job-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+    line-height: 1.2;
+}
+
+.job-department {
+    font-size: 1.125rem;
+    color: var(--accent-primary);
+    margin-bottom: var(--space-4);
+    font-weight: 500;
+}
+
+.job-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-bottom: var(--space-3);
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.meta-item i {
+    color: var(--text-tertiary);
+    width: 14px;
+    text-align: center;
+}
+
+.salary-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: var(--radius-md);
+    color: #22c55e;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    margin-top: var(--space-3);
+}
+
+/* Apply Button Area */
+.job-header-action {
+    flex-shrink: 0;
+}
+
+.apply-btn {
+    white-space: nowrap;
+    padding: 14px 28px;
+    font-size: 1rem;
+}
+
+.apply-status {
+    text-align: center;
+}
+
+.apply-status .btn {
+    pointer-events: none;
+}
+
+.apply-status.applied .btn {
+    border-color: #22c55e;
+    color: #22c55e;
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.apply-status .status-text {
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+    margin-top: var(--space-2);
+    max-width: 200px;
+}
+
+/* Job Content Card */
+.job-content-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+}
+
+/* Sections */
+.job-section {
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.job-section:last-of-type {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-4);
+}
+
+.section-title i {
+    color: var(--accent-primary);
+    font-size: 1rem;
+}
+
+.section-content {
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+.description-content p {
+    margin-bottom: var(--space-3);
+}
+
+.description-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Job Lists */
+.job-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.job-list li {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.job-list li:last-child {
+    margin-bottom: 0;
+}
+
+.job-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+}
+
+.requirements-list li::before {
+    background: #22c55e;
+}
+
+.nice-to-have-list li::before {
+    background: #f59e0b;
+}
+
+.benefits-list li::before {
+    background: #8b5cf6;
+}
+
+/* Tech Stack */
+.tech-stack-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tech-tag {
+    padding: 8px 14px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.tech-tag:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+/* Benefits Section */
+.benefits-section {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(59, 130, 246, 0.05));
+    margin: 0 calc(-1 * var(--space-6));
+    padding: var(--space-6);
+    border-radius: 0;
+    border-bottom: none;
+}
+
+/* Apply CTA */
+.apply-cta-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border-primary);
+    margin-top: var(--space-6);
+}
+
+.cta-content h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.cta-content p {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .job-header-content {
+        flex-direction: column;
+    }
+    
+    .job-header-action {
+        width: 100%;
+    }
+    
+    .apply-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .apply-status {
+        text-align: left;
+    }
+    
+    .apply-status .status-text {
+        max-width: none;
+    }
+    
+    .job-title {
+        font-size: 1.5rem;
+    }
+    
+    .job-meta {
+        gap: var(--space-3);
+    }
+    
+    .apply-cta-section {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .apply-cta-section .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .benefits-section {
+        margin: 0 calc(-1 * var(--space-4));
+        padding: var(--space-4);
+    }
+}
+
+@media (max-width: 480px) {
+    .job-header-card,
+    .job-content-card {
+        padding: var(--space-4);
+    }
+    
+    .meta-item {
+        font-size: 0.8125rem;
+    }
+    
+    .section-title {
+        font-size: 1.125rem;
+    }
+}
+</style>
+{% endblock content %}
