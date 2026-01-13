@@ -2,6 +2,9 @@
 {% load static %}
 
 {% block content %}
+<!-- PDF Preview CSS for pixel-perfect matching -->
+<link rel="stylesheet" type="text/css" href="{% static 'css/resume-pdf-preview.css' %}?v=20260113">
+
 <div class="container" style="padding: var(--space-6) 0;">
   <!-- Header Actions -->
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6); flex-wrap: wrap; gap: var(--space-4);">
@@ -30,6 +33,8 @@
           {% if resume.email %}<span>✉ {{ resume.email }}</span>{% endif %}
           {% if resume.phone %}<span>✆ {{ resume.phone }}</span>{% endif %}
           {% if resume.location or resume.address %}<span>⌂ {{ resume.location|default:resume.address }}</span>{% endif %}
+          {% if resume.linkedin %}<span>in {{ resume.linkedin }}</span>{% endif %}
+          {% if resume.github %}<span>⌘ {{ resume.github }}</span>{% endif %}
         </div>
       </header>
 
@@ -80,13 +85,6 @@
         </main>
 
         <aside class="modern-sidebar">
-          {% if resume.linkedin %}
-          <section class="modern-sidebar-section">
-            <h3 class="modern-sidebar-title">LinkedIn</h3>
-            <p class="modern-sidebar-text">{{ resume.linkedin }}</p>
-          </section>
-          {% endif %}
-
           <section class="modern-sidebar-section">
             <h3 class="modern-sidebar-title">Skills</h3>
             <ul class="modern-skills">

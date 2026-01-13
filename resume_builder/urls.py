@@ -50,4 +50,15 @@ urlpatterns = [
     # API Endpoints - Rename
     path('api/rename-resume/<int:resume_id>/', views.api_rename_resume, name='api_rename_resume'),
     path('api/rename-cover-letter/<int:cover_letter_id>/', views.api_rename_cover_letter, name='api_rename_cover_letter'),
+    
+    # API Endpoints - AI Content Generation (Enterprise)
+    path('api/ai/generate-summary/', views.api_generate_summary, name='api_generate_summary'),
+    path('api/ai/generate-bullets/', views.api_generate_bullets, name='api_generate_bullets'),
+    path('api/ai/generate-skills/', views.api_generate_skills, name='api_generate_skills'),
+    path('api/ai/generate-cover-letter/', views.api_generate_cover_letter_content, name='api_generate_cover_letter_content'),
+    path('api/ai/optimize-ats/', views.api_optimize_ats, name='api_optimize_ats'),
+    
+    # API Endpoints - Template Themes
+    path('api/themes/<str:template_slug>/', views.api_get_template_themes, name='api_get_template_themes'),
+    path('api/themes/<str:template_slug>/recommended/<str:role>/', views.api_get_recommended_themes, name='api_get_recommended_themes'),
 ]
