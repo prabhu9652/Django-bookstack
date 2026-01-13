@@ -858,77 +858,8 @@
     gap: var(--space-3);
 }
 
-/* Modal */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 1000;
-    align-items: flex-start;
-    justify-content: center;
-    padding-top: 80px;
-}
-
-.modal-overlay.show {
-    display: flex;
-}
-
-.modal-content {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-primary);
-    border-radius: var(--radius-lg);
-    max-width: 440px;
-    width: 90%;
-    animation: slideDown 0.3s ease;
-}
-
-.success-modal {
-    text-align: center;
-    padding: var(--space-6);
-}
-
-.success-icon {
-    width: 72px;
-    height: 72px;
-    margin: 0 auto var(--space-4);
-    background: rgba(34, 197, 94, 0.15);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.success-icon i {
-    font-size: 2rem;
-    color: #22c55e;
-}
-
-.success-modal h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 8px;
-}
-
-.success-modal p {
-    color: var(--text-secondary);
-    margin-bottom: var(--space-5);
-}
-
-.success-actions {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-}
-
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+/* Modal - Uses standardized styles from ui-standardization.css */
+/* Modal positioning at TOP of screen is handled by the global stylesheet */
 
 /* Responsive */
 @media (max-width: 640px) {

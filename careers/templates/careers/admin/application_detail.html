@@ -771,84 +771,8 @@
 </div>
 
 <style>
-.delete-modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 1000;
-    align-items: flex-start;
-    justify-content: center;
-    padding-top: 100px;
-}
-
-.delete-modal-overlay.show {
-    display: flex;
-}
-
-.delete-modal-content {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-primary);
-    border-radius: var(--radius-lg);
-    padding: var(--space-6);
-    max-width: 420px;
-    width: 90%;
-    text-align: center;
-    animation: slideDown 0.2s ease;
-}
-
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.delete-modal-icon {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto var(--space-4);
-    background: rgba(239, 68, 68, 0.15);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.delete-modal-icon i {
-    font-size: 1.75rem;
-    color: #ef4444;
-}
-
-.delete-modal-content h3 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: var(--space-2);
-}
-
-.delete-modal-content p {
-    color: var(--text-secondary);
-    margin-bottom: var(--space-5);
-    line-height: 1.5;
-}
-
-.delete-modal-actions {
-    display: flex;
-    gap: var(--space-3);
-    justify-content: center;
-}
-
-.btn-danger {
-    background: #ef4444;
-    color: white;
-    border: none;
-}
-
-.btn-danger:hover {
-    background: #dc2626;
-}
+/* Delete Modal - Uses standardized styles from ui-standardization.css */
+/* Modal positioning at TOP of screen is handled by the global stylesheet */
 </style>
 
 <script>
