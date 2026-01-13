@@ -1,0 +1,90 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}Request Leave{% endblock %}
+{% block breadcrumb %}Request Leave{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <div class="hr-flex hr-items-center hr-gap-4">
+            <button onclick="history.back()" class="hr-btn hr-btn-ghost hr-btn-icon">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <div>
+                <h1 class="hr-page-title">Request Leave</h1>
+                <p class="hr-page-subtitle">Submit a new leave request</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="hr-grid hr-gap-4" style="grid-template-columns: 2fr 1fr;">
+        <!-- Form -->
+        <div class="hr-card">
+            <div class="hr-card-header">
+                <h3 class="hr-card-title"><i class="bi bi-calendar-plus"></i> Leave Details</h3>
+            </div>
+            <div class="hr-card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="hr-form-group">
+                        <label class="hr-form-label required">Leave Type</label>
+                        <select name="leave_type" class="hr-form-select" required>
+                            <option value="">Select leave type...</option>
+                            {% for lt in leave_types %}
+                            <option value="{{ lt.id }}">{{ lt.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="hr-form-row">
+                        <div class="hr-form-group">
+                            <label class="hr-form-label required">Start Date</label>
+                            <input type="date" name="start_date" class="hr-form-input" required>
+                        </div>
+                        <div class="hr-form-group">
+                            <label class="hr-form-label required">End Date</label>
+                            <input type="date" name="end_date" class="hr-form-input" required>
+                        </div>
+                    </div>
+                    
+                    <div class="hr-form-group">
+                        <label class="hr-form-label">Reason</label>
+                        <textarea name="reason" class="hr-form-textarea" rows="4" placeholder="Provide a reason for your leave request..."></textarea>
+                    </div>
+                    
+                    <div class="hr-flex hr-gap-3 hr-mt-6">
+                        <button type="submit" class="hr-btn hr-btn-primary">
+                            <i class="bi bi-send"></i>
+                            <span>Submit Request</span>
+                        </button>
+                        <button type="button" onclick="history.back()" class="hr-btn hr-btn-secondary">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Leave Balances -->
+        <div class="hr-card">
+            <div class="hr-card-header">
+                <h3 class="hr-card-title"><i class="bi bi-pie-chart"></i> Your Balances</h3>
+            </div>
+            <div class="hr-card-body hr-card-body-compact">
+                {% for balance in leave_balances %}
+                <div style="padding: var(--hr-space-3) 0; border-bottom: 1px solid var(--hr-border-light);">
+                    <div class="hr-flex hr-justify-between hr-items-center">
+                        <span style="font-size: var(--hr-font-size-sm);">{{ balance.leave_type.name }}</span>
+                        <span class="hr-badge hr-badge-primary">{{ balance.available_days }} days</span>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color: var(--hr-text-muted); text-align: center;">No leave balances found</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

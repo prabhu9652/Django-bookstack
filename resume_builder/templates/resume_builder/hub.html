@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="rb-hub-page">
+  <div class="rb-hub-inner">
+    <!-- Header -->
+    <div class="rb-hub-header">
+      <h1>Resume Builder</h1>
+      <p>Create, manage, and download your career documents</p>
+    </div>
+
+    <!-- Action Cards -->
+    <div class="rb-hub-cards">
+      <!-- Resume Card -->
+      <a href="{% url 'resume_builder:live_resume_editor' 1 %}" class="rb-hub-card rb-card-resume">
+        <div class="rb-card-icon">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <h2>Resume</h2>
+        <p>Create a professional resume with our live editor and ATS-optimized templates</p>
+        <ul class="rb-card-features">
+          <li><i class="fas fa-check"></i> {{ resume_template_count }} Professional Templates</li>
+          <li><i class="fas fa-check"></i> Real-time Preview</li>
+          <li><i class="fas fa-check"></i> Role-specific Content</li>
+        </ul>
+        <div class="rb-card-action">
+          <span>Create Resume</span>
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- Cover Letter Card -->
+      <a href="{% url 'resume_builder:live_cover_letter_editor' 3 %}" class="rb-hub-card rb-card-cover">
+        <div class="rb-card-icon">
+          <i class="fas fa-envelope-open-text"></i>
+        </div>
+        <h2>Cover Letter</h2>
+        <p>Write compelling cover letters that complement your resume perfectly</p>
+        <ul class="rb-card-features">
+          <li><i class="fas fa-check"></i> {{ cover_letter_template_count }} Professional Styles</li>
+          <li><i class="fas fa-check"></i> Live Preview</li>
+          <li><i class="fas fa-check"></i> Professional Formatting</li>
+        </ul>
+        <div class="rb-card-action">
+          <span>Create Cover Letter</span>
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- My Documents Card -->
+      <a href="{% url 'resume_builder:dashboard' %}" class="rb-hub-card rb-card-docs">
+        <div class="rb-card-icon">
+          <i class="fas fa-folder-open"></i>
+        </div>
+        <h2>My Documents</h2>
+        <p>Access, edit, and manage all your saved career documents in one place</p>
+        <ul class="rb-card-features">
+          <li><i class="fas fa-check"></i> View & Edit Anytime</li>
+          <li><i class="fas fa-check"></i> Download as PDF</li>
+          <li><i class="fas fa-check"></i> Organize & Delete</li>
+        </ul>
+        <div class="rb-card-action">
+          <span>View Documents</span>
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </a>
+    </div>
+
+    {% if user.is_authenticated %}
+    <!-- User Stats -->
+    <div class="rb-user-stats">
+      <div class="rb-user-stat">
+        <span class="rb-user-stat-value">{{ user_resumes|default:0 }}</span>
+        <span class="rb-user-stat-label">Saved Resumes</span>
+      </div>
+      <div class="rb-user-stat">
+        <span class="rb-user-stat-value">{{ user_cover_letters|default:0 }}</span>
+        <span class="rb-user-stat-label">Saved Cover Letters</span>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

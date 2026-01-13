@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/services/notification_service.py
+# hypothesis_version: 6.150.0
+
+['-created_at', 'Asset Assigned', 'Expense Approved', 'Expense Paid', 'Expense Rejected', 'Expense Submitted', 'New Expense Claim', 'New Leave Request', 'Timesheet Approved', 'Timesheet Rejected', 'Timesheet Submitted', 'approved', 'asset_assigned', 'assigned', 'expense_request', 'finance_approved', 'leave_request', 'manager_approved', 'paid', 'pending', 'rejected', 'submitted', 'timesheet_approved', 'timesheet_rejected', 'timesheet_reminder']

@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/services/employee_service.py
+# hypothesis_version: 6.150.0
+
+['-id', 'active', 'address', 'allocated_days', 'assigned_assets', 'department', 'designation', 'employment_type', 'full_time', 'hr_role', 'joining_date', 'leave_balances', 'manager_approved', 'pending', 'pending_expenses', 'pending_leaves', 'phone', 'recent_expenses', 'recent_leaves', 'reporting_manager', 'submitted', 'terminated', 'user', 'work_location']

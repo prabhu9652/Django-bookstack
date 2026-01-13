@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/resume_builder/urls.py
+# hypothesis_version: 6.150.0
+
+['api/ai/optimize-ats/', 'api/preview/resume/', 'api_generate_bullets', 'api_generate_skills', 'api_generate_summary', 'api_optimize_ats', 'api_rename_resume', 'api_save_resume', 'api_upload_photo', 'create-cover-letter/', 'create-resume/', 'create_cover_letter', 'create_resume', 'create_resume_direct', 'dashboard', 'dashboard/', 'delete_cover_letter', 'delete_resume', 'download_resume', 'draft_resume_editor', 'edit_cover_letter', 'edit_resume', 'home', 'preview_cover_letter', 'preview_resume', 'resume-templates/', 'resume_builder', 'resume_templates']

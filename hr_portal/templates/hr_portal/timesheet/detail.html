@@ -1,0 +1,117 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}Timesheet{% endblock %}
+{% block breadcrumb %}Timesheet{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <div class="hr-page-header-row">
+            <div class="hr-flex hr-items-center hr-gap-4">
+                <button onclick="history.back()" class="hr-btn hr-btn-ghost hr-btn-icon">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+                <div>
+                    <h1 class="hr-page-title">Timesheet</h1>
+                    <p class="hr-page-subtitle">{{ timesheet.week_start_date|date:"M d" }} - {{ timesheet.week_end_date|date:"M d, Y" }}</p>
+                </div>
+            </div>
+            <div class="hr-flex hr-items-center hr-gap-3">
+                <span class="hr-badge hr-badge-{{ timesheet.status }}" style="font-size: var(--hr-font-size-sm); padding: var(--hr-space-2) var(--hr-space-4);">
+                    {{ timesheet.get_status_display }}
+                </span>
+                <span style="font-size: var(--hr-font-size-2xl); font-weight: 700; color: var(--hr-primary);">
+                    {{ timesheet.total_hours }} hrs
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Timesheet Entries -->
+    <div class="hr-card hr-mb-4">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title"><i class="bi bi-clock"></i> Time Entries</h3>
+            {% if timesheet.status == 'draft' %}
+            <button class="hr-btn hr-btn-primary hr-btn-sm" onclick="document.getElementById('addEntryForm').style.display='block'">
+                <i class="bi bi-plus-lg"></i> Add Entry
+            </button>
+            {% endif %}
+        </div>
+        <div class="hr-table-wrapper">
+            <table class="hr-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Project</th>
+                        <th>Task</th>
+                        <th>Hours</th>
+                        <th>Notes</th>
+                        {% if timesheet.status == 'draft' %}<th>Action</th>{% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in timesheet.entries.all %}
+                    <tr>
+                        <td>{{ entry.date|date:"D, M d" }}</td>
+                        <td>{{ entry.project.name|default:"—" }}</td>
+                        <td>{{ entry.task|default:"—" }}</td>
+                        <td><span style="font-weight: 600;">{{ entry.hours }} hrs</span></td>
+                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">{{ entry.notes|default:"—" }}</td>
+                        {% if timesheet.status == 'draft' %}
+                        <td>
+                            <button class="hr-btn hr-btn-ghost hr-btn-sm hr-btn-icon" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="{% if timesheet.status == 'draft' %}6{% else %}5{% endif %}" class="hr-table-empty">
+                            <i class="bi bi-clock"></i>
+                            <div>No time entries yet</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Actions -->
+    <div class="hr-card">
+        <div class="hr-card-body">
+            <div class="hr-flex hr-justify-between hr-items-center">
+                <div>
+                    {% if timesheet.status == 'draft' %}
+                    <form method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" name="action" value="submit" class="hr-btn hr-btn-primary">
+                            <i class="bi bi-send"></i> Submit for Approval
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                
+                {% if can_approve %}
+                <div class="hr-flex hr-gap-3">
+                    <form method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" name="action" value="approve" class="hr-btn hr-btn-success">
+                            <i class="bi bi-check-lg"></i> Approve
+                        </button>
+                    </form>
+                    <form method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" name="action" value="reject" class="hr-btn hr-btn-danger">
+                            <i class="bi bi-x-lg"></i> Reject
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,1543 @@
+/* ============================================
+   RESPONSIVE ENHANCEMENTS - MOBILE-FIRST
+   Production-Grade SaaS Responsive Design
+   
+   Breakpoint Strategy:
+   - Mobile: < 640px (primary constraint)
+   - Tablet: 640px - 1024px (adaptive enhancement)
+   - Desktop: > 1024px (full capability)
+   ============================================ */
+
+/* ============================================
+   CSS CUSTOM PROPERTIES - RESPONSIVE TOKENS
+   ============================================ */
+:root {
+  /* Touch-friendly sizing */
+  --touch-target-min: 44px;
+  --touch-target-comfortable: 48px;
+  
+  /* Responsive spacing scale */
+  --space-responsive-xs: clamp(0.25rem, 1vw, 0.5rem);
+  --space-responsive-sm: clamp(0.5rem, 2vw, 1rem);
+  --space-responsive-md: clamp(1rem, 3vw, 1.5rem);
+  --space-responsive-lg: clamp(1.5rem, 4vw, 2.5rem);
+  --space-responsive-xl: clamp(2rem, 5vw, 4rem);
+  
+  /* Responsive typography */
+  --font-size-responsive-xs: clamp(0.6875rem, 1.5vw, 0.75rem);
+  --font-size-responsive-sm: clamp(0.75rem, 1.8vw, 0.875rem);
+  --font-size-responsive-base: clamp(0.875rem, 2vw, 1rem);
+  --font-size-responsive-lg: clamp(1rem, 2.5vw, 1.125rem);
+  --font-size-responsive-xl: clamp(1.25rem, 3vw, 1.5rem);
+  --font-size-responsive-2xl: clamp(1.5rem, 4vw, 2rem);
+  --font-size-responsive-3xl: clamp(1.75rem, 5vw, 2.5rem);
+  --font-size-responsive-hero: clamp(2rem, 6vw, 2.75rem);
+}
+
+/* ============================================
+   GLOBAL RESPONSIVE UTILITIES
+   ============================================ */
+
+/* Hide on specific breakpoints */
+.hide-mobile { display: block; }
+.hide-tablet { display: block; }
+.hide-desktop { display: none; }
+.show-mobile { display: none; }
+.show-tablet { display: none; }
+
+/* Touch-friendly tap targets */
+.touch-target {
+  min-height: var(--touch-target-min);
+  min-width: var(--touch-target-min);
+}
+
+/* Safe area padding for notched devices */
+.safe-area-padding {
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+}
+
+/* ============================================
+   NAVIGATION - MOBILE OPTIMIZATIONS
+   ============================================ */
+
+/* Mobile Navigation Overlay */
+.mobile-nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-nav-overlay.active {
+  opacity: 1;
+}
+
+/* Mobile Menu Panel */
+.mobile-menu-panel {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: min(320px, 85vw);
+  height: 100vh;
+  background: var(--bg-surface);
+  z-index: 1000;
+  transition: right 0.3s ease;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-menu-panel.active {
+  right: 0;
+}
+
+.mobile-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.mobile-menu-close {
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.mobile-nav-links {
+  padding: 1rem 0;
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background 0.2s;
+  min-height: var(--touch-target-min);
+}
+
+.mobile-nav-link:hover,
+.mobile-nav-link.active {
+  background: rgba(74, 158, 255, 0.1);
+  color: #4a9eff;
+}
+
+.mobile-nav-link i {
+  width: 20px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.mobile-nav-link.active i {
+  color: #4a9eff;
+}
+
+/* Mobile Auth Section */
+.mobile-auth-section {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border-default);
+  margin-top: auto;
+}
+
+.mobile-auth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mobile-auth-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  min-height: var(--touch-target-min);
+  transition: all 0.2s;
+}
+
+.mobile-auth-btn.primary {
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  color: white;
+}
+
+.mobile-auth-btn.secondary {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+}
+
+/* ============================================
+   CONTAINER RESPONSIVE ADJUSTMENTS
+   ============================================ */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ============================================
+   CARDS - TOUCH-FRIENDLY ENHANCEMENTS
+   ============================================ */
+.card-touch-friendly {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* ============================================
+   BUTTONS - MOBILE OPTIMIZATIONS
+   ============================================ */
+button,
+.btn,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Ensure all interactive elements meet touch target size */
+.btn-sm {
+  min-height: var(--touch-target-min);
+  padding: 0.5rem 1rem;
+}
+
+/* ============================================
+   FORMS - MOBILE OPTIMIZATIONS
+   ============================================ */
+input,
+select,
+textarea {
+  font-size: 16px; /* Prevents iOS zoom on focus */
+  min-height: var(--touch-target-min);
+}
+
+/* ============================================
+   SKELETON LOADERS - PERCEIVED PERFORMANCE
+   ============================================ */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-elevated) 25%,
+    var(--bg-surface) 50%,
+    var(--bg-elevated) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-text {
+  height: 1em;
+  margin-bottom: 0.5em;
+}
+
+.skeleton-text.short { width: 40%; }
+.skeleton-text.medium { width: 70%; }
+.skeleton-text.long { width: 100%; }
+
+.skeleton-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.skeleton-card {
+  height: 200px;
+  border-radius: 12px;
+}
+
+/* ============================================
+   EMPTY STATES - RESPONSIVE
+   ============================================ */
+.empty-state-responsive {
+  text-align: center;
+  padding: var(--space-responsive-xl) var(--space-responsive-md);
+}
+
+.empty-state-responsive .empty-icon {
+  width: clamp(60px, 15vw, 80px);
+  height: clamp(60px, 15vw, 80px);
+  margin: 0 auto 1.5rem;
+}
+
+.empty-state-responsive h3 {
+  font-size: var(--font-size-responsive-xl);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-responsive p {
+  font-size: var(--font-size-responsive-base);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* ============================================
+   LOADING STATES
+   ============================================ */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--border-default);
+  border-top-color: #4a9eff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   ERROR STATES - RESPONSIVE
+   ============================================ */
+.error-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.error-banner-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+}
+
+.error-banner-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.error-banner-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.error-banner-message {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   OFFLINE INDICATOR
+   ============================================ */
+.offline-indicator {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.75rem 1rem;
+  background: #f59e0b;
+  color: white;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  z-index: 9999;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.offline-indicator.show {
+  transform: translateY(0);
+}
+
+
+/* ============================================
+   TABLET BREAKPOINT (640px - 1024px)
+   ============================================ */
+@media (min-width: 640px) and (max-width: 1024px) {
+  .hide-tablet { display: none !important; }
+  .show-tablet { display: block !important; }
+  
+  .container {
+    padding: 0 1.5rem;
+  }
+  
+  /* Two-column layouts where appropriate */
+  .tablet-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+  
+  /* Sidebar behavior - collapsible */
+  .sidebar-collapsible {
+    position: fixed;
+    left: -280px;
+    top: 64px;
+    bottom: 0;
+    width: 280px;
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border-default);
+    z-index: 100;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+  }
+  
+  .sidebar-collapsible.open {
+    left: 0;
+  }
+  
+  /* Hero sections - adjusted sizing */
+  .hero-title {
+    font-size: 2.25rem !important;
+  }
+  
+  .hero-description {
+    font-size: 1rem !important;
+  }
+  
+  /* Cards grid - 2 columns */
+  .books-grid,
+  .paths-grid,
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  /* Value grid - 2x2 */
+  .value-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  /* Stats grid - 2x2 */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  /* Decision cards - stack on tablet */
+  .decision-cards {
+    grid-template-columns: 1fr !important;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  /* Features 5-column to 3-column */
+  .features-grid-5 {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  /* Career tools - single column */
+  .career-tools-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Wizard grid - single column */
+  .wizard-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .preview-panel {
+    position: static !important;
+    order: -1;
+  }
+  
+  /* Content layout - single column with toggle */
+  .content-layout {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Hide desktop sidebars */
+  .sidebar-left,
+  .sidebar-right {
+    display: none !important;
+  }
+  
+  /* Show mobile category nav */
+  .mobile-category-nav {
+    display: block !important;
+  }
+  
+  /* Principles grid - 2 columns */
+  .principles-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  /* Why content - single column */
+  .why-content {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Focus areas - 2 columns */
+  .focus-areas-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  /* Tech grid - 2 columns */
+  .tech-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  /* Mission vision - single column */
+  .mission-vision-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Features grid - single column */
+  .features-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Roles grid - 2 columns */
+  .roles-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  /* Steps grid - 3 columns */
+  .steps-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  .steps-grid-5 {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  /* Template options - 2 columns */
+  .template-options {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  /* Industry options - 3 columns */
+  .industry-options {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  /* Roadmap layout */
+  .roadmap-timeline {
+    padding-left: 40px !important;
+  }
+  
+  /* Hero visual - hide on tablet */
+  .hero-visual {
+    display: none !important;
+  }
+  
+  /* Hero content - full width */
+  .hero-text-content {
+    max-width: 100% !important;
+    text-align: center;
+  }
+  
+  .hero-actions {
+    justify-content: center;
+  }
+  
+  .hero-trust-row {
+    justify-content: center;
+  }
+}
+
+/* ============================================
+   MOBILE BREAKPOINT (< 640px)
+   ============================================ */
+@media (max-width: 639px) {
+  .hide-mobile { display: none !important; }
+  .show-mobile { display: block !important; }
+  
+  .container {
+    padding: 0 1rem;
+  }
+  
+  /* Typography scaling */
+  h1, .h1 {
+    font-size: var(--font-size-responsive-2xl) !important;
+    line-height: 1.2 !important;
+  }
+  
+  h2, .h2 {
+    font-size: var(--font-size-responsive-xl) !important;
+  }
+  
+  h3, .h3 {
+    font-size: var(--font-size-responsive-lg) !important;
+  }
+  
+  /* Navigation - show hamburger, hide desktop nav */
+  .navbar-nav {
+    display: none !important;
+  }
+  
+  .mobile-menu-toggle {
+    display: flex !important;
+  }
+  
+  .navbar-auth {
+    display: none !important;
+  }
+  
+  /* Hero section - mobile optimized */
+  .hero-title {
+    font-size: 1.75rem !important;
+    text-align: center;
+  }
+  
+  .hero-description {
+    font-size: 0.9375rem !important;
+    text-align: center;
+  }
+  
+  .hero-badge {
+    margin: 0 auto 1rem !important;
+  }
+  
+  .hero-text-content {
+    text-align: center;
+  }
+  
+  .hero-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .hero-actions a,
+  .hero-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .hero-trust-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .hero-visual {
+    display: none !important;
+  }
+  
+  /* Announcement bar - compact */
+  .announcement-content {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .announcement-text {
+    flex: 1 1 100%;
+    text-align: center;
+    order: 2;
+  }
+  
+  .announcement-badge {
+    order: 1;
+  }
+  
+  .announcement-link {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    padding-top: 0.5rem;
+  }
+  
+  /* Value grid - single column */
+  .value-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  
+  .value-card {
+    padding: 1.25rem !important;
+  }
+  
+  /* Section headers - centered */
+  .section-header-row {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .section-title-block {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .view-all-link {
+    margin-top: 0.5rem;
+  }
+  
+  /* Features grid - single column */
+  .features-grid-5 {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+  
+  .feature-card-compact {
+    flex-direction: row;
+    text-align: left;
+    padding: 1rem !important;
+    gap: 1rem;
+  }
+  
+  .feature-icon-sm {
+    margin-bottom: 0 !important;
+    flex-shrink: 0;
+  }
+  
+  .feature-content-sm {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .feature-arrow {
+    margin-top: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  
+  /* Career tools - single column */
+  .career-tools-section {
+    padding: 1.25rem !important;
+  }
+  
+  .career-tools-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  
+  .career-tools-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .career-tool-card {
+    flex-direction: column;
+  }
+  
+  /* Paths grid - single column */
+  .paths-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .path-card {
+    padding: 1rem !important;
+  }
+  
+  /* Books grid - single column on small screens */
+  .books-grid,
+  .home-books-row {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .book-card {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 1rem;
+  }
+  
+  .book-cover {
+    aspect-ratio: 3/4;
+  }
+  
+  .book-info {
+    padding: 0.5rem 0 !important;
+  }
+  
+  /* Stats grid - 2x2 */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+  }
+  
+  .stat-card {
+    padding: 1rem !important;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem !important;
+  }
+  
+  /* CTA section */
+  .cta-card {
+    padding: 2rem 1.25rem !important;
+  }
+  
+  .cta-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .cta-buttons a,
+  .cta-buttons button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  /* Quick actions */
+  .quick-actions-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+  }
+  
+  .quick-actions-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .quick-actions-buttons a {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  /* Decision cards - single column */
+  .decision-cards {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .decision-card {
+    padding: 1.25rem !important;
+  }
+  
+  /* Steps grid - 2 columns */
+  .steps-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+  
+  .steps-grid-5 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .step-card {
+    padding: 1rem 0.75rem !important;
+  }
+  
+  .step-card h4 {
+    font-size: 0.8125rem !important;
+  }
+  
+  .step-card p {
+    font-size: 0.6875rem !important;
+  }
+  
+  /* Features grid - single column */
+  .features-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Roles grid - single column */
+  .roles-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Process tabs - scrollable */
+  .process-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.5rem;
+    margin-bottom: 2rem !important;
+  }
+  
+  .process-tab {
+    white-space: nowrap;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.8125rem !important;
+  }
+  
+  /* Page headers - compact */
+  .books-page-header,
+  .library-page-header,
+  .roadmap-page-header,
+  .about-header-section {
+    padding: 1.5rem 0 2rem !important;
+  }
+  
+  .header-content h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  .header-subtitle {
+    font-size: 0.875rem !important;
+  }
+  
+  .header-meta {
+    flex-wrap: wrap;
+    gap: 0.75rem !important;
+    padding: 0.75rem 1rem !important;
+  }
+  
+  .meta-divider {
+    display: none !important;
+  }
+  
+  .meta-item {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+  
+  /* Header stats - compact */
+  .header-stats {
+    flex-direction: row !important;
+    gap: 1rem !important;
+    padding: 1rem !important;
+  }
+  
+  .stat-divider {
+    width: 1px !important;
+    height: 30px !important;
+  }
+  
+  .stat-number {
+    font-size: 1.25rem !important;
+  }
+  
+  /* Trust indicators - compact */
+  .trust-indicators {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    gap: 0.75rem !important;
+    padding: 1rem !important;
+  }
+  
+  .trust-divider {
+    display: none !important;
+  }
+  
+  .trust-stat {
+    flex: 1 1 auto;
+    min-width: 80px;
+  }
+  
+  .trust-value {
+    font-size: 1.25rem !important;
+  }
+  
+  /* Content layout - single column */
+  .content-layout {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Hide sidebars on mobile */
+  .sidebar-left,
+  .sidebar-right,
+  .books-sidebar,
+  .library-sidebar {
+    display: none !important;
+  }
+  
+  /* Show mobile category nav */
+  .mobile-category-nav {
+    display: block !important;
+  }
+  
+  /* Section headers - compact */
+  .books-section-header,
+  .library-section-header {
+    flex-direction: column;
+    gap: 1rem !important;
+  }
+  
+  .section-title-group h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  .section-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  /* Container cards - reduced padding */
+  .books-container-card,
+  .library-container-card {
+    padding: 1rem !important;
+    border-radius: 12px !important;
+  }
+  
+  /* Access banner - stack */
+  .access-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem !important;
+  }
+  
+  .access-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  /* Pagination - compact */
+  .pagination-wrapper {
+    flex-wrap: wrap;
+    gap: 0.75rem !important;
+  }
+  
+  .pagination-btn {
+    flex: 1;
+    justify-content: center;
+    min-width: 120px;
+  }
+  
+  /* Wizard pages */
+  .wizard-header {
+    padding: 0.75rem 0 1rem !important;
+  }
+  
+  .wizard-nav {
+    flex-wrap: wrap;
+    gap: 0.75rem !important;
+  }
+  
+  .wizard-title {
+    order: -1;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .wizard-title h1 {
+    font-size: 1.125rem !important;
+  }
+  
+  .wizard-content {
+    padding: 1.5rem 0 3rem !important;
+  }
+  
+  .wizard-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .preview-panel {
+    display: none !important;
+  }
+  
+  .config-section {
+    padding: 1.25rem !important;
+    border-radius: 12px !important;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    gap: 0.75rem !important;
+  }
+  
+  .section-icon {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .section-header h2 {
+    font-size: 1rem !important;
+  }
+  
+  /* Role options - compact */
+  .role-options {
+    gap: 0.625rem !important;
+  }
+  
+  .role-card {
+    padding: 0.875rem !important;
+  }
+  
+  .role-icon {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .role-info h3 {
+    font-size: 0.875rem !important;
+  }
+  
+  .role-info p {
+    font-size: 0.75rem !important;
+  }
+  
+  /* Template options - single column */
+  .template-options {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Wizard footer */
+  .wizard-footer {
+    flex-direction: column;
+    gap: 0.75rem !important;
+  }
+  
+  .btn-footer-primary,
+  .btn-footer-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  /* Roadmap page */
+  .roadmap-hero {
+    padding: 2rem 0 3rem !important;
+  }
+  
+  .roadmap-content {
+    padding: 2rem 0 3rem !important;
+  }
+  
+  /* About page */
+  .about-section {
+    padding: 2.5rem 0 !important;
+  }
+  
+  .section-intro {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .why-content {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .principles-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .focus-areas-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .tech-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .mission-vision-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Roadmap detail page */
+  .roadmap-detail-page .content-layout {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .roadmap-detail-page .sidebar {
+    display: none !important;
+  }
+  
+  .roadmap-section-header {
+    flex-direction: column;
+    gap: 1rem !important;
+  }
+  
+  .legend {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem !important;
+  }
+  
+  .visual-roadmap {
+    padding: 1.5rem !important;
+  }
+  
+  .timeline-phase {
+    padding-left: 40px !important;
+  }
+  
+  .phase-node {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  
+  .phase-label {
+    font-size: 0.875rem !important;
+  }
+  
+  .skills-branch {
+    margin-left: 16px !important;
+    padding-left: 1.25rem !important;
+  }
+  
+  .skill-node {
+    padding: 0.625rem 0.75rem !important;
+  }
+  
+  .skill-name {
+    font-size: 0.75rem !important;
+  }
+  
+  /* Page actions */
+  .page-actions {
+    flex-direction: column;
+    gap: 0.75rem !important;
+  }
+  
+  .btn-action-primary,
+  .btn-action-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ============================================
+   VERY SMALL SCREENS (< 375px)
+   ============================================ */
+@media (max-width: 374px) {
+  .container {
+    padding: 0 0.75rem;
+  }
+  
+  .hero-title {
+    font-size: 1.5rem !important;
+  }
+  
+  .hero-actions a,
+  .hero-actions button {
+    padding: 0.75rem 1rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .steps-grid,
+  .steps-grid-5 {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .header-stats {
+    flex-direction: column !important;
+  }
+  
+  .stat-divider {
+    width: 60px !important;
+    height: 1px !important;
+  }
+}
+
+/* ============================================
+   LARGE DESKTOP (> 1440px)
+   ============================================ */
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1400px;
+  }
+  
+  /* Larger spacing for big screens */
+  .home-section {
+    padding: 5rem 0;
+  }
+  
+  .hero-title {
+    font-size: 3rem !important;
+  }
+}
+
+/* ============================================
+   REDUCED MOTION PREFERENCES
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .skeleton {
+    animation: none;
+    background: var(--bg-elevated);
+  }
+  
+  .floating-icon {
+    animation: none;
+  }
+  
+  .hero-glow {
+    animation: none;
+  }
+}
+
+/* ============================================
+   HIGH CONTRAST MODE
+   ============================================ */
+@media (prefers-contrast: high) {
+  .btn-hero-primary,
+  .btn-cta-primary,
+  .card-cta {
+    border: 2px solid currentColor;
+  }
+  
+  .feature-card-compact,
+  .path-card,
+  .book-card {
+    border-width: 2px;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+  .navbar,
+  .mobile-menu-toggle,
+  .mobile-nav-overlay,
+  .mobile-menu-panel,
+  .announcement-bar,
+  .cta-section,
+  footer {
+    display: none !important;
+  }
+  
+  .container {
+    max-width: 100%;
+    padding: 0;
+  }
+  
+  .hero-bg-effects,
+  .hero-glow,
+  .floating-icon {
+    display: none !important;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
+}
+
+/* ============================================
+   NAVIGATION DROPDOWN - BOOKS MENU
+   Unified entry point for Books & My Library
+   ============================================ */
+
+/* Desktop Dropdown Container */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  font-family: inherit;
+}
+
+.nav-dropdown-trigger:hover,
+.nav-dropdown-trigger.active {
+  color: #4a9eff;
+}
+
+.nav-dropdown-chevron {
+  font-size: 0.625rem;
+  transition: transform 0.2s ease;
+}
+
+.nav-dropdown-trigger[aria-expanded="true"] .nav-dropdown-chevron {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Panel */
+.nav-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%) scale(0.95);
+  min-width: 280px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.nav-dropdown-panel.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) scale(1);
+}
+
+/* Dropdown Items */
+.nav-dropdown-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 1rem 1.25rem;
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: background 0.15s ease;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.nav-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.nav-dropdown-item:hover {
+  background: rgba(74, 158, 255, 0.08);
+}
+
+.nav-dropdown-item-disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.nav-dropdown-item-disabled:hover {
+  background: transparent;
+}
+
+.nav-dropdown-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-dropdown-icon i {
+  font-size: 1rem;
+  color: #4a9eff;
+}
+
+.nav-dropdown-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.nav-dropdown-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.nav-dropdown-desc {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.nav-dropdown-login-link {
+  color: #4a9eff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.nav-dropdown-login-link:hover {
+  text-decoration: underline;
+}
+
+/* ============================================
+   MOBILE NAVIGATION - BOOKS SECTION
+   ============================================ */
+.mobile-nav-section {
+  border-bottom: 1px solid var(--border-default);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.mobile-nav-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mobile-nav-section-header i {
+  width: 20px;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.mobile-nav-section-items {
+  padding-left: 0.5rem;
+}
+
+.mobile-nav-sublink {
+  padding-left: 2.5rem !important;
+}
+
+.mobile-nav-sublink i {
+  font-size: 0.875rem;
+}
+
+.mobile-nav-disabled {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
+.mobile-nav-disabled small {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS FOR DROPDOWN
+   ============================================ */
+@media (max-width: 1024px) {
+  .nav-dropdown-panel {
+    min-width: 260px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Hide desktop dropdown on mobile */
+  .nav-dropdown {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Hide mobile books section on desktop */
+  .mobile-nav-section {
+    display: none;
+  }
+}

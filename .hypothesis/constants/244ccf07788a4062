@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/views/leave.py
+# hypothesis_version: 6.150.0
+
+[400, 404, '%Y-%m-%d', '-created_at', 'Employee not found', 'Leave Calendar', 'Leave History', 'Leave Management', 'POST', 'Request Leave', 'allocated', 'approve', 'available', 'can_approve_hr', 'can_approve_manager', 'can_cancel', 'can_edit', 'can_reject', 'can_submit', 'cancel', 'comments', 'contact_during_leave', 'days', 'draft', 'duration_type', 'duration_types', 'employee', 'end_date', 'error', 'full_day', 'hr_pending_approvals', 'hr_portal:dashboard', 'leave_balances', 'leave_request', 'leave_type', 'leave_types', 'leaves', 'manager_approved', 'my_leaves', 'pending', 'pending_approvals', 'reason', 'reject', 'selected_year', 'start_date', 'submit', 'submit_now', 'supporting_document', 'title', 'used', 'year', 'years']

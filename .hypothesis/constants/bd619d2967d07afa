@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/views/approval.py
+# hypothesis_version: 6.150.0
+
+['Approvals', 'employee', 'hr_pending_leaves', 'pending_expenses', 'pending_leaves', 'pending_timesheets', 'title']

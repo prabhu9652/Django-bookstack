@@ -1,0 +1,86 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}Employees{% endblock %}
+{% block breadcrumb %}Employees{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <div class="hr-page-header-row">
+            <div>
+                <h1 class="hr-page-title">Employee Directory</h1>
+                <p class="hr-page-subtitle">View and manage all employees</p>
+            </div>
+            <div class="hr-page-actions">
+                <a href="{% url 'hr_portal:employee_create' %}" class="hr-btn hr-btn-primary">
+                    <i class="bi bi-person-plus"></i>
+                    <span>Add Employee</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Employees Table -->
+    <div class="hr-card">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title"><i class="bi bi-people"></i> All Employees</h3>
+            <span class="hr-badge hr-badge-primary">{{ employees|length }} total</span>
+        </div>
+        <div class="hr-table-wrapper">
+            <table class="hr-table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Employee ID</th>
+                        <th>Department</th>
+                        <th>Designation</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for emp in employees %}
+                    <tr>
+                        <td>
+                            <div class="hr-flex hr-items-center hr-gap-3">
+                                <div class="hr-user-avatar" style="width: 36px; height: 36px; font-size: var(--hr-font-size-xs);">
+                                    {{ emp.user.first_name|slice:":1"|upper }}{{ emp.user.last_name|slice:":1"|upper }}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 500;">{{ emp.full_name }}</div>
+                                    <div style="font-size: var(--hr-font-size-xs); color: var(--hr-text-muted);">{{ emp.user.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span style="font-family: monospace; font-size: var(--hr-font-size-xs);">{{ emp.employee_id }}</span></td>
+                        <td>{{ emp.department.name }}</td>
+                        <td>{{ emp.designation.title }}</td>
+                        <td>
+                            {% if emp.is_active %}
+                            <span class="hr-badge hr-badge-active">Active</span>
+                            {% else %}
+                            <span class="hr-badge hr-badge-inactive">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'hr_portal:employee_detail' emp.employee_id %}" class="hr-btn hr-btn-secondary hr-btn-sm">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="hr-table-empty">
+                            <i class="bi bi-people"></i>
+                            <div>No employees found</div>
+                            <a href="{% url 'hr_portal:employee_create' %}" class="hr-btn hr-btn-primary hr-btn-sm hr-mt-4">Add Employee</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

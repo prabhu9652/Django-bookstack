@@ -1,0 +1,108 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}Holiday Calendar{% endblock %}
+{% block breadcrumb %}Holidays{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <h1 class="hr-page-title">Holiday Calendar</h1>
+        <p class="hr-page-subtitle">View upcoming company holidays and observances</p>
+    </div>
+    
+    <div class="hr-grid hr-gap-4" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));">
+        <!-- Upcoming Holidays -->
+        <div class="hr-card">
+            <div class="hr-card-header">
+                <h3 class="hr-card-title"><i class="bi bi-calendar-event"></i> Upcoming Holidays</h3>
+            </div>
+            <div class="hr-card-body hr-card-body-compact">
+                {% for holiday in upcoming_holidays %}
+                <div class="hr-holiday-item">
+                    <div class="hr-holiday-date">
+                        <div class="hr-holiday-day">{{ holiday.date|date:"d" }}</div>
+                        <div class="hr-holiday-month">{{ holiday.date|date:"M" }}</div>
+                    </div>
+                    <div class="hr-holiday-info">
+                        <div class="hr-holiday-name">{{ holiday.name }}</div>
+                        <div class="hr-holiday-type">{{ holiday.date|date:"l, Y" }}</div>
+                    </div>
+                    {% if holiday.is_optional %}
+                    <span class="hr-badge hr-badge-info">Optional</span>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <div class="hr-empty-state" style="padding: var(--hr-space-8);">
+                    <i class="bi bi-calendar-x" style="font-size: 2rem; color: var(--hr-text-muted); margin-bottom: var(--hr-space-2);"></i>
+                    <p style="color: var(--hr-text-muted); margin: 0;">No upcoming holidays</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Past Holidays (This Year) -->
+        {% if past_holidays %}
+        <div class="hr-card">
+            <div class="hr-card-header">
+                <h3 class="hr-card-title"><i class="bi bi-calendar-check"></i> Past Holidays (This Year)</h3>
+            </div>
+            <div class="hr-card-body hr-card-body-compact">
+                {% for holiday in past_holidays %}
+                <div class="hr-holiday-item" style="opacity: 0.7;">
+                    <div class="hr-holiday-date">
+                        <div class="hr-holiday-day">{{ holiday.date|date:"d" }}</div>
+                        <div class="hr-holiday-month">{{ holiday.date|date:"M" }}</div>
+                    </div>
+                    <div class="hr-holiday-info">
+                        <div class="hr-holiday-name">{{ holiday.name }}</div>
+                        <div class="hr-holiday-type">{{ holiday.date|date:"l, Y" }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Holiday Summary -->
+    {% if holiday_summary %}
+    <div class="hr-card hr-mt-6">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title"><i class="bi bi-bar-chart"></i> Holiday Summary</h3>
+        </div>
+        <div class="hr-card-body">
+            <div class="hr-stats-grid">
+                <div class="hr-stat-card">
+                    <div class="hr-stat-icon primary">
+                        <i class="bi bi-calendar3"></i>
+                    </div>
+                    <div class="hr-stat-content">
+                        <div class="hr-stat-label">Total Holidays</div>
+                        <div class="hr-stat-value">{{ holiday_summary.total|default:0 }}</div>
+                    </div>
+                </div>
+                <div class="hr-stat-card">
+                    <div class="hr-stat-icon success">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div class="hr-stat-content">
+                        <div class="hr-stat-label">Mandatory</div>
+                        <div class="hr-stat-value">{{ holiday_summary.mandatory|default:0 }}</div>
+                    </div>
+                </div>
+                <div class="hr-stat-card">
+                    <div class="hr-stat-icon info">
+                        <i class="bi bi-star"></i>
+                    </div>
+                    <div class="hr-stat-content">
+                        <div class="hr-stat-label">Optional</div>
+                        <div class="hr-stat-value">{{ holiday_summary.optional|default:0 }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

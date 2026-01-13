@@ -1,0 +1,100 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}My Team{% endblock %}
+{% block breadcrumb %}My Team{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <h1 class="hr-page-title">My Team</h1>
+        <p class="hr-page-subtitle">View and manage your direct reports</p>
+    </div>
+    
+    {% if team_members %}
+    <!-- Team Stats -->
+    <div class="hr-stats-grid hr-stagger">
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon primary">
+                <i class="bi bi-people"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">Team Size</div>
+                <div class="hr-stat-value">{{ team_members|length }}</div>
+            </div>
+        </div>
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon info">
+                <i class="bi bi-calendar-check"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">On Leave Today</div>
+                <div class="hr-stat-value">{{ on_leave_today|default:0 }}</div>
+            </div>
+        </div>
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon warning">
+                <i class="bi bi-hourglass-split"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">Pending Approvals</div>
+                <div class="hr-stat-value">{{ pending_approvals|default:0 }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Team Members -->
+    <div class="hr-card">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title"><i class="bi bi-people"></i> Team Members</h3>
+        </div>
+        <div class="hr-card-body">
+            <div class="hr-grid hr-gap-4" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                {% for member in team_members %}
+                <div class="hr-card" style="border: 1px solid var(--hr-border);">
+                    <div class="hr-card-body">
+                        <div class="hr-flex hr-items-center hr-gap-4 hr-mb-4">
+                            <div class="hr-user-avatar" style="width: 48px; height: 48px;">
+                                {{ member.user.first_name|slice:":1"|upper }}{{ member.user.last_name|slice:":1"|upper }}
+                            </div>
+                            <div>
+                                <div style="font-weight: 600; color: var(--hr-text);">{{ member.full_name }}</div>
+                                <div style="font-size: var(--hr-font-size-sm); color: var(--hr-text-secondary);">{{ member.designation.title }}</div>
+                            </div>
+                        </div>
+                        <div class="hr-info-list" style="grid-template-columns: 1fr;">
+                            <div class="hr-info-item" style="padding: var(--hr-space-2) 0;">
+                                <div class="hr-info-label">Email</div>
+                                <div class="hr-info-value">{{ member.user.email }}</div>
+                            </div>
+                            <div class="hr-info-item" style="padding: var(--hr-space-2) 0;">
+                                <div class="hr-info-label">Department</div>
+                                <div class="hr-info-value">{{ member.department.name }}</div>
+                            </div>
+                        </div>
+                        <div class="hr-mt-4">
+                            <a href="{% url 'hr_portal:employee_detail' member.employee_id %}" class="hr-btn hr-btn-secondary hr-btn-sm hr-w-full">
+                                <i class="bi bi-eye"></i> View Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="hr-card">
+        <div class="hr-card-body">
+            <div class="hr-empty-state">
+                <div class="hr-empty-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <h3 class="hr-empty-title">No Team Members</h3>
+                <p class="hr-empty-message">You don't have any direct reports assigned to you yet.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

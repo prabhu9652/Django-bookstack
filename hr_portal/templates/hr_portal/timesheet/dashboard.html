@@ -1,0 +1,128 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}Timesheet{% endblock %}
+{% block breadcrumb %}Timesheet{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <h1 class="hr-page-title">Timesheet Management</h1>
+        <p class="hr-page-subtitle">Track and submit your working hours</p>
+    </div>
+    
+    <!-- Current Week Timesheet -->
+    {% if current_timesheet %}
+    <div class="hr-card hr-mb-6">
+        <div class="hr-card-header" style="background: var(--hr-primary-light);">
+            <h3 class="hr-card-title" style="color: var(--hr-primary);">
+                <i class="bi bi-calendar-week"></i>
+                Current Week: {{ current_timesheet.week_start_date|date:"M d" }} - {{ current_timesheet.week_end_date|date:"M d, Y" }}
+            </h3>
+        </div>
+        <div class="hr-card-body">
+            <div class="hr-flex hr-items-center hr-justify-between">
+                <div class="hr-flex hr-items-center hr-gap-4">
+                    <div>
+                        <div style="font-size: var(--hr-font-size-3xl); font-weight: 700; color: var(--hr-text);">{{ current_timesheet.total_hours }}</div>
+                        <div style="font-size: var(--hr-font-size-sm); color: var(--hr-text-muted);">hours logged</div>
+                    </div>
+                    <span class="hr-badge hr-badge-{{ current_timesheet.status }}">{{ current_timesheet.get_status_display }}</span>
+                </div>
+                <a href="{% url 'hr_portal:timesheet_detail' current_timesheet.id %}" class="hr-btn hr-btn-primary">
+                    {% if current_timesheet.status == 'draft' %}
+                    <i class="bi bi-pencil"></i> Edit Timesheet
+                    {% else %}
+                    <i class="bi bi-eye"></i> View Timesheet
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Recent Timesheets -->
+    <div class="hr-card hr-mb-6">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title"><i class="bi bi-clock-history"></i> Recent Timesheets</h3>
+        </div>
+        <div class="hr-table-wrapper">
+            <table class="hr-table">
+                <thead>
+                    <tr>
+                        <th>Week</th>
+                        <th>Hours</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ts in recent_timesheets %}
+                    <tr>
+                        <td>{{ ts.week_start_date|date:"M d" }} - {{ ts.week_end_date|date:"M d, Y" }}</td>
+                        <td><span style="font-weight: 600;">{{ ts.total_hours }} hrs</span></td>
+                        <td><span class="hr-badge hr-badge-{{ ts.status }}">{{ ts.get_status_display }}</span></td>
+                        <td>
+                            <a href="{% url 'hr_portal:timesheet_detail' ts.id %}" class="hr-btn hr-btn-secondary hr-btn-sm">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="hr-table-empty">
+                            <i class="bi bi-clock"></i>
+                            <div>No timesheets found</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Pending Approvals -->
+    {% if pending_approvals %}
+    <div class="hr-card">
+        <div class="hr-approval-header timesheet">
+            <i class="bi bi-hourglass-split"></i>
+            <span>Pending Approvals</span>
+            <span class="hr-approval-count">{{ pending_approvals|length }}</span>
+        </div>
+        <div class="hr-table-wrapper">
+            <table class="hr-table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Week</th>
+                        <th>Hours</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ts in pending_approvals %}
+                    <tr>
+                        <td>
+                            <div class="hr-flex hr-items-center hr-gap-3">
+                                <div class="hr-user-avatar" style="width: 32px; height: 32px; font-size: var(--hr-font-size-xs);">
+                                    {{ ts.employee.user.first_name|slice:":1"|upper }}{{ ts.employee.user.last_name|slice:":1"|upper }}
+                                </div>
+                                <span style="font-weight: 500;">{{ ts.employee.full_name }}</span>
+                            </div>
+                        </td>
+                        <td>{{ ts.week_start_date|date:"M d" }} - {{ ts.week_end_date|date:"M d" }}</td>
+                        <td><span style="font-weight: 600;">{{ ts.total_hours }} hrs</span></td>
+                        <td>
+                            <a href="{% url 'hr_portal:timesheet_detail' ts.id %}" class="hr-btn hr-btn-primary hr-btn-sm">
+                                <i class="bi bi-check2-square"></i> Review
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

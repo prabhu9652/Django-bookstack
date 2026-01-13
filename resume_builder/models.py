@@ -9,8 +9,9 @@ class ResumeTemplate(models.Model):
     CATEGORIES = [
         ('professional', 'Professional'),
         ('modern', 'Modern'),
-        ('creative', 'Creative'),
+        ('executive', 'Executive'),
         ('minimal', 'Minimal'),
+        ('creative', 'Creative'),
     ]
     
     name = models.CharField(max_length=100)
@@ -34,8 +35,17 @@ class ResumeTemplate(models.Model):
         help_text='High-quality preview image of the template (recommended: 850x1100px)'
     )
     
+    # New fields for template system redesign
+    display_order = models.IntegerField(default=0, help_text='Order in template selector (lower = first)')
+    is_ats_safe = models.BooleanField(default=True, help_text='Whether template is ATS-compatible')
+    recommended_roles = models.JSONField(
+        default=list, 
+        blank=True,
+        help_text='List of role slugs this template is recommended for (e.g., ["software_engineer", "devops_sre"])'
+    )
+    
     class Meta:
-        ordering = ['category', 'name']
+        ordering = ['display_order', 'category', 'name']
     
     def __str__(self):
         return f"{self.name} ({self.get_category_display()})"
@@ -51,8 +61,8 @@ class CoverLetterTemplate(models.Model):
     TONES = [
         ('formal', 'Formal'),
         ('professional', 'Professional'),
-        ('friendly', 'Friendly'),
         ('modern', 'Modern'),
+        ('creative', 'Creative'),
     ]
     
     name = models.CharField(max_length=100)
@@ -68,8 +78,25 @@ class CoverLetterTemplate(models.Model):
     # Color scheme
     primary_color = models.CharField(max_length=7, default='#4a9d9a', help_text='Primary color hex code')
     
+    # New fields for template system redesign
+    preview_image = models.ImageField(
+        upload_to='cl_template_previews/',
+        blank=True,
+        null=True,
+        help_text='High-quality preview image of the template (recommended: 850x1100px)'
+    )
+    paired_resume_template = models.ForeignKey(
+        ResumeTemplate,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='paired_cover_letters',
+        help_text='Recommended resume template to pair with this cover letter'
+    )
+    display_order = models.IntegerField(default=0, help_text='Order in template selector (lower = first)')
+    
     class Meta:
-        ordering = ['tone', 'name']
+        ordering = ['display_order', 'tone', 'name']
     
     def __str__(self):
         return f"{self.name} ({self.get_tone_display()})"
@@ -157,9 +184,17 @@ class Resume(models.Model):
 
 class CoverLetter(models.Model):
     """User's cover letter documents"""
+    
+    ROLE_CHOICES = [
+        ('devops_sre', 'DevOps / SRE Engineer'),
+        ('software_engineer', 'Software Engineer'),
+        ('ds_ml', 'DS / ML Engineer'),
+    ]
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cover_letters')
     template = models.ForeignKey(CoverLetterTemplate, on_delete=models.CASCADE)
     title = models.CharField(max_length=200, default="My Cover Letter")
+    target_role = models.CharField(max_length=30, choices=ROLE_CHOICES, default='software_engineer', help_text='Target role for AI content suggestions')
     
     # Color Theme
     primary_color = models.CharField(max_length=7, default='#4a9d9a', help_text='Header/accent color')

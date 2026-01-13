@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/views/project.py
+# hypothesis_version: 6.150.0
+
+[100, '%Y-%m-%d', '-created_at', '-date', '-total_hours', '0', 'All Projects', 'Create Project', 'POST', 'Project Management', 'active', 'active_projects', 'all_projects', 'allocation', 'approved', 'budget_amount', 'budget_hours', 'by_employee', 'can_manage', 'client', 'create', 'created_by', 'department', 'departments', 'description', 'employee', 'employee_id', 'end_date', 'entries', 'hours', 'is_assigned', 'is_billable', 'managers', 'member', 'my_hours', 'my_projects', 'name', 'on', 'planning', 'project', 'project__name', 'project__project_id', 'project_id', 'project_manager', 'projects', 'role', 'selected_department', 'selected_status', 'start_date', 'status', 'status_choices', 'team_members', 'time_logged', 'timesheet__employee', 'title', 'total', 'total_hours']

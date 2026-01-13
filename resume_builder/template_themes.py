@@ -269,6 +269,198 @@ EXECUTIVE_PALETTES = [
 
 
 # ============================================================================
+# MINIMAL TEMPLATE PALETTES (Single Column, Maximum Whitespace)
+# ============================================================================
+
+MINIMAL_PALETTES = [
+    ColorPalette(
+        name='Classic Black',
+        primary='#1a1a1a',
+        secondary='#333333',
+        accent='#666666',
+        text_primary='#1a1a1a',
+        text_secondary='#666666',
+        background='#ffffff',
+        sidebar_bg='#ffffff',
+        description='Classic black - timeless and elegant',
+        recommended_roles=['software_engineer', 'ds_ml', 'devops_sre']
+    ),
+    ColorPalette(
+        name='Navy Subtle',
+        primary='#1e3a5f',
+        secondary='#2a4a73',
+        accent='#3d5a80',
+        text_primary='#1a1a1a',
+        text_secondary='#555555',
+        background='#ffffff',
+        sidebar_bg='#ffffff',
+        description='Navy - subtle and professional',
+        recommended_roles=['software_engineer', 'ds_ml']
+    ),
+    ColorPalette(
+        name='Slate Minimal',
+        primary='#475569',
+        secondary='#64748b',
+        accent='#94a3b8',
+        text_primary='#1a1a1a',
+        text_secondary='#555555',
+        background='#ffffff',
+        sidebar_bg='#ffffff',
+        description='Slate - modern and understated',
+        recommended_roles=['devops_sre', 'software_engineer']
+    ),
+    ColorPalette(
+        name='Teal Accent',
+        primary='#0d9488',
+        secondary='#14b8a6',
+        accent='#2dd4bf',
+        text_primary='#1a1a1a',
+        text_secondary='#555555',
+        background='#ffffff',
+        sidebar_bg='#ffffff',
+        description='Teal - fresh and approachable',
+        recommended_roles=['software_engineer', 'devops_sre']
+    ),
+]
+
+
+# ============================================================================
+# CREATIVE TEMPLATE PALETTES (Bold Name Block, Asymmetric Layout)
+# ============================================================================
+
+CREATIVE_PALETTES = [
+    ColorPalette(
+        name='Coral Bold',
+        primary='#e74c3c',
+        secondary='#c0392b',
+        accent='#ff6b6b',
+        text_primary='#1a1a1a',
+        text_secondary='#555555',
+        background='#ffffff',
+        sidebar_bg='#f5f5f5',
+        description='Coral - bold and energetic',
+        recommended_roles=['designer', 'marketing', 'creative_director']
+    ),
+    ColorPalette(
+        name='Purple Creative',
+        primary='#9b59b6',
+        secondary='#8e44ad',
+        accent='#bb8fce',
+        text_primary='#1a1a1a',
+        text_secondary='#555555',
+        background='#ffffff',
+        sidebar_bg='#f5f5f5',
+        description='Purple - creative and innovative',
+        recommended_roles=['ux_designer', 'brand_manager', 'creative_director']
+    ),
+    ColorPalette(
+        name='Teal Modern',
+        primary='#1abc9c',
+        secondary='#16a085',
+        accent='#48c9b0',
+        text_primary='#1a1a1a',
+        text_secondary='#555555',
+        background='#ffffff',
+        sidebar_bg='#f5f5f5',
+        description='Teal - modern and fresh',
+        recommended_roles=['designer', 'marketing']
+    ),
+    ColorPalette(
+        name='Orange Vibrant',
+        primary='#e67e22',
+        secondary='#d35400',
+        accent='#f39c12',
+        text_primary='#1a1a1a',
+        text_secondary='#555555',
+        background='#ffffff',
+        sidebar_bg='#f5f5f5',
+        description='Orange - vibrant and confident',
+        recommended_roles=['marketing', 'brand_manager']
+    ),
+    ColorPalette(
+        name='Blue Electric',
+        primary='#3498db',
+        secondary='#2980b9',
+        accent='#5dade2',
+        text_primary='#1a1a1a',
+        text_secondary='#555555',
+        background='#ffffff',
+        sidebar_bg='#f5f5f5',
+        description='Blue - electric and dynamic',
+        recommended_roles=['ux_designer', 'designer']
+    ),
+]
+
+
+# ============================================================================
+# TECHNICAL TEMPLATE PALETTES (Skills Sidebar, Monospace Accents)
+# ============================================================================
+
+TECHNICAL_PALETTES = [
+    ColorPalette(
+        name='Green Terminal',
+        primary='#2ecc71',
+        secondary='#27ae60',
+        accent='#58d68d',
+        text_primary='#1a1a1a',
+        text_secondary='#555555',
+        background='#ffffff',
+        sidebar_bg='#f8f9fa',
+        description='Green - terminal-inspired and tech-forward',
+        recommended_roles=['software_engineer', 'devops_sre', 'backend_developer']
+    ),
+    ColorPalette(
+        name='Blue Code',
+        primary='#3498db',
+        secondary='#2980b9',
+        accent='#5dade2',
+        text_primary='#1a1a1a',
+        text_secondary='#555555',
+        background='#ffffff',
+        sidebar_bg='#f8f9fa',
+        description='Blue - clean and professional',
+        recommended_roles=['software_engineer', 'full_stack_developer', 'data_scientist']
+    ),
+    ColorPalette(
+        name='Purple Dev',
+        primary='#9b59b6',
+        secondary='#8e44ad',
+        accent='#bb8fce',
+        text_primary='#1a1a1a',
+        text_secondary='#555555',
+        background='#ffffff',
+        sidebar_bg='#f8f9fa',
+        description='Purple - innovative and modern',
+        recommended_roles=['data_scientist', 'software_engineer']
+    ),
+    ColorPalette(
+        name='Orange Rust',
+        primary='#e67e22',
+        secondary='#d35400',
+        accent='#f39c12',
+        text_primary='#1a1a1a',
+        text_secondary='#555555',
+        background='#ffffff',
+        sidebar_bg='#f8f9fa',
+        description='Orange - Rust-inspired and bold',
+        recommended_roles=['backend_developer', 'devops_sre']
+    ),
+    ColorPalette(
+        name='Cyan Docker',
+        primary='#00bcd4',
+        secondary='#0097a7',
+        accent='#4dd0e1',
+        text_primary='#1a1a1a',
+        text_secondary='#555555',
+        background='#ffffff',
+        sidebar_bg='#f8f9fa',
+        description='Cyan - Docker-inspired and cloud-native',
+        recommended_roles=['devops_sre', 'backend_developer', 'full_stack_developer']
+    ),
+]
+
+
+# ============================================================================
 # TEMPLATE THEME MANAGER
 # ============================================================================
 
@@ -279,6 +471,9 @@ class TemplateThemeManager:
         'professional': PROFESSIONAL_PALETTES,
         'modern': MODERN_PALETTES,
         'executive': EXECUTIVE_PALETTES,
+        'minimal': MINIMAL_PALETTES,
+        'creative': CREATIVE_PALETTES,
+        'technical': TECHNICAL_PALETTES,
     }
     
     @classmethod
@@ -337,22 +532,82 @@ class TemplateThemeManager:
 
 ROLE_TEMPLATE_RECOMMENDATIONS = {
     'devops_sre': {
-        'recommended_template': 'professional',
-        'recommended_palette': 'Teal Classic',
-        'reasoning': 'Professional template with teal conveys reliability and technical expertise',
-        'alternative_templates': ['executive', 'modern'],
+        'recommended_template': 'technical',
+        'recommended_palette': 'Cyan Docker',
+        'reasoning': 'Technical template with monospace accents conveys infrastructure expertise',
+        'alternative_templates': ['professional', 'modern'],
     },
     'software_engineer': {
-        'recommended_template': 'modern',
-        'recommended_palette': 'Charcoal Minimal',
-        'reasoning': 'Modern template with charcoal shows clean code mindset and contemporary skills',
-        'alternative_templates': ['professional', 'executive'],
+        'recommended_template': 'technical',
+        'recommended_palette': 'Green Terminal',
+        'reasoning': 'Technical template shows clean code mindset and engineering skills',
+        'alternative_templates': ['modern', 'minimal'],
     },
     'ds_ml': {
-        'recommended_template': 'executive',
-        'recommended_palette': 'Mint Executive',
-        'reasoning': 'Executive template conveys analytical thinking and data-driven approach',
+        'recommended_template': 'modern',
+        'recommended_palette': 'Charcoal Minimal',
+        'reasoning': 'Modern template conveys analytical thinking and data-driven approach',
+        'alternative_templates': ['technical', 'executive'],
+    },
+    'data_scientist': {
+        'recommended_template': 'technical',
+        'recommended_palette': 'Blue Code',
+        'reasoning': 'Technical template emphasizes analytical and programming skills',
+        'alternative_templates': ['modern', 'minimal'],
+    },
+    'backend_developer': {
+        'recommended_template': 'technical',
+        'recommended_palette': 'Green Terminal',
+        'reasoning': 'Technical template with terminal-inspired colors shows backend expertise',
+        'alternative_templates': ['modern', 'minimal'],
+    },
+    'full_stack_developer': {
+        'recommended_template': 'technical',
+        'recommended_palette': 'Blue Code',
+        'reasoning': 'Technical template showcases broad technical skills',
         'alternative_templates': ['modern', 'professional'],
+    },
+    'designer': {
+        'recommended_template': 'creative',
+        'recommended_palette': 'Coral Bold',
+        'reasoning': 'Creative template with bold design shows visual creativity',
+        'alternative_templates': ['minimal', 'modern'],
+    },
+    'ux_designer': {
+        'recommended_template': 'creative',
+        'recommended_palette': 'Purple Creative',
+        'reasoning': 'Creative template demonstrates design sensibility',
+        'alternative_templates': ['minimal', 'modern'],
+    },
+    'marketing': {
+        'recommended_template': 'creative',
+        'recommended_palette': 'Orange Vibrant',
+        'reasoning': 'Creative template with vibrant colors shows marketing flair',
+        'alternative_templates': ['executive', 'modern'],
+    },
+    'creative_director': {
+        'recommended_template': 'creative',
+        'recommended_palette': 'Purple Creative',
+        'reasoning': 'Creative template showcases leadership in creative fields',
+        'alternative_templates': ['executive', 'minimal'],
+    },
+    'brand_manager': {
+        'recommended_template': 'creative',
+        'recommended_palette': 'Teal Modern',
+        'reasoning': 'Creative template demonstrates brand awareness',
+        'alternative_templates': ['executive', 'modern'],
+    },
+    'executive': {
+        'recommended_template': 'executive',
+        'recommended_palette': 'Gold Premium',
+        'reasoning': 'Executive template conveys leadership and authority',
+        'alternative_templates': ['professional', 'minimal'],
+    },
+    'consultant': {
+        'recommended_template': 'minimal',
+        'recommended_palette': 'Classic Black',
+        'reasoning': 'Minimal template shows professionalism and clarity',
+        'alternative_templates': ['professional', 'executive'],
     },
 }
 

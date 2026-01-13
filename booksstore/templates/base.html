@@ -76,13 +76,19 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/image-optimization.css' %}?v=20260113">
     
     <!-- Responsive Enhancements - Mobile First -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/responsive-enhancements.css' %}?v=20260113">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/responsive-enhancements.css' %}?v=20260114">
+    
+    <!-- Mobile-First Responsive Optimization -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/responsive-mobile-first.css' %}?v=20260114">
     
     <!-- PWA Styles -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/pwa.css' %}?v=20260113">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/pwa.css' %}?v=20260114">
     
     <!-- UI Standardization - Modals, Toasts, Forms -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/ui-standardization.css' %}?v=20260113">
+    
+    <!-- Resume Builder Pages -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/resume-builder-pages.css' %}?v=20260113">
     
     <!-- Shared Library Management -->
     <script src="{% static 'js/library-manager.js' %}" defer></script>
@@ -124,6 +130,11 @@
           
           <!-- Careers -->
           <li><a href="{% url 'careers:careers_home' %}" class="nav-link {% if request.resolver_match.namespace == 'careers' %}active{% endif %}">Careers</a></li>
+          
+          <!-- HR Portal (only for employees) -->
+          {% if can_access_hr_portal %}
+          <li><a href="{% url 'hr_portal:dashboard' %}" class="nav-link {% if request.resolver_match.namespace == 'hr_portal' %}active{% endif %}">HR Portal</a></li>
+          {% endif %}
           
           <!-- Get App -->
           <li><a href="{% url 'home.app' %}" class="nav-link nav-link-app {% if request.resolver_match.url_name == 'home.app' %}active{% endif %}"><i class="fas fa-mobile-alt"></i> Get App</a></li>
@@ -287,6 +298,12 @@
           <i class="fas fa-briefcase"></i>
           <span>Careers</span>
         </a>
+        {% if can_access_hr_portal %}
+        <a href="{% url 'hr_portal:dashboard' %}" class="mobile-nav-link {% if request.resolver_match.namespace == 'hr_portal' %}active{% endif %}">
+          <i class="fas fa-building"></i>
+          <span>HR Portal</span>
+        </a>
+        {% endif %}
         <a href="{% url 'home.app' %}" class="mobile-nav-link mobile-nav-app {% if request.resolver_match.url_name == 'home.app' %}active{% endif %}">
           <i class="fas fa-mobile-alt"></i>
           <span>Get App</span>

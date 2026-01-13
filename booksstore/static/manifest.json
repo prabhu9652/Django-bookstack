@@ -103,7 +103,7 @@
       "name": "Resume Builder",
       "short_name": "Resume",
       "description": "Create professional resumes",
-      "url": "/resume-builder/dashboard/?source=pwa_shortcut",
+      "url": "/resume-builder/?source=pwa_shortcut",
       "icons": [{ "src": "/static/img/pwa/shortcut-resume.png", "sizes": "96x96", "type": "image/png" }]
     },
     {

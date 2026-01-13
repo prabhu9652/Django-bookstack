@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/resume_builder/migrations/0013_add_premium_templates.py
+# hypothesis_version: 6.150.0
+
+['#059669', '#0891b2', '#0c4a6e', '#0f766e', '#1e40af', '#1f2937', '#334155', '#374151', '#64748b', '#7c3aed', 'Apex', 'Clarity', 'Foundation', 'Horizon', 'Metro', 'Nordic', 'Prestige', 'ResumeTemplate', 'Slate', 'Streamline', 'Zenith', 'apex', 'category', 'clarity', 'description', 'display_order', 'executive', 'foundation', 'horizon', 'is_active', 'metro', 'minimal', 'modern', 'name', 'nordic', 'prestige', 'primary_color', 'professional', 'resume_builder', 'slate', 'slug', 'streamline', 'zenith']

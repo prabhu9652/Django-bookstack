@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/views/api.py
+# hypothesis_version: 6.150.0
+
+[403, 404, '-created_at', 'Not an employee', 'Not found', 'active', 'allocated', 'allocated_days', 'available', 'balances', 'code', 'created_at', 'date', 'department', 'employee_id', 'error', 'holidays', 'id', 'link', 'location', 'manager_approved', 'message', 'name', 'notifications', 'pending', 'pending_expenses', 'pending_leaves', 'pending_timesheets', 'q', 'results', 'submitted', 'success', 'title', 'type', 'unread_count', 'used', 'user', 'year']

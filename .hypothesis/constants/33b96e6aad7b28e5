@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/booksstore/urls.py
+# hypothesis_version: 6.150.0
+
+['accounts.urls', 'accounts/', 'admin/', 'books.urls', 'books/', 'careers.urls', 'careers/', 'home.urls', 'hr/', 'hr_portal.urls', 'library.urls', 'library/', 'manifest', 'manifest.json', 'r', 'resume-builder/', 'resume_builder.urls', 'roadmap.urls', 'roadmap/', 'service_worker', 'sw.js']

@@ -1,0 +1,136 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}Asset {{ asset.asset_id }}{% endblock %}
+{% block breadcrumb %}Asset Details{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <div class="hr-page-header-row">
+            <div class="hr-flex hr-items-center hr-gap-4">
+                <button onclick="history.back()" class="hr-btn hr-btn-ghost hr-btn-icon">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+                <div>
+                    <h1 class="hr-page-title">{{ asset.name }}</h1>
+                    <p class="hr-page-subtitle">{{ asset.asset_id }}</p>
+                </div>
+            </div>
+            <div class="hr-flex hr-items-center hr-gap-3">
+                <span class="hr-badge hr-badge-{{ asset.status }}">{{ asset.get_status_display }}</span>
+                {% if can_edit %}
+                <a href="{% url 'admin:hr_portal_asset_change' asset.id %}" class="hr-btn hr-btn-secondary">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="hr-grid hr-gap-4" style="grid-template-columns: 2fr 1fr;">
+        <!-- Main Content -->
+        <div>
+            <!-- Asset Details -->
+            <div class="hr-card hr-mb-4">
+                <div class="hr-card-header">
+                    <h3 class="hr-card-title"><i class="bi bi-laptop"></i> Asset Information</h3>
+                </div>
+                <div class="hr-card-body">
+                    <div class="hr-info-list">
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Category</div>
+                            <div class="hr-info-value">{{ asset.category.name }}</div>
+                        </div>
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Serial Number</div>
+                            <div class="hr-info-value">{{ asset.serial_number|default:"—" }}</div>
+                        </div>
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Condition</div>
+                            <div class="hr-info-value">{{ asset.get_condition_display }}</div>
+                        </div>
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Purchase Date</div>
+                            <div class="hr-info-value">{{ asset.purchase_date|date:"M d, Y"|default:"—" }}</div>
+                        </div>
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Purchase Cost</div>
+                            <div class="hr-info-value">{{ asset.purchase_cost|default:"—" }}</div>
+                        </div>
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Warranty Expiry</div>
+                            <div class="hr-info-value">{{ asset.warranty_expiry|date:"M d, Y"|default:"—" }}</div>
+                        </div>
+                    </div>
+                    
+                    {% if asset.description %}
+                    <div class="hr-mt-4">
+                        <div class="hr-info-label">Description</div>
+                        <p style="color: var(--hr-text); margin-top: var(--hr-space-2);">{{ asset.description }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Assignment History -->
+            {% if assignment_history %}
+            <div class="hr-card">
+                <div class="hr-card-header">
+                    <h3 class="hr-card-title"><i class="bi bi-clock-history"></i> Assignment History</h3>
+                </div>
+                <div class="hr-table-wrapper">
+                    <table class="hr-table">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Assigned Date</th>
+                                <th>Returned Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assignment in assignment_history %}
+                            <tr>
+                                <td>{{ assignment.employee.full_name }}</td>
+                                <td>{{ assignment.assigned_date|date:"M d, Y" }}</td>
+                                <td>{{ assignment.returned_date|date:"M d, Y"|default:"Current" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sidebar -->
+        <div>
+            <!-- Current Assignment -->
+            <div class="hr-card">
+                <div class="hr-card-header">
+                    <h3 class="hr-card-title"><i class="bi bi-person"></i> Current Assignment</h3>
+                </div>
+                <div class="hr-card-body">
+                    {% if asset.assigned_to %}
+                    <div class="hr-flex hr-items-center hr-gap-3">
+                        <div class="hr-user-avatar" style="width: 48px; height: 48px;">
+                            {{ asset.assigned_to.user.first_name|slice:":1"|upper }}{{ asset.assigned_to.user.last_name|slice:":1"|upper }}
+                        </div>
+                        <div>
+                            <div style="font-weight: 600;">{{ asset.assigned_to.full_name }}</div>
+                            <div style="font-size: var(--hr-font-size-sm); color: var(--hr-text-secondary);">{{ asset.assigned_to.designation.title }}</div>
+                            <div style="font-size: var(--hr-font-size-xs); color: var(--hr-text-muted);">{{ asset.assigned_to.department.name }}</div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="hr-empty-state" style="padding: var(--hr-space-4);">
+                        <i class="bi bi-box" style="font-size: 1.5rem; color: var(--hr-text-muted);"></i>
+                        <p style="color: var(--hr-text-muted); margin: var(--hr-space-2) 0 0;">Not assigned</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

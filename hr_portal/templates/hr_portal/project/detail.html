@@ -1,0 +1,135 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}{{ project.name }}{% endblock %}
+{% block breadcrumb %}Project Details{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <div class="hr-page-header-row">
+            <div class="hr-flex hr-items-center hr-gap-4">
+                <button onclick="history.back()" class="hr-btn hr-btn-ghost hr-btn-icon">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+                <div>
+                    <h1 class="hr-page-title">{{ project.name }}</h1>
+                    <p class="hr-page-subtitle">{{ project.code|default:"No code" }}</p>
+                </div>
+            </div>
+            <span class="hr-badge hr-badge-{{ project.status }}" style="font-size: var(--hr-font-size-sm); padding: var(--hr-space-2) var(--hr-space-4);">
+                {{ project.get_status_display }}
+            </span>
+        </div>
+    </div>
+    
+    <div class="hr-grid hr-gap-4" style="grid-template-columns: 2fr 1fr;">
+        <!-- Main Content -->
+        <div>
+            <!-- Project Details -->
+            <div class="hr-card hr-mb-4">
+                <div class="hr-card-header">
+                    <h3 class="hr-card-title"><i class="bi bi-kanban"></i> Project Information</h3>
+                </div>
+                <div class="hr-card-body">
+                    {% if project.description %}
+                    <p style="color: var(--hr-text); margin-bottom: var(--hr-space-4);">{{ project.description }}</p>
+                    {% endif %}
+                    
+                    <div class="hr-info-list">
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Start Date</div>
+                            <div class="hr-info-value">{{ project.start_date|date:"M d, Y" }}</div>
+                        </div>
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">End Date</div>
+                            <div class="hr-info-value">{{ project.end_date|date:"M d, Y"|default:"Ongoing" }}</div>
+                        </div>
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Budget</div>
+                            <div class="hr-info-value">{{ project.budget|default:"—" }}</div>
+                        </div>
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Client</div>
+                            <div class="hr-info-value">{{ project.client|default:"Internal" }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Team Members -->
+            <div class="hr-card">
+                <div class="hr-card-header">
+                    <h3 class="hr-card-title"><i class="bi bi-people"></i> Team Members</h3>
+                    <span class="hr-badge hr-badge-primary">{{ project.assignments.count }} members</span>
+                </div>
+                <div class="hr-table-wrapper">
+                    <table class="hr-table">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Role</th>
+                                <th>Allocation</th>
+                                <th>Start Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assignment in project.assignments.all %}
+                            <tr>
+                                <td>
+                                    <div class="hr-flex hr-items-center hr-gap-3">
+                                        <div class="hr-user-avatar" style="width: 32px; height: 32px; font-size: var(--hr-font-size-xs);">
+                                            {{ assignment.employee.user.first_name|slice:":1"|upper }}{{ assignment.employee.user.last_name|slice:":1"|upper }}
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 500;">{{ assignment.employee.full_name }}</div>
+                                            <div style="font-size: var(--hr-font-size-xs); color: var(--hr-text-muted);">{{ assignment.employee.designation.title }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ assignment.role }}</td>
+                                <td><span class="hr-badge hr-badge-info">{{ assignment.allocation_percentage }}%</span></td>
+                                <td>{{ assignment.start_date|date:"M d, Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="hr-table-empty">
+                                    <i class="bi bi-people"></i>
+                                    <div>No team members assigned</div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div>
+            <!-- Project Manager -->
+            <div class="hr-card">
+                <div class="hr-card-header">
+                    <h3 class="hr-card-title"><i class="bi bi-person-badge"></i> Project Manager</h3>
+                </div>
+                <div class="hr-card-body">
+                    {% if project.project_manager %}
+                    <div class="hr-flex hr-items-center hr-gap-3">
+                        <div class="hr-user-avatar" style="width: 48px; height: 48px;">
+                            {{ project.project_manager.user.first_name|slice:":1"|upper }}{{ project.project_manager.user.last_name|slice:":1"|upper }}
+                        </div>
+                        <div>
+                            <div style="font-weight: 600;">{{ project.project_manager.full_name }}</div>
+                            <div style="font-size: var(--hr-font-size-sm); color: var(--hr-text-secondary);">{{ project.project_manager.designation.title }}</div>
+                            <div style="font-size: var(--hr-font-size-xs); color: var(--hr-text-muted);">{{ project.project_manager.department.name }}</div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p style="color: var(--hr-text-muted); text-align: center;">No manager assigned</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

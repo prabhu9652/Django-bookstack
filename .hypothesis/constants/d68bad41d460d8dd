@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/resume_builder/tests.py
+# hypothesis_version: 6.150.0
+
+[0.0, 1.0, 4.5, 21.0, 100, 154, 157, 255, '#000000', '#1a1a1a', '#4a9d9a', '#555555', '#FFFFFF', '#cccccc', '#ff0000', '#fff', '#ffffff', '#gggggg', '4a9d9a', 'Arial', 'Helvetica', '^#[0-9a-fA-F]{6}$', 'accent', 'background', 'creative', 'executive', 'font-family', 'invalid', 'minimal', 'modern', 'monospace', 'name', 'primary', 'professional', 'reasoning', 'recommended_palette', 'recommended_template', 'sans-serif', 'secondary', 'serif', 'technical', 'text_on_primary', 'text_primary', 'text_secondary', '{', '}']

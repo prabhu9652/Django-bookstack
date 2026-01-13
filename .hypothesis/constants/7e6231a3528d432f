@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/views/dashboard.py
+# hypothesis_version: 6.150.0
+
+[100, '-created_at', 'HR Portal Dashboard', 'HTTP_REFERER', 'My Profile', 'Notifications', 'active', 'approved', 'assigned_assets', 'category', 'date', 'employee', 'hr_pending_leaves', 'hr_portal:dashboard', 'leave_balances', 'leave_type', 'manager_approved', 'notifications', 'pending', 'pending_expenses', 'pending_leaves', 'recent_expenses', 'recent_leaves', 'reporting_chain', 'submitted', 'team_on_leave', 'title', 'total_employees', 'unread_count', 'upcoming_holidays']

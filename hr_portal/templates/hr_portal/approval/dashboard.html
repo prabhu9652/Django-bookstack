@@ -1,0 +1,258 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}Approvals{% endblock %}
+{% block breadcrumb %}Approvals{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <h1 class="hr-page-title">Approval Dashboard</h1>
+        <p class="hr-page-subtitle">Review and approve pending requests from your team</p>
+    </div>
+    
+    {% if not pending_leaves and not hr_pending_leaves and not pending_expenses and not finance_pending_expenses and not pending_timesheets %}
+    <!-- All Caught Up -->
+    <div class="hr-card">
+        <div class="hr-card-body">
+            <div class="hr-empty-state">
+                <div class="hr-empty-icon" style="background: var(--hr-success-light);">
+                    <i class="bi bi-check-circle" style="color: var(--hr-success);"></i>
+                </div>
+                <h3 class="hr-empty-title">You're all caught up!</h3>
+                <p class="hr-empty-message">No pending approvals at the moment. Check back later for new requests.</p>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    
+    <!-- Leave Requests (Manager Approval) -->
+    {% if pending_leaves %}
+    <div class="hr-card hr-mb-6 hr-approval-section">
+        <div class="hr-approval-header leave">
+            <i class="bi bi-calendar-check"></i>
+            <span>Leave Requests (Manager Approval)</span>
+            <span class="hr-approval-count">{{ pending_leaves|length }}</span>
+        </div>
+        <div class="hr-table-wrapper">
+            <table class="hr-table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Type</th>
+                        <th>Dates</th>
+                        <th>Days</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for leave in pending_leaves %}
+                    <tr>
+                        <td>
+                            <div class="hr-flex hr-items-center hr-gap-3">
+                                <div class="hr-user-avatar" style="width: 32px; height: 32px; font-size: var(--hr-font-size-xs);">
+                                    {{ leave.employee.user.first_name|slice:":1"|upper }}{{ leave.employee.user.last_name|slice:":1"|upper }}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 500;">{{ leave.employee.full_name }}</div>
+                                    <div style="font-size: var(--hr-font-size-xs); color: var(--hr-text-muted);">{{ leave.employee.designation.title }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ leave.leave_type.name }}</td>
+                        <td>{{ leave.start_date|date:"M d" }} - {{ leave.end_date|date:"M d" }}</td>
+                        <td><span class="hr-badge hr-badge-primary">{{ leave.total_days }} days</span></td>
+                        <td>
+                            <a href="{% url 'hr_portal:leave_request_detail' leave.request_id %}" class="hr-btn hr-btn-primary hr-btn-sm">
+                                <i class="bi bi-check2-square"></i> Review
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Leave Requests (HR Approval) -->
+    {% if hr_pending_leaves %}
+    <div class="hr-card hr-mb-6 hr-approval-section">
+        <div class="hr-approval-header hr">
+            <i class="bi bi-calendar-check"></i>
+            <span>Leave Requests (HR Approval)</span>
+            <span class="hr-approval-count">{{ hr_pending_leaves|length }}</span>
+        </div>
+        <div class="hr-table-wrapper">
+            <table class="hr-table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Type</th>
+                        <th>Dates</th>
+                        <th>Manager Approved</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for leave in hr_pending_leaves %}
+                    <tr>
+                        <td>
+                            <div class="hr-flex hr-items-center hr-gap-3">
+                                <div class="hr-user-avatar" style="width: 32px; height: 32px; font-size: var(--hr-font-size-xs);">
+                                    {{ leave.employee.user.first_name|slice:":1"|upper }}{{ leave.employee.user.last_name|slice:":1"|upper }}
+                                </div>
+                                <span style="font-weight: 500;">{{ leave.employee.full_name }}</span>
+                            </div>
+                        </td>
+                        <td>{{ leave.leave_type.name }}</td>
+                        <td>{{ leave.start_date|date:"M d" }} - {{ leave.end_date|date:"M d" }}</td>
+                        <td>{{ leave.manager_approved_by.full_name }}</td>
+                        <td>
+                            <a href="{% url 'hr_portal:leave_request_detail' leave.request_id %}" class="hr-btn hr-btn-primary hr-btn-sm">
+                                <i class="bi bi-check2-square"></i> Review
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Expense Claims (Manager Approval) -->
+    {% if pending_expenses %}
+    <div class="hr-card hr-mb-6 hr-approval-section">
+        <div class="hr-approval-header expense">
+            <i class="bi bi-receipt"></i>
+            <span>Expense Claims (Manager Approval)</span>
+            <span class="hr-approval-count">{{ pending_expenses|length }}</span>
+        </div>
+        <div class="hr-table-wrapper">
+            <table class="hr-table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Title</th>
+                        <th>Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in pending_expenses %}
+                    <tr>
+                        <td>
+                            <div class="hr-flex hr-items-center hr-gap-3">
+                                <div class="hr-user-avatar" style="width: 32px; height: 32px; font-size: var(--hr-font-size-xs);">
+                                    {{ expense.employee.user.first_name|slice:":1"|upper }}{{ expense.employee.user.last_name|slice:":1"|upper }}
+                                </div>
+                                <span style="font-weight: 500;">{{ expense.employee.full_name }}</span>
+                            </div>
+                        </td>
+                        <td>{{ expense.title }}</td>
+                        <td style="font-weight: 600;">{{ expense.amount }} {{ expense.currency }}</td>
+                        <td>
+                            <a href="{% url 'hr_portal:expense_request_detail' expense.request_id %}" class="hr-btn hr-btn-primary hr-btn-sm">
+                                <i class="bi bi-check2-square"></i> Review
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Expense Claims (Finance Approval) -->
+    {% if finance_pending_expenses %}
+    <div class="hr-card hr-mb-6 hr-approval-section">
+        <div class="hr-approval-header expense">
+            <i class="bi bi-cash-stack"></i>
+            <span>Expense Claims (Finance Approval)</span>
+            <span class="hr-approval-count">{{ finance_pending_expenses|length }}</span>
+        </div>
+        <div class="hr-table-wrapper">
+            <table class="hr-table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Title</th>
+                        <th>Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in finance_pending_expenses %}
+                    <tr>
+                        <td>
+                            <div class="hr-flex hr-items-center hr-gap-3">
+                                <div class="hr-user-avatar" style="width: 32px; height: 32px; font-size: var(--hr-font-size-xs);">
+                                    {{ expense.employee.user.first_name|slice:":1"|upper }}{{ expense.employee.user.last_name|slice:":1"|upper }}
+                                </div>
+                                <span style="font-weight: 500;">{{ expense.employee.full_name }}</span>
+                            </div>
+                        </td>
+                        <td>{{ expense.title }}</td>
+                        <td style="font-weight: 600;">{{ expense.amount }} {{ expense.currency }}</td>
+                        <td>
+                            <a href="{% url 'hr_portal:expense_request_detail' expense.request_id %}" class="hr-btn hr-btn-primary hr-btn-sm">
+                                <i class="bi bi-check2-square"></i> Review
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Timesheets -->
+    {% if pending_timesheets %}
+    <div class="hr-card hr-approval-section">
+        <div class="hr-approval-header timesheet">
+            <i class="bi bi-clock"></i>
+            <span>Timesheets</span>
+            <span class="hr-approval-count">{{ pending_timesheets|length }}</span>
+        </div>
+        <div class="hr-table-wrapper">
+            <table class="hr-table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Week</th>
+                        <th>Hours</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ts in pending_timesheets %}
+                    <tr>
+                        <td>
+                            <div class="hr-flex hr-items-center hr-gap-3">
+                                <div class="hr-user-avatar" style="width: 32px; height: 32px; font-size: var(--hr-font-size-xs);">
+                                    {{ ts.employee.user.first_name|slice:":1"|upper }}{{ ts.employee.user.last_name|slice:":1"|upper }}
+                                </div>
+                                <span style="font-weight: 500;">{{ ts.employee.full_name }}</span>
+                            </div>
+                        </td>
+                        <td>{{ ts.week_start_date|date:"M d" }} - {{ ts.week_end_date|date:"M d" }}</td>
+                        <td style="font-weight: 600;">{{ ts.total_hours }} hrs</td>
+                        <td>
+                            <a href="{% url 'hr_portal:timesheet_detail' ts.id %}" class="hr-btn hr-btn-primary hr-btn-sm">
+                                <i class="bi bi-check2-square"></i> Review
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    
+    {% endif %}
+</div>
+{% endblock %}

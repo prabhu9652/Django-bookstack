@@ -1,0 +1,78 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}Notifications{% endblock %}
+{% block breadcrumb %}Notifications{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <div class="hr-page-header-row">
+            <div>
+                <h1 class="hr-page-title">Notifications</h1>
+                <p class="hr-page-subtitle">Stay updated with your HR activities</p>
+            </div>
+            {% if notifications %}
+            <div class="hr-page-actions">
+                <form method="post" action="{% url 'hr_portal:mark_all_read' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="hr-btn hr-btn-secondary">
+                        <i class="bi bi-check-all"></i>
+                        <span>Mark All Read</span>
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% if notifications %}
+    <div class="hr-card">
+        <div class="hr-card-body hr-card-body-compact">
+            {% for notification in notifications %}
+            <div class="hr-flex hr-gap-4" style="padding: var(--hr-space-4); border-bottom: 1px solid var(--hr-border-light); {% if not notification.is_read %}background: var(--hr-primary-light);{% endif %}">
+                <div style="flex-shrink: 0;">
+                    <div class="hr-stat-icon {% if notification.notification_type == 'approval' %}success{% elif notification.notification_type == 'rejection' %}danger{% elif notification.notification_type == 'reminder' %}warning{% else %}info{% endif %}" style="width: 40px; height: 40px;">
+                        <i class="bi bi-{% if notification.notification_type == 'approval' %}check-circle{% elif notification.notification_type == 'rejection' %}x-circle{% elif notification.notification_type == 'reminder' %}bell{% else %}info-circle{% endif %}"></i>
+                    </div>
+                </div>
+                <div style="flex: 1; min-width: 0;">
+                    <div style="font-weight: {% if not notification.is_read %}600{% else %}500{% endif %}; color: var(--hr-text); margin-bottom: var(--hr-space-1);">
+                        {{ notification.title }}
+                    </div>
+                    <div style="font-size: var(--hr-font-size-sm); color: var(--hr-text-secondary); margin-bottom: var(--hr-space-2);">
+                        {{ notification.message }}
+                    </div>
+                    <div style="font-size: var(--hr-font-size-xs); color: var(--hr-text-muted);">
+                        {{ notification.created_at|timesince }} ago
+                    </div>
+                </div>
+                {% if not notification.is_read %}
+                <div style="flex-shrink: 0;">
+                    <form method="post" action="{% url 'hr_portal:mark_notification_read' notification.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="hr-btn hr-btn-ghost hr-btn-sm" title="Mark as read">
+                            <i class="bi bi-check"></i>
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="hr-card">
+        <div class="hr-card-body">
+            <div class="hr-empty-state">
+                <div class="hr-empty-icon">
+                    <i class="bi bi-bell-slash"></i>
+                </div>
+                <h3 class="hr-empty-title">No Notifications</h3>
+                <p class="hr-empty-message">You're all caught up! Check back later for new updates.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/services/asset_service.py
+# hypothesis_version: 6.150.0
+
+['-assigned_date', '-id', 'assigned', 'assigned_by', 'assigned_to', 'available', 'by_category', 'by_condition', 'by_status', 'category', 'category__name', 'condition', 'count', 'description', 'employee', 'good', 'id', 'location', 'manufacturer', 'model', 'name', 'new', 'purchase_cost', 'purchase_date', 'serial_number', 'specifications', 'status', 'total', 'transferred', 'warranty_expiry']

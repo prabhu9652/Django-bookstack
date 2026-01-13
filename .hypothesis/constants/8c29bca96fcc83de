@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/permissions.py
+# hypothesis_version: 6.150.0
+
+['accounts.login', 'app_admin', 'can_access_hr_portal', 'can_manage_assets', 'can_manage_employees', 'can_manage_expenses', 'can_manage_leaves', 'can_manage_projects', 'can_view_reports', 'finance_admin', 'home.index', 'hr_admin', 'hr_portal:dashboard', 'is_app_admin', 'is_employee', 'is_finance_admin', 'is_hr_admin', 'is_manager']
