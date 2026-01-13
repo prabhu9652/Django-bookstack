@@ -2,300 +2,170 @@
 {% load static %}
 
 {% block content %}
-<div class="resume-builder-page">
-  
+<div class="rb-home">
   <!-- Hero Section -->
   <section class="rb-hero">
-    <div class="hero-bg-effects">
-      <div class="hero-gradient"></div>
-      <div class="hero-pattern"></div>
-    </div>
     <div class="container">
-      <div class="hero-content-centered">
-        <h1>Build Your Professional <span class="highlight">Career Documents</span></h1>
-        <p class="hero-subtitle">Create ATS-optimized resumes and compelling cover letters that get you noticed by recruiters and land interviews at top companies.</p>
+      <div class="hero-content">
+        <div class="hero-badge"><i class="fas fa-star"></i> Professional Career Documents</div>
+        <h1>Build Your <span class="gradient-text">Resume</span> & <span class="gradient-text">Cover Letter</span></h1>
+        <p class="hero-desc">Create ATS-optimized career documents that get you noticed. Our live editor shows your changes in real-time, and what you see is exactly what you'll download.</p>
+        
+        <div class="hero-actions">
+          {% if user.is_authenticated %}
+          <a href="{% url 'resume_builder:live_resume_editor' 1 %}" class="btn-hero-primary">
+            <i class="fas fa-file-alt"></i> Create Resume
+          </a>
+          <a href="{% url 'resume_builder:live_cover_letter_editor' 3 %}" class="btn-hero-secondary">
+            <i class="fas fa-envelope"></i> Create Cover Letter
+          </a>
+          {% else %}
+          <a href="{% url 'accounts.signup' %}?next={% url 'resume_builder:home' %}" class="btn-hero-primary">
+            <i class="fas fa-user-plus"></i> Get Started Free
+          </a>
+          <a href="{% url 'accounts.login' %}" class="btn-hero-secondary">Sign In</a>
+          {% endif %}
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Primary Decision Section - Three Equal Options -->
-  <section class="rb-decision-section">
+  <!-- Quick Actions Bar -->
+  {% if user.is_authenticated %}
+  <section class="rb-quick-actions">
     <div class="container">
-      <div class="decision-header">
-        <h2>What would you like to do?</h2>
-        <p>Choose an option to get started</p>
-      </div>
-      
-      <div class="decision-cards">
-        <!-- Create Resume Card -->
-        <div class="decision-card card-resume">
-          <div class="card-accent"></div>
-          <div class="card-icon">
-            <i class="fas fa-file-alt"></i>
-          </div>
-          <div class="card-content">
+      <div class="quick-actions-grid">
+        <a href="{% url 'resume_builder:live_resume_editor' 1 %}" class="quick-action-card qa-resume">
+          <div class="qa-icon"><i class="fas fa-file-alt"></i></div>
+          <div class="qa-content">
             <h3>Create Resume</h3>
-            <p class="card-description">Build a professional, ATS-optimized resume that stands out</p>
-            
-            <div class="card-use-cases">
-              <span><i class="fas fa-check"></i> Job Applications</span>
-              <span><i class="fas fa-check"></i> Career Switch</span>
-              <span><i class="fas fa-check"></i> Fresh Graduates</span>
-              <span><i class="fas fa-check"></i> Promotions</span>
-            </div>
-            
-            <div class="card-meta">
-              <div class="meta-item">
-                <i class="fas fa-clock"></i>
-                <span>~10 min</span>
-              </div>
-              <div class="meta-item">
-                <i class="fas fa-robot"></i>
-                <span>ATS Score</span>
-              </div>
-            </div>
+            <p>Start with a professional template</p>
           </div>
-          
-          {% if user.is_authenticated %}
-          <a href="{% url 'resume_builder:resume_templates' %}" class="card-cta">
-            <span>Start Resume</span>
-            <i class="fas fa-arrow-right"></i>
-          </a>
-          {% else %}
-          <a href="{% url 'accounts.signup' %}?next={% url 'resume_builder:resume_templates' %}" class="card-cta">
-            <span>Start Resume</span>
-            <i class="fas fa-arrow-right"></i>
-          </a>
-          {% endif %}
-        </div>
-
-        <!-- Create Cover Letter Card -->
-        <div class="decision-card card-cover-letter">
-          <div class="card-accent"></div>
-          <div class="card-icon">
-            <i class="fas fa-envelope-open-text"></i>
-          </div>
-          <div class="card-content">
+          <i class="fas fa-arrow-right qa-arrow"></i>
+        </a>
+        
+        <a href="{% url 'resume_builder:live_cover_letter_editor' 3 %}" class="quick-action-card qa-cover">
+          <div class="qa-icon"><i class="fas fa-envelope-open-text"></i></div>
+          <div class="qa-content">
             <h3>Create Cover Letter</h3>
-            <p class="card-description">Craft a compelling letter that complements your resume</p>
-            
-            <div class="card-use-cases">
-              <span><i class="fas fa-check"></i> Job-Specific</span>
-              <span><i class="fas fa-check"></i> Cold Outreach</span>
-              <span><i class="fas fa-check"></i> Internships</span>
-              <span><i class="fas fa-check"></i> Referrals</span>
-            </div>
-            
-            <div class="card-meta">
-              <div class="meta-item">
-                <i class="fas fa-clock"></i>
-                <span>~5 min</span>
-              </div>
-              <div class="meta-item">
-                <i class="fas fa-magic"></i>
-                <span>Role-Based</span>
-              </div>
-            </div>
+            <p>Complement your resume</p>
           </div>
-          
-          {% if user.is_authenticated %}
-          <a href="{% url 'resume_builder:cover_letter_templates' %}" class="card-cta">
-            <span>Start Cover Letter</span>
-            <i class="fas fa-arrow-right"></i>
-          </a>
-          {% else %}
-          <a href="{% url 'accounts.signup' %}?next={% url 'resume_builder:cover_letter_templates' %}" class="card-cta">
-            <span>Start Cover Letter</span>
-            <i class="fas fa-arrow-right"></i>
-          </a>
-          {% endif %}
-        </div>
-
-        <!-- My Documents Card -->
-        <div class="decision-card card-documents">
-          <div class="card-accent"></div>
-          <div class="card-icon">
-            <i class="fas fa-folder-open"></i>
-          </div>
-          <div class="card-content">
+          <i class="fas fa-arrow-right qa-arrow"></i>
+        </a>
+        
+        <a href="{% url 'resume_builder:dashboard' %}" class="quick-action-card qa-docs">
+          <div class="qa-icon"><i class="fas fa-folder-open"></i></div>
+          <div class="qa-content">
             <h3>My Documents</h3>
-            <p class="card-description">Access, edit, and manage your saved career documents</p>
-            
-            {% if user.is_authenticated %}
-            <div class="card-stats">
-              <div class="stat-item">
-                <span class="stat-value">{{ user_resumes|default:0 }}</span>
-                <span class="stat-label">Resumes</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-value">{{ user_cover_letters|default:0 }}</span>
-                <span class="stat-label">Cover Letters</span>
-              </div>
-            </div>
-            {% else %}
-            <div class="card-use-cases">
-              <span><i class="fas fa-check"></i> Edit Drafts</span>
-              <span><i class="fas fa-check"></i> Download PDFs</span>
-              <span><i class="fas fa-check"></i> Duplicate</span>
-              <span><i class="fas fa-check"></i> Version Control</span>
-            </div>
-            {% endif %}
-            
-            <div class="card-meta">
-              <div class="meta-item">
-                <i class="fas fa-sync-alt"></i>
-                <span>Auto-Save</span>
-              </div>
-              <div class="meta-item">
-                <i class="fas fa-history"></i>
-                <span>Version History</span>
-              </div>
-            </div>
+            <p>{{ user_resumes|default:0 }} resumes, {{ user_cover_letters|default:0 }} cover letters</p>
           </div>
-          
+          <i class="fas fa-arrow-right qa-arrow"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- What Are These Documents Section -->
+  <section class="rb-explainer">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Understanding Career Documents</span>
+        <h2>What You Need to Know</h2>
+      </div>
+      
+      <div class="explainer-grid">
+        <div class="explainer-card">
+          <div class="explainer-icon"><i class="fas fa-file-alt"></i></div>
+          <h3>What is a Resume?</h3>
+          <p>A resume is a concise document (1-2 pages) that summarizes your professional experience, skills, education, and achievements. It's your first impression with employers and is scanned by Applicant Tracking Systems (ATS) before reaching human recruiters.</p>
+          <div class="explainer-tips">
+            <span><i class="fas fa-check"></i> Tailored to each job</span>
+            <span><i class="fas fa-check"></i> Quantified achievements</span>
+            <span><i class="fas fa-check"></i> ATS-friendly format</span>
+          </div>
+        </div>
+        
+        <div class="explainer-card">
+          <div class="explainer-icon"><i class="fas fa-envelope-open-text"></i></div>
+          <h3>What is a Cover Letter?</h3>
+          <p>A cover letter is a personalized letter that accompanies your resume. It explains why you're interested in the role, highlights relevant experience, and shows your personality. It's your chance to tell your story beyond bullet points.</p>
+          <div class="explainer-tips">
+            <span><i class="fas fa-check"></i> Company-specific</span>
+            <span><i class="fas fa-check"></i> Shows enthusiasm</span>
+            <span><i class="fas fa-check"></i> Complements resume</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- How It Works Section -->
+  <section class="rb-how-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Simple Process</span>
+        <h2>How It Works</h2>
+        <p>Create professional documents in just a few steps</p>
+      </div>
+      
+      <div class="how-works-grid">
+        <div class="hw-step">
+          <div class="hw-number">1</div>
+          <div class="hw-icon"><i class="fas fa-mouse-pointer"></i></div>
+          <h4>Click Create</h4>
+          <p>Choose "Create Resume" or "Create Cover Letter" to open the live editor</p>
+        </div>
+        
+        <div class="hw-step">
+          <div class="hw-number">2</div>
+          <div class="hw-icon"><i class="fas fa-palette"></i></div>
+          <h4>Pick Template & Role</h4>
+          <p>Select a template style and your target role. The preview updates instantly</p>
+        </div>
+        
+        <div class="hw-step">
+          <div class="hw-number">3</div>
+          <div class="hw-icon"><i class="fas fa-edit"></i></div>
+          <h4>Fill Your Details</h4>
+          <p>Enter your information in the left panel. Watch the preview update in real-time on the right</p>
+        </div>
+        
+        <div class="hw-step">
+          <div class="hw-number">4</div>
+          <div class="hw-icon"><i class="fas fa-save"></i></div>
+          <h4>Save to My Documents</h4>
+          <p>Click Save to store your document. It appears in "My Documents" for future editing</p>
+        </div>
+        
+        <div class="hw-step">
+          <div class="hw-number">5</div>
+          <div class="hw-icon"><i class="fas fa-download"></i></div>
+          <h4>Download PDF</h4>
+          <p>Download a professional PDF. What you see in preview is exactly what you get</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- My Documents Explanation -->
+  <section class="rb-my-docs-explain">
+    <div class="container">
+      <div class="docs-explain-card">
+        <div class="docs-explain-icon"><i class="fas fa-folder-open"></i></div>
+        <div class="docs-explain-content">
+          <h3>About My Documents</h3>
+          <p>When you save a resume or cover letter, it's stored in "My Documents" - your personal document library. From there you can:</p>
+          <ul>
+            <li><i class="fas fa-edit"></i> <strong>Edit anytime</strong> - Make changes and updates whenever needed</li>
+            <li><i class="fas fa-download"></i> <strong>Download PDFs</strong> - Export professional PDFs for job applications</li>
+            <li><i class="fas fa-copy"></i> <strong>Duplicate</strong> - Create variations for different job applications</li>
+            <li><i class="fas fa-trash-alt"></i> <strong>Delete</strong> - Remove documents you no longer need</li>
+          </ul>
           {% if user.is_authenticated %}
-          <a href="{% url 'resume_builder:dashboard' %}" class="card-cta">
-            <span>View Documents</span>
-            <i class="fas fa-arrow-right"></i>
-          </a>
-          {% else %}
-          <a href="{% url 'accounts.login' %}?next={% url 'resume_builder:dashboard' %}" class="card-cta">
-            <span>Sign In to View</span>
-            <i class="fas fa-arrow-right"></i>
+          <a href="{% url 'resume_builder:dashboard' %}" class="docs-explain-btn">
+            <i class="fas fa-folder-open"></i> Open My Documents
           </a>
           {% endif %}
-        </div>
-      </div>
-      
-      {% if not user.is_authenticated %}
-      <div class="decision-signin">
-        <p>Already have an account? <a href="{% url 'accounts.login' %}">Sign in</a> to access your documents</p>
-      </div>
-      {% endif %}
-    </div>
-  </section>
-
-  <!-- How It Works Section -->
-  <section class="rb-how-it-works">
-    <div class="container">
-      <div class="section-header-center">
-        <span class="section-badge">Simple Process</span>
-        <h2>How It Works</h2>
-        <p>Create professional documents in minutes with our streamlined workflow</p>
-      </div>
-      
-      <div class="process-tabs">
-        <button class="process-tab active" data-tab="resume">
-          <i class="fas fa-file-alt"></i>
-          <span>Resume Process</span>
-        </button>
-        <button class="process-tab" data-tab="cover-letter">
-          <i class="fas fa-envelope"></i>
-          <span>Cover Letter Process</span>
-        </button>
-      </div>
-      
-      <!-- Resume Process Steps -->
-      <div class="process-content active" id="resume-process">
-        <div class="steps-grid steps-grid-4">
-          <div class="step-card">
-            <div class="step-number">1</div>
-            <div class="step-icon"><i class="fas fa-briefcase"></i></div>
-            <h4>Select Your Role</h4>
-            <p>Choose your target role: DevOps/SRE, Software Engineer, or Data Science/ML Engineer</p>
-          </div>
-          <div class="step-card">
-            <div class="step-number">2</div>
-            <div class="step-icon"><i class="fas fa-palette"></i></div>
-            <h4>Pick a Template</h4>
-            <p>Choose from Professional (with photo), Modern, or Executive templates</p>
-          </div>
-          <div class="step-card">
-            <div class="step-number">3</div>
-            <div class="step-icon"><i class="fas fa-edit"></i></div>
-            <h4>Fill Your Details</h4>
-            <p>Add your info, experience, skills, and education. Preview in real-time as you type</p>
-          </div>
-          <div class="step-card">
-            <div class="step-number">4</div>
-            <div class="step-icon"><i class="fas fa-download"></i></div>
-            <h4>Save & Download</h4>
-            <p>Save to My Documents and download as a professional PDF ready for applications</p>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Cover Letter Process Steps -->
-      <div class="process-content" id="cover-letter-process">
-        <div class="steps-grid steps-grid-4">
-          <div class="step-card">
-            <div class="step-number">1</div>
-            <div class="step-icon"><i class="fas fa-file-signature"></i></div>
-            <h4>Choose Template</h4>
-            <p>Select from Classic (formal), Modern (clean), or Creative (bold) styles</p>
-          </div>
-          <div class="step-card">
-            <div class="step-number">2</div>
-            <div class="step-icon"><i class="fas fa-building"></i></div>
-            <h4>Add Company Info</h4>
-            <p>Enter company name, position title, and hiring manager details</p>
-          </div>
-          <div class="step-card">
-            <div class="step-number">3</div>
-            <div class="step-icon"><i class="fas fa-pen-fancy"></i></div>
-            <h4>Write Your Letter</h4>
-            <p>Fill opening, body, and closing paragraphs with role-specific starter content</p>
-          </div>
-          <div class="step-card">
-            <div class="step-number">4</div>
-            <div class="step-icon"><i class="fas fa-file-pdf"></i></div>
-            <h4>Save & Download</h4>
-            <p>Preview your letter, save to My Documents, and export as PDF</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features Section -->
-  <section class="rb-features">
-    <div class="container">
-      <div class="section-header-center">
-        <span class="section-badge">Why Choose Us</span>
-        <h2>Built for Job Seekers</h2>
-        <p>Professional tools designed by recruiters and career experts</p>
-      </div>
-      
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon"><i class="fas fa-robot"></i></div>
-          <h3>ATS-Optimized</h3>
-          <p>Templates designed to pass Applicant Tracking Systems used by 99% of Fortune 500 companies.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i class="fas fa-palette"></i></div>
-          <h3>Professional Templates</h3>
-          <p>Role-specific layouts tailored for different industries and experience levels.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i class="fas fa-lightbulb"></i></div>
-          <h3>Smart Suggestions</h3>
-          <p>Get role-specific content suggestions and bullet point examples to highlight achievements.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i class="fas fa-eye"></i></div>
-          <h3>Live Preview</h3>
-          <p>See your changes in real-time as you build. No surprises when you download.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i class="fas fa-file-pdf"></i></div>
-          <h3>PDF Export</h3>
-          <p>Download high-quality PDF files that look perfect on any device and print beautifully.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i class="fas fa-sync-alt"></i></div>
-          <h3>Version Control</h3>
-          <p>Create multiple versions for different roles and track your document history.</p>
         </div>
       </div>
     </div>
@@ -304,48 +174,82 @@
   <!-- Role Templates Section -->
   <section class="rb-roles">
     <div class="container">
-      <div class="section-header-center">
-        <span class="section-badge">Tailored for You</span>
-        <h2>Templates for Every Role</h2>
-        <p>Industry-specific templates with pre-written content suggestions</p>
+      <div class="section-header">
+        <span class="section-tag">Tailored Content</span>
+        <h2>Templates for Your Role</h2>
+        <p>Pre-filled content suggestions based on your target position</p>
       </div>
       
       <div class="roles-grid">
-        <a href="{% url 'resume_builder:resume_templates' %}?role=devops_sre" class="role-card">
+        <a href="{% url 'resume_builder:live_resume_editor' 1 %}?role=devops_sre" class="role-card">
           <div class="role-icon"><i class="fas fa-server"></i></div>
-          <div class="role-content">
-            <h3>DevOps / SRE</h3>
-            <p>Cloud infrastructure, CI/CD, Kubernetes, monitoring & observability</p>
-            <div class="role-skills">
-              <span>AWS</span><span>Terraform</span><span>K8s</span><span>Docker</span>
-            </div>
+          <h3>DevOps / SRE</h3>
+          <p>Cloud infrastructure, CI/CD, Kubernetes, monitoring</p>
+          <div class="role-skills">
+            <span>AWS</span><span>Terraform</span><span>K8s</span><span>Docker</span>
           </div>
-          <span class="role-cta">Create Resume <i class="fas fa-arrow-right"></i></span>
         </a>
         
-        <a href="{% url 'resume_builder:resume_templates' %}?role=software_engineer" class="role-card">
+        <a href="{% url 'resume_builder:live_resume_editor' 1 %}?role=software_engineer" class="role-card">
           <div class="role-icon"><i class="fas fa-code"></i></div>
-          <div class="role-content">
-            <h3>Software Engineer</h3>
-            <p>Full-stack development, APIs, databases, system design</p>
-            <div class="role-skills">
-              <span>Python</span><span>React</span><span>Node.js</span><span>SQL</span>
-            </div>
+          <h3>Software Engineer</h3>
+          <p>Full-stack development, APIs, databases, system design</p>
+          <div class="role-skills">
+            <span>Python</span><span>React</span><span>Node.js</span><span>SQL</span>
           </div>
-          <span class="role-cta">Create Resume <i class="fas fa-arrow-right"></i></span>
         </a>
         
-        <a href="{% url 'resume_builder:resume_templates' %}?role=ds_ml" class="role-card">
+        <a href="{% url 'resume_builder:live_resume_editor' 1 %}?role=ds_ml" class="role-card">
           <div class="role-icon"><i class="fas fa-brain"></i></div>
-          <div class="role-content">
-            <h3>Data Science / ML</h3>
-            <p>Machine learning, data pipelines, model deployment, analytics</p>
-            <div class="role-skills">
-              <span>Python</span><span>TensorFlow</span><span>PyTorch</span><span>SQL</span>
-            </div>
+          <h3>Data Science / ML</h3>
+          <p>Machine learning, data pipelines, model deployment</p>
+          <div class="role-skills">
+            <span>Python</span><span>TensorFlow</span><span>PyTorch</span><span>SQL</span>
           </div>
-          <span class="role-cta">Create Resume <i class="fas fa-arrow-right"></i></span>
         </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="rb-features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Why Choose Us</span>
+        <h2>Built for Job Seekers</h2>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fas fa-eye"></i></div>
+          <h4>Live Preview</h4>
+          <p>See changes instantly as you type. No surprises when you download.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fas fa-robot"></i></div>
+          <h4>ATS-Optimized</h4>
+          <p>Templates designed to pass Applicant Tracking Systems.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fas fa-file-pdf"></i></div>
+          <h4>Perfect PDFs</h4>
+          <p>What you see is what you get. Preview matches PDF exactly.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fas fa-palette"></i></div>
+          <h4>6 Resume Templates</h4>
+          <p>Professional, Modern, Executive, Minimal, Creative, Technical.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fas fa-sync-alt"></i></div>
+          <h4>Auto-Save</h4>
+          <p>Your work is saved automatically. Never lose your progress.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+          <h4>Responsive</h4>
+          <p>Works on desktop, tablet, and mobile devices.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -353,402 +257,156 @@
   <!-- CTA Section -->
   <section class="rb-cta">
     <div class="container">
-      <div class="cta-card">
-        <div class="cta-glow"></div>
-        <div class="cta-content">
-          <div class="cta-icon"><i class="fas fa-rocket"></i></div>
-          <h2>Ready to Build Your Career Documents?</h2>
-          <p>Join thousands of job seekers who have landed their dream jobs with our tools.</p>
-          <div class="cta-buttons">
-            {% if user.is_authenticated %}
-            <a href="{% url 'resume_builder:resume_templates' %}" class="btn-cta-primary">
-              <i class="fas fa-file-alt"></i> Create Resume
-            </a>
-            <a href="{% url 'resume_builder:cover_letter_templates' %}" class="btn-cta-secondary">
-              <i class="fas fa-envelope"></i> Create Cover Letter
-            </a>
-            {% else %}
-            <a href="{% url 'accounts.signup' %}" class="btn-cta-primary">
-              <i class="fas fa-user-plus"></i> Get Started Free
-            </a>
-            <a href="{% url 'accounts.login' %}" class="btn-cta-secondary">Sign In</a>
-            {% endif %}
-          </div>
+      <div class="cta-box">
+        <h2>Ready to Build Your Career Documents?</h2>
+        <p>Start creating professional resumes and cover letters in minutes.</p>
+        <div class="cta-actions">
+          {% if user.is_authenticated %}
+          <a href="{% url 'resume_builder:live_resume_editor' 1 %}" class="btn-cta-primary">
+            <i class="fas fa-file-alt"></i> Create Resume
+          </a>
+          <a href="{% url 'resume_builder:live_cover_letter_editor' 3 %}" class="btn-cta-secondary">
+            <i class="fas fa-envelope"></i> Create Cover Letter
+          </a>
+          {% else %}
+          <a href="{% url 'accounts.signup' %}" class="btn-cta-primary">
+            <i class="fas fa-user-plus"></i> Get Started Free
+          </a>
+          {% endif %}
         </div>
       </div>
     </div>
   </section>
-
 </div>
 
-
 <style>
-/* ============================================
-   RESUME BUILDER PAGE - REDESIGNED
-   ============================================ */
-.resume-builder-page {
-  background: var(--bg-primary);
-}
+/* Resume Builder Home - Redesigned */
+.rb-home { background: var(--bg-primary); }
 
-/* Hero Section */
+/* Hero */
 .rb-hero {
-  position: relative;
-  padding: 4rem 0 2rem;
-  overflow: hidden;
-}
-
-.hero-bg-effects {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.hero-gradient {
-  position: absolute;
-  top: -50%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  height: 150%;
-  background: radial-gradient(ellipse, rgba(74, 158, 255, 0.08) 0%, transparent 70%);
-}
-
-.hero-pattern {
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(74, 158, 255, 0.03) 1px, transparent 1px);
-  background-size: 30px 30px;
-}
-
-.hero-content-centered {
+  padding: 4rem 0 3rem;
   text-align: center;
-  max-width: 700px;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
+  background: linear-gradient(180deg, rgba(74, 158, 255, 0.03) 0%, transparent 100%);
 }
-
+.hero-content { max-width: 700px; margin: 0 auto; }
 .hero-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: rgba(34, 197, 94, 0.1);
-  border: 1px solid rgba(34, 197, 94, 0.2);
+  background: rgba(74, 158, 255, 0.1);
+  border: 1px solid rgba(74, 158, 255, 0.2);
   border-radius: 50px;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #22c55e;
+  color: #4a9eff;
   margin-bottom: 1.5rem;
 }
-
-.hero-content-centered h1 {
+.rb-hero h1 {
   font-size: 2.75rem;
   font-weight: 800;
   color: var(--text-primary);
-  line-height: 1.15;
+  line-height: 1.2;
   margin: 0 0 1rem;
-  letter-spacing: -0.02em;
 }
-
-.hero-content-centered h1 .highlight {
-  background: linear-gradient(135deg, #4a9eff 0%, #6366f1 100%);
+.gradient-text {
+  background: linear-gradient(135deg, #4a9eff 0%, #8b5cf6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-
-.hero-subtitle {
+.hero-desc {
   font-size: 1.125rem;
   color: var(--text-secondary);
   line-height: 1.7;
-  margin: 0;
+  margin: 0 0 2rem;
 }
-
-/* Decision Section - Three Equal Cards */
-.rb-decision-section {
-  padding: 3rem 0 4rem;
-}
-
-.decision-header {
-  text-align: center;
-  margin-bottom: 2.5rem;
-}
-
-.decision-header h2 {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0 0 0.5rem;
-}
-
-.decision-header p {
-  font-size: 1rem;
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-.decision-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.decision-card {
-  position: relative;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: 18px;
-  padding: 1.75rem;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.card-accent {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.card-resume .card-accent {
-  background: linear-gradient(90deg, #4a9eff 0%, #0066cc 100%);
-}
-
-.card-cover-letter .card-accent {
-  background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
-}
-
-.card-documents .card-accent {
-  background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
-}
-
-.decision-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(74, 158, 255, 0.3);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-}
-
-.decision-card:hover .card-accent {
-  opacity: 1;
-}
-
-.card-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1.25rem;
-}
-
-.card-resume .card-icon {
-  background: rgba(74, 158, 255, 0.1);
-}
-
-.card-resume .card-icon i {
-  font-size: 1.5rem;
-  color: #4a9eff;
-}
-
-.card-cover-letter .card-icon {
-  background: rgba(139, 92, 246, 0.1);
-}
-
-.card-cover-letter .card-icon i {
-  font-size: 1.5rem;
-  color: #8b5cf6;
-}
-
-.card-documents .card-icon {
-  background: rgba(34, 197, 94, 0.1);
-}
-
-.card-documents .card-icon i {
-  font-size: 1.5rem;
-  color: #22c55e;
-}
-
-.card-content {
-  flex: 1;
-}
-
-.card-content h3 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0 0 0.5rem;
-}
-
-.card-description {
-  font-size: 0.9375rem;
-  color: var(--text-secondary);
-  margin: 0 0 1rem;
-  line-height: 1.5;
-}
-
-.card-use-cases {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.card-use-cases span {
+.hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+.btn-hero-primary {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.25rem 0.625rem;
-  background: var(--bg-elevated);
-  border-radius: 6px;
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-}
-
-.card-use-cases span i {
-  font-size: 0.5rem;
-  color: #22c55e;
-}
-
-.card-stats {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.stat-item {
-  text-align: center;
-}
-
-.stat-value {
-  display: block;
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: #22c55e;
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin-top: 0.25rem;
-}
-
-.card-meta {
-  display: flex;
-  gap: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-default);
-  margin-bottom: 1.25rem;
-}
-
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-.meta-item i {
-  font-size: 0.75rem;
-}
-
-.card-resume .meta-item i { color: #4a9eff; }
-.card-cover-letter .meta-item i { color: #8b5cf6; }
-.card-documents .meta-item i { color: #22c55e; }
-
-.card-cta {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 0.5rem;
-  padding: 0.875rem 1.25rem;
-  border-radius: 10px;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  color: white;
   font-weight: 600;
-  font-size: 0.9375rem;
+  font-size: 1rem;
+  border-radius: 12px;
   text-decoration: none;
   transition: all 0.25s ease;
 }
-
-.card-resume .card-cta {
-  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+.btn-hero-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(74, 158, 255, 0.4);
   color: white;
 }
-
-.card-resume .card-cta:hover {
-  box-shadow: 0 6px 20px rgba(74, 158, 255, 0.35);
-  color: white;
-}
-
-.card-cover-letter .card-cta {
-  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
-  color: white;
-}
-
-.card-cover-letter .card-cta:hover {
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
-  color: white;
-}
-
-.card-documents .card-cta {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  color: white;
-}
-
-.card-documents .card-cta:hover {
-  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
-  color: white;
-}
-
-.card-cta i {
-  transition: transform 0.25s ease;
-}
-
-.card-cta:hover i {
-  transform: translateX(4px);
-}
-
-.decision-signin {
-  text-align: center;
-  margin-top: 2rem;
-  font-size: 0.9375rem;
-  color: var(--text-secondary);
-}
-
-.decision-signin a {
-  color: #4a9eff;
+.btn-hero-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   font-weight: 600;
+  font-size: 1rem;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
   text-decoration: none;
+  transition: all 0.25s ease;
+}
+.btn-hero-secondary:hover {
+  border-color: #4a9eff;
+  color: #4a9eff;
 }
 
-.decision-signin a:hover {
-  text-decoration: underline;
+/* Quick Actions */
+.rb-quick-actions { padding: 0 0 3rem; }
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
 }
-</style>
-
-
-<style>
-/* How It Works Section */
-.rb-how-it-works {
-  padding: 4rem 0;
-  background: linear-gradient(180deg, transparent 0%, rgba(74, 158, 255, 0.02) 50%, transparent 100%);
+.quick-action-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  text-decoration: none;
+  transition: all 0.25s ease;
 }
-
-.section-header-center {
-  text-align: center;
-  margin-bottom: 2.5rem;
+.quick-action-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(74, 158, 255, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
+.qa-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.qa-resume .qa-icon { background: rgba(74, 158, 255, 0.1); }
+.qa-resume .qa-icon i { color: #4a9eff; font-size: 1.25rem; }
+.qa-cover .qa-icon { background: rgba(139, 92, 246, 0.1); }
+.qa-cover .qa-icon i { color: #8b5cf6; font-size: 1.25rem; }
+.qa-docs .qa-icon { background: rgba(34, 197, 94, 0.1); }
+.qa-docs .qa-icon i { color: #22c55e; font-size: 1.25rem; }
+.qa-content { flex: 1; }
+.qa-content h3 { font-size: 1rem; font-weight: 600; color: var(--text-primary); margin: 0 0 0.25rem; }
+.qa-content p { font-size: 0.8125rem; color: var(--text-secondary); margin: 0; }
+.qa-arrow { color: var(--text-muted); transition: transform 0.25s ease; }
+.quick-action-card:hover .qa-arrow { transform: translateX(4px); color: #4a9eff; }
 
-.section-badge {
+/* Section Header */
+.section-header { text-align: center; margin-bottom: 2.5rem; }
+.section-tag {
   display: inline-block;
   padding: 0.375rem 0.875rem;
   background: rgba(74, 158, 255, 0.1);
@@ -761,94 +419,92 @@
   letter-spacing: 0.5px;
   margin-bottom: 1rem;
 }
-
-.section-header-center h2 {
+.section-header h2 {
   font-size: 1.75rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0 0 0.5rem;
 }
-
-.section-header-center p {
+.section-header p {
   font-size: 1rem;
   color: var(--text-secondary);
   margin: 0;
 }
+</style>
 
-.process-tabs {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 2.5rem;
+<style>
+/* Explainer Section */
+.rb-explainer { padding: 3rem 0; }
+.explainer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
 }
-
-.process-tab {
+.explainer-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  padding: 2rem;
+}
+.explainer-icon {
+  width: 56px;
+  height: 56px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 14px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1.5rem;
-  background: var(--bg-surface);
-  border: 2px solid var(--border-default);
-  border-radius: 10px;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.25s ease;
+  justify-content: center;
+  margin-bottom: 1.25rem;
 }
-
-.process-tab:hover {
-  border-color: rgba(74, 158, 255, 0.3);
+.explainer-icon i { font-size: 1.5rem; color: #4a9eff; }
+.explainer-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
   color: var(--text-primary);
+  margin: 0 0 0.75rem;
 }
-
-.process-tab.active {
-  background: rgba(74, 158, 255, 0.1);
-  border-color: #4a9eff;
-  color: #4a9eff;
+.explainer-card p {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0 0 1.25rem;
 }
-
-.process-content {
-  display: none;
+.explainer-tips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
-
-.process-content.active {
-  display: block;
+.explainer-tips span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: var(--bg-elevated);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
 }
+.explainer-tips span i { color: #22c55e; font-size: 0.625rem; }
 
-.steps-grid {
+/* How It Works */
+.rb-how-works {
+  padding: 3rem 0;
+  background: linear-gradient(180deg, rgba(74, 158, 255, 0.02) 0%, transparent 100%);
+}
+.how-works-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 1rem;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.steps-grid-4 {
-  grid-template-columns: repeat(4, 1fr);
-}
-
-.steps-grid-5 {
   grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
 }
-
-.step-card {
+.hw-step {
   position: relative;
   background: var(--bg-surface);
   border: 1px solid var(--border-default);
   border-radius: 14px;
   padding: 1.5rem 1rem;
   text-align: center;
-  transition: all 0.25s ease;
 }
-
-.step-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(74, 158, 255, 0.3);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
-}
-
-.step-number {
+.hw-number {
   position: absolute;
   top: -12px;
   left: 50%;
@@ -864,8 +520,119 @@
   align-items: center;
   justify-content: center;
 }
+.hw-icon {
+  width: 44px;
+  height: 44px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.75rem;
+}
+.hw-icon i { font-size: 1rem; color: #4a9eff; }
+.hw-step h4 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.375rem;
+}
+.hw-step p {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
 
-.step-icon {
+/* My Documents Explanation */
+.rb-my-docs-explain { padding: 3rem 0; }
+.docs-explain-card {
+  display: flex;
+  gap: 2rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  padding: 2rem;
+}
+.docs-explain-icon {
+  width: 64px;
+  height: 64px;
+  background: rgba(34, 197, 94, 0.1);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.docs-explain-icon i { font-size: 1.75rem; color: #22c55e; }
+.docs-explain-content h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+.docs-explain-content > p {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin: 0 0 1rem;
+}
+.docs-explain-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.25rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+.docs-explain-content li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+.docs-explain-content li i { color: #4a9eff; width: 16px; }
+.docs-explain-content li strong { color: var(--text-primary); }
+.docs-explain-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #22c55e;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+.docs-explain-btn:hover {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+/* Roles */
+.rb-roles { padding: 3rem 0; }
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+.role-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  padding: 1.5rem;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+.role-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(74, 158, 255, 0.3);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+.role-icon {
   width: 48px;
   height: 48px;
   background: rgba(74, 158, 255, 0.1);
@@ -873,161 +640,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 0.875rem;
-}
-
-.step-icon i {
-  font-size: 1.125rem;
-  color: #4a9eff;
-}
-
-.step-card h4 {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 0.375rem;
-}
-
-.step-card p {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  line-height: 1.45;
-  margin: 0;
-}
-
-/* Features Section */
-.rb-features {
-  padding: 4rem 0;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-}
-
-.feature-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: 16px;
-  padding: 1.75rem;
-  transition: all 0.3s ease;
-}
-
-.feature-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(74, 158, 255, 0.3);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-}
-
-.feature-icon {
-  width: 52px;
-  height: 52px;
-  background: rgba(74, 158, 255, 0.1);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   margin-bottom: 1rem;
 }
-
-.feature-icon i {
-  font-size: 1.25rem;
-  color: #4a9eff;
-}
-
-.feature-card h3 {
+.role-icon i { font-size: 1.25rem; color: #4a9eff; }
+.role-card h3 {
   font-size: 1.0625rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin: 0 0 0.5rem;
-}
-
-.feature-card p {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin: 0;
-}
-
-/* Roles Section */
-.rb-roles {
-  padding: 4rem 0;
-  background: linear-gradient(180deg, transparent 0%, rgba(74, 158, 255, 0.02) 50%, transparent 100%);
-}
-
-.roles-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-}
-
-.role-card {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: 16px;
-  padding: 1.75rem;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-.role-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(74, 158, 255, 0.4);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-}
-
-.role-card:hover .role-cta {
-  color: #4a9eff;
-}
-
-.role-card:hover .role-cta i {
-  transform: translateX(4px);
-}
-
-.role-icon {
-  width: 52px;
-  height: 52px;
-  background: rgba(74, 158, 255, 0.1);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-
-.role-icon i {
-  font-size: 1.25rem;
-  color: #4a9eff;
-}
-
-.role-content {
-  flex: 1;
-}
-
-.role-card h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-primary);
   margin: 0 0 0.375rem;
 }
-
 .role-card p {
   font-size: 0.8125rem;
   color: var(--text-secondary);
-  line-height: 1.5;
   margin: 0 0 0.875rem;
 }
-
 .role-skills {
   display: flex;
   flex-wrap: wrap;
   gap: 0.375rem;
-  margin-bottom: 1rem;
 }
-
 .role-skills span {
   padding: 0.25rem 0.5rem;
   background: var(--bg-elevated);
@@ -1037,279 +668,121 @@
   color: var(--text-secondary);
 }
 
-.role-cta {
-  display: inline-flex;
+/* Features */
+.rb-features { padding: 3rem 0; background: linear-gradient(180deg, rgba(74, 158, 255, 0.02) 0%, transparent 100%); }
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+.feature-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  padding: 1.5rem;
+}
+.feature-icon {
+  width: 44px;
+  height: 44px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 10px;
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
+  justify-content: center;
+  margin-bottom: 0.875rem;
+}
+.feature-icon i { font-size: 1rem; color: #4a9eff; }
+.feature-item h4 {
+  font-size: 0.9375rem;
   font-weight: 600;
   color: var(--text-primary);
-  transition: all 0.25s ease;
+  margin: 0 0 0.375rem;
+}
+.feature-item p {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
 }
 
-.role-cta i {
-  font-size: 0.75rem;
-  transition: transform 0.25s ease;
-}
-
-/* CTA Section */
-.rb-cta {
-  padding: 4rem 0 5rem;
-}
-
-.cta-card {
-  position: relative;
-  background: linear-gradient(135deg, rgba(74, 158, 255, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%);
+/* CTA */
+.rb-cta { padding: 3rem 0 4rem; }
+.cta-box {
+  background: linear-gradient(135deg, rgba(74, 158, 255, 0.08) 0%, rgba(139, 92, 246, 0.05) 100%);
   border: 1px solid rgba(74, 158, 255, 0.15);
-  border-radius: 24px;
-  padding: 4rem 2rem;
-  text-align: center;
-  overflow: hidden;
-}
-
-.cta-glow {
-  position: absolute;
-  top: -50%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(74, 158, 255, 0.12) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.cta-content {
-  position: relative;
-}
-
-.cta-icon {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #4a9eff 0%, #6366f1 100%);
   border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.5rem;
-  box-shadow: 0 10px 30px rgba(74, 158, 255, 0.3);
+  padding: 3rem 2rem;
+  text-align: center;
 }
-
-.cta-icon i {
-  font-size: 2rem;
-  color: white;
-}
-
-.cta-card h2 {
-  font-size: 1.75rem;
+.cta-box h2 {
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.5rem;
 }
-
-.cta-card p {
+.cta-box p {
   font-size: 1rem;
   color: var(--text-secondary);
-  max-width: 500px;
-  margin: 0 auto 2rem;
-  line-height: 1.6;
+  margin: 0 0 1.5rem;
 }
-
-.cta-buttons {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
+.cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 .btn-cta-primary {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 1rem 2rem;
+  padding: 0.875rem 1.75rem;
   background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
   color: white;
   font-weight: 600;
-  font-size: 1rem;
-  border-radius: 12px;
+  font-size: 0.9375rem;
+  border-radius: 10px;
   text-decoration: none;
   transition: all 0.25s ease;
 }
-
-.btn-cta-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(74, 158, 255, 0.4);
-  color: white;
-}
-
+.btn-cta-primary:hover { box-shadow: 0 6px 20px rgba(74, 158, 255, 0.35); color: white; }
 .btn-cta-secondary {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 1rem 2rem;
-  background: transparent;
+  padding: 0.875rem 1.75rem;
+  background: var(--bg-surface);
   color: var(--text-primary);
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.9375rem;
   border: 1px solid var(--border-default);
-  border-radius: 12px;
+  border-radius: 10px;
   text-decoration: none;
   transition: all 0.25s ease;
 }
+.btn-cta-secondary:hover { border-color: #4a9eff; color: #4a9eff; }
 
-.btn-cta-secondary:hover {
-  border-color: #4a9eff;
-  color: #4a9eff;
-}
-</style>
-
-
-<style>
-/* Responsive Design */
-@media (max-width: 1100px) {
-  .decision-cards {
-    grid-template-columns: 1fr;
-    max-width: 450px;
-  }
-  
-  .steps-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
-  .steps-grid-4,
-  .steps-grid-5 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
+/* Responsive */
 @media (max-width: 1024px) {
-  .hero-content-centered h1 {
-    font-size: 2.25rem;
-  }
-  
-  .features-grid,
-  .roles-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .quick-actions-grid { grid-template-columns: 1fr; }
+  .explainer-grid { grid-template-columns: 1fr; }
+  .how-works-grid { grid-template-columns: repeat(3, 1fr); }
+  .roles-grid { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .docs-explain-card { flex-direction: column; }
+  .docs-explain-content ul { grid-template-columns: 1fr; }
 }
-
 @media (max-width: 768px) {
-  .rb-hero {
-    padding: 3rem 0 1.5rem;
-  }
-  
-  .hero-content-centered h1 {
-    font-size: 1.875rem;
-  }
-  
-  .hero-subtitle {
-    font-size: 1rem;
-  }
-  
-  .decision-header h2 {
-    font-size: 1.5rem;
-  }
-  
-  .process-tabs {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .process-tab {
-    width: 100%;
-    max-width: 280px;
-    justify-content: center;
-  }
-  
-  .steps-grid,
-  .steps-grid-4,
-  .steps-grid-5 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .features-grid,
-  .roles-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .cta-buttons {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .btn-cta-primary,
-  .btn-cta-secondary {
-    width: 100%;
-    max-width: 280px;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero-content-centered h1 {
-    font-size: 1.625rem;
-  }
-  
-  .decision-card {
-    padding: 1.5rem;
-  }
-  
-  .card-meta {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .steps-grid,
-  .steps-grid-4,
-  .steps-grid-5 {
-    grid-template-columns: 1fr;
-  }
-  
-  .cta-card {
-    padding: 2.5rem 1.5rem;
-  }
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-  .decision-card,
-  .step-card,
-  .feature-card,
-  .role-card,
-  .btn-cta-primary,
-  .card-cta {
-    transition: none;
-  }
-  
-  .decision-card:hover,
-  .step-card:hover,
-  .feature-card:hover,
-  .role-card:hover {
-    transform: none;
-  }
+  .rb-hero h1 { font-size: 2rem; }
+  .how-works-grid { grid-template-columns: repeat(2, 1fr); }
+  .features-grid { grid-template-columns: 1fr; }
 }
 </style>
 
 <script>
+// Process tabs functionality
 document.addEventListener('DOMContentLoaded', function() {
-  // Process tabs functionality
-  const processTabs = document.querySelectorAll('.process-tab');
-  const processContents = document.querySelectorAll('.process-content');
-  
-  processTabs.forEach(tab => {
+  const tabs = document.querySelectorAll('.process-tab');
+  tabs.forEach(tab => {
     tab.addEventListener('click', function() {
-      const tabId = this.dataset.tab;
-      
-      // Update active tab
-      processTabs.forEach(t => t.classList.remove('active'));
+      tabs.forEach(t => t.classList.remove('active'));
       this.classList.add('active');
-      
-      // Update active content
-      processContents.forEach(content => {
-        content.classList.remove('active');
-        if (content.id === `${tabId}-process`) {
-          content.classList.add('active');
-        }
-      });
+      document.querySelectorAll('.process-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(this.dataset.tab + '-process').classList.add('active');
     });
   });
 });

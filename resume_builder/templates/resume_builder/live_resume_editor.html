@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Resume Editor - {{ template.name }}</title>
+    <title>Resume Editor - {{ template.name }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -26,105 +26,102 @@
             overflow: hidden;
             height: 100vh;
         }
-        /* TOP BAR */
-        .top-bar {
+        
+        /* TOP NAVIGATION BAR */
+        .top-nav {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0.75rem 1.5rem;
+            padding: 0 1.5rem;
             background: var(--bg-surface);
             border-bottom: 1px solid var(--border-default);
-            height: 60px;
+            height: 56px;
         }
-        .top-bar-left { display: flex; align-items: center; gap: 1rem; }
-        .back-btn {
+        .nav-left { display: flex; align-items: center; gap: 1.5rem; }
+        .nav-brand {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.5rem 0.75rem;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        .nav-brand i { color: var(--primary); }
+        .nav-links { display: flex; gap: 0.25rem; }
+        .nav-link {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
             color: var(--text-secondary);
             text-decoration: none;
             border-radius: 6px;
-            font-size: 0.875rem;
+            transition: all 0.2s;
         }
-        .back-btn:hover { background: var(--bg-elevated); color: var(--text-primary); }
-        .doc-title input {
-            font-size: 1rem;
+        .nav-link:hover { color: var(--text-primary); background: var(--bg-elevated); }
+        .nav-link.active { color: var(--primary); background: rgba(74, 158, 255, 0.1); }
+        .nav-right { display: flex; align-items: center; gap: 0.75rem; }
+        .doc-title-input {
+            font-size: 0.9375rem;
             font-weight: 600;
             color: var(--text-primary);
             background: transparent;
             border: 1px solid transparent;
-            padding: 0.375rem 0.5rem;
+            padding: 0.375rem 0.625rem;
             border-radius: 6px;
-            min-width: 200px;
+            min-width: 180px;
         }
-        .doc-title input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: var(--bg-surface);
-        }
-        .save-status {
+        .doc-title-input:focus { outline: none; border-color: var(--primary); background: var(--bg-elevated); }
+        .save-indicator {
             display: flex;
             align-items: center;
             gap: 0.375rem;
             font-size: 0.75rem;
             color: var(--text-muted);
         }
-        .save-status.saved { color: var(--success); }
-        .top-bar-right { display: flex; align-items: center; gap: 0.75rem; }
-        .template-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 0.75rem;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-default);
-            border-radius: 8px;
-            font-size: 0.8125rem;
-            color: var(--text-secondary);
-            cursor: pointer;
-        }
-        .template-btn:hover { border-color: var(--primary); color: var(--text-primary); }
+        .save-indicator.saved { color: var(--success); }
         .btn {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
             padding: 0.5rem 1rem;
-            font-size: 0.875rem;
+            font-size: 0.8125rem;
             font-weight: 600;
             border-radius: 8px;
             border: none;
             cursor: pointer;
+            transition: all 0.2s;
         }
-        .btn-secondary {
-            background: var(--bg-elevated);
-            color: var(--text-primary);
-            border: 1px solid var(--border-default);
-        }
+        .btn-ghost { background: transparent; color: var(--text-secondary); }
+        .btn-ghost:hover { color: var(--text-primary); background: var(--bg-elevated); }
+        .btn-secondary { background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border-default); }
+        .btn-secondary:hover { border-color: var(--primary); }
         .btn-primary { background: var(--primary); color: #fff; }
-        .btn:hover { opacity: 0.9; }
-        /* SPLIT VIEW LAYOUT - THE KEY PART */
-        .split-container {
+        .btn-primary:hover { opacity: 0.9; }
+        /* SPLIT LAYOUT */
+        .editor-layout {
             display: flex;
-            height: calc(100vh - 60px);
+            height: calc(100vh - 56px);
             overflow: hidden;
         }
-        /* LEFT PANEL - EDITOR */
-        .editor-panel {
-            width: 420px;
-            min-width: 380px;
-            max-width: 500px;
+        
+        /* LEFT PANEL - FORM EDITOR (Wider) */
+        .form-panel {
+            width: 480px;
+            min-width: 420px;
+            max-width: 560px;
             background: var(--bg-surface);
             border-right: 1px solid var(--border-default);
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
-        .editor-scroll {
+        .form-scroll {
             flex: 1;
             overflow-y: auto;
             padding: 1.25rem;
         }
+        
         /* RIGHT PANEL - PREVIEW */
         .preview-panel {
             flex: 1;
@@ -132,16 +129,20 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
         }
-        .preview-toolbar {
+        .preview-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0.75rem 1.5rem;
+            padding: 0.625rem 1.25rem;
             background: var(--bg-surface);
             border-bottom: 1px solid var(--border-default);
         }
-        .preview-label {
+        .preview-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             font-size: 0.8125rem;
             font-weight: 600;
             color: var(--text-secondary);
@@ -156,16 +157,12 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        .zoom-level {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            min-width: 40px;
-            text-align: center;
-        }
-        .preview-scroll {
+        .zoom-btn:hover { border-color: var(--primary); color: var(--text-primary); }
+        .zoom-level { font-size: 0.75rem; color: var(--text-muted); min-width: 40px; text-align: center; }
+        .preview-area {
             flex: 1;
             overflow: auto;
-            padding: 2rem;
+            padding: 1.5rem;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -192,16 +189,14 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.75rem;
             z-index: 10;
         }
         .preview-loading.hidden { display: none; }
-        .preview-loading i {
-            font-size: 2rem;
-            color: var(--primary);
-            animation: spin 1s linear infinite;
-        }
+        .preview-loading i { font-size: 1.5rem; color: var(--primary); animation: spin 1s linear infinite; }
+        .preview-loading span { font-size: 0.875rem; color: var(--text-primary); }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
         /* FORM SECTIONS */
         .form-section {
             background: var(--bg-surface);
@@ -214,7 +209,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1rem 1.25rem;
+            padding: 0.875rem 1rem;
             background: var(--bg-elevated);
             cursor: pointer;
             user-select: none;
@@ -222,74 +217,102 @@
         .section-header h3 {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            font-size: 0.9375rem;
+            gap: 0.625rem;
+            font-size: 0.875rem;
             font-weight: 600;
             color: var(--text-primary);
             margin: 0;
         }
-        .section-header h3 i { color: var(--primary); }
-        .section-toggle {
-            color: var(--text-muted);
-            transition: transform 0.2s;
-        }
+        .section-header h3 i { color: var(--primary); font-size: 0.875rem; }
+        .section-toggle { color: var(--text-muted); transition: transform 0.2s; font-size: 0.75rem; }
         .section-header.collapsed .section-toggle { transform: rotate(-90deg); }
-        .section-content {
-            padding: 1.25rem;
-            border-top: 1px solid var(--border-default);
-        }
-        .section-content.collapsed { display: none; }
-        .field-row {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        .field-row.single { grid-template-columns: 1fr; }
-        .field-row:last-child { margin-bottom: 0; }
-        .field-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.375rem;
-        }
-        .field-group label {
-            font-size: 0.8125rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-        }
-        .field-group input,
-        .field-group textarea {
-            padding: 0.625rem 0.875rem;
+        .section-body { padding: 1rem; border-top: 1px solid var(--border-default); }
+        .section-body.collapsed { display: none; }
+        
+        /* FORM FIELDS */
+        .field-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.875rem; }
+        .field-grid.single { grid-template-columns: 1fr; }
+        .field-group { display: flex; flex-direction: column; gap: 0.375rem; }
+        .field-group label { font-size: 0.75rem; font-weight: 500; color: var(--text-secondary); }
+        .field-group input, .field-group textarea, .field-group select {
+            padding: 0.625rem 0.75rem;
             font-size: 0.875rem;
             color: var(--text-primary);
             background: var(--bg-primary);
             border: 1px solid var(--border-default);
             border-radius: 8px;
+            font-family: inherit;
         }
-        .field-group input:focus,
-        .field-group textarea:focus {
+        .field-group input:focus, .field-group textarea:focus, .field-group select:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1);
         }
-        .field-group textarea {
-            resize: vertical;
-            min-height: 80px;
-            font-family: inherit;
-        }
-        /* PHOTO UPLOAD */
-        .photo-upload {
-            display: flex;
-            align-items: center;
-            gap: 1.25rem;
+        .field-group textarea { resize: vertical; min-height: 80px; }
+        /* TEMPLATE & ROLE SELECTOR (On same page) */
+        .selector-section {
+            background: linear-gradient(135deg, rgba(74, 158, 255, 0.05) 0%, rgba(139, 92, 246, 0.03) 100%);
+            border: 1px solid rgba(74, 158, 255, 0.15);
+            border-radius: 12px;
             padding: 1rem;
-            background: var(--bg-primary);
-            border-radius: 10px;
             margin-bottom: 1rem;
         }
-        .photo-preview {
-            width: 80px;
-            height: 80px;
+        .selector-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        .selector-row:last-child { margin-bottom: 0; }
+        .selector-group { flex: 1; }
+        .selector-label {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        .selector-label i { color: var(--primary); }
+        .template-options, .role-options {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .template-chip, .role-chip {
+            padding: 0.5rem 0.875rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .template-chip:hover, .role-chip:hover {
+            border-color: var(--primary);
+            color: var(--text-primary);
+        }
+        .template-chip.active, .role-chip.active {
+            background: rgba(74, 158, 255, 0.15);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        /* PHOTO UPLOAD */
+        .photo-upload-box {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.875rem;
+            background: var(--bg-primary);
+            border-radius: 10px;
+            margin-bottom: 0.875rem;
+        }
+        .photo-preview-circle {
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
             background: var(--bg-elevated);
             border: 2px dashed var(--border-default);
@@ -297,43 +320,44 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            flex-shrink: 0;
         }
-        .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
-        .photo-preview i { font-size: 1.5rem; color: var(--text-muted); }
-        .upload-btn {
+        .photo-preview-circle img { width: 100%; height: 100%; object-fit: cover; }
+        .photo-preview-circle i { font-size: 1.25rem; color: var(--text-muted); }
+        .photo-upload-info p { font-size: 0.75rem; font-weight: 500; color: var(--text-secondary); margin: 0 0 0.375rem; }
+        .upload-btn-small {
             display: inline-flex;
             align-items: center;
             gap: 0.375rem;
-            padding: 0.375rem 0.75rem;
-            font-size: 0.75rem;
+            padding: 0.375rem 0.625rem;
+            font-size: 0.6875rem;
             color: var(--primary);
             background: rgba(74, 158, 255, 0.1);
             border: none;
             border-radius: 6px;
             cursor: pointer;
         }
+        
         /* COLOR PICKER */
-        .color-row {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
+        .color-options { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
         .color-swatch {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
             cursor: pointer;
             border: 2px solid transparent;
+            transition: all 0.2s;
         }
+        .color-swatch:hover { transform: scale(1.1); }
         .color-swatch.active { border-color: var(--text-primary); }
-        /* ENTRY CARDS */
+        
+        /* ENTRY CARDS (Experience, Education) */
         .entry-card {
             background: var(--bg-primary);
             border: 1px solid var(--border-default);
             border-radius: 10px;
-            padding: 1rem;
-            margin-bottom: 1rem;
+            padding: 0.875rem;
+            margin-bottom: 0.75rem;
         }
         .entry-header {
             display: flex;
@@ -341,73 +365,51 @@
             align-items: center;
             margin-bottom: 0.75rem;
         }
-        .entry-title {
-            font-size: 0.8125rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-        .delete-btn {
+        .entry-title { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); }
+        .entry-delete {
             padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
+            font-size: 0.6875rem;
             color: var(--text-muted);
             background: transparent;
             border: none;
             cursor: pointer;
         }
-        .delete-btn:hover { color: var(--error); }
-        .add-btn {
+        .entry-delete:hover { color: var(--error); }
+        .add-entry-btn {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            padding: 0.75rem;
-            font-size: 0.875rem;
+            padding: 0.625rem;
+            font-size: 0.8125rem;
             color: var(--primary);
             background: transparent;
             border: 2px dashed var(--border-default);
             border-radius: 10px;
             cursor: pointer;
             width: 100%;
+            transition: all 0.2s;
         }
-        .add-btn:hover {
-            background: rgba(74, 158, 255, 0.05);
-            border-color: var(--primary);
-        }
+        .add-entry-btn:hover { background: rgba(74, 158, 255, 0.05); border-color: var(--primary); }
+        
         /* LANGUAGES */
-        .languages-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
-        }
-        .language-tag {
+        .tags-container { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.625rem; }
+        .tag-item {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.375rem;
             background: rgba(74, 158, 255, 0.1);
             color: var(--primary);
-            padding: 0.375rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8125rem;
-        }
-        .language-tag button {
-            background: none;
-            border: none;
-            color: inherit;
-            cursor: pointer;
-            padding: 0;
-        }
-        .add-lang-row {
-            display: flex;
-            gap: 0.5rem;
-        }
-        .add-lang-row input { flex: 1; }
-        .btn-sm {
-            padding: 0.375rem 0.75rem;
+            padding: 0.375rem 0.625rem;
+            border-radius: 16px;
             font-size: 0.75rem;
         }
+        .tag-item button { background: none; border: none; color: inherit; cursor: pointer; padding: 0; }
+        .add-tag-row { display: flex; gap: 0.5rem; }
+        .add-tag-row input { flex: 1; }
+        .btn-sm { padding: 0.375rem 0.625rem; font-size: 0.75rem; }
         /* MODALS */
-        .modal {
+        .modal-overlay {
             position: fixed;
             inset: 0;
             background: rgba(0, 0, 0, 0.6);
@@ -416,72 +418,34 @@
             justify-content: center;
             z-index: 1000;
         }
-        .modal.hidden { display: none; }
-        .modal-content {
+        .modal-overlay.hidden { display: none; }
+        .modal-box {
             background: var(--bg-surface);
             border-radius: 16px;
             padding: 1.5rem;
-            max-width: 700px;
+            max-width: 440px;
             width: 90%;
         }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        .modal-header h3 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin: 0;
-        }
-        .close-btn {
-            padding: 0.5rem;
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-        }
-        .template-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-        }
-        .template-card {
-            background: var(--bg-primary);
+        .modal-box h3 { font-size: 1.125rem; font-weight: 600; margin: 0 0 0.5rem; text-align: center; }
+        .modal-box > p { font-size: 0.875rem; color: var(--text-secondary); margin: 0 0 1.25rem; text-align: center; }
+        .modal-input-group { margin-bottom: 1.25rem; }
+        .modal-input-group label { display: block; font-size: 0.8125rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .modal-input-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 0.9375rem;
             border: 2px solid var(--border-default);
-            border-radius: 12px;
-            padding: 1rem;
-            cursor: pointer;
-            text-align: center;
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
         }
-        .template-card:hover { border-color: var(--primary); }
-        .template-card.active {
-            border-color: var(--primary);
-            background: rgba(74, 158, 255, 0.05);
-        }
-        .template-icon {
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            margin-bottom: 0.75rem;
-        }
-        .template-card h4 {
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin: 0 0 0.25rem;
-        }
-        .template-card p {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin: 0;
-        }
+        .modal-input-group input:focus { outline: none; border-color: var(--primary); }
+        .modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
+        
         /* TOAST */
-        .toast {
+        .toast-notification {
             position: fixed;
-            bottom: 2rem;
+            bottom: 1.5rem;
             left: 50%;
             transform: translateX(-50%);
             background: var(--bg-surface);
@@ -490,113 +454,87 @@
             padding: 0.75rem 1.25rem;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.625rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             z-index: 1000;
         }
-        .toast.hidden { display: none; }
-        .toast i { color: var(--success); }
-        /* SAVE MODAL */
-        .save-modal-content {
-            max-width: 440px;
-        }
-        .save-modal-content h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin: 0 0 0.5rem;
-            text-align: center;
-        }
-        .save-modal-content > p {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin: 0 0 1.5rem;
-            text-align: center;
-        }
-        .save-input-group { margin-bottom: 1.5rem; }
-        .save-input-group label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        .save-input-group input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            font-size: 1rem;
-            border: 2px solid var(--border-default);
-            border-radius: 8px;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-        }
-        .save-input-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        .save-actions {
-            display: flex;
-            gap: 0.75rem;
-            justify-content: flex-end;
-        }
-        .btn-ghost {
-            background: transparent;
-            color: var(--text-secondary);
-            border: 1px solid var(--border-default);
-        }
+        .toast-notification.hidden { display: none; }
+        .toast-notification i { color: var(--success); }
+        .toast-notification span { font-size: 0.875rem; color: var(--text-primary); }
+        
         /* RESPONSIVE */
         @media (max-width: 1024px) {
-            .split-container { flex-direction: column; }
-            .editor-panel { width: 100%; max-width: none; height: 50vh; }
+            .editor-layout { flex-direction: column; }
+            .form-panel { width: 100%; max-width: none; height: 50vh; }
             .preview-panel { height: 50vh; }
-            .template-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
-    <!-- TOP BAR -->
-    <div class="top-bar">
-        <div class="top-bar-left">
-            <a href="{% url 'resume_builder:resume_templates' %}" class="back-btn">
-                <i class="fas fa-arrow-left"></i> Back
-            </a>
-            <div class="doc-title">
-                <input type="text" id="documentTitle" value="My Resume">
-                <span class="save-status" id="saveStatus"><i class="fas fa-circle"></i> Draft</span>
+    <!-- TOP NAVIGATION -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <a href="{% url 'resume_builder:home' %}" class="nav-brand"><i class="fas fa-file-alt"></i> Resume Builder</a>
+            <div class="nav-links">
+                <a href="{% url 'resume_builder:live_resume_editor' template.id %}" class="nav-link active">Resume</a>
+                <a href="{% url 'resume_builder:live_cover_letter_editor' 3 %}" class="nav-link">Cover Letter</a>
+                <a href="{% url 'resume_builder:dashboard' %}" class="nav-link">My Documents</a>
             </div>
         </div>
-        <div class="top-bar-right">
-            <button type="button" class="template-btn" onclick="openTemplateModal()">
-                <i class="fas fa-palette"></i>
-                <span id="currentTemplateName">{{ template.name }}</span>
-                <i class="fas fa-chevron-down"></i>
-            </button>
-            <button type="button" class="btn btn-secondary" onclick="saveToMyDocuments()">
-                <i class="fas fa-save"></i> Save
-            </button>
-            <button type="button" class="btn btn-primary" onclick="downloadPDF()">
-                <i class="fas fa-download"></i> Download
-            </button>
+        <div class="nav-right">
+            <input type="text" class="doc-title-input" id="documentTitle" value="My Resume">
+            <span class="save-indicator" id="saveIndicator"><i class="fas fa-circle"></i> Draft</span>
+            <button type="button" class="btn btn-secondary" onclick="saveDocument()"><i class="fas fa-save"></i> Save</button>
+            <button type="button" class="btn btn-primary" onclick="downloadPDF()"><i class="fas fa-download"></i> Download</button>
         </div>
-    </div>
+    </nav>
 
-    <!-- SPLIT VIEW -->
-    <div class="split-container">
-        <!-- LEFT: EDITOR PANEL -->
-        <div class="editor-panel">
-            <div class="editor-scroll">
+    <!-- EDITOR LAYOUT -->
+    <div class="editor-layout">
+        <!-- LEFT: FORM PANEL -->
+        <div class="form-panel">
+            <div class="form-scroll">
                 <form id="resumeForm">
                     {% csrf_token %}
                     <input type="hidden" id="templateId" value="{{ template.id }}">
                     <input type="hidden" id="templateSlug" value="{{ template.slug }}">
                     <input type="hidden" id="roleField" value="software_engineer">
 
-                    <!-- Personal Details -->
+                    <!-- TEMPLATE & ROLE SELECTOR -->
+                    <div class="selector-section">
+                        <div class="selector-row">
+                            <div class="selector-group">
+                                <div class="selector-label"><i class="fas fa-palette"></i> Template</div>
+                                <div class="template-options" id="templateOptions">
+                                    <span class="template-chip active" data-template="professional" data-id="1">Professional</span>
+                                    <span class="template-chip" data-template="modern" data-id="2">Modern</span>
+                                    <span class="template-chip" data-template="executive" data-id="3">Executive</span>
+                                    <span class="template-chip" data-template="minimal" data-id="4">Minimal</span>
+                                    <span class="template-chip" data-template="creative" data-id="5">Creative</span>
+                                    <span class="template-chip" data-template="technical" data-id="6">Technical</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="selector-row">
+                            <div class="selector-group">
+                                <div class="selector-label"><i class="fas fa-briefcase"></i> Target Role</div>
+                                <div class="role-options" id="roleOptions">
+                                    <span class="role-chip" data-role="devops_sre">DevOps / SRE</span>
+                                    <span class="role-chip active" data-role="software_engineer">Software Engineer</span>
+                                    <span class="role-chip" data-role="ds_ml">DS / ML Engineer</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PERSONAL DETAILS -->
                     <div class="form-section">
                         <div class="section-header" onclick="toggleSection(this)">
                             <h3><i class="fas fa-user"></i> Personal Details</h3>
                             <i class="fas fa-chevron-down section-toggle"></i>
                         </div>
-                        <div class="section-content">
-                            <div class="field-row">
+                        <div class="section-body">
+                            <div class="field-grid">
                                 <div class="field-group">
                                     <label>Full Name</label>
                                     <input type="text" id="fullName">
@@ -606,7 +544,7 @@
                                     <input type="text" id="roleTitle" placeholder="Senior Software Engineer">
                                 </div>
                             </div>
-                            <div class="field-row">
+                            <div class="field-grid">
                                 <div class="field-group">
                                     <label>Email</label>
                                     <input type="email" id="email">
@@ -616,126 +554,124 @@
                                     <input type="tel" id="phone">
                                 </div>
                             </div>
-                            <div class="field-row single">
+                            <div class="field-grid single">
                                 <div class="field-group">
-                                    <label>Address</label>
-                                    <input type="text" id="address">
+                                    <label>Address / Location</label>
+                                    <input type="text" id="address" placeholder="City, Country">
                                 </div>
                             </div>
-                            <div class="field-row">
+                            <div class="field-grid">
                                 <div class="field-group">
                                     <label>LinkedIn</label>
-                                    <input type="text" id="linkedin">
+                                    <input type="text" id="linkedin" placeholder="linkedin.com/in/username">
                                 </div>
                                 <div class="field-group">
                                     <label>GitHub</label>
-                                    <input type="text" id="github">
+                                    <input type="text" id="github" placeholder="github.com/username">
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Photo & Theme -->
+                    <!-- PHOTO & THEME -->
                     <div class="form-section" id="photoSection">
                         <div class="section-header" onclick="toggleSection(this)">
                             <h3><i class="fas fa-palette"></i> Photo & Theme</h3>
                             <i class="fas fa-chevron-down section-toggle"></i>
                         </div>
-                        <div class="section-content">
-                            <div class="photo-upload" id="photoUploadArea">
-                                <div class="photo-preview" id="photoPreview">
+                        <div class="section-body">
+                            <div class="photo-upload-box" id="photoUploadBox">
+                                <div class="photo-preview-circle" id="photoPreview">
                                     <i class="fas fa-user"></i>
                                 </div>
-                                <div>
-                                    <p style="margin:0 0 .5rem;font-size:.8125rem;font-weight:500">Profile Photo</p>
-                                    <label class="upload-btn">
-                                        <i class="fas fa-camera"></i> Upload
+                                <div class="photo-upload-info">
+                                    <p>Profile Photo (Professional template only)</p>
+                                    <label class="upload-btn-small">
+                                        <i class="fas fa-camera"></i> Upload Photo
                                         <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(this)">
                                     </label>
                                 </div>
                             </div>
                             <div class="field-group">
                                 <label>Color Theme</label>
-                                <div class="color-row">
+                                <div class="color-options">
                                     <div class="color-swatch active" style="background:#4a9d9a" data-color="#4a9d9a" onclick="selectColor(this)"></div>
                                     <div class="color-swatch" style="background:#1e3a5f" data-color="#1e3a5f" onclick="selectColor(this)"></div>
                                     <div class="color-swatch" style="background:#2d5a3d" data-color="#2d5a3d" onclick="selectColor(this)"></div>
                                     <div class="color-swatch" style="background:#722f37" data-color="#722f37" onclick="selectColor(this)"></div>
                                     <div class="color-swatch" style="background:#475569" data-color="#475569" onclick="selectColor(this)"></div>
                                     <div class="color-swatch" style="background:#5b21b6" data-color="#5b21b6" onclick="selectColor(this)"></div>
-                                    <input type="color" id="customColor" value="#4a9d9a" style="width:32px;height:32px;border:none;border-radius:8px;cursor:pointer" onchange="selectCustomColor(this)">
+                                    <input type="color" id="customColor" value="#4a9d9a" style="width:28px;height:28px;border:none;border-radius:6px;cursor:pointer" onchange="selectCustomColor(this)">
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- Profile Summary -->
+
+                    <!-- PROFILE SUMMARY -->
                     <div class="form-section">
                         <div class="section-header" onclick="toggleSection(this)">
                             <h3><i class="fas fa-align-left"></i> Profile Summary</h3>
                             <i class="fas fa-chevron-down section-toggle"></i>
                         </div>
-                        <div class="section-content">
+                        <div class="section-body">
                             <div class="field-group">
-                                <textarea id="summary" rows="5" placeholder="Write a compelling summary..."></textarea>
+                                <textarea id="summary" rows="5" placeholder="Write a compelling professional summary..."></textarea>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Skills -->
+                    <!-- SKILLS -->
                     <div class="form-section">
                         <div class="section-header" onclick="toggleSection(this)">
                             <h3><i class="fas fa-cogs"></i> Skills</h3>
                             <i class="fas fa-chevron-down section-toggle"></i>
                         </div>
-                        <div class="section-content">
+                        <div class="section-body">
                             <div class="field-group">
                                 <label>Skills (one per line)</label>
-                                <textarea id="skillsInput" rows="8" placeholder="Python&#10;JavaScript&#10;AWS"></textarea>
+                                <textarea id="skillsInput" rows="8" placeholder="Python&#10;JavaScript&#10;AWS&#10;Docker"></textarea>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Experience -->
+                    <!-- EXPERIENCE -->
                     <div class="form-section">
                         <div class="section-header" onclick="toggleSection(this)">
                             <h3><i class="fas fa-briefcase"></i> Experience</h3>
                             <i class="fas fa-chevron-down section-toggle"></i>
                         </div>
-                        <div class="section-content">
+                        <div class="section-body">
                             <div id="experienceContainer"></div>
-                            <button type="button" class="add-btn" onclick="addExperience()">
+                            <button type="button" class="add-entry-btn" onclick="addExperience()">
                                 <i class="fas fa-plus"></i> Add Experience
                             </button>
                         </div>
                     </div>
 
-                    <!-- Education -->
+                    <!-- EDUCATION -->
                     <div class="form-section">
                         <div class="section-header" onclick="toggleSection(this)">
                             <h3><i class="fas fa-graduation-cap"></i> Education</h3>
                             <i class="fas fa-chevron-down section-toggle"></i>
                         </div>
-                        <div class="section-content">
+                        <div class="section-body">
                             <div id="educationContainer"></div>
-                            <button type="button" class="add-btn" onclick="addEducation()">
+                            <button type="button" class="add-entry-btn" onclick="addEducation()">
                                 <i class="fas fa-plus"></i> Add Education
                             </button>
                         </div>
                     </div>
 
-                    <!-- Languages -->
+                    <!-- LANGUAGES -->
                     <div class="form-section">
                         <div class="section-header" onclick="toggleSection(this)">
                             <h3><i class="fas fa-language"></i> Languages</h3>
                             <i class="fas fa-chevron-down section-toggle"></i>
                         </div>
-                        <div class="section-content">
-                            <div id="languagesContainer" class="languages-container"></div>
-                            <div class="add-lang-row">
+                        <div class="section-body">
+                            <div id="languagesContainer" class="tags-container"></div>
+                            <div class="add-tag-row">
                                 <input type="text" id="newLanguageInput" placeholder="Add a language" onkeypress="if(event.key==='Enter'){event.preventDefault();addLanguage();}">
-                                <button type="button" class="btn btn-primary btn-sm" onclick="addLanguage()">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button type="button" class="btn btn-primary btn-sm" onclick="addLanguage()"><i class="fas fa-plus"></i></button>
                             </div>
                         </div>
                     </div>
@@ -745,77 +681,36 @@
 
         <!-- RIGHT: PREVIEW PANEL -->
         <div class="preview-panel">
-            <div class="preview-toolbar">
-                <div class="preview-label"><i class="fas fa-eye"></i> Live Preview</div>
+            <div class="preview-header">
+                <div class="preview-title"><i class="fas fa-eye"></i> Live Preview</div>
                 <div class="zoom-controls">
                     <button class="zoom-btn" onclick="zoomOut()"><i class="fas fa-minus"></i></button>
                     <span class="zoom-level" id="zoomLevel">100%</span>
                     <button class="zoom-btn" onclick="zoomIn()"><i class="fas fa-plus"></i></button>
                 </div>
             </div>
-            <div class="preview-scroll">
+            <div class="preview-area">
                 <div class="preview-paper" id="previewPaper">
                     <iframe id="previewFrame"></iframe>
                 </div>
             </div>
             <div class="preview-loading hidden" id="previewLoading">
                 <i class="fas fa-spinner"></i>
-                <span style="color: var(--text-primary);">Updating...</span>
-            </div>
-        </div>
-    </div>
-    <!-- TEMPLATE MODAL -->
-    <div class="modal hidden" id="templateModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Choose Template</h3>
-                <button class="close-btn" onclick="closeTemplateModal()"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="template-grid">
-                <div class="template-card active" data-template="professional" data-id="1" onclick="selectTemplate(this)">
-                    <div class="template-icon">📄</div>
-                    <h4>Professional</h4>
-                    <p>With photo</p>
-                </div>
-                <div class="template-card" data-template="modern" data-id="2" onclick="selectTemplate(this)">
-                    <div class="template-icon">📋</div>
-                    <h4>Modern</h4>
-                    <p>Clean minimal</p>
-                </div>
-                <div class="template-card" data-template="executive" data-id="3" onclick="selectTemplate(this)">
-                    <div class="template-icon">📑</div>
-                    <h4>Executive</h4>
-                    <p>Bold headers</p>
-                </div>
-                <div class="template-card" data-template="minimal" data-id="4" onclick="selectTemplate(this)">
-                    <div class="template-icon">📃</div>
-                    <h4>Minimal</h4>
-                    <p>Simple</p>
-                </div>
-                <div class="template-card" data-template="creative" data-id="5" onclick="selectTemplate(this)">
-                    <div class="template-icon">🎨</div>
-                    <h4>Creative</h4>
-                    <p>Colorful</p>
-                </div>
-                <div class="template-card" data-template="technical" data-id="6" onclick="selectTemplate(this)">
-                    <div class="template-icon">💻</div>
-                    <h4>Technical</h4>
-                    <p>Developer</p>
-                </div>
+                <span>Updating preview...</span>
             </div>
         </div>
     </div>
 
     <!-- SAVE MODAL -->
-    <div class="modal hidden" id="saveModal">
-        <div class="modal-content save-modal-content">
+    <div class="modal-overlay hidden" id="saveModal">
+        <div class="modal-box">
             <h3>Save to My Documents</h3>
-            <p>Give your resume a name.</p>
-            <div class="save-input-group">
+            <p>Give your resume a name to save it.</p>
+            <div class="modal-input-group">
                 <label>Document Name</label>
-                <input type="text" id="saveDocumentName" placeholder="e.g., Senior Engineer Resume">
+                <input type="text" id="saveDocName" placeholder="e.g., Senior Engineer Resume">
             </div>
-            <div class="save-actions">
+            <div class="modal-actions">
                 <button class="btn btn-ghost" onclick="closeSaveModal()">Cancel</button>
                 <button class="btn btn-primary" onclick="confirmSave()"><i class="fas fa-save"></i> Save</button>
             </div>
@@ -823,33 +718,59 @@
     </div>
 
     <!-- TOAST -->
-    <div class="toast hidden" id="toast">
+    <div class="toast-notification hidden" id="toast">
         <i class="fas fa-check-circle"></i>
         <span id="toastMessage">Saved!</span>
     </div>
     <script>
-        // CSRF Token
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        
-        // Draft data from Django
         const draftData = {{ draft_data|safe }};
-        
-        // State
         let currentZoom = 1;
         let savedResumeId = null;
         let previewDebounceTimer = null;
         let currentColor = '#4a9d9a';
         let photoBase64 = null;
 
-        // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
+            initTemplateSelector();
+            initRoleSelector();
             populateForm(draftData);
             setupLivePreview();
             updatePreview();
             updatePhotoVisibility();
         });
 
-        // Populate form with draft data
+        // Template selector
+        function initTemplateSelector() {
+            document.querySelectorAll('.template-chip').forEach(chip => {
+                chip.addEventListener('click', function() {
+                    document.querySelectorAll('.template-chip').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById('templateSlug').value = this.dataset.template;
+                    document.getElementById('templateId').value = this.dataset.id;
+                    updatePhotoVisibility();
+                    updatePreview();
+                });
+            });
+            // Set initial active based on current template
+            const currentSlug = document.getElementById('templateSlug').value;
+            document.querySelectorAll('.template-chip').forEach(c => {
+                c.classList.toggle('active', c.dataset.template === currentSlug);
+            });
+        }
+
+        // Role selector
+        function initRoleSelector() {
+            document.querySelectorAll('.role-chip').forEach(chip => {
+                chip.addEventListener('click', function() {
+                    document.querySelectorAll('.role-chip').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById('roleField').value = this.dataset.role;
+                    // Could load role-specific defaults here if needed
+                });
+            });
+        }
+
         function populateForm(d) {
             document.getElementById('fullName').value = d.full_name || '';
             document.getElementById('roleTitle').value = d.role_title || '';
@@ -885,7 +806,6 @@
             }
         }
 
-        // Setup live preview with debounce
         function setupLivePreview() {
             document.getElementById('resumeForm').addEventListener('input', () => {
                 clearTimeout(previewDebounceTimer);
@@ -893,7 +813,6 @@
             });
         }
 
-        // Collect all form data
         function collectFormData() {
             return {
                 template_id: parseInt(document.getElementById('templateId').value),
@@ -952,13 +871,13 @@
 
         function collectLanguages() {
             const langs = [];
-            document.querySelectorAll('#languagesContainer .language-tag span').forEach(span => {
+            document.querySelectorAll('#languagesContainer .tag-item span').forEach(span => {
                 const l = span.textContent.trim();
                 if (l) langs.push(l);
             });
             return langs;
         }
-        // Update preview via API
+
         async function updatePreview() {
             const loading = document.getElementById('previewLoading');
             loading.classList.remove('hidden');
@@ -967,13 +886,9 @@
                 const data = collectFormData();
                 const response = await fetch('/resume-builder/api/preview/resume/', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
                     body: JSON.stringify(data)
                 });
-                
                 const result = await response.json();
                 if (result.success) {
                     document.getElementById('previewFrame').srcdoc = result.html;
@@ -985,13 +900,11 @@
             }
         }
 
-        // Toggle section collapse
         function toggleSection(header) {
             header.classList.toggle('collapsed');
             header.nextElementSibling.classList.toggle('collapsed');
         }
 
-        // Color selection
         function selectColor(el) {
             document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
             el.classList.add('active');
@@ -1005,7 +918,6 @@
             updatePreview();
         }
 
-        // Photo upload
         function handlePhotoUpload(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -1020,10 +932,8 @@
 
         function updatePhotoVisibility() {
             const slug = document.getElementById('templateSlug').value;
-            document.getElementById('photoUploadArea').style.display = slug === 'professional' ? 'flex' : 'none';
+            document.getElementById('photoUploadBox').style.display = slug === 'professional' ? 'flex' : 'none';
         }
-
-        // Add experience entry
         function addExperience(data) {
             data = data || {};
             const container = document.getElementById('experienceContainer');
@@ -1032,11 +942,11 @@
             div.innerHTML = `
                 <div class="entry-header">
                     <span class="entry-title">Experience</span>
-                    <button type="button" class="delete-btn" onclick="this.closest('.entry-card').remove();updatePreview();">
-                        <i class="fas fa-trash"></i>
+                    <button type="button" class="entry-delete" onclick="this.closest('.entry-card').remove();updatePreview();">
+                        <i class="fas fa-trash"></i> Remove
                     </button>
                 </div>
-                <div class="field-row">
+                <div class="field-grid">
                     <div class="field-group">
                         <label>Job Title</label>
                         <input type="text" data-field="role" value="${data.role || ''}">
@@ -1046,7 +956,7 @@
                         <input type="text" data-field="company" value="${data.company || ''}">
                     </div>
                 </div>
-                <div class="field-row">
+                <div class="field-grid">
                     <div class="field-group">
                         <label>Start Date</label>
                         <input type="text" data-field="start_date" value="${data.start_date || ''}" placeholder="Jan 2020">
@@ -1058,13 +968,12 @@
                 </div>
                 <div class="field-group">
                     <label>Achievements (one per line)</label>
-                    <textarea data-field="bullets" rows="4">${(data.bullets || []).join('\n')}</textarea>
+                    <textarea data-field="bullets" rows="4" placeholder="• Led team of 5 engineers...&#10;• Reduced deployment time by 50%...">${(data.bullets || []).join('\n')}</textarea>
                 </div>
             `;
             container.appendChild(div);
         }
 
-        // Add education entry
         function addEducation(data) {
             data = data || {};
             const container = document.getElementById('educationContainer');
@@ -1073,35 +982,34 @@
             div.innerHTML = `
                 <div class="entry-header">
                     <span class="entry-title">Education</span>
-                    <button type="button" class="delete-btn" onclick="this.closest('.entry-card').remove();updatePreview();">
-                        <i class="fas fa-trash"></i>
+                    <button type="button" class="entry-delete" onclick="this.closest('.entry-card').remove();updatePreview();">
+                        <i class="fas fa-trash"></i> Remove
                     </button>
                 </div>
-                <div class="field-row">
+                <div class="field-grid">
                     <div class="field-group">
                         <label>Degree</label>
-                        <input type="text" data-field="degree" value="${data.degree || ''}">
+                        <input type="text" data-field="degree" value="${data.degree || ''}" placeholder="Bachelor of Science">
                     </div>
                     <div class="field-group">
-                        <label>Field</label>
-                        <input type="text" data-field="field" value="${data.field || ''}">
+                        <label>Field of Study</label>
+                        <input type="text" data-field="field" value="${data.field || ''}" placeholder="Computer Science">
                     </div>
                 </div>
-                <div class="field-row">
+                <div class="field-grid">
                     <div class="field-group">
                         <label>Institution</label>
                         <input type="text" data-field="school" value="${data.school || ''}">
                     </div>
                     <div class="field-group">
-                        <label>Year</label>
-                        <input type="text" data-field="graduation_date" value="${data.graduation_date || ''}">
+                        <label>Graduation Year</label>
+                        <input type="text" data-field="graduation_date" value="${data.graduation_date || ''}" placeholder="2020">
                     </div>
                 </div>
             `;
             container.appendChild(div);
         }
 
-        // Languages
         function addLanguage() {
             const input = document.getElementById('newLanguageInput');
             const lang = input.value.trim();
@@ -1114,67 +1022,31 @@
         function addLanguageTag(lang) {
             const container = document.getElementById('languagesContainer');
             const tag = document.createElement('div');
-            tag.className = 'language-tag';
+            tag.className = 'tag-item';
             tag.innerHTML = '<span>' + lang + '</span><button type="button" onclick="this.parentElement.remove();updatePreview();"><i class="fas fa-times"></i></button>';
             container.appendChild(tag);
         }
-        // Zoom controls
-        function zoomIn() {
-            if (currentZoom < 1.5) {
-                currentZoom += 0.1;
-                applyZoom();
-            }
-        }
 
-        function zoomOut() {
-            if (currentZoom > 0.5) {
-                currentZoom -= 0.1;
-                applyZoom();
-            }
-        }
-
+        // Zoom
+        function zoomIn() { if (currentZoom < 1.5) { currentZoom += 0.1; applyZoom(); } }
+        function zoomOut() { if (currentZoom > 0.5) { currentZoom -= 0.1; applyZoom(); } }
         function applyZoom() {
             document.getElementById('previewPaper').style.transform = 'scale(' + currentZoom + ')';
             document.getElementById('zoomLevel').textContent = Math.round(currentZoom * 100) + '%';
         }
 
-        // Template modal
-        function openTemplateModal() {
-            document.getElementById('templateModal').classList.remove('hidden');
-        }
-
-        function closeTemplateModal() {
-            document.getElementById('templateModal').classList.add('hidden');
-        }
-
-        function selectTemplate(card) {
-            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
-            card.classList.add('active');
-            document.getElementById('templateSlug').value = card.dataset.template;
-            document.getElementById('templateId').value = card.dataset.id;
-            document.getElementById('currentTemplateName').textContent = card.querySelector('h4').textContent;
-            updatePhotoVisibility();
-            closeTemplateModal();
-            updatePreview();
-        }
-
-        // Save functionality
-        function saveToMyDocuments() {
-            if (savedResumeId) {
-                performSave();
-                return;
-            }
+        // Save
+        function saveDocument() {
+            if (savedResumeId) { performSave(); return; }
             const roleTitle = document.getElementById('roleTitle').value;
-            document.getElementById('saveDocumentName').value = roleTitle ? roleTitle + ' Resume' : 'My Resume';
+            document.getElementById('saveDocName').value = roleTitle ? roleTitle + ' Resume' : 'My Resume';
             document.getElementById('saveModal').classList.remove('hidden');
         }
 
-        function closeSaveModal() {
-            document.getElementById('saveModal').classList.add('hidden');
-        }
+        function closeSaveModal() { document.getElementById('saveModal').classList.add('hidden'); }
 
         async function confirmSave() {
-            const name = document.getElementById('saveDocumentName').value.trim();
+            const name = document.getElementById('saveDocName').value.trim();
             if (!name) return;
             document.getElementById('documentTitle').value = name;
             closeSaveModal();
@@ -1182,8 +1054,8 @@
         }
 
         async function performSave(documentName) {
-            const status = document.getElementById('saveStatus');
-            status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            const indicator = document.getElementById('saveIndicator');
+            indicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             
             try {
                 const data = collectFormData();
@@ -1195,10 +1067,7 @@
                 
                 const response = await fetch(url, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
                     body: JSON.stringify(data)
                 });
                 
@@ -1209,34 +1078,30 @@
                         savedResumeId = result.resume_id;
                         history.replaceState(null, '', result.redirect_url);
                     }
-                    status.innerHTML = '<i class="fas fa-check-circle"></i> Saved';
-                    status.className = 'save-status saved';
+                    indicator.innerHTML = '<i class="fas fa-check-circle"></i> Saved';
+                    indicator.className = 'save-indicator saved';
                     showToast('Saved to My Documents!');
                 } else {
                     throw new Error(result.error);
                 }
             } catch (error) {
-                status.innerHTML = '<i class="fas fa-circle"></i> Draft';
-                status.className = 'save-status';
+                indicator.innerHTML = '<i class="fas fa-circle"></i> Draft';
+                indicator.className = 'save-indicator';
                 alert('Error: ' + error.message);
             }
         }
 
-        // Download PDF
         async function downloadPDF() {
             showToast('Generating PDF...');
-            
             if (!savedResumeId) {
                 const name = document.getElementById('documentTitle').value || 'My Resume';
                 await performSave(name);
             }
-            
             if (savedResumeId) {
                 window.location.href = '/resume-builder/download-resume/' + savedResumeId + '/';
             }
         }
 
-        // Toast notification
         function showToast(message) {
             const toast = document.getElementById('toast');
             document.getElementById('toastMessage').textContent = message;
