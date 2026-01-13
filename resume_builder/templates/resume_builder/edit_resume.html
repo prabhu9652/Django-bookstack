@@ -128,7 +128,12 @@
 
     <!-- Skills (Left Sidebar) -->
     <div class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
-      <h2 class="section-title"><i class="fas fa-cogs"></i> Skills <span style="font-size: var(--font-size-sm); font-weight: 400; color: var(--text-muted);">(One per line - appears in left sidebar)</span></h2>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+        <h2 class="section-title" style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;"><i class="fas fa-cogs"></i> Skills <span style="font-size: var(--font-size-sm); font-weight: 400; color: var(--text-muted);">(One per line)</span></h2>
+        <button type="button" onclick="generateAISkills()" class="ai-generate-btn" id="aiSkillsBtn">
+          <i class="fas fa-magic"></i> AI Generate
+        </button>
+      </div>
       
       <textarea id="skillsInput" rows="12" class="form-input" placeholder="AWS&#10;Azure&#10;GCP&#10;Terraform&#10;Kubernetes&#10;Docker&#10;Jenkins&#10;Python&#10;GitHub Actions">{% for skill in resume.skills %}{{ skill }}{% if not forloop.last %}
 {% endif %}{% endfor %}</textarea>
@@ -139,9 +144,17 @@
 
     <!-- Profile / Summary -->
     <div class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
-      <h2 class="section-title"><i class="fas fa-align-left"></i> Profile Summary</h2>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+        <h2 class="section-title" style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;"><i class="fas fa-align-left"></i> Profile Summary</h2>
+        <button type="button" onclick="generateAISummary()" class="ai-generate-btn" id="aiSummaryBtn">
+          <i class="fas fa-magic"></i> AI Generate
+        </button>
+      </div>
       
-      <textarea name="summary" rows="5" class="form-input" placeholder="I am a Cloud DevOps and SRE Engineer with 8+ years of experience, specializing in DevOps toolchains, build and release management, configuration management, infrastructure management, and automated deployments...">{{ resume.summary }}</textarea>
+      <textarea name="summary" id="summaryInput" rows="5" class="form-input" placeholder="I am a Cloud DevOps and SRE Engineer with 8+ years of experience, specializing in DevOps toolchains, build and release management, configuration management, infrastructure management, and automated deployments...">{{ resume.summary }}</textarea>
+      
+      <!-- ATS Score Indicator -->
+      <div id="atsScoreContainer" style="margin-top: var(--space-4);"></div>
     </div>
 
     <!-- Employment / Experience -->
@@ -609,5 +622,196 @@ function removeEducation(btn) { btn.closest('.education-item').remove(); }
 document.addEventListener('keydown', function(e) {
   if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveResume(); }
 });
+
+// ============================================
+// AI CONTENT GENERATION FUNCTIONS
+// ============================================
+
+const resumeRole = '{{ resume.role }}';
+
+async function generateAISummary() {
+  const btn = document.getElementById('aiSummaryBtn');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+  btn.disabled = true;
+
+  try {
+    const response = await fetch('/resume-builder/api/ai/generate-summary/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+      body: JSON.stringify({ role: resumeRole, years: 5 })
+    });
+    const result = await response.json();
+    
+    if (result.success) {
+      document.getElementById('summaryInput').value = result.summary;
+      showToast('Summary generated successfully!');
+      // Update ATS score after generating
+      updateATSScore();
+    } else {
+      throw new Error(result.error || 'Failed to generate');
+    }
+  } catch (error) {
+    alert('Error generating summary: ' + error.message);
+  } finally {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
+}
+
+async function generateAISkills() {
+  const btn = document.getElementById('aiSkillsBtn');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+  btn.disabled = true;
+
+  try {
+    const response = await fetch('/resume-builder/api/ai/generate-skills/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+      body: JSON.stringify({ role: resumeRole, count: 12 })
+    });
+    const result = await response.json();
+    
+    if (result.success) {
+      document.getElementById('skillsInput').value = result.skills.join('\n');
+      showToast('Skills generated successfully!');
+      updateATSScore();
+    } else {
+      throw new Error(result.error || 'Failed to generate');
+    }
+  } catch (error) {
+    alert('Error generating skills: ' + error.message);
+  } finally {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
+}
+
+async function generateAIBullets(textareaEl) {
+  const btn = textareaEl.parentElement.querySelector('.ai-bullets-btn');
+  if (!btn) return;
+  
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  btn.disabled = true;
+
+  try {
+    const response = await fetch('/resume-builder/api/ai/generate-bullets/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+      body: JSON.stringify({ role: resumeRole, count: 5 })
+    });
+    const result = await response.json();
+    
+    if (result.success) {
+      textareaEl.value = result.bullets.join('\n');
+      showToast('Bullet points generated!');
+    } else {
+      throw new Error(result.error || 'Failed to generate');
+    }
+  } catch (error) {
+    alert('Error generating bullets: ' + error.message);
+  } finally {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
+}
+
+async function updateATSScore() {
+  const container = document.getElementById('atsScoreContainer');
+  if (!container) return;
+
+  // Collect all text content
+  const summary = document.getElementById('summaryInput')?.value || '';
+  const skills = document.getElementById('skillsInput')?.value || '';
+  let bullets = '';
+  document.querySelectorAll('[data-field="bullets"]').forEach(el => {
+    bullets += el.value + ' ';
+  });
+
+  const text = summary + ' ' + skills + ' ' + bullets;
+  if (!text.trim()) {
+    container.innerHTML = '';
+    return;
+  }
+
+  try {
+    const response = await fetch('/resume-builder/api/ai/optimize-ats/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+      body: JSON.stringify({ role: resumeRole, text: text })
+    });
+    const result = await response.json();
+    
+    if (result.success) {
+      const score = Math.round(result.analysis.score);
+      const label = score >= 80 ? 'Excellent' : score >= 60 ? 'Good' : score >= 40 ? 'Fair' : 'Needs Work';
+      const color = score >= 80 ? '#22c55e' : score >= 60 ? '#eab308' : score >= 40 ? '#f97316' : '#ef4444';
+      
+      container.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-elevated); border: 1px solid var(--border-primary); border-radius: var(--radius-lg);">
+          <div style="position: relative; width: 50px; height: 50px;">
+            <svg viewBox="0 0 36 36" style="width: 100%; height: 100%; transform: rotate(-90deg);">
+              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--border-default)" stroke-width="3"/>
+              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="${color}" stroke-width="3" stroke-dasharray="${score}, 100" stroke-linecap="round"/>
+            </svg>
+            <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.75rem; font-weight: 700;">${score}%</span>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-size: 0.875rem; font-weight: 600; color: ${color};">${label}</div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary);">ATS Keyword Score</div>
+          </div>
+          <button type="button" onclick="updateATSScore()" class="btn btn-ghost btn-sm" title="Refresh score">
+            <i class="fas fa-sync-alt"></i>
+          </button>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('ATS analysis failed:', error);
+  }
+}
+
+function showToast(message) {
+  const toast = document.getElementById('successToast');
+  document.getElementById('toastMessage').textContent = message;
+  toast.style.display = 'flex';
+  setTimeout(() => { toast.style.display = 'none'; }, 3000);
+}
+
+// Initialize ATS score on page load
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(updateATSScore, 1000);
+});
 </script>
+
+<style>
+/* AI Generate Button Styles */
+.ai-generate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ai-generate-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.ai-generate-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+</style>
 {% endblock %}

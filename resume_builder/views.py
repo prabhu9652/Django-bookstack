@@ -1220,3 +1220,240 @@ def api_rename_cover_letter(request, cover_letter_id):
             'success': False,
             'error': str(e)
         }, status=400)
+
+
+# ============================================
+# AI CONTENT GENERATION API ENDPOINTS
+# ============================================
+
+@login_required
+@require_POST
+def api_generate_summary(request):
+    """API endpoint for AI-generated professional summary"""
+    try:
+        from .ai_content_generator import AIContentGenerator
+        
+        data = json.loads(request.body)
+        role = data.get('role', 'software_engineer')
+        years = data.get('years', 5)
+        
+        generator = AIContentGenerator(role)
+        summary = generator.generate_summary(years=years)
+        
+        return JsonResponse({
+            'success': True,
+            'summary': summary,
+            'role': role
+        })
+        
+    except Exception as e:
+        logger.error(f"Error generating summary: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+@login_required
+@require_POST
+def api_generate_bullets(request):
+    """API endpoint for AI-generated achievement bullet points"""
+    try:
+        from .ai_content_generator import AIContentGenerator
+        
+        data = json.loads(request.body)
+        role = data.get('role', 'software_engineer')
+        count = data.get('count', 5)
+        
+        generator = AIContentGenerator(role)
+        bullets = generator.generate_bullet_points(count=count)
+        
+        return JsonResponse({
+            'success': True,
+            'bullets': bullets,
+            'role': role
+        })
+        
+    except Exception as e:
+        logger.error(f"Error generating bullets: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+@login_required
+@require_POST
+def api_generate_skills(request):
+    """API endpoint for AI-generated skills list"""
+    try:
+        from .ai_content_generator import AIContentGenerator, get_role_skills
+        
+        data = json.loads(request.body)
+        role = data.get('role', 'software_engineer')
+        count = data.get('count', 12)
+        
+        generator = AIContentGenerator(role)
+        skills = generator.generate_skills_list(count=count)
+        
+        # Also return categorized skills for reference
+        categorized_skills = get_role_skills(role)
+        
+        return JsonResponse({
+            'success': True,
+            'skills': skills,
+            'categorized_skills': categorized_skills,
+            'role': role
+        })
+        
+    except Exception as e:
+        logger.error(f"Error generating skills: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+@login_required
+@require_POST
+def api_generate_cover_letter_content(request):
+    """API endpoint for AI-generated cover letter content"""
+    try:
+        from .ai_content_generator import AIContentGenerator
+        
+        data = json.loads(request.body)
+        role = data.get('role', 'software_engineer')
+        company = data.get('company', 'Company Name')
+        position = data.get('position', 'Position Title')
+        years = data.get('years', 5)
+        
+        generator = AIContentGenerator(role)
+        content = generator.generate_cover_letter_content(
+            company=company,
+            position=position,
+            years=years
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'content': content,
+            'role': role
+        })
+        
+    except Exception as e:
+        logger.error(f"Error generating cover letter content: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+@login_required
+@require_POST
+def api_optimize_ats(request):
+    """API endpoint for ATS optimization analysis"""
+    try:
+        from .ai_content_generator import AIContentGenerator
+        
+        data = json.loads(request.body)
+        role = data.get('role', 'software_engineer')
+        text = data.get('text', '')
+        
+        if not text:
+            return JsonResponse({
+                'success': False,
+                'error': 'No text provided for analysis'
+            }, status=400)
+        
+        generator = AIContentGenerator(role)
+        analysis = generator.optimize_for_ats(text)
+        
+        return JsonResponse({
+            'success': True,
+            'analysis': analysis,
+            'role': role
+        })
+        
+    except Exception as e:
+        logger.error(f"Error analyzing ATS: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+# ============================================
+# TEMPLATE THEMES API ENDPOINTS
+# ============================================
+
+@login_required
+def api_get_template_themes(request, template_slug):
+    """API endpoint to get all color themes for a template"""
+    try:
+        from .template_themes import TemplateThemeManager
+        
+        palettes = TemplateThemeManager.get_palettes_for_template(template_slug)
+        
+        themes = [
+            {
+                'name': p.name,
+                'primary': p.primary,
+                'secondary': p.secondary,
+                'accent': p.accent,
+                'description': p.description,
+                'recommended_roles': p.recommended_roles,
+            }
+            for p in palettes
+        ]
+        
+        return JsonResponse({
+            'success': True,
+            'template': template_slug,
+            'themes': themes
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting template themes: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+@login_required
+def api_get_recommended_themes(request, template_slug, role):
+    """API endpoint to get recommended themes for a role"""
+    try:
+        from .template_themes import TemplateThemeManager, get_role_recommendations
+        
+        # Get role-specific recommendations
+        recommendations = get_role_recommendations(role)
+        
+        # Get recommended palettes
+        palettes = TemplateThemeManager.get_recommended_palettes(template_slug, role)
+        
+        themes = [
+            {
+                'name': p.name,
+                'primary': p.primary,
+                'secondary': p.secondary,
+                'accent': p.accent,
+                'description': p.description,
+            }
+            for p in palettes
+        ]
+        
+        return JsonResponse({
+            'success': True,
+            'template': template_slug,
+            'role': role,
+            'recommendations': recommendations,
+            'themes': themes
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting recommended themes: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
