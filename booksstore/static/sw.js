@@ -10,7 +10,7 @@
  * - Forms/POST: Network-only
  */
 
-const CACHE_VERSION = 'v1.0.1';
+const CACHE_VERSION = 'v1.1.0';
 const CACHE_NAMES = {
   static: `techbookhub-static-${CACHE_VERSION}`,
   pages: `techbookhub-pages-${CACHE_VERSION}`,
