@@ -2069,7 +2069,32 @@ document.addEventListener('DOMContentLoaded', function() {
       skillNodes.forEach(node => {
         node.className = 'skill-node skill-not-started';
       });
+      
+      // Reset all journey tool items visually
+      const journeyToolItems = document.querySelectorAll('.journey-tool-item');
+      journeyToolItems.forEach(item => {
+        item.classList.remove('status-in_progress', 'status-completed');
+        item.classList.add('status-not_started');
+        // Update the status indicator icon
+        const statusIcon = item.querySelector('.tool-status-indicator i');
+        if (statusIcon) {
+          statusIcon.className = 'far fa-circle';
+        }
+      });
+      
       updateProgressStats();
+      
+      // Call backend API to reset progress in database
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+      if (csrfToken) {
+        fetch('{% url "roadmap:reset_progress" roadmap_path.slug %}', {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': csrfToken.value,
+            'Content-Type': 'application/json'
+          }
+        }).catch(err => console.warn('Failed to reset progress on server:', err));
+      }
       
       // Close modal
       resetModal.classList.remove('active');

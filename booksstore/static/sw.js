@@ -10,7 +10,7 @@
  * - Forms/POST: Network-only
  */
 
-const CACHE_VERSION = 'v1.0.0';
+const CACHE_VERSION = 'v1.0.1';
 const CACHE_NAMES = {
   static: `techbookhub-static-${CACHE_VERSION}`,
   pages: `techbookhub-pages-${CACHE_VERSION}`,
@@ -231,7 +231,10 @@ async function networkOnly(request) {
   try {
     return await fetch(request);
   } catch (error) {
-    // For auth pages, show a simple error
+    // For navigation requests (pages), show offline page
+    if (request.mode === 'navigate') {
+      return getAuthOfflinePage();
+    }
     return new Response('Network connection required', { 
       status: 503,
       headers: { 'Content-Type': 'text/plain' }
@@ -384,6 +387,98 @@ async function getOfflinePage() {
         <h1>You're Offline</h1>
         <p>It looks like you've lost your internet connection. Some features may be unavailable until you're back online.</p>
         <button class="retry-btn" onclick="location.reload()">Try Again</button>
+      </div>
+    </body>
+    </html>
+  `, {
+    status: 200,
+    headers: { 'Content-Type': 'text/html' }
+  });
+}
+
+// Offline page specifically for auth routes
+async function getAuthOfflinePage() {
+  return new Response(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Connection Required - TechBookHub</title>
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          background: #0f1419;
+          color: #e7e9ea;
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+        }
+        .offline-container {
+          text-align: center;
+          max-width: 420px;
+        }
+        .offline-icon {
+          font-size: 56px;
+          margin-bottom: 20px;
+        }
+        h1 { font-size: 22px; margin-bottom: 12px; font-weight: 600; }
+        p { color: #71767b; margin-bottom: 20px; line-height: 1.6; font-size: 15px; }
+        .btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .btn {
+          padding: 12px 24px;
+          border-radius: 8px;
+          font-size: 15px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+          text-decoration: none;
+          border: none;
+        }
+        .btn-primary {
+          background: #4a9eff;
+          color: white;
+        }
+        .btn-primary:hover { background: #3d8be6; }
+        .btn-secondary {
+          background: transparent;
+          color: #4a9eff;
+          border: 1px solid #4a9eff;
+        }
+        .btn-secondary:hover { background: rgba(74, 158, 255, 0.1); }
+        .info-box {
+          background: rgba(74, 158, 255, 0.08);
+          border: 1px solid rgba(74, 158, 255, 0.2);
+          border-radius: 10px;
+          padding: 14px 18px;
+          margin-top: 24px;
+          font-size: 13px;
+          color: #8b949e;
+        }
+        .info-box i { color: #4a9eff; margin-right: 8px; }
+      </style>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </head>
+    <body>
+      <div class="offline-container">
+        <div class="offline-icon">🔐</div>
+        <h1>Internet Connection Required</h1>
+        <p>Sign in and sign up require a secure connection to our servers. Please check your internet connection and try again.</p>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="location.reload()">
+            <i class="fas fa-rotate-right"></i>&nbsp; Try Again
+          </button>
+          <a href="/" class="btn btn-secondary">
+            <i class="fas fa-home"></i>&nbsp; Go Home
+          </a>
+        </div>
+        <div class="info-box">
+          <i class="fas fa-shield-halved"></i>
+          For your security, authentication always requires a live connection.
+        </div>
       </div>
     </body>
     </html>
