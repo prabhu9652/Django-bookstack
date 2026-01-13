@@ -3,35 +3,54 @@
   {% load static %}
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <title>{{ template_data.title|default:"TechBookHub - Technical Books for Developers" }}</title>
     
     <!-- CSRF Token for AJAX requests -->
     <meta name="csrf-token" content="{{ csrf_token }}">
     
-    <!-- PWA Meta Tags -->
+    <!-- PWA Meta Tags - Cross Platform -->
     <meta name="application-name" content="TechBookHub">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- iOS/Safari PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="TechBookHub">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="msapplication-TileColor" content="#0f1419">
-    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="format-detection" content="telephone=no">
     
-    <!-- Theme color -->
-    <meta name="theme-color" content="#4a9eff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#4a9eff" media="(prefers-color-scheme: dark)">
+    <!-- Windows/Edge PWA -->
+    <meta name="msapplication-TileColor" content="#0f1419">
+    <meta name="msapplication-TileImage" content="{% static 'img/pwa/icon-144x144.png' %}">
+    <meta name="msapplication-config" content="none">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="msapplication-navbutton-color" content="#0f1419">
+    <meta name="msapplication-starturl" content="/">
+    
+    <!-- Theme color - matches app background for seamless splash -->
+    <meta name="theme-color" content="#0f1419">
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
     
-    <!-- PWA Icons -->
+    <!-- Favicon & Icons -->
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/pwa/icon-96x96.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/pwa/icon-72x72.png' %}">
+    <link rel="shortcut icon" href="{% static 'img/pwa/icon-96x96.png' %}">
+    
+    <!-- Apple Touch Icons - All sizes for different devices -->
     <link rel="apple-touch-icon" href="{% static 'img/pwa/icon-192x192.png' %}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static 'img/pwa/icon-128x128.png' %}">
     <link rel="apple-touch-icon" sizes="152x152" href="{% static 'img/pwa/icon-152x152.png' %}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/pwa/icon-192x192.png' %}">
     <link rel="apple-touch-icon" sizes="167x167" href="{% static 'img/pwa/icon-192x192.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/pwa/icon-192x192.png' %}">
+    
+    <!-- iOS Splash Screens -->
+    <link rel="apple-touch-startup-image" href="{% static 'img/pwa/splash-1125x2436.png' %}" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="{% static 'img/pwa/splash-1242x2688.png' %}" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="{% static 'img/pwa/splash-828x1792.png' %}" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="{% static 'img/pwa/splash-1170x2532.png' %}" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="{% static 'img/pwa/splash-1284x2778.png' %}" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)">
     
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,22 +64,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
     <!-- Unified Dark Theme CSS -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/dark-theme-unified.css' %}?v=20260111-darktheme">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/dark-theme-unified.css' %}?v=20260113">
     
     <!-- Component-specific enhancements -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/components-dark.css' %}?v=20260111-darktheme">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/components-dark.css' %}?v=20260113">
     
     <!-- Enterprise Authentication Styles -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/auth-enterprise.css' %}?v=20260111-enterprise">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/auth-enterprise.css' %}?v=20260113">
     
     <!-- Image Optimization Styles -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/image-optimization.css' %}?v=20260111-imgopt">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/image-optimization.css' %}?v=20260113">
     
     <!-- Responsive Enhancements - Mobile First -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/responsive-enhancements.css' %}?v=20260112-responsive">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/responsive-enhancements.css' %}?v=20260113">
     
     <!-- PWA Styles -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/pwa.css' %}?v=20260113-pwa">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/pwa.css' %}?v=20260113">
     
     <!-- Shared Library Management -->
     <script src="{% static 'js/library-manager.js' %}" defer></script>

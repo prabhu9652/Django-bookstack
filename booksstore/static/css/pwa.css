@@ -1,24 +1,120 @@
 /**
  * TechBookHub PWA Styles
- * Styles for install prompts, offline indicators, and notifications
+ * Production-grade styles for install prompts, offline indicators, 
+ * safe areas, and platform-specific optimizations
  */
+
+/* ============================================
+   CSS Custom Properties for PWA
+   ============================================ */
+:root {
+  /* Safe area insets - fallback to 0 */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  
+  /* PWA-specific spacing */
+  --pwa-banner-offset: 16px;
+  --pwa-toast-offset: 80px;
+}
+
+/* ============================================
+   Standalone Mode Adjustments
+   ============================================ */
+@media (display-mode: standalone) {
+  /* Adjust navbar for standalone mode */
+  .navbar {
+    padding-top: var(--safe-area-top);
+  }
+  
+  /* Adjust main content */
+  main {
+    padding-top: calc(64px + var(--safe-area-top)) !important;
+    min-height: calc(100vh - var(--safe-area-bottom));
+  }
+  
+  /* Footer safe area */
+  footer {
+    padding-bottom: var(--safe-area-bottom);
+  }
+  
+  /* Hide browser-specific elements */
+  .browser-only {
+    display: none !important;
+  }
+}
+
+/* Window Controls Overlay (Desktop PWA) */
+@media (display-mode: window-controls-overlay) {
+  .navbar {
+    padding-left: env(titlebar-area-x, 0);
+    padding-right: calc(100% - env(titlebar-area-width, 100%) - env(titlebar-area-x, 0));
+  }
+  
+  .navbar-content {
+    -webkit-app-region: drag;
+    app-region: drag;
+  }
+  
+  .navbar-content a,
+  .navbar-content button {
+    -webkit-app-region: no-drag;
+    app-region: no-drag;
+  }
+}
+
+/* ============================================
+   iOS Safe Area Handling
+   ============================================ */
+@supports (padding: env(safe-area-inset-top)) {
+  /* iOS notch/dynamic island support */
+  html {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  
+  body {
+    /* Prevent content from going under notch */
+    min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+  
+  /* Fixed elements need safe area consideration */
+  .navbar {
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  /* Mobile menu panel */
+  .mobile-menu-panel {
+    padding-top: calc(16px + env(safe-area-inset-top));
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Bottom fixed elements */
+  #pwa-install-banner {
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+}
 
 /* ============================================
    PWA Install Banner
    ============================================ */
 #pwa-install-banner {
   position: fixed;
-  bottom: -100px;
+  bottom: 0;
   left: 0;
   right: 0;
   z-index: 9999;
-  padding: 0 16px 16px;
+  padding: var(--pwa-banner-offset);
+  padding-bottom: calc(var(--pwa-banner-offset) + var(--safe-area-bottom));
+  transform: translateY(100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
 }
 
 #pwa-install-banner.show {
-  transform: translateY(-100px);
+  transform: translateY(0);
   pointer-events: auto;
 }
 
@@ -28,26 +124,29 @@
   gap: 12px;
   max-width: 480px;
   margin: 0 auto;
-  padding: 12px 16px;
+  padding: 14px 16px;
   background: var(--bg-surface, #1a1f26);
   border: 1px solid var(--border-primary, #2f3640);
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .pwa-install-icon {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   background: linear-gradient(135deg, #4a9eff, #6366f1);
-  border-radius: 10px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
 }
 
 .pwa-install-icon i {
-  font-size: 20px;
+  font-size: 22px;
   color: white;
 }
 
@@ -58,15 +157,16 @@
 
 .pwa-install-text strong {
   display: block;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary, #e7e9ea);
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .pwa-install-text span {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-secondary, #71767b);
+  line-height: 1.3;
 }
 
 .pwa-install-actions {
@@ -77,24 +177,30 @@
 }
 
 .pwa-install-btn {
-  padding: 8px 16px;
+  padding: 10px 18px;
   background: #4a9eff;
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 13px;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .pwa-install-btn:hover {
   background: #3d8be6;
+  transform: translateY(-1px);
+}
+
+.pwa-install-btn:active {
+  transform: translateY(0);
 }
 
 .pwa-dismiss-btn {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   background: transparent;
   border: none;
   border-radius: 50%;
@@ -116,7 +222,7 @@
    ============================================ */
 #pwa-update-notification {
   position: fixed;
-  top: -60px;
+  top: calc(-80px - var(--safe-area-top));
   left: 50%;
   transform: translateX(-50%);
   z-index: 10000;
@@ -124,37 +230,46 @@
 }
 
 #pwa-update-notification.show {
-  top: 80px;
+  top: calc(var(--pwa-toast-offset) + var(--safe-area-top));
 }
 
 .pwa-update-content {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
+  padding: 14px 18px;
   background: var(--bg-surface, #1a1f26);
   border: 1px solid var(--border-primary, #2f3640);
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .pwa-update-content i {
   color: #4a9eff;
-  font-size: 16px;
+  font-size: 18px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .pwa-update-content span {
   font-size: 14px;
+  font-weight: 500;
   color: var(--text-primary, #e7e9ea);
 }
 
 .pwa-update-btn {
-  padding: 6px 12px;
+  padding: 8px 14px;
   background: #4a9eff;
   color: white;
   border: none;
-  border-radius: 6px;
-  font-size: 12px;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
@@ -169,38 +284,52 @@
    ============================================ */
 .pwa-notification {
   position: fixed;
-  top: -60px;
+  top: calc(-80px - var(--safe-area-top));
   left: 50%;
   transform: translateX(-50%);
   z-index: 10001;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 20px;
+  padding: 14px 20px;
   background: var(--bg-surface, #1a1f26);
   border: 1px solid var(--border-primary, #2f3640);
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
+  max-width: calc(100vw - 32px);
 }
 
 .pwa-notification.show {
-  top: 80px;
+  top: calc(var(--pwa-toast-offset) + var(--safe-area-top));
 }
 
 .pwa-notification i {
-  font-size: 16px;
+  font-size: 18px;
+  flex-shrink: 0;
 }
 
 .pwa-notification span {
   font-size: 14px;
+  font-weight: 500;
   color: var(--text-primary, #e7e9ea);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+.pwa-notification.success { border-color: rgba(34, 197, 94, 0.3); }
 .pwa-notification.success i { color: #22c55e; }
+
+.pwa-notification.warning { border-color: rgba(245, 158, 11, 0.3); }
 .pwa-notification.warning i { color: #f59e0b; }
+
+.pwa-notification.error { border-color: rgba(239, 68, 68, 0.3); }
 .pwa-notification.error i { color: #ef4444; }
+
+.pwa-notification.info { border-color: rgba(74, 158, 255, 0.3); }
 .pwa-notification.info i { color: #4a9eff; }
 
 /* ============================================
@@ -209,23 +338,23 @@
 html.offline::before {
   content: '';
   position: fixed;
-  top: 0;
+  top: var(--safe-area-top, 0);
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #f59e0b, #ef4444);
+  background: linear-gradient(90deg, #f59e0b, #ef4444, #f59e0b);
+  background-size: 200% 100%;
   z-index: 10002;
-  animation: offlinePulse 2s ease-in-out infinite;
+  animation: offlineSlide 2s ease-in-out infinite;
 }
 
-@keyframes offlinePulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+@keyframes offlineSlide {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
-/* Offline state adjustments */
 html.offline .navbar {
-  border-bottom-color: #f59e0b;
+  border-bottom-color: rgba(245, 158, 11, 0.5);
 }
 
 /* ============================================
@@ -235,59 +364,105 @@ html.pwa-installed #pwa-install-banner {
   display: none !important;
 }
 
-/* Hide browser-specific UI when installed */
-html.pwa-installed .browser-only {
-  display: none;
+html.pwa-installed .browser-only,
+html.pwa-installed .install-prompt-trigger {
+  display: none !important;
 }
 
 /* ============================================
-   iOS Safari Specific
+   Touch Optimizations
    ============================================ */
-@supports (-webkit-touch-callout: none) {
-  /* iOS safe area padding */
+@media (pointer: coarse) {
+  /* Larger touch targets on touch devices */
+  .pwa-install-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .pwa-dismiss-btn {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .pwa-update-btn {
+    min-height: 40px;
+    padding: 10px 16px;
+  }
+}
+
+/* ============================================
+   Tablet Optimizations
+   ============================================ */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .pwa-install-content {
+    max-width: 520px;
+  }
+  
+  .pwa-notification {
+    max-width: 400px;
+  }
+}
+
+/* ============================================
+   Desktop Optimizations
+   ============================================ */
+@media (min-width: 1025px) {
   #pwa-install-banner {
-    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+    padding: 20px;
+    padding-bottom: 20px;
+  }
+  
+  .pwa-install-content {
+    max-width: 440px;
+    padding: 16px 20px;
   }
   
   .pwa-notification,
   #pwa-update-notification {
-    top: calc(-60px - env(safe-area-inset-top));
+    left: auto;
+    right: 20px;
+    transform: none;
   }
   
   .pwa-notification.show,
   #pwa-update-notification.show {
-    top: calc(80px + env(safe-area-inset-top));
+    top: 84px;
   }
 }
 
 /* ============================================
-   Responsive Adjustments
+   Mobile Responsive
    ============================================ */
 @media (max-width: 480px) {
   #pwa-install-banner {
-    padding: 0 12px 12px;
+    padding: 12px;
   }
   
   .pwa-install-content {
-    padding: 10px 12px;
+    padding: 12px;
+    gap: 10px;
   }
   
   .pwa-install-icon {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
+  }
+  
+  .pwa-install-icon i {
+    font-size: 18px;
   }
   
   .pwa-install-text strong {
-    font-size: 13px;
+    font-size: 14px;
   }
   
   .pwa-install-text span {
-    font-size: 11px;
+    font-size: 12px;
   }
   
   .pwa-install-btn {
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 8px 14px;
+    font-size: 13px;
   }
   
   .pwa-notification,
@@ -295,11 +470,12 @@ html.pwa-installed .browser-only {
     left: 12px;
     right: 12px;
     transform: none;
+    max-width: none;
   }
   
   .pwa-notification.show,
   #pwa-update-notification.show {
-    top: 72px;
+    top: calc(72px + var(--safe-area-top));
   }
 }
 
@@ -313,7 +489,50 @@ html.pwa-installed .browser-only {
     transition: none;
   }
   
-  @keyframes offlinePulse {
-    0%, 100% { opacity: 1; }
+  .pwa-update-content i {
+    animation: none;
+  }
+  
+  @keyframes offlineSlide {
+    0%, 100% { background-position: 0% 50%; }
+  }
+}
+
+/* ============================================
+   High Contrast Mode
+   ============================================ */
+@media (prefers-contrast: high) {
+  .pwa-install-content,
+  .pwa-update-content,
+  .pwa-notification {
+    border-width: 2px;
+  }
+  
+  .pwa-install-btn,
+  .pwa-update-btn {
+    border: 2px solid white;
+  }
+}
+
+/* ============================================
+   Dark Mode Enhancements
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+  .pwa-install-content,
+  .pwa-update-content,
+  .pwa-notification {
+    background: rgba(26, 31, 38, 0.95);
+  }
+}
+
+/* ============================================
+   Print Styles - Hide PWA elements
+   ============================================ */
+@media print {
+  #pwa-install-banner,
+  #pwa-update-notification,
+  .pwa-notification,
+  html.offline::before {
+    display: none !important;
   }
 }

@@ -38,15 +38,10 @@ def signup(request):
             user = authenticate(username=username, password=password)
             if user:
                 login(request, user)
-                messages.success(request, 
-                    'Account created successfully! Your access is pending admin approval. '
-                    'You can request access to view and download content.'
-                )
-                return redirect('accounts.access_status')
+                messages.success(request, 'Welcome to TechBookHub! Your account has been created.')
+                return redirect('home.index')
             else:
-                messages.success(request, 
-                    'Account created successfully! Please log in and request access to content.'
-                )
+                messages.success(request, 'Account created successfully! Please log in.')
                 return redirect('accounts.login')
     else:
         form = UserCreationForm()
