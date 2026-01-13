@@ -1,16 +1,17 @@
 {
-  "name": "TechBookHub - Technical Books for Developers",
+  "name": "TechBookHub",
   "short_name": "TechBookHub",
-  "description": "Professional technical books, resume builder, career tools, and learning roadmaps for DevOps, Cloud, Data Science, ML, and Software Development.",
+  "description": "Technical books, resume builder, career tools, and learning roadmaps for developers.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "orientation": "any",
+  "orientation": "portrait",
   "theme_color": "#4a9eff",
   "background_color": "#0f1419",
   "categories": ["education", "productivity", "books"],
   "lang": "en",
   "dir": "ltr",
+  "id": "/",
   "icons": [
     {
       "src": "/static/img/pwa/icon-72x72.png",
