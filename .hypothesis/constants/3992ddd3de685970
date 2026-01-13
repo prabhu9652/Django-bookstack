@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/views/admin_views.py
+# hypothesis_version: 6.150.0
+
+['HR Administration', 'User Management', 'active', 'department_count', 'employee', 'employee_count', 'employee_profile', 'hr_role', 'is_employee', 'manager_approved', 'on', 'pending_expenses', 'pending_leaves', 'role_choices', 'role_type', 'title', 'update', 'username', 'users']

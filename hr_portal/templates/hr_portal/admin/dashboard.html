@@ -1,0 +1,134 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}HR Admin{% endblock %}
+{% block breadcrumb %}HR Admin{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <h1 class="hr-page-title">HR Administration</h1>
+        <p class="hr-page-subtitle">Manage HR operations and view organization metrics</p>
+    </div>
+    
+    <!-- Organization Stats -->
+    <div class="hr-stats-grid hr-stagger">
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon primary">
+                <i class="bi bi-people"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">Total Employees</div>
+                <div class="hr-stat-value">{{ stats.total_employees|default:0 }}</div>
+            </div>
+        </div>
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon success">
+                <i class="bi bi-building"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">Departments</div>
+                <div class="hr-stat-value">{{ stats.total_departments|default:0 }}</div>
+            </div>
+        </div>
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon warning">
+                <i class="bi bi-hourglass-split"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">Pending Requests</div>
+                <div class="hr-stat-value">{{ stats.pending_requests|default:0 }}</div>
+            </div>
+        </div>
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon info">
+                <i class="bi bi-calendar-check"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">On Leave Today</div>
+                <div class="hr-stat-value">{{ stats.on_leave_today|default:0 }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="hr-card hr-mb-6">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title"><i class="bi bi-lightning"></i> Quick Actions</h3>
+        </div>
+        <div class="hr-card-body">
+            <div class="hr-quick-actions">
+                <a href="{% url 'hr_portal:employee_create' %}" class="hr-quick-action">
+                    <div class="hr-quick-action-icon">
+                        <i class="bi bi-person-plus"></i>
+                    </div>
+                    <span class="hr-quick-action-label">Add Employee</span>
+                </a>
+                <a href="{% url 'hr_portal:employee_list' %}" class="hr-quick-action">
+                    <div class="hr-quick-action-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <span class="hr-quick-action-label">View Employees</span>
+                </a>
+                <a href="{% url 'hr_portal:approval_dashboard' %}" class="hr-quick-action">
+                    <div class="hr-quick-action-icon">
+                        <i class="bi bi-check2-square"></i>
+                    </div>
+                    <span class="hr-quick-action-label">Approvals</span>
+                </a>
+                <a href="{% url 'admin:index' %}" class="hr-quick-action">
+                    <div class="hr-quick-action-icon">
+                        <i class="bi bi-gear"></i>
+                    </div>
+                    <span class="hr-quick-action-label">Django Admin</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="hr-grid hr-gap-4" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));">
+        <!-- Recent Employees -->
+        <div class="hr-card">
+            <div class="hr-card-header">
+                <h3 class="hr-card-title"><i class="bi bi-person-plus"></i> Recent Employees</h3>
+                <a href="{% url 'hr_portal:employee_list' %}" class="hr-btn hr-btn-ghost hr-btn-sm">View All</a>
+            </div>
+            <div class="hr-card-body hr-card-body-compact">
+                {% for emp in recent_employees %}
+                <div class="hr-flex hr-items-center hr-gap-3" style="padding: var(--hr-space-3) 0; border-bottom: 1px solid var(--hr-border-light);">
+                    <div class="hr-user-avatar" style="width: 36px; height: 36px; font-size: var(--hr-font-size-xs);">
+                        {{ emp.user.first_name|slice:":1"|upper }}{{ emp.user.last_name|slice:":1"|upper }}
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 500;">{{ emp.full_name }}</div>
+                        <div style="font-size: var(--hr-font-size-xs); color: var(--hr-text-muted);">{{ emp.designation.title }}</div>
+                    </div>
+                    <div style="font-size: var(--hr-font-size-xs); color: var(--hr-text-muted);">
+                        {{ emp.joining_date|date:"M d" }}
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color: var(--hr-text-muted); text-align: center; padding: var(--hr-space-4);">No recent employees</p>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Department Overview -->
+        <div class="hr-card">
+            <div class="hr-card-header">
+                <h3 class="hr-card-title"><i class="bi bi-building"></i> Department Overview</h3>
+            </div>
+            <div class="hr-card-body hr-card-body-compact">
+                {% for dept in departments %}
+                <div class="hr-flex hr-items-center hr-justify-between" style="padding: var(--hr-space-3) 0; border-bottom: 1px solid var(--hr-border-light);">
+                    <span style="font-weight: 500;">{{ dept.name }}</span>
+                    <span class="hr-badge hr-badge-primary">{{ dept.employee_count }} employees</span>
+                </div>
+                {% empty %}
+                <p style="color: var(--hr-text-muted); text-align: center; padding: var(--hr-space-4);">No departments found</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

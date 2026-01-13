@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/services/audit_service.py
+# hypothesis_version: 6.150.0
+
+[100, ',', '-performed_at', 'HTTP_USER_AGENT', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR', 'amount', 'asset', 'assigned_to', 'category', 'condition', 'currency', 'employee', 'end_date', 'expense_request', 'leave_request', 'name', 'performed_by', 'project', 'start_date', 'status', 'timesheet', 'total_days', 'total_hours']

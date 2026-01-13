@@ -1,0 +1,117 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}{{ emp.full_name }}{% endblock %}
+{% block breadcrumb %}Employee Details{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <div class="hr-page-header-row">
+            <div class="hr-flex hr-items-center hr-gap-4">
+                <button onclick="history.back()" class="hr-btn hr-btn-ghost hr-btn-icon">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+                <div>
+                    <h1 class="hr-page-title">{{ emp.full_name }}</h1>
+                    <p class="hr-page-subtitle">{{ emp.designation.title }} • {{ emp.department.name }}</p>
+                </div>
+            </div>
+            {% if can_edit %}
+            <div class="hr-page-actions">
+                <a href="{% url 'admin:hr_portal_employee_change' emp.id %}" class="hr-btn hr-btn-secondary">
+                    <i class="bi bi-pencil"></i>
+                    <span>Edit</span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="hr-grid hr-gap-4" style="grid-template-columns: 280px 1fr;">
+        <!-- Profile Card -->
+        <div class="hr-card">
+            <div class="hr-profile-card">
+                <div class="hr-profile-avatar">
+                    {% if emp.profile_photo %}
+                    <img src="{{ emp.profile_photo.url }}" alt="{{ emp.full_name }}">
+                    {% else %}
+                    <div class="hr-profile-avatar-placeholder">
+                        {{ emp.user.first_name|slice:":1"|upper }}{{ emp.user.last_name|slice:":1"|upper }}
+                    </div>
+                    {% endif %}
+                </div>
+                <h2 class="hr-profile-name">{{ emp.full_name }}</h2>
+                <p class="hr-profile-title">{{ emp.designation.title }}</p>
+                <p class="hr-profile-dept">{{ emp.department.name }}</p>
+                <div class="hr-mt-4">
+                    {% if emp.is_active %}
+                    <span class="hr-badge hr-badge-active">Active</span>
+                    {% else %}
+                    <span class="hr-badge hr-badge-inactive">Inactive</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Info Cards -->
+        <div>
+            <!-- Personal Information -->
+            <div class="hr-card hr-mb-4">
+                <div class="hr-card-header">
+                    <h3 class="hr-card-title"><i class="bi bi-person"></i> Personal Information</h3>
+                </div>
+                <div class="hr-card-body">
+                    <div class="hr-info-list">
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Employee ID</div>
+                            <div class="hr-info-value">{{ emp.employee_id }}</div>
+                        </div>
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Email</div>
+                            <div class="hr-info-value">{{ emp.user.email }}</div>
+                        </div>
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Phone</div>
+                            <div class="hr-info-value">{{ emp.phone|default:"—" }}</div>
+                        </div>
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Work Location</div>
+                            <div class="hr-info-value">{{ emp.work_location|default:"—" }}</div>
+                        </div>
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Employment Type</div>
+                            <div class="hr-info-value">{{ emp.get_employment_type_display }}</div>
+                        </div>
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Joining Date</div>
+                            <div class="hr-info-value">{{ emp.joining_date|date:"M d, Y" }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reporting Manager -->
+            {% if emp.reporting_manager %}
+            <div class="hr-card">
+                <div class="hr-card-header">
+                    <h3 class="hr-card-title"><i class="bi bi-person-badge"></i> Reporting Manager</h3>
+                </div>
+                <div class="hr-card-body">
+                    <div class="hr-flex hr-items-center hr-gap-4">
+                        <div class="hr-user-avatar" style="width: 48px; height: 48px;">
+                            {{ emp.reporting_manager.user.first_name|slice:":1"|upper }}{{ emp.reporting_manager.user.last_name|slice:":1"|upper }}
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--hr-text);">{{ emp.reporting_manager.full_name }}</div>
+                            <div style="font-size: var(--hr-font-size-sm); color: var(--hr-text-secondary);">{{ emp.reporting_manager.designation.title }}</div>
+                            <div style="font-size: var(--hr-font-size-xs); color: var(--hr-text-muted);">{{ emp.reporting_manager.department.name }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

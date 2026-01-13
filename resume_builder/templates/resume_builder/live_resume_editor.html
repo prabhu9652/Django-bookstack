@@ -504,14 +504,13 @@
                     <div class="selector-section">
                         <div class="selector-row">
                             <div class="selector-group">
-                                <div class="selector-label"><i class="fas fa-palette"></i> Template</div>
+                                <div class="selector-label"><i class="fas fa-palette"></i> Template ({{ all_templates|length }} available)</div>
                                 <div class="template-options" id="templateOptions">
+                                    {% for t in all_templates %}
+                                    <span class="template-chip{% if t.id == template.id %} active{% endif %}" data-template="{{ t.slug }}" data-id="{{ t.id }}">{{ t.name }}</span>
+                                    {% empty %}
                                     <span class="template-chip active" data-template="professional" data-id="1">Professional</span>
-                                    <span class="template-chip" data-template="modern" data-id="2">Modern</span>
-                                    <span class="template-chip" data-template="executive" data-id="3">Executive</span>
-                                    <span class="template-chip" data-template="minimal" data-id="4">Minimal</span>
-                                    <span class="template-chip" data-template="creative" data-id="5">Creative</span>
-                                    <span class="template-chip" data-template="technical" data-id="6">Technical</span>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
@@ -731,6 +730,40 @@
         let currentColor = '#4a9d9a';
         let photoBase64 = null;
 
+        // Role-specific content for auto-population
+        const ROLE_CONTENT = {
+            'devops_sre': {
+                title: 'Senior DevOps / SRE Engineer',
+                skills: ['AWS', 'Azure', 'GCP', 'Terraform', 'Docker', 'Kubernetes', 'Jenkins', 'GitHub Actions', 'Ansible', 'Prometheus', 'Grafana', 'Python', 'Bash', 'Linux', 'Helm', 'ArgoCD'],
+                summary: 'Results-driven DevOps/SRE Engineer with 5+ years of experience designing and implementing scalable cloud infrastructure, CI/CD pipelines, and observability solutions. Expert in AWS, Kubernetes, Terraform, and GitOps practices. Proven track record of reducing deployment times by 70%, achieving 99.99% uptime SLAs, and implementing infrastructure-as-code across multi-cloud environments.',
+                experience: [
+                    {role: 'Senior DevOps Engineer', company: 'Tech Company', start_date: '2022', end_date: 'Present', bullets: ['Architected and implemented multi-region Kubernetes clusters on AWS EKS, achieving 99.99% uptime and supporting 500+ microservices', 'Designed and deployed GitOps-based CI/CD pipelines using GitHub Actions and ArgoCD, reducing deployment time from 2 hours to 15 minutes', 'Implemented Infrastructure as Code using Terraform and Terragrunt, managing 200+ AWS resources across 5 environments', 'Built comprehensive observability stack with Prometheus, Grafana, and ELK, reducing MTTR by 60%']},
+                    {role: 'DevOps Engineer', company: 'Previous Company', start_date: '2019', end_date: '2022', bullets: ['Built and maintained CI/CD pipelines using Jenkins and GitHub Actions for 50+ repositories', 'Managed containerized applications on Docker and Kubernetes with zero-downtime deployments', 'Implemented monitoring solutions using Prometheus and Grafana, creating 100+ custom dashboards']}
+                ],
+                education: [{degree: 'Bachelor of Technology', field: 'Computer Science', school: 'University Name', graduation_date: '2019'}]
+            },
+            'software_engineer': {
+                title: 'Senior Software Engineer',
+                skills: ['Python', 'JavaScript', 'TypeScript', 'React', 'Node.js', 'Django', 'PostgreSQL', 'MongoDB', 'Redis', 'REST APIs', 'GraphQL', 'Docker', 'AWS', 'Git', 'Agile'],
+                summary: 'Senior Software Engineer with 5+ years of experience building scalable, high-performance applications. Proficient in full-stack development with expertise in Python, JavaScript, and cloud-native architectures. Track record of delivering complex features that drive business value and improve user experience.',
+                experience: [
+                    {role: 'Senior Software Engineer', company: 'Tech Company', start_date: '2022', end_date: 'Present', bullets: ['Designed and implemented RESTful APIs serving 10M+ daily requests with 99.9% availability', 'Led migration from monolithic architecture to microservices, improving system scalability by 300%', 'Optimized database queries and implemented caching strategies, reducing API response times by 40%', 'Mentored team of 5 junior developers through code reviews and pair programming sessions']},
+                    {role: 'Software Engineer', company: 'Previous Company', start_date: '2019', end_date: '2022', bullets: ['Developed full-stack features using React and Django, serving 100K+ active users', 'Implemented automated testing achieving 85% code coverage, reducing production bugs by 60%', 'Built real-time notification system using WebSockets and Redis pub/sub']}
+                ],
+                education: [{degree: 'Bachelor of Science', field: 'Computer Science', school: 'University Name', graduation_date: '2019'}]
+            },
+            'ds_ml': {
+                title: 'Senior Data Scientist / ML Engineer',
+                skills: ['Python', 'TensorFlow', 'PyTorch', 'Scikit-learn', 'Pandas', 'NumPy', 'SQL', 'Spark', 'MLflow', 'Kubeflow', 'Deep Learning', 'NLP', 'Computer Vision', 'Statistics', 'AWS SageMaker'],
+                summary: 'Data Scientist / ML Engineer with 5+ years of experience developing and deploying machine learning models at scale. Expert in Python, TensorFlow, and PyTorch with a strong foundation in statistics and deep learning. Proven track record of building production ML systems that drive measurable business impact.',
+                experience: [
+                    {role: 'Senior ML Engineer', company: 'Tech Company', start_date: '2022', end_date: 'Present', bullets: ['Developed and deployed production ML models serving 5M+ predictions daily with 99.5% uptime', 'Built end-to-end ML pipelines using Airflow and MLflow, reducing model deployment time by 70%', 'Implemented recommendation systems that increased user engagement by 25% and revenue by $2M annually', 'Optimized model inference latency from 200ms to 50ms through quantization and efficient serving']},
+                    {role: 'Data Scientist', company: 'Previous Company', start_date: '2019', end_date: '2022', bullets: ['Built NLP models for sentiment analysis achieving 92% accuracy on customer feedback data', 'Conducted A/B tests and statistical analysis for product decisions, influencing $5M in revenue', 'Created automated data pipelines processing 10TB+ daily using Spark and Airflow']}
+                ],
+                education: [{degree: 'Master of Science', field: 'Machine Learning', school: 'University Name', graduation_date: '2019'}]
+            }
+        };
+
         document.addEventListener('DOMContentLoaded', function() {
             initTemplateSelector();
             initRoleSelector();
@@ -759,16 +792,49 @@
             });
         }
 
-        // Role selector
+        // Role selector with content auto-population
         function initRoleSelector() {
             document.querySelectorAll('.role-chip').forEach(chip => {
                 chip.addEventListener('click', function() {
                     document.querySelectorAll('.role-chip').forEach(c => c.classList.remove('active'));
                     this.classList.add('active');
-                    document.getElementById('roleField').value = this.dataset.role;
-                    // Could load role-specific defaults here if needed
+                    const role = this.dataset.role;
+                    document.getElementById('roleField').value = role;
+                    
+                    // Load role-specific content
+                    if (ROLE_CONTENT[role]) {
+                        loadRoleContent(role);
+                    }
                 });
             });
+        }
+
+        // Load role-specific content into the form
+        function loadRoleContent(role) {
+            const content = ROLE_CONTENT[role];
+            if (!content) return;
+
+            // Update role title
+            document.getElementById('roleTitle').value = content.title;
+            
+            // Update summary
+            document.getElementById('summary').value = content.summary;
+            
+            // Update skills
+            document.getElementById('skillsInput').value = content.skills.join('\n');
+            
+            // Clear and repopulate experience
+            const expContainer = document.getElementById('experienceContainer');
+            expContainer.innerHTML = '';
+            content.experience.forEach(exp => addExperience(exp));
+            
+            // Clear and repopulate education
+            const eduContainer = document.getElementById('educationContainer');
+            eduContainer.innerHTML = '';
+            content.education.forEach(edu => addEducation(edu));
+            
+            // Update preview
+            updatePreview();
         }
 
         function populateForm(d) {

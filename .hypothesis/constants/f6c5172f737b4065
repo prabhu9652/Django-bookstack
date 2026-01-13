@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/resume_builder/migrations/0016_add_3_more_cover_letter_templates.py
+# hypothesis_version: 6.150.0
+
+['#2d3748', '#4a5568', '#fc8181', 'CoverLetterTemplate', 'Ember', 'Essence', 'Pure', 'cl_essence', 'cl_pure', 'creative', 'css_styles', 'description', 'display_order', 'ember', 'html_template', 'is_active', 'name', 'primary_color', 'resume_builder', 'slug', 'tone']

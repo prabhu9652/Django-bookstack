@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/views/timesheet.py
+# hypothesis_version: 6.150.0
+
+['%Y-%m-%d', '-week_start_date', '0', 'Entry deleted.', 'Timesheet History', 'Timesheet Management', 'Timesheet approved.', 'Timesheet rejected.', 'approve', 'assigned_projects', 'can_approve', 'can_edit', 'can_submit', 'comments', 'current_timesheet', 'date', 'description', 'draft', 'employee', 'entries', 'hours', 'hr_portal:dashboard', 'is_billable', 'on', 'pending_approvals', 'project', 'reason', 'recent_timesheets', 'reject', 'selected_year', 'submit', 'submitted', 'timesheet', 'timesheets', 'title', 'year', 'years']

@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/views/holiday.py
+# hypothesis_version: 6.150.0
+
+['can_manage', 'date', 'holidays', 'location', 'locations', 'selected_location', 'selected_year', 'title', 'year', 'years']

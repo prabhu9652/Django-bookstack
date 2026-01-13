@@ -1,0 +1,136 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}Leave Management{% endblock %}
+{% block breadcrumb %}Leave{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <div class="hr-page-header-row">
+            <div>
+                <h1 class="hr-page-title">Leave Management</h1>
+                <p class="hr-page-subtitle">Track and manage your leave requests</p>
+            </div>
+            <div class="hr-page-actions">
+                <a href="{% url 'hr_portal:leave_request_create' %}" class="hr-btn hr-btn-primary">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Request Leave</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Leave Balances -->
+    {% if leave_balances %}
+    <div class="hr-balance-grid hr-stagger">
+        {% for balance in leave_balances %}
+        <div class="hr-balance-card">
+            <div class="hr-balance-type">{{ balance.leave_type.name }}</div>
+            <div class="hr-balance-value">{{ balance.available_days }}</div>
+            <div class="hr-balance-total">of {{ balance.total_entitled }} days available</div>
+            <div class="hr-balance-bar">
+                <div class="hr-balance-bar-fill" style="width: {% widthratio balance.available_days balance.total_entitled 100 %}%"></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- My Leave Requests -->
+    <div class="hr-card hr-mb-6">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title"><i class="bi bi-list-ul"></i> My Leave Requests</h3>
+        </div>
+        <div class="hr-table-wrapper">
+            <table class="hr-table">
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Type</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Days</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for leave in my_leaves %}
+                    <tr>
+                        <td><span style="font-family: monospace; font-size: var(--hr-font-size-xs);">{{ leave.request_id }}</span></td>
+                        <td>{{ leave.leave_type.name }}</td>
+                        <td>{{ leave.start_date|date:"M d, Y" }}</td>
+                        <td>{{ leave.end_date|date:"M d, Y" }}</td>
+                        <td><span class="hr-badge hr-badge-primary">{{ leave.total_days }} days</span></td>
+                        <td><span class="hr-badge hr-badge-{{ leave.status }}">{{ leave.get_status_display }}</span></td>
+                        <td>
+                            <a href="{% url 'hr_portal:leave_request_detail' leave.request_id %}" class="hr-btn hr-btn-secondary hr-btn-sm">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="hr-table-empty">
+                            <i class="bi bi-calendar-x"></i>
+                            <div>No leave requests found</div>
+                            <a href="{% url 'hr_portal:leave_request_create' %}" class="hr-btn hr-btn-primary hr-btn-sm hr-mt-4">Request Leave</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pending Approvals (Manager View) -->
+    {% if pending_approvals %}
+    <div class="hr-card">
+        <div class="hr-approval-header leave">
+            <i class="bi bi-hourglass-split"></i>
+            <span>Pending Team Approvals</span>
+            <span class="hr-approval-count">{{ pending_approvals|length }}</span>
+        </div>
+        <div class="hr-table-wrapper">
+            <table class="hr-table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Type</th>
+                        <th>Dates</th>
+                        <th>Days</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for leave in pending_approvals %}
+                    <tr>
+                        <td>
+                            <div class="hr-flex hr-items-center hr-gap-3">
+                                <div class="hr-user-avatar" style="width: 32px; height: 32px; font-size: var(--hr-font-size-xs);">
+                                    {{ leave.employee.user.first_name|slice:":1"|upper }}{{ leave.employee.user.last_name|slice:":1"|upper }}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 500;">{{ leave.employee.full_name }}</div>
+                                    <div style="font-size: var(--hr-font-size-xs); color: var(--hr-text-muted);">{{ leave.employee.designation.title }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ leave.leave_type.name }}</td>
+                        <td>{{ leave.start_date|date:"M d" }} - {{ leave.end_date|date:"M d" }}</td>
+                        <td><span class="hr-badge hr-badge-primary">{{ leave.total_days }} days</span></td>
+                        <td>
+                            <a href="{% url 'hr_portal:leave_request_detail' leave.request_id %}" class="hr-btn hr-btn-primary hr-btn-sm">
+                                <i class="bi bi-check2-square"></i> Review
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

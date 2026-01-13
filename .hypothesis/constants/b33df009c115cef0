@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/views/asset.py
+# hypothesis_version: 6.150.0
+
+['%Y-%m-%d', '-assigned_date', '-created_at', 'Add New Asset', 'All Assets', 'Asset Categories', 'Asset Management', 'POST', 'all_assets', 'asset', 'asset__category', 'asset_history', 'asset_id', 'asset_summary', 'assets', 'assign', 'assigned', 'assigned_by', 'assigned_to', 'assignment_history', 'available', 'can_manage', 'categories', 'category', 'code', 'condition', 'condition_choices', 'create', 'depreciation_years', 'description', 'employee', 'employee_id', 'good', 'location', 'manufacturer', 'model', 'my_assets', 'name', 'new', 'notes', 'purchase_cost', 'purchase_date', 'return', 'selected_category', 'selected_status', 'serial_number', 'status', 'status_choices', 'title', 'warranty_expiry']

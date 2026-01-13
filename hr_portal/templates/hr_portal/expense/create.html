@@ -1,0 +1,90 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}Submit Expense{% endblock %}
+{% block breadcrumb %}Submit Expense{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <div class="hr-flex hr-items-center hr-gap-4">
+            <button onclick="history.back()" class="hr-btn hr-btn-ghost hr-btn-icon">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <div>
+                <h1 class="hr-page-title">Submit Expense</h1>
+                <p class="hr-page-subtitle">Create a new expense claim</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="hr-card" style="max-width: 700px;">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title"><i class="bi bi-receipt"></i> Expense Details</h3>
+        </div>
+        <div class="hr-card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="hr-form-group">
+                    <label class="hr-form-label required">Title</label>
+                    <input type="text" name="title" class="hr-form-input" placeholder="e.g., Client dinner, Travel expenses" required>
+                </div>
+                
+                <div class="hr-form-row">
+                    <div class="hr-form-group">
+                        <label class="hr-form-label required">Category</label>
+                        <select name="category" class="hr-form-select" required>
+                            <option value="">Select category...</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat.id }}">{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="hr-form-group">
+                        <label class="hr-form-label required">Expense Date</label>
+                        <input type="date" name="expense_date" class="hr-form-input" required>
+                    </div>
+                </div>
+                
+                <div class="hr-form-row">
+                    <div class="hr-form-group">
+                        <label class="hr-form-label required">Amount</label>
+                        <input type="number" name="amount" class="hr-form-input" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    <div class="hr-form-group">
+                        <label class="hr-form-label required">Currency</label>
+                        <select name="currency" class="hr-form-select" required>
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="GBP">GBP - British Pound</option>
+                            <option value="INR">INR - Indian Rupee</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="hr-form-group">
+                    <label class="hr-form-label">Description</label>
+                    <textarea name="description" class="hr-form-textarea" rows="4" placeholder="Provide details about this expense..."></textarea>
+                </div>
+                
+                <div class="hr-form-group">
+                    <label class="hr-form-label">Receipt/Attachment</label>
+                    <input type="file" name="receipt" class="hr-form-input" accept="image/*,.pdf">
+                    <div class="hr-form-help">Upload receipt or supporting document (PDF, JPG, PNG)</div>
+                </div>
+                
+                <div class="hr-flex hr-gap-3 hr-mt-6">
+                    <button type="submit" class="hr-btn hr-btn-primary">
+                        <i class="bi bi-send"></i>
+                        <span>Submit Expense</span>
+                    </button>
+                    <button type="button" onclick="history.back()" class="hr-btn hr-btn-secondary">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

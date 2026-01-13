@@ -184,9 +184,17 @@ class Resume(models.Model):
 
 class CoverLetter(models.Model):
     """User's cover letter documents"""
+    
+    ROLE_CHOICES = [
+        ('devops_sre', 'DevOps / SRE Engineer'),
+        ('software_engineer', 'Software Engineer'),
+        ('ds_ml', 'DS / ML Engineer'),
+    ]
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cover_letters')
     template = models.ForeignKey(CoverLetterTemplate, on_delete=models.CASCADE)
     title = models.CharField(max_length=200, default="My Cover Letter")
+    target_role = models.CharField(max_length=30, choices=ROLE_CHOICES, default='software_engineer', help_text='Target role for AI content suggestions')
     
     # Color Theme
     primary_color = models.CharField(max_length=7, default='#4a9d9a', help_text='Header/accent color')

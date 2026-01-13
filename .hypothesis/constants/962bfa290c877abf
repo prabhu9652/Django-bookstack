@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/services/timesheet_service.py
+# hypothesis_version: 6.150.0
+
+['-week_start_date', '0', 'active', 'approved', 'billable_hours', 'by_day', 'by_employee', 'by_project', 'by_week', 'date', 'description', 'draft', 'employee', 'hours', 'is_billable', 'non_billable_hours', 'project', 'project__name', 'project__project_id', 'rejected', 'submitted', 'total', 'total_hours', 'week_end_date']

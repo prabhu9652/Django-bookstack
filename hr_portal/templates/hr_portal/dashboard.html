@@ -1,0 +1,191 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <h1 class="hr-page-title">Welcome back, {{ request.user.first_name|default:request.user.username }}!</h1>
+        <p class="hr-page-subtitle">Here's what's happening with your HR activities today.</p>
+    </div>
+    
+    <!-- Quick Stats -->
+    <div class="hr-stats-grid hr-stagger">
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon primary">
+                <i class="bi bi-calendar-check"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">Pending Leaves</div>
+                <div class="hr-stat-value">{{ pending_leaves|default:0 }}</div>
+            </div>
+        </div>
+        
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon success">
+                <i class="bi bi-receipt"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">Pending Expenses</div>
+                <div class="hr-stat-value">{{ pending_expenses|default:0 }}</div>
+            </div>
+        </div>
+        
+        {% if is_manager %}
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon warning">
+                <i class="bi bi-hourglass-split"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">Awaiting Approval</div>
+                <div class="hr-stat-value">{{ pending_leave_approvals|default:0|add:pending_expense_approvals|default:0 }}</div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if is_hr_admin %}
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon info">
+                <i class="bi bi-people"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">Total Employees</div>
+                <div class="hr-stat-value">{{ total_employees|default:0 }}</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="hr-card hr-mb-6">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title"><i class="bi bi-lightning"></i> Quick Actions</h3>
+        </div>
+        <div class="hr-card-body">
+            <div class="hr-quick-actions">
+                <a href="{% url 'hr_portal:leave_request_create' %}" class="hr-quick-action">
+                    <div class="hr-quick-action-icon">
+                        <i class="bi bi-calendar-plus"></i>
+                    </div>
+                    <span class="hr-quick-action-label">Request Leave</span>
+                </a>
+                <a href="{% url 'hr_portal:expense_request_create' %}" class="hr-quick-action">
+                    <div class="hr-quick-action-icon">
+                        <i class="bi bi-plus-circle"></i>
+                    </div>
+                    <span class="hr-quick-action-label">Submit Expense</span>
+                </a>
+                <a href="{% url 'hr_portal:timesheet_dashboard' %}" class="hr-quick-action">
+                    <div class="hr-quick-action-icon">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                    <span class="hr-quick-action-label">Log Time</span>
+                </a>
+                <a href="{% url 'hr_portal:holiday_calendar' %}" class="hr-quick-action">
+                    <div class="hr-quick-action-icon">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    <span class="hr-quick-action-label">View Holidays</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="hr-grid hr-grid-2 hr-gap-4" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));">
+        <!-- Leave Balances -->
+        {% if leave_balances %}
+        <div class="hr-card">
+            <div class="hr-card-header">
+                <h3 class="hr-card-title"><i class="bi bi-pie-chart"></i> Leave Balances</h3>
+                <a href="{% url 'hr_portal:leave_dashboard' %}" class="hr-btn hr-btn-ghost hr-btn-sm">View All</a>
+            </div>
+            <div class="hr-card-body">
+                <div class="hr-balance-grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
+                    {% for balance in leave_balances %}
+                    <div class="hr-balance-card">
+                        <div class="hr-balance-type">{{ balance.leave_type.name }}</div>
+                        <div class="hr-balance-value">{{ balance.available_days }}</div>
+                        <div class="hr-balance-total">of {{ balance.total_entitled }} days</div>
+                        <div class="hr-balance-bar">
+                            <div class="hr-balance-bar-fill" style="width: {% widthratio balance.available_days balance.total_entitled 100 %}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Recent Leave Requests -->
+        <div class="hr-card">
+            <div class="hr-card-header">
+                <h3 class="hr-card-title"><i class="bi bi-clock-history"></i> Recent Leave Requests</h3>
+                <a href="{% url 'hr_portal:leave_dashboard' %}" class="hr-btn hr-btn-ghost hr-btn-sm">View All</a>
+            </div>
+            <div class="hr-card-body hr-card-body-compact">
+                {% for leave in recent_leaves %}
+                <div class="hr-flex hr-items-center hr-justify-between hr-gap-3" style="padding: var(--hr-space-3) 0; border-bottom: 1px solid var(--hr-border-light);">
+                    <div>
+                        <div style="font-weight: 500; color: var(--hr-text);">{{ leave.leave_type.name }}</div>
+                        <div style="font-size: var(--hr-font-size-xs); color: var(--hr-text-muted);">{{ leave.start_date|date:"M d" }} - {{ leave.end_date|date:"M d, Y" }}</div>
+                    </div>
+                    <span class="hr-badge hr-badge-{{ leave.status }}">{{ leave.get_status_display }}</span>
+                </div>
+                {% empty %}
+                <div class="hr-empty-state" style="padding: var(--hr-space-6);">
+                    <i class="bi bi-calendar-x" style="font-size: 2rem; color: var(--hr-text-muted); margin-bottom: var(--hr-space-2);"></i>
+                    <p style="color: var(--hr-text-muted); margin: 0;">No recent leave requests</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Upcoming Holidays -->
+        {% if upcoming_holidays %}
+        <div class="hr-card">
+            <div class="hr-card-header">
+                <h3 class="hr-card-title"><i class="bi bi-calendar-event"></i> Upcoming Holidays</h3>
+                <a href="{% url 'hr_portal:holiday_calendar' %}" class="hr-btn hr-btn-ghost hr-btn-sm">View Calendar</a>
+            </div>
+            <div class="hr-card-body hr-card-body-compact">
+                {% for holiday in upcoming_holidays %}
+                <div class="hr-holiday-item">
+                    <div class="hr-holiday-date">
+                        <div class="hr-holiday-day">{{ holiday.date|date:"d" }}</div>
+                        <div class="hr-holiday-month">{{ holiday.date|date:"M" }}</div>
+                    </div>
+                    <div class="hr-holiday-info">
+                        <div class="hr-holiday-name">{{ holiday.name }}</div>
+                        <div class="hr-holiday-type">{{ holiday.date|date:"l" }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Assigned Assets -->
+        {% if assigned_assets %}
+        <div class="hr-card">
+            <div class="hr-card-header">
+                <h3 class="hr-card-title"><i class="bi bi-laptop"></i> My Assets</h3>
+                <a href="{% url 'hr_portal:asset_dashboard' %}" class="hr-btn hr-btn-ghost hr-btn-sm">View All</a>
+            </div>
+            <div class="hr-card-body hr-card-body-compact">
+                {% for asset in assigned_assets %}
+                <div class="hr-flex hr-items-center hr-justify-between hr-gap-3" style="padding: var(--hr-space-3) 0; border-bottom: 1px solid var(--hr-border-light);">
+                    <div>
+                        <div style="font-weight: 500; color: var(--hr-text);">{{ asset.name }}</div>
+                        <div style="font-size: var(--hr-font-size-xs); color: var(--hr-text-muted);">{{ asset.asset_id }}</div>
+                    </div>
+                    <span class="hr-badge hr-badge-info">{{ asset.category.name }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

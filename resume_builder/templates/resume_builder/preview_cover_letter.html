@@ -5,12 +5,15 @@
 <div class="container" style="padding: var(--space-6) 0;">
   <!-- Header Actions -->
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6); flex-wrap: wrap; gap: var(--space-4);">
-    <div>
-      <h1 style="font-size: var(--font-size-2xl); font-weight: 700; color: var(--text-primary);">Cover Letter Preview</h1>
-      <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">{{ cover_letter.title }} • Template: {{ cover_letter.template.name }}</p>
+    <div style="display: flex; align-items: center; gap: var(--space-4);">
+      <a href="javascript:history.back()" class="btn btn-ghost" style="padding: 0.5rem 0.75rem;"><i class="fas fa-arrow-left"></i></a>
+      <div>
+        <h1 style="font-size: var(--font-size-2xl); font-weight: 700; color: var(--text-primary);">Cover Letter Preview</h1>
+        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">{{ cover_letter.title }} • Template: {{ cover_letter.template.name }}</p>
+      </div>
     </div>
     <div style="display: flex; gap: var(--space-3);">
-      <a href="{% url 'resume_builder:edit_cover_letter' cover_letter.id %}" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit</a>
+      <a href="{% url 'resume_builder:live_edit_cover_letter' cover_letter.id %}" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit</a>
       <a href="{% url 'resume_builder:download_cover_letter' cover_letter.id %}" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Download PDF</a>
       <button onclick="window.print()" class="btn btn-ghost"><i class="fas fa-print"></i> Print</button>
     </div>
@@ -24,10 +27,6 @@
         <span>Loading preview...</span>
       </div>
     </div>
-  </div>
-
-  <div style="text-align: center; margin-top: var(--space-6);">
-    <a href="{% url 'resume_builder:edit_cover_letter' cover_letter.id %}" class="btn btn-ghost"><i class="fas fa-arrow-left"></i> Back to Editor</a>
   </div>
 </div>
 

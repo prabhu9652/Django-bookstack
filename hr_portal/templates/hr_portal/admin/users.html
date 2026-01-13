@@ -1,0 +1,116 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}User Roles{% endblock %}
+{% block breadcrumb %}User Roles{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <h1 class="hr-page-title">User Role Management</h1>
+        <p class="hr-page-subtitle">Manage HR Portal access and role assignments</p>
+    </div>
+    
+    <!-- Role Summary -->
+    <div class="hr-stats-grid hr-stagger">
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon primary">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">App Admins</div>
+                <div class="hr-stat-value">{{ role_counts.app_admin|default:0 }}</div>
+            </div>
+        </div>
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon success">
+                <i class="bi bi-person-badge"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">HR Admins</div>
+                <div class="hr-stat-value">{{ role_counts.hr_admin|default:0 }}</div>
+            </div>
+        </div>
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon warning">
+                <i class="bi bi-cash-stack"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">Finance Admins</div>
+                <div class="hr-stat-value">{{ role_counts.finance_admin|default:0 }}</div>
+            </div>
+        </div>
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon info">
+                <i class="bi bi-people"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">Managers</div>
+                <div class="hr-stat-value">{{ role_counts.manager|default:0 }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Users Table -->
+    <div class="hr-card">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title"><i class="bi bi-people"></i> Users with HR Portal Access</h3>
+        </div>
+        <div class="hr-table-wrapper">
+            <table class="hr-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Access Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hr_role in hr_roles %}
+                    <tr>
+                        <td>
+                            <div class="hr-flex hr-items-center hr-gap-3">
+                                <div class="hr-user-avatar" style="width: 32px; height: 32px; font-size: var(--hr-font-size-xs);">
+                                    {{ hr_role.user.first_name|slice:":1"|upper|default:hr_role.user.username|slice:":1"|upper }}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 500;">{{ hr_role.user.get_full_name|default:hr_role.user.username }}</div>
+                                    <div style="font-size: var(--hr-font-size-xs); color: var(--hr-text-muted);">@{{ hr_role.user.username }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ hr_role.user.email }}</td>
+                        <td>
+                            <span class="hr-badge hr-badge-{% if hr_role.role_type == 'app_admin' %}danger{% elif hr_role.role_type == 'hr_admin' %}success{% elif hr_role.role_type == 'finance_admin' %}warning{% elif hr_role.role_type == 'manager' %}info{% else %}primary{% endif %}">
+                                {{ hr_role.get_role_type_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if hr_role.can_access_hr_portal %}
+                            <span class="hr-badge hr-badge-active"><i class="bi bi-check-circle"></i> Active</span>
+                            {% else %}
+                            <span class="hr-badge hr-badge-inactive"><i class="bi bi-x-circle"></i> Disabled</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'admin:hr_portal_hrrole_change' hr_role.id %}" class="hr-btn hr-btn-secondary hr-btn-sm">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="hr-table-empty">
+                            <i class="bi bi-people"></i>
+                            <div>No users with HR roles found</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

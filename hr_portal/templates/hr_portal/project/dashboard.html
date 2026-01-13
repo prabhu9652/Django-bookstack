@@ -1,0 +1,106 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}Projects{% endblock %}
+{% block breadcrumb %}Projects{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <h1 class="hr-page-title">Project Dashboard</h1>
+        <p class="hr-page-subtitle">View your project assignments and track progress</p>
+    </div>
+    
+    <!-- My Projects -->
+    {% if my_projects %}
+    <div class="hr-card hr-mb-6">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title"><i class="bi bi-kanban"></i> My Projects</h3>
+        </div>
+        <div class="hr-card-body">
+            <div class="hr-grid hr-gap-4" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                {% for assignment in my_projects %}
+                <div class="hr-card" style="border: 1px solid var(--hr-border);">
+                    <div class="hr-card-body">
+                        <div class="hr-flex hr-items-center hr-justify-between hr-mb-4">
+                            <h4 style="font-weight: 600; color: var(--hr-text); margin: 0;">{{ assignment.project.name }}</h4>
+                            <span class="hr-badge hr-badge-{{ assignment.project.status }}">{{ assignment.project.get_status_display }}</span>
+                        </div>
+                        <p style="font-size: var(--hr-font-size-sm); color: var(--hr-text-secondary); margin-bottom: var(--hr-space-4);">
+                            {{ assignment.project.description|truncatewords:20 }}
+                        </p>
+                        <div class="hr-flex hr-items-center hr-justify-between">
+                            <div>
+                                <div style="font-size: var(--hr-font-size-xs); color: var(--hr-text-muted);">Role</div>
+                                <div style="font-size: var(--hr-font-size-sm); font-weight: 500;">{{ assignment.role }}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: var(--hr-font-size-xs); color: var(--hr-text-muted);">Allocation</div>
+                                <div style="font-size: var(--hr-font-size-sm); font-weight: 500;">{{ assignment.allocation_percentage }}%</div>
+                            </div>
+                        </div>
+                        <div class="hr-mt-4">
+                            <a href="{% url 'hr_portal:project_detail' assignment.project.id %}" class="hr-btn hr-btn-secondary hr-btn-sm hr-w-full">
+                                <i class="bi bi-eye"></i> View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="hr-card">
+        <div class="hr-card-body">
+            <div class="hr-empty-state">
+                <div class="hr-empty-icon">
+                    <i class="bi bi-kanban"></i>
+                </div>
+                <h3 class="hr-empty-title">No Project Assignments</h3>
+                <p class="hr-empty-message">You are not currently assigned to any projects. Contact your manager for project assignments.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- All Projects (Admin View) -->
+    {% if can_manage_projects and all_projects %}
+    <div class="hr-card">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title"><i class="bi bi-grid"></i> All Projects</h3>
+        </div>
+        <div class="hr-table-wrapper">
+            <table class="hr-table">
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Manager</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in all_projects %}
+                    <tr>
+                        <td style="font-weight: 500;">{{ project.name }}</td>
+                        <td>{{ project.project_manager.full_name|default:"—" }}</td>
+                        <td>{{ project.start_date|date:"M d, Y" }}</td>
+                        <td>{{ project.end_date|date:"M d, Y"|default:"—" }}</td>
+                        <td><span class="hr-badge hr-badge-{{ project.status }}">{{ project.get_status_display }}</span></td>
+                        <td>
+                            <a href="{% url 'hr_portal:project_detail' project.id %}" class="hr-btn hr-btn-secondary hr-btn-sm">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/views/expense.py
+# hypothesis_version: 6.150.0
+
+['%Y-%m-%d', '-created_at', 'Expense History', 'Expense Management', 'POST', 'Submit Expense', 'USD', 'amount', 'approve', 'can_approve_finance', 'can_approve_manager', 'can_cancel', 'can_edit', 'can_mark_paid', 'can_reject', 'can_submit', 'categories', 'category', 'comments', 'currencies', 'currency', 'description', 'draft', 'employee', 'expense_date', 'expense_request', 'expense_summary', 'expenses', 'finance_approved', 'hr_portal:dashboard', 'manager_approved', 'my_expenses', 'payment_reference', 'pending_approvals', 'pending_payment', 'project', 'projects', 'reason', 'receipt', 'reject', 'selected_year', 'submit', 'submit_now', 'submitted', 'title', 'update', 'year', 'years']

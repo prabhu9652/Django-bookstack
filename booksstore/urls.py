@@ -47,6 +47,7 @@ urlpatterns = [
     path('resume-builder/', include('resume_builder.urls')),
     path('roadmap/', include('roadmap.urls')),
     path('careers/', include('careers.urls')),
+    path('hr/', include('hr_portal.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL,

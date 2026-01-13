@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/tests.py
+# hypothesis_version: 6.150.0
+
+[200, 302, '_hr_role_cache', 'app', 'app_admin', 'disabled', 'disabled@test.com', 'emp', 'employee', 'enabled', 'enabled@test.com', 'fin', 'finance_admin', 'hr', 'hr_admin', 'hr_portal:dashboard', 'hradmin', 'hradmin@test.com', 'login', 'noaccess', 'norole', 'norole@test.com', 'super', 'super@test.com', 'test', 'testpass123', 'withaccess']

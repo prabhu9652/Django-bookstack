@@ -1,0 +1,149 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}Leave Request {{ leave.request_id }}{% endblock %}
+{% block breadcrumb %}Leave Request{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <div class="hr-page-header-row">
+            <div class="hr-flex hr-items-center hr-gap-4">
+                <button onclick="history.back()" class="hr-btn hr-btn-ghost hr-btn-icon">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+                <div>
+                    <h1 class="hr-page-title">Leave Request</h1>
+                    <p class="hr-page-subtitle">{{ leave.request_id }}</p>
+                </div>
+            </div>
+            <span class="hr-badge hr-badge-{{ leave.status }}" style="font-size: var(--hr-font-size-sm); padding: var(--hr-space-2) var(--hr-space-4);">
+                {{ leave.get_status_display }}
+            </span>
+        </div>
+    </div>
+    
+    <div class="hr-grid hr-gap-4" style="grid-template-columns: 2fr 1fr;">
+        <!-- Main Content -->
+        <div>
+            <!-- Request Details -->
+            <div class="hr-card hr-mb-4">
+                <div class="hr-card-header">
+                    <h3 class="hr-card-title"><i class="bi bi-calendar-check"></i> Request Details</h3>
+                </div>
+                <div class="hr-card-body">
+                    <div class="hr-info-list">
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Leave Type</div>
+                            <div class="hr-info-value">{{ leave.leave_type.name }}</div>
+                        </div>
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Start Date</div>
+                            <div class="hr-info-value">{{ leave.start_date|date:"M d, Y" }}</div>
+                        </div>
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">End Date</div>
+                            <div class="hr-info-value">{{ leave.end_date|date:"M d, Y" }}</div>
+                        </div>
+                        <div class="hr-info-item">
+                            <div class="hr-info-label">Total Days</div>
+                            <div class="hr-info-value">{{ leave.total_days }} days</div>
+                        </div>
+                    </div>
+                    
+                    {% if leave.reason %}
+                    <div class="hr-mt-4">
+                        <div class="hr-info-label">Reason</div>
+                        <p style="color: var(--hr-text); margin-top: var(--hr-space-2);">{{ leave.reason }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Approval Actions -->
+            {% if can_approve %}
+            <div class="hr-card">
+                <div class="hr-card-header">
+                    <h3 class="hr-card-title"><i class="bi bi-check2-square"></i> Approval Action</h3>
+                </div>
+                <div class="hr-card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="hr-form-group">
+                            <label class="hr-form-label">Comments (Optional)</label>
+                            <textarea name="comments" class="hr-form-textarea" rows="3" placeholder="Add any comments..."></textarea>
+                        </div>
+                        <div class="hr-flex hr-gap-3">
+                            <button type="submit" name="action" value="approve" class="hr-btn hr-btn-success">
+                                <i class="bi bi-check-lg"></i> Approve
+                            </button>
+                            <button type="submit" name="action" value="reject" class="hr-btn hr-btn-danger">
+                                <i class="bi bi-x-lg"></i> Reject
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sidebar -->
+        <div>
+            <!-- Employee Info -->
+            <div class="hr-card hr-mb-4">
+                <div class="hr-card-header">
+                    <h3 class="hr-card-title"><i class="bi bi-person"></i> Requested By</h3>
+                </div>
+                <div class="hr-card-body">
+                    <div class="hr-flex hr-items-center hr-gap-3">
+                        <div class="hr-user-avatar" style="width: 48px; height: 48px;">
+                            {{ leave.employee.user.first_name|slice:":1"|upper }}{{ leave.employee.user.last_name|slice:":1"|upper }}
+                        </div>
+                        <div>
+                            <div style="font-weight: 600;">{{ leave.employee.full_name }}</div>
+                            <div style="font-size: var(--hr-font-size-sm); color: var(--hr-text-secondary);">{{ leave.employee.designation.title }}</div>
+                            <div style="font-size: var(--hr-font-size-xs); color: var(--hr-text-muted);">{{ leave.employee.department.name }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Timeline -->
+            <div class="hr-card">
+                <div class="hr-card-header">
+                    <h3 class="hr-card-title"><i class="bi bi-clock-history"></i> Timeline</h3>
+                </div>
+                <div class="hr-card-body">
+                    <div class="hr-timeline">
+                        <div class="hr-timeline-item">
+                            <div class="hr-timeline-dot"></div>
+                            <div class="hr-timeline-content">
+                                <div class="hr-timeline-title">Request Submitted</div>
+                                <div class="hr-timeline-meta">{{ leave.created_at|date:"M d, Y H:i" }}</div>
+                            </div>
+                        </div>
+                        {% if leave.manager_approved_at %}
+                        <div class="hr-timeline-item">
+                            <div class="hr-timeline-dot" style="background: var(--hr-success);"></div>
+                            <div class="hr-timeline-content">
+                                <div class="hr-timeline-title">Manager Approved</div>
+                                <div class="hr-timeline-meta">{{ leave.manager_approved_at|date:"M d, Y H:i" }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if leave.hr_approved_at %}
+                        <div class="hr-timeline-item">
+                            <div class="hr-timeline-dot" style="background: var(--hr-success);"></div>
+                            <div class="hr-timeline-content">
+                                <div class="hr-timeline-title">HR Approved</div>
+                                <div class="hr-timeline-meta">{{ leave.hr_approved_at|date:"M d, Y H:i" }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

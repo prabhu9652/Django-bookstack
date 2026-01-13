@@ -1,0 +1,112 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}Add Employee{% endblock %}
+{% block breadcrumb %}Add Employee{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <div class="hr-flex hr-items-center hr-gap-4">
+            <button onclick="history.back()" class="hr-btn hr-btn-ghost hr-btn-icon">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <div>
+                <h1 class="hr-page-title">Add New Employee</h1>
+                <p class="hr-page-subtitle">Create a new employee record</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="hr-card" style="max-width: 800px;">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title"><i class="bi bi-person-plus"></i> Employee Information</h3>
+        </div>
+        <div class="hr-card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- User Account -->
+                <div class="hr-form-group">
+                    <label class="hr-form-label required">User Account</label>
+                    <select name="user" class="hr-form-select" required>
+                        <option value="">Select a user...</option>
+                        {% for user in available_users %}
+                        <option value="{{ user.id }}">{{ user.username }} ({{ user.email }})</option>
+                        {% endfor %}
+                    </select>
+                    <div class="hr-form-help">Select an existing user account to link to this employee</div>
+                </div>
+                
+                <div class="hr-form-row">
+                    <div class="hr-form-group">
+                        <label class="hr-form-label required">Department</label>
+                        <select name="department" class="hr-form-select" required>
+                            <option value="">Select department...</option>
+                            {% for dept in departments %}
+                            <option value="{{ dept.id }}">{{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="hr-form-group">
+                        <label class="hr-form-label required">Designation</label>
+                        <select name="designation" class="hr-form-select" required>
+                            <option value="">Select designation...</option>
+                            {% for desig in designations %}
+                            <option value="{{ desig.id }}">{{ desig.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="hr-form-row">
+                    <div class="hr-form-group">
+                        <label class="hr-form-label">Phone</label>
+                        <input type="tel" name="phone" class="hr-form-input" placeholder="+1 (555) 000-0000">
+                    </div>
+                    <div class="hr-form-group">
+                        <label class="hr-form-label">Work Location</label>
+                        <input type="text" name="work_location" class="hr-form-input" placeholder="e.g., New York Office">
+                    </div>
+                </div>
+                
+                <div class="hr-form-row">
+                    <div class="hr-form-group">
+                        <label class="hr-form-label required">Employment Type</label>
+                        <select name="employment_type" class="hr-form-select" required>
+                            <option value="full_time">Full Time</option>
+                            <option value="part_time">Part Time</option>
+                            <option value="contract">Contract</option>
+                            <option value="intern">Intern</option>
+                        </select>
+                    </div>
+                    <div class="hr-form-group">
+                        <label class="hr-form-label required">Joining Date</label>
+                        <input type="date" name="joining_date" class="hr-form-input" required>
+                    </div>
+                </div>
+                
+                <div class="hr-form-group">
+                    <label class="hr-form-label">Reporting Manager</label>
+                    <select name="reporting_manager" class="hr-form-select">
+                        <option value="">No manager (top-level)</option>
+                        {% for manager in managers %}
+                        <option value="{{ manager.id }}">{{ manager.full_name }} - {{ manager.designation.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="hr-flex hr-gap-3 hr-mt-6">
+                    <button type="submit" class="hr-btn hr-btn-primary">
+                        <i class="bi bi-check-lg"></i>
+                        <span>Create Employee</span>
+                    </button>
+                    <button type="button" onclick="history.back()" class="hr-btn hr-btn-secondary">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

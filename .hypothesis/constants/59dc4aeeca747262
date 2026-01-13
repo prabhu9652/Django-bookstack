@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/views/employee.py
+# hypothesis_version: 6.150.0
+
+['Create Employee', 'Employees', 'My Team', 'Organization Chart', 'POST', 'active', 'address', 'assigned_assets', 'can_edit', 'category', 'create', 'department', 'departments', 'designation', 'designations', 'direct_reports', 'email', 'employee', 'employee_id', 'employees', 'employment_status', 'employment_statuses', 'employment_type', 'employment_types', 'first_name', 'full_time', 'hr_portal:dashboard', 'id', 'joining_date', 'last_name', 'managers', 'name', 'phone', 'q', 'reporting_chain', 'reporting_manager', 'search', 'search_query', 'selected_department', 'selected_status', 'status', 'status_choices', 'team_members', 'title', 'top_level_employees', 'update', 'user', 'user_id', 'username', 'work_location']

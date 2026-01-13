@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'resume_builder',
     'roadmap',
     'careers',
+    'hr_portal',
 ]
 
 MIDDLEWARE = [
@@ -80,6 +81,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'accounts.context_processors.access_control_context',
+                'hr_portal.permissions.hr_portal_context',
             ],
         },
     },

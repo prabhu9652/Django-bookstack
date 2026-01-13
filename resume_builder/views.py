@@ -6,6 +6,7 @@ from django.views.decorators.http import require_POST
 from django.template import Template, Context
 from django.db import transaction
 from django.core.files.base import ContentFile
+from django.urls import reverse
 import json
 import logging
 import uuid
@@ -53,76 +54,6 @@ def _save_base64_photo(resume, photo_data):
 # DRAFT EDITOR VIEWS (No auto-save to My Documents)
 # ============================================
 
-@login_required
-def draft_resume_editor(request, template_id):
-    """
-    Open resume editor in DRAFT mode - nothing saved to My Documents yet.
-    Document only saves when user explicitly clicks Save.
-    """
-    template = get_object_or_404(ResumeTemplate, id=template_id, is_active=True)
-    role = request.GET.get('role', 'devops_sre')
-    
-    # Generate a unique draft ID for this session
-    draft_id = str(uuid.uuid4())[:8]
-    
-    # Prepare default data based on role (NOT saved to database)
-    draft_data = {
-        'template_id': template.id,
-        'template_name': template.name,
-        'template_slug': template.slug,
-        'role': role,
-        'title': 'My Resume',
-        'full_name': f'{request.user.first_name} {request.user.last_name}'.strip() or request.user.username,
-        'role_title': get_default_role_title(role),
-        'email': request.user.email or '',
-        'phone': '',
-        'address': '',
-        'location': '',
-        'linkedin': '',
-        'github': '',
-        'website': '',
-        'summary': get_default_summary_for_role(role),
-        'skills': get_default_skills_for_role(role),
-        'experience': [get_default_experience_for_role(role)],
-        'education': [{
-            'degree': 'Bachelor of Technology',
-            'field': 'Computer Science',
-            'school': 'University Name',
-            'location': 'City, Country',
-            'graduation_date': '2020'
-        }],
-        'projects': [],
-        'languages': ['English'],
-        'certifications': [],
-        'primary_color': template.primary_color,
-    }
-    
-    # Color options for the theme picker
-    color_options = [
-        {'name': 'Teal', 'value': '#4a9d9a'},
-        {'name': 'Navy', 'value': '#1e3a5f'},
-        {'name': 'Forest', 'value': '#2d5a3d'},
-        {'name': 'Burgundy', 'value': '#722f37'},
-        {'name': 'Slate', 'value': '#475569'},
-        {'name': 'Purple', 'value': '#5b21b6'},
-    ]
-    
-    context = {
-        'title': f'Create Resume - {template.name}',
-        'template': template,
-        'draft_id': draft_id,
-        'draft_data': json.dumps(draft_data),
-        'is_draft': True,
-        'color_options': color_options,
-        'role_options': [
-            ('devops_sre', 'DevOps / SRE Engineer'),
-            ('software_engineer', 'Software Engineer'),
-            ('ds_ml', 'DS / ML Engineer'),
-        ],
-    }
-    
-    return render(request, 'resume_builder/draft_resume_editor.html', context)
-
 
 @login_required
 def live_resume_editor(request, template_id):
@@ -132,6 +63,9 @@ def live_resume_editor(request, template_id):
     """
     template = get_object_or_404(ResumeTemplate, id=template_id, is_active=True)
     role = request.GET.get('role', 'devops_sre')
+    
+    # Get all active templates for the template selector
+    all_templates = ResumeTemplate.objects.filter(is_active=True).order_by('display_order', 'id')
     
     # Prepare default data based on role (NOT saved to database)
     draft_data = {
@@ -168,6 +102,7 @@ def live_resume_editor(request, template_id):
     context = {
         'title': f'Live Editor - {template.name}',
         'template': template,
+        'all_templates': all_templates,
         'draft_data': json.dumps(draft_data),
     }
     
@@ -175,62 +110,52 @@ def live_resume_editor(request, template_id):
 
 
 @login_required
-def draft_cover_letter_editor(request, template_id):
+def live_edit_resume(request, resume_id):
     """
-    Open cover letter editor in DRAFT mode - nothing saved to My Documents yet.
-    Document only saves when user explicitly clicks Save.
+    Edit an existing resume using the live editor.
+    Loads the saved resume data into the live editor interface.
     """
-    template = get_object_or_404(CoverLetterTemplate, id=template_id, is_active=True)
-    role = request.GET.get('role', 'devops_sre')
+    resume = get_object_or_404(Resume, id=resume_id, user=request.user)
+    template = resume.template
     
-    # Generate a unique draft ID for this session
-    draft_id = str(uuid.uuid4())[:8]
+    # Get all active templates for the template selector
+    all_templates = ResumeTemplate.objects.filter(is_active=True).order_by('display_order', 'id')
     
-    # Get role-specific content
-    cover_letter_content = get_default_cover_letter_content(role)
-    
-    # Prepare default data based on role (NOT saved to database)
+    # Load existing resume data
     draft_data = {
+        'resume_id': resume.id,
         'template_id': template.id,
         'template_name': template.name,
         'template_slug': template.slug,
-        'title': 'My Cover Letter',
-        'full_name': f'{request.user.first_name} {request.user.last_name}'.strip() or request.user.username,
-        'email': request.user.email or '',
-        'phone': '',
-        'address': '',
-        'location': '',
-        'linkedin': '',
-        'company_name': 'Company Name',
-        'company_address': '',
-        'position_title': cover_letter_content['position_title'],
-        'hiring_manager': '',
-        'opening_paragraph': cover_letter_content['opening_paragraph'],
-        'body_paragraph': cover_letter_content['body_paragraph'],
-        'closing_paragraph': cover_letter_content['closing_paragraph'],
-        'primary_color': template.primary_color,
+        'title': resume.title,
+        'full_name': resume.full_name or '',
+        'role_title': resume.role_title or '',
+        'email': resume.email or '',
+        'phone': resume.phone or '',
+        'address': resume.address or '',
+        'location': resume.location or '',
+        'linkedin': resume.linkedin or '',
+        'github': resume.github or '',
+        'website': resume.website or '',
+        'summary': resume.summary or '',
+        'skills': resume.skills or [],
+        'experience': resume.experience or [],
+        'education': resume.education or [],
+        'projects': resume.projects or [],
+        'languages': resume.languages or [],
+        'certifications': resume.certifications or [],
+        'primary_color': resume.primary_color or template.primary_color,
     }
-    
-    # Color options for the theme picker
-    color_options = [
-        {'name': 'Teal', 'value': '#4a9d9a'},
-        {'name': 'Navy', 'value': '#1e3a5f'},
-        {'name': 'Forest', 'value': '#2d5a3d'},
-        {'name': 'Burgundy', 'value': '#722f37'},
-        {'name': 'Slate', 'value': '#475569'},
-        {'name': 'Purple', 'value': '#5b21b6'},
-    ]
     
     context = {
-        'title': f'Create Cover Letter - {template.name}',
+        'title': f'Edit - {resume.title}',
         'template': template,
-        'draft_id': draft_id,
+        'all_templates': all_templates,
         'draft_data': json.dumps(draft_data),
-        'is_draft': True,
-        'color_options': color_options,
+        'resume_id': resume.id,
     }
     
-    return render(request, 'resume_builder/draft_cover_letter_editor.html', context)
+    return render(request, 'resume_builder/live_resume_editor.html', context)
 
 
 @login_required
@@ -242,6 +167,9 @@ def live_cover_letter_editor(request, template_id):
     template = get_object_or_404(CoverLetterTemplate, id=template_id, is_active=True)
     role = request.GET.get('role', 'devops_sre')
     
+    # Get all active cover letter templates for the template selector
+    all_templates = CoverLetterTemplate.objects.filter(is_active=True).order_by('id')
+    
     # Get role-specific content
     cover_letter_content = get_default_cover_letter_content(role)
     
@@ -251,6 +179,7 @@ def live_cover_letter_editor(request, template_id):
         'template_name': template.name,
         'template_slug': template.slug,
         'title': 'My Cover Letter',
+        'target_role': role,
         'full_name': f'{request.user.first_name} {request.user.last_name}'.strip() or request.user.username,
         'email': request.user.email or '',
         'phone': '',
@@ -270,7 +199,55 @@ def live_cover_letter_editor(request, template_id):
     context = {
         'title': f'Live Editor - {template.name}',
         'template': template,
+        'all_templates': all_templates,
         'draft_data': json.dumps(draft_data),
+    }
+    
+    return render(request, 'resume_builder/live_cover_letter_editor.html', context)
+
+
+@login_required
+def live_edit_cover_letter(request, cover_letter_id):
+    """
+    Edit an existing cover letter using the live editor.
+    Loads the saved cover letter data into the live editor interface.
+    """
+    cover_letter = get_object_or_404(CoverLetter, id=cover_letter_id, user=request.user)
+    template = cover_letter.template
+    
+    # Get all active cover letter templates for the template selector
+    all_templates = CoverLetterTemplate.objects.filter(is_active=True).order_by('id')
+    
+    # Load existing cover letter data
+    draft_data = {
+        'cover_letter_id': cover_letter.id,
+        'template_id': template.id,
+        'template_name': template.name,
+        'template_slug': template.slug,
+        'title': cover_letter.title,
+        'target_role': cover_letter.target_role or 'software_engineer',
+        'full_name': cover_letter.full_name or '',
+        'email': cover_letter.email or '',
+        'phone': cover_letter.phone or '',
+        'address': cover_letter.address or '',
+        'location': cover_letter.location or '',
+        'linkedin': cover_letter.linkedin or '',
+        'company_name': cover_letter.company_name or '',
+        'company_address': getattr(cover_letter, 'company_address', '') or '',
+        'position_title': cover_letter.position_title or '',
+        'hiring_manager': cover_letter.hiring_manager or '',
+        'opening_paragraph': cover_letter.opening_paragraph or '',
+        'body_paragraph': cover_letter.body_paragraph or '',
+        'closing_paragraph': cover_letter.closing_paragraph or '',
+        'primary_color': cover_letter.primary_color or template.primary_color,
+    }
+    
+    context = {
+        'title': f'Edit - {cover_letter.title}',
+        'template': template,
+        'all_templates': all_templates,
+        'draft_data': json.dumps(draft_data),
+        'cover_letter_id': cover_letter.id,
     }
     
     return render(request, 'resume_builder/live_cover_letter_editor.html', context)
@@ -357,6 +334,7 @@ def api_save_draft_cover_letter(request):
                 user=request.user,
                 template=template,
                 title=data.get('title', 'My Cover Letter'),
+                target_role=data.get('target_role', 'software_engineer'),
                 full_name=data.get('full_name', request.user.username),
                 email=data.get('email', request.user.email),
                 phone=data.get('phone', ''),
@@ -391,20 +369,28 @@ def api_save_draft_cover_letter(request):
 
 
 def home(request):
-    """Resume Builder landing page"""
+    """Resume Builder landing page - informational entry point"""
     context = {
         'title': 'Professional Resume & Cover Letter Builder',
         'resume_count': ResumeTemplate.objects.filter(is_active=True).count(),
         'cover_letter_count': CoverLetterTemplate.objects.filter(is_active=True).count(),
     }
     
-    if request.user.is_authenticated:
-        context.update({
-            'user_resumes': Resume.objects.filter(user=request.user).count(),
-            'user_cover_letters': CoverLetter.objects.filter(user=request.user).count(),
-        })
-    
     return render(request, 'resume_builder/home.html', context)
+
+
+@login_required
+def hub(request):
+    """Resume Builder hub page - functional navigation with action cards"""
+    context = {
+        'title': 'Resume Builder',
+        'user_resumes': Resume.objects.filter(user=request.user).count(),
+        'user_cover_letters': CoverLetter.objects.filter(user=request.user).count(),
+        'resume_template_count': ResumeTemplate.objects.filter(is_active=True).count(),
+        'cover_letter_template_count': CoverLetterTemplate.objects.filter(is_active=True).count(),
+    }
+    
+    return render(request, 'resume_builder/hub.html', context)
 
 
 @login_required
@@ -463,7 +449,7 @@ def resume_templates(request):
 
 @login_required
 def create_resume_direct(request):
-    """Create a new resume directly without template selection - goes straight to editor"""
+    """Create a new resume directly without template selection - goes straight to live editor"""
     # Get or create a default template
     template = ResumeTemplate.objects.filter(is_active=True).first()
     if not template:
@@ -481,38 +467,13 @@ def create_resume_direct(request):
     # Default role
     role = request.GET.get('role', 'devops_sre')
     
-    # Create the resume with defaults
-    resume = Resume.objects.create(
-        user=request.user,
-        template=template,
-        title='My Resume',
-        role=role,
-        full_name=f'{request.user.first_name} {request.user.last_name}'.strip() or request.user.username,
-        role_title=get_default_role_title(role),
-        email=request.user.email or '',
-        phone='',
-        address='',
-        linkedin='',
-        github='',
-        summary=get_default_summary_for_role(role),
-        skills=get_default_skills_for_role(role),
-        experience=[get_default_experience_for_role(role)],
-        education=[{
-            'degree': 'Bachelor of Technology',
-            'field': 'Computer Science',
-            'school': 'University Name',
-            'graduation_date': '2020'
-        }],
-        languages=['English'],
-    )
-    
-    messages.success(request, 'Resume created! Start editing below.')
-    return redirect('resume_builder:edit_resume', resume_id=resume.id)
+    # Redirect to live editor (no database save until user explicitly saves)
+    return redirect('resume_builder:live_resume_editor', template_id=template.id)
 
 
 @login_required
 def create_cover_letter_direct(request):
-    """Create a new cover letter directly without template selection - goes straight to editor"""
+    """Create a new cover letter directly without template selection - goes straight to live editor"""
     # Get or create a default template
     template = CoverLetterTemplate.objects.filter(is_active=True).first()
     if not template:
@@ -527,31 +488,8 @@ def create_cover_letter_direct(request):
             is_active=True
         )
     
-    # Get role from query parameter or default
-    role = request.GET.get('role', 'devops_sre')
-    
-    # Get role-specific cover letter content
-    cover_letter_content = get_default_cover_letter_content(role)
-    
-    # Create the cover letter with role-specific defaults
-    cover_letter = CoverLetter.objects.create(
-        user=request.user,
-        template=template,
-        title='My Cover Letter',
-        full_name=f'{request.user.first_name} {request.user.last_name}'.strip() or request.user.username,
-        email=request.user.email or '',
-        phone='',
-        address='',
-        company_name='Company Name',
-        position_title=cover_letter_content['position_title'],
-        hiring_manager='',
-        opening_paragraph=cover_letter_content['opening_paragraph'],
-        body_paragraph=cover_letter_content['body_paragraph'],
-        closing_paragraph=cover_letter_content['closing_paragraph'],
-    )
-    
-    messages.success(request, 'Cover letter created! Start editing below.')
-    return redirect('resume_builder:edit_cover_letter', cover_letter_id=cover_letter.id)
+    # Redirect to live editor (no database save until user explicitly saves)
+    return redirect('resume_builder:live_cover_letter_editor', template_id=template.id)
 
 
 def get_default_cover_letter_content(role):
@@ -641,6 +579,22 @@ I am passionate about my work and committed to continuous learning and professio
 
 
 @login_required
+def api_cover_letter_role_content(request):
+    """API endpoint to get role-specific cover letter content."""
+    role = request.GET.get('role', 'devops_sre')
+    content = get_default_cover_letter_content(role)
+    
+    return JsonResponse({
+        'success': True,
+        'role': role,
+        'position_title': content['position_title'],
+        'opening_paragraph': content['opening_paragraph'],
+        'body_paragraph': content['body_paragraph'],
+        'closing_paragraph': content['closing_paragraph']
+    })
+
+
+@login_required
 def cover_letter_templates(request):
     """Display available cover letter templates"""
     templates = CoverLetterTemplate.objects.filter(is_active=True)
@@ -655,64 +609,10 @@ def cover_letter_templates(request):
 
 @login_required
 def create_resume(request, template_id):
-    """Create a new resume with role selection"""
+    """Legacy create resume - redirects to live editor"""
     template = get_object_or_404(ResumeTemplate, id=template_id, is_active=True)
-    
-    if request.method == 'POST':
-        try:
-            role = request.POST.get('role', 'software_engineer')
-            
-            # Log template info for debugging
-            logger.info(f"Creating resume with template: {template.id} ({template.slug}) for user {request.user.username}")
-            
-            # Get default skills structure based on role
-            default_skills = get_default_skills_for_role(role)
-            
-            with transaction.atomic():
-                resume = Resume.objects.create(
-                    user=request.user,
-                    template=template,
-                    title=request.POST.get('title', f'My {template.name} Resume'),
-                    role=role,
-                    full_name=request.POST.get('full_name', f'{request.user.first_name} {request.user.last_name}'.strip() or request.user.username),
-                    role_title=get_default_role_title(role),
-                    email=request.POST.get('email', request.user.email),
-                    phone=request.POST.get('phone', ''),
-                    location=request.POST.get('location', ''),
-                    linkedin=request.POST.get('linkedin', ''),
-                    github=request.POST.get('github', ''),
-                    website=request.POST.get('website', ''),
-                    summary=get_default_summary_for_role(role),
-                    skills=default_skills,
-                    experience=[get_default_experience_for_role(role)],
-                    education=[{
-                        'degree': 'Bachelor of Technology',
-                        'field': 'Computer Science',
-                        'school': 'University Name',
-                        'location': 'City, Country',
-                        'graduation_date': '2020'
-                    }],
-                    projects=[],
-                    languages=['English'],
-                    certifications=[]
-                )
-                
-                # Verify template was saved correctly
-                logger.info(f"Resume {resume.id} created with template: {resume.template.id} ({resume.template.slug})")
-                
-                messages.success(request, f'Resume created with {template.name} template!')
-                return redirect('resume_builder:edit_resume', resume_id=resume.id)
-        except Exception as e:
-            logger.error(f"Error creating resume: {str(e)}")
-            messages.error(request, f'Error creating resume: {str(e)}')
-    
-    context = {
-        'title': f'Create Resume - {template.name}',
-        'template': template,
-        'role': request.GET.get('role', 'software_engineer'),
-    }
-    
-    return render(request, 'resume_builder/create_resume.html', context)
+    role = request.GET.get('role', 'software_engineer')
+    return redirect(f"{reverse('resume_builder:live_resume_editor', args=[template_id])}?role={role}")
 
 
 def get_default_role_title(role):
@@ -828,80 +728,9 @@ def get_default_experience_for_role(role):
 
 @login_required
 def edit_resume(request, resume_id):
-    """Edit an existing resume with role-aware sections"""
+    """Legacy edit resume - redirects to live editor"""
     resume = get_object_or_404(Resume, id=resume_id, user=request.user)
-    
-    if request.method == 'POST':
-        try:
-            # Handle file upload
-            if 'profile_photo' in request.FILES:
-                resume.profile_photo = request.FILES['profile_photo']
-            
-            # Update resume fields
-            resume.title = request.POST.get('title', resume.title)
-            resume.role = request.POST.get('role', resume.role)
-            resume.primary_color = request.POST.get('primary_color', resume.primary_color)
-            resume.full_name = request.POST.get('full_name', resume.full_name)
-            resume.role_title = request.POST.get('role_title', resume.role_title)
-            resume.email = request.POST.get('email', resume.email)
-            resume.phone = request.POST.get('phone', resume.phone)
-            resume.address = request.POST.get('address', resume.address)
-            resume.location = request.POST.get('location', resume.location)
-            resume.linkedin = request.POST.get('linkedin', resume.linkedin)
-            resume.github = request.POST.get('github', resume.github)
-            resume.website = request.POST.get('website', resume.website)
-            resume.summary = request.POST.get('summary', resume.summary)
-            
-            # Handle JSON fields
-            if 'experience' in request.POST:
-                resume.experience = json.loads(request.POST.get('experience', '[]'))
-            if 'education' in request.POST:
-                resume.education = json.loads(request.POST.get('education', '[]'))
-            if 'skills' in request.POST:
-                resume.skills = json.loads(request.POST.get('skills', '[]'))
-            if 'projects' in request.POST:
-                resume.projects = json.loads(request.POST.get('projects', '[]'))
-            if 'languages' in request.POST:
-                resume.languages = json.loads(request.POST.get('languages', '[]'))
-            if 'certifications' in request.POST:
-                resume.certifications = json.loads(request.POST.get('certifications', '[]'))
-            
-            resume.save()
-            
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({'success': True, 'message': 'Resume saved successfully!'})
-            else:
-                messages.success(request, 'Resume updated successfully!')
-                return redirect('resume_builder:edit_resume', resume_id=resume.id)
-                
-        except Exception as e:
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({'success': False, 'error': str(e)})
-            else:
-                messages.error(request, f'Error updating resume: {str(e)}')
-    
-    # Color options for the theme picker
-    color_options = [
-        {'name': 'Teal', 'value': '#4a9d9a'},
-        {'name': 'Navy', 'value': '#1e3a5f'},
-        {'name': 'Forest', 'value': '#2d5a3d'},
-        {'name': 'Burgundy', 'value': '#722f37'},
-        {'name': 'Slate', 'value': '#475569'},
-        {'name': 'Purple', 'value': '#5b21b6'},
-    ]
-    
-    context = {
-        'title': f'Edit Resume - {resume.title}',
-        'resume': resume,
-        'color_options': color_options,
-        'role_options': [
-            ('devops_sre', 'DevOps / SRE Engineer'),
-            ('software_engineer', 'Software Engineer'),
-            ('ds_ml', 'DS / ML Engineer'),
-        ],
-    }
-    
-    return render(request, 'resume_builder/edit_resume.html', context)
+    return redirect('resume_builder:live_edit_resume', resume_id=resume_id)
 
 
 @login_required
@@ -941,101 +770,17 @@ def download_resume(request, resume_id):
 
 @login_required
 def create_cover_letter(request, template_id):
-    """Create a new cover letter with role-based default content"""
+    """Legacy create cover letter - redirects to live editor"""
     template = get_object_or_404(CoverLetterTemplate, id=template_id, is_active=True)
-    
-    if request.method == 'POST':
-        try:
-            # Get role from form or default
-            role = request.POST.get('role', 'devops_sre')
-            cover_letter_content = get_default_cover_letter_content(role)
-            
-            # Log template info for debugging
-            logger.info(f"Creating cover letter with template: {template.id} ({template.slug}) for user {request.user.username}")
-            
-            with transaction.atomic():
-                cover_letter = CoverLetter.objects.create(
-                    user=request.user,
-                    template=template,
-                    title=request.POST.get('title', f'My {template.name} Cover Letter'),
-                    full_name=request.POST.get('full_name', f'{request.user.first_name} {request.user.last_name}'.strip() or request.user.username),
-                    email=request.POST.get('email', request.user.email),
-                    phone=request.POST.get('phone', ''),
-                    location=request.POST.get('location', ''),
-                    company_name=request.POST.get('company_name', 'Company Name'),
-                    position_title=request.POST.get('position_title', cover_letter_content['position_title']),
-                    hiring_manager=request.POST.get('hiring_manager', ''),
-                    opening_paragraph=cover_letter_content['opening_paragraph'],
-                    body_paragraph=cover_letter_content['body_paragraph'],
-                    closing_paragraph=cover_letter_content['closing_paragraph'],
-                )
-                
-                # Verify template was saved correctly
-                logger.info(f"Cover letter {cover_letter.id} created with template: {cover_letter.template.id} ({cover_letter.template.slug})")
-                
-                messages.success(request, f'Cover letter created with {template.name} template!')
-                return redirect('resume_builder:edit_cover_letter', cover_letter_id=cover_letter.id)
-        except Exception as e:
-            logger.error(f"Error creating cover letter: {str(e)}")
-            messages.error(request, 'Error creating cover letter. Please try again.')
-    
-    # GET request - show role selection
     role = request.GET.get('role', 'devops_sre')
-    
-    # Role options for selection
-    role_options = [
-        {
-            'id': 'devops_sre',
-            'name': 'DevOps / SRE Engineer',
-            'icon': 'fas fa-server',
-            'description': 'Cloud infrastructure, CI/CD, Kubernetes, observability'
-        },
-        {
-            'id': 'software_engineer',
-            'name': 'Software Engineer',
-            'icon': 'fas fa-code',
-            'description': 'Full-stack development, APIs, system design'
-        },
-        {
-            'id': 'ds_ml',
-            'name': 'DS / ML Engineer',
-            'icon': 'fas fa-brain',
-            'description': 'Machine learning, data pipelines, MLOps'
-        },
-    ]
-    
-    context = {
-        'title': f'Create Cover Letter - {template.name}',
-        'template': template,
-        'role': role,
-        'role_options': role_options,
-    }
-    
-    return render(request, 'resume_builder/create_cover_letter.html', context)
+    return redirect(f"{reverse('resume_builder:live_cover_letter_editor', args=[template_id])}?role={role}")
 
 
 @login_required
 def edit_cover_letter(request, cover_letter_id):
-    """Edit an existing cover letter"""
+    """Legacy edit cover letter - redirects to live editor"""
     cover_letter = get_object_or_404(CoverLetter, id=cover_letter_id, user=request.user)
-    
-    # Color options for the theme picker
-    color_options = [
-        {'name': 'Teal', 'value': '#4a9d9a'},
-        {'name': 'Navy', 'value': '#1e3a5f'},
-        {'name': 'Forest', 'value': '#2d5a3d'},
-        {'name': 'Burgundy', 'value': '#722f37'},
-        {'name': 'Slate', 'value': '#475569'},
-        {'name': 'Purple', 'value': '#5b21b6'},
-    ]
-    
-    context = {
-        'title': f'Edit Cover Letter - {cover_letter.title}',
-        'cover_letter': cover_letter,
-        'color_options': color_options,
-    }
-    
-    return render(request, 'resume_builder/edit_cover_letter.html', context)
+    return redirect('resume_builder:live_edit_cover_letter', cover_letter_id=cover_letter_id)
 
 
 @login_required
@@ -1210,6 +955,7 @@ def api_save_cover_letter(request, cover_letter_id):
         cover_letter.body_paragraph = data.get('body_paragraph', cover_letter.body_paragraph)
         cover_letter.closing_paragraph = data.get('closing_paragraph', cover_letter.closing_paragraph)
         cover_letter.primary_color = data.get('primary_color', cover_letter.primary_color)
+        cover_letter.target_role = data.get('target_role', cover_letter.target_role)
         
         # Legacy content field
         if 'content' in data:
@@ -1592,7 +1338,10 @@ def api_generate_preview_html(request):
         resume.projects = data.get('projects', [])
         resume.certifications = data.get('certifications', [])
         resume.primary_color = data.get('primary_color', '#4a9d9a')
-        resume.profile_photo = None  # Handle separately for preview
+        resume.profile_photo = None  # File-based photo not used in preview
+        
+        # Handle base64 photo for live preview
+        resume.profile_photo_base64 = data.get('profile_photo_base64')
         
         # Create mock template
         class MockTemplate:

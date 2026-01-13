@@ -1,0 +1,152 @@
+{% extends 'hr_portal/base.html' %}
+
+{% block title %}Asset Management{% endblock %}
+{% block breadcrumb %}Assets{% endblock %}
+
+{% block hr_content %}
+<div class="hr-animate-fade">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <div class="hr-page-header-row">
+            <div>
+                <h1 class="hr-page-title">Asset Management</h1>
+                <p class="hr-page-subtitle">View and manage company assets</p>
+            </div>
+            {% if can_manage_assets %}
+            <div class="hr-page-actions">
+                <a href="{% url 'hr_portal:asset_create' %}" class="hr-btn hr-btn-primary">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Add Asset</span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Asset Summary (Admin View) -->
+    {% if can_manage_assets and asset_summary %}
+    <div class="hr-stats-grid hr-stagger">
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon primary">
+                <i class="bi bi-box-seam"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">Total Assets</div>
+                <div class="hr-stat-value">{{ asset_summary.total|default:0 }}</div>
+            </div>
+        </div>
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon success">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">Available</div>
+                <div class="hr-stat-value">{{ asset_summary.available|default:0 }}</div>
+            </div>
+        </div>
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon info">
+                <i class="bi bi-person-check"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">Assigned</div>
+                <div class="hr-stat-value">{{ asset_summary.assigned|default:0 }}</div>
+            </div>
+        </div>
+        <div class="hr-stat-card">
+            <div class="hr-stat-icon warning">
+                <i class="bi bi-tools"></i>
+            </div>
+            <div class="hr-stat-content">
+                <div class="hr-stat-label">Maintenance</div>
+                <div class="hr-stat-value">{{ asset_summary.maintenance|default:0 }}</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- My Assigned Assets -->
+    {% if my_assets %}
+    <div class="hr-card hr-mb-6">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title"><i class="bi bi-laptop"></i> My Assigned Assets</h3>
+        </div>
+        <div class="hr-table-wrapper">
+            <table class="hr-table">
+                <thead>
+                    <tr>
+                        <th>Asset ID</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Condition</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for asset in my_assets %}
+                    <tr>
+                        <td><span style="font-family: monospace; font-size: var(--hr-font-size-xs);">{{ asset.asset_id }}</span></td>
+                        <td style="font-weight: 500;">{{ asset.name }}</td>
+                        <td><span class="hr-badge hr-badge-info">{{ asset.category.name }}</span></td>
+                        <td><span class="hr-badge hr-badge-{{ asset.condition|lower }}">{{ asset.get_condition_display }}</span></td>
+                        <td>
+                            <a href="{% url 'hr_portal:asset_detail' asset.asset_id %}" class="hr-btn hr-btn-secondary hr-btn-sm">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- All Assets (Admin View) -->
+    {% if can_manage_assets %}
+    <div class="hr-card">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title"><i class="bi bi-grid"></i> All Assets</h3>
+            <a href="{% url 'hr_portal:asset_list' %}" class="hr-btn hr-btn-secondary hr-btn-sm">View All</a>
+        </div>
+        <div class="hr-table-wrapper">
+            <table class="hr-table">
+                <thead>
+                    <tr>
+                        <th>Asset ID</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Assigned To</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for asset in all_assets %}
+                    <tr>
+                        <td><span style="font-family: monospace; font-size: var(--hr-font-size-xs);">{{ asset.asset_id }}</span></td>
+                        <td style="font-weight: 500;">{{ asset.name }}</td>
+                        <td><span class="hr-badge hr-badge-info">{{ asset.category.name }}</span></td>
+                        <td><span class="hr-badge hr-badge-{{ asset.status }}">{{ asset.get_status_display }}</span></td>
+                        <td>{{ asset.assigned_to.full_name|default:"—" }}</td>
+                        <td>
+                            <a href="{% url 'hr_portal:asset_detail' asset.asset_id %}" class="hr-btn hr-btn-secondary hr-btn-sm">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="hr-table-empty">
+                            <i class="bi bi-box"></i>
+                            <div>No assets found</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

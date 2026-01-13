@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/hr_portal/services/leave_service.py
+# hypothesis_version: 6.150.0
+
+['-created_at', '0', '0.5', '1', 'active', 'approved', 'contact_during_leave', 'date', 'draft', 'duration_type', 'employee', 'end_date', 'first_half', 'full_day', 'leave_type', 'manager_approved', 'manager_approved_by', 'pending', 'reason', 'rejected', 'second_half', 'start_date', 'supporting_document']

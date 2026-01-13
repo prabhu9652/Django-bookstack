@@ -10,6 +10,9 @@
     <!-- Dashboard Header -->
     <div class="dashboard-header-enhanced">
       <div class="header-left">
+        <a href="javascript:history.back()" class="back-btn-header" style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;background:var(--bg-elevated);color:var(--text-secondary);text-decoration:none;margin-right:1rem;">
+          <i class="fas fa-arrow-left"></i>
+        </a>
         <div class="header-icon-wrapper">
           <i class="fas fa-folder-open"></i>
         </div>
@@ -19,11 +22,11 @@
         </div>
       </div>
       <div class="header-actions-enhanced">
-        <a href="{% url 'resume_builder:resume_templates' %}" class="action-btn-new resume-btn">
+        <a href="{% url 'resume_builder:live_resume_editor' 1 %}" class="action-btn-new resume-btn">
           <i class="fas fa-file-alt"></i>
           <span>New Resume</span>
         </a>
-        <a href="{% url 'resume_builder:cover_letter_templates' %}" class="action-btn-new letter-btn">
+        <a href="{% url 'resume_builder:live_cover_letter_editor' 3 %}" class="action-btn-new letter-btn">
           <i class="fas fa-envelope"></i>
           <span>New Cover Letter</span>
         </a>
@@ -160,10 +163,9 @@
                     <i class="fas fa-file-alt"></i>
                     Resume
                   </div>
-                  <div class="document-status-badge">
-                    <i class="fas fa-check-circle"></i>
-                    Ready
-                  </div>
+                  <a href="{% url 'resume_builder:preview_resume' resume.id %}" class="preview-btn-top" title="Preview">
+                    <i class="fas fa-eye"></i>
+                  </a>
                 </div>
                 <div class="card-body-section">
                   <div class="document-title-row">
@@ -189,19 +191,16 @@
                 </div>
                 <div class="card-actions-section">
                   <div class="primary-actions-row">
-                    <a href="{% url 'resume_builder:edit_resume' resume.id %}" class="action-btn-enhanced primary-action">
+                    <a href="{% url 'resume_builder:live_edit_resume' resume.id %}" class="action-btn-enhanced primary-action">
                       <i class="fas fa-file-signature"></i>
                       Edit Resume
                     </a>
-                    <a href="{% url 'resume_builder:preview_resume' resume.id %}" class="action-btn-enhanced secondary-action">
-                      <i class="fas fa-eye"></i>
-                      Preview
+                    <a href="{% url 'resume_builder:download_resume' resume.id %}" class="action-btn-enhanced secondary-action">
+                      <i class="fas fa-download"></i>
+                      Download
                     </a>
                   </div>
                   <div class="secondary-actions-row">
-                    <a href="{% url 'resume_builder:download_resume' resume.id %}" class="icon-action-btn download-action" title="Download PDF">
-                      <i class="fas fa-download"></i>
-                    </a>
                     <button type="button" class="icon-action-btn delete-action delete-document-btn" 
                             data-document-id="{{ resume.id }}" 
                             data-document-type="resume" 
@@ -235,10 +234,9 @@
                     <i class="fas fa-envelope"></i>
                     Cover Letter
                   </div>
-                  <div class="document-status-badge">
-                    <i class="fas fa-check-circle"></i>
-                    Ready
-                  </div>
+                  <a href="{% url 'resume_builder:preview_cover_letter' cover_letter.id %}" class="preview-btn-top" title="Preview">
+                    <i class="fas fa-eye"></i>
+                  </a>
                 </div>
                 <div class="card-body-section">
                   <div class="document-title-row">
@@ -268,19 +266,16 @@
                 </div>
                 <div class="card-actions-section">
                   <div class="primary-actions-row">
-                    <a href="{% url 'resume_builder:edit_cover_letter' cover_letter.id %}" class="action-btn-enhanced primary-action">
+                    <a href="{% url 'resume_builder:live_edit_cover_letter' cover_letter.id %}" class="action-btn-enhanced primary-action">
                       <i class="fas fa-file-signature"></i>
                       Edit Letter
                     </a>
-                    <a href="{% url 'resume_builder:preview_cover_letter' cover_letter.id %}" class="action-btn-enhanced secondary-action">
-                      <i class="fas fa-eye"></i>
-                      Preview
+                    <a href="{% url 'resume_builder:download_cover_letter' cover_letter.id %}" class="action-btn-enhanced secondary-action">
+                      <i class="fas fa-download"></i>
+                      Download
                     </a>
                   </div>
                   <div class="secondary-actions-row">
-                    <a href="{% url 'resume_builder:download_cover_letter' cover_letter.id %}" class="icon-action-btn download-action" title="Download PDF">
-                      <i class="fas fa-download"></i>
-                    </a>
                     <button type="button" class="icon-action-btn delete-action delete-document-btn" 
                             data-document-id="{{ cover_letter.id }}" 
                             data-document-type="cover_letter" 
@@ -303,11 +298,11 @@
             <h3>No documents yet</h3>
             <p>Create your first resume or cover letter to get started on your career journey.</p>
             <div class="empty-actions">
-              <a href="{% url 'resume_builder:resume_templates' %}" class="empty-btn primary">
+              <a href="{% url 'resume_builder:live_resume_editor' 1 %}" class="empty-btn primary">
                 <i class="fas fa-file-alt"></i>
                 Create Resume
               </a>
-              <a href="{% url 'resume_builder:cover_letter_templates' %}" class="empty-btn secondary">
+              <a href="{% url 'resume_builder:live_cover_letter_editor' 3 %}" class="empty-btn secondary">
                 <i class="fas fa-envelope"></i>
                 Create Cover Letter
               </a>
@@ -327,10 +322,9 @@
                   <i class="fas fa-file-alt"></i>
                   Resume
                 </div>
-                <div class="document-status-badge">
-                  <i class="fas fa-check-circle"></i>
-                  Ready
-                </div>
+                <a href="{% url 'resume_builder:preview_resume' resume.id %}" class="preview-btn-top" title="Preview">
+                  <i class="fas fa-eye"></i>
+                </a>
               </div>
               <div class="card-body-section">
                 <div class="document-title-row">
@@ -356,19 +350,16 @@
               </div>
               <div class="card-actions-section">
                 <div class="primary-actions-row">
-                  <a href="{% url 'resume_builder:edit_resume' resume.id %}" class="action-btn-enhanced primary-action">
+                  <a href="{% url 'resume_builder:live_edit_resume' resume.id %}" class="action-btn-enhanced primary-action">
                     <i class="fas fa-file-signature"></i>
                     Edit Resume
                   </a>
-                  <a href="{% url 'resume_builder:preview_resume' resume.id %}" class="action-btn-enhanced secondary-action">
-                    <i class="fas fa-eye"></i>
-                    Preview
+                  <a href="{% url 'resume_builder:download_resume' resume.id %}" class="action-btn-enhanced secondary-action">
+                    <i class="fas fa-download"></i>
+                    Download
                   </a>
                 </div>
                 <div class="secondary-actions-row">
-                  <a href="{% url 'resume_builder:download_resume' resume.id %}" class="icon-action-btn download-action" title="Download PDF">
-                    <i class="fas fa-download"></i>
-                  </a>
                   <button type="button" class="icon-action-btn delete-action delete-document-btn" 
                           data-document-id="{{ resume.id }}" 
                           data-document-type="resume" 
@@ -388,7 +379,7 @@
             </div>
             <h3>No resumes yet</h3>
             <p>Create your first professional resume to get started on your career journey.</p>
-            <a href="{% url 'resume_builder:resume_templates' %}" class="empty-btn primary">
+            <a href="{% url 'resume_builder:live_resume_editor' 1 %}" class="empty-btn primary">
               <i class="fas fa-plus"></i>
               Create Your First Resume
             </a>
@@ -407,10 +398,9 @@
                   <i class="fas fa-envelope"></i>
                   Cover Letter
                 </div>
-                <div class="document-status-badge">
-                  <i class="fas fa-check-circle"></i>
-                  Ready
-                </div>
+                <a href="{% url 'resume_builder:preview_cover_letter' cover_letter.id %}" class="preview-btn-top" title="Preview">
+                  <i class="fas fa-eye"></i>
+                </a>
               </div>
               <div class="card-body-section">
                 <div class="document-title-row">
@@ -440,19 +430,16 @@
               </div>
               <div class="card-actions-section">
                 <div class="primary-actions-row">
-                  <a href="{% url 'resume_builder:edit_cover_letter' cover_letter.id %}" class="action-btn-enhanced primary-action">
+                  <a href="{% url 'resume_builder:live_edit_cover_letter' cover_letter.id %}" class="action-btn-enhanced primary-action">
                     <i class="fas fa-file-signature"></i>
                     Edit Letter
                   </a>
-                  <a href="{% url 'resume_builder:preview_cover_letter' cover_letter.id %}" class="action-btn-enhanced secondary-action">
-                    <i class="fas fa-eye"></i>
-                    Preview
+                  <a href="{% url 'resume_builder:download_cover_letter' cover_letter.id %}" class="action-btn-enhanced secondary-action">
+                    <i class="fas fa-download"></i>
+                    Download
                   </a>
                 </div>
                 <div class="secondary-actions-row">
-                  <a href="{% url 'resume_builder:download_cover_letter' cover_letter.id %}" class="icon-action-btn download-action" title="Download PDF">
-                    <i class="fas fa-download"></i>
-                  </a>
                   <button type="button" class="icon-action-btn delete-action delete-document-btn" 
                           data-document-id="{{ cover_letter.id }}" 
                           data-document-type="cover_letter" 
@@ -472,7 +459,7 @@
             </div>
             <h3>No cover letters yet</h3>
             <p>Create your first cover letter to complement your resume and make a great impression.</p>
-            <a href="{% url 'resume_builder:cover_letter_templates' %}" class="empty-btn primary">
+            <a href="{% url 'resume_builder:live_cover_letter_editor' 3 %}" class="empty-btn primary">
               <i class="fas fa-plus"></i>
               Create Your First Cover Letter
             </a>
@@ -483,9 +470,9 @@
 
     <!-- Back to Resume Builder Link -->
     <div class="back-link-section">
-      <a href="{% url 'resume_builder:home' %}" class="back-link">
+      <a href="javascript:history.back()" class="back-link">
         <i class="fas fa-arrow-left"></i>
-        <span>Back to Resume Builder</span>
+        <span>Back</span>
       </a>
     </div>
   </div>
