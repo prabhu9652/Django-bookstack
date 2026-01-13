@@ -1,0 +1,233 @@
+<!-- Job Card Partial - Industry-Grade Design -->
+<a href="{% url 'careers:job_detail' slug=job.slug %}" class="job-card-link">
+    <div class="job-card">
+        <!-- Card Header -->
+        <div class="job-card-header">
+            <div class="job-card-badges">
+                <!-- Location Type Badge -->
+                <span class="badge badge-{{ job.location_type }}">
+                    {% if job.location_type == 'remote' %}
+                    <i class="fas fa-globe"></i>
+                    {% elif job.location_type == 'hybrid' %}
+                    <i class="fas fa-building"></i>
+                    {% else %}
+                    <i class="fas fa-map-pin"></i>
+                    {% endif %}
+                    {{ job.get_location_type_display }}
+                </span>
+                <!-- Employment Type Badge -->
+                <span class="badge badge-employment">
+                    {{ job.get_employment_type_display }}
+                </span>
+            </div>
+        </div>
+        
+        <!-- Card Body -->
+        <div class="job-card-body">
+            <h3 class="job-card-title">{{ job.title }}</h3>
+            <p class="job-card-department">{{ job.department }}</p>
+            
+            <!-- Meta Info -->
+            <div class="job-card-meta">
+                <span class="meta-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    {{ job.location }}
+                </span>
+                {% if job.experience_range %}
+                <span class="meta-item">
+                    <i class="fas fa-user-clock"></i>
+                    {{ job.experience_range }}
+                </span>
+                {% endif %}
+            </div>
+            
+            {% if job.salary_range %}
+            <div class="job-card-salary">
+                <i class="fas fa-money-bill-wave"></i>
+                {{ job.salary_range }}
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Card Footer -->
+        <div class="job-card-footer">
+            <span class="posted-date">
+                <i class="fas fa-clock"></i>
+                Posted {{ job.created_at|timesince }} ago
+            </span>
+            <span class="view-link">
+                View Details <i class="fas fa-arrow-right"></i>
+            </span>
+        </div>
+    </div>
+</a>
+
+<style>
+.job-card-link {
+    text-decoration: none;
+    display: block;
+}
+
+.job-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    transition: all 0.2s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.job-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    border-color: var(--accent-primary);
+}
+
+/* Card Header */
+.job-card-header {
+    margin-bottom: var(--space-3);
+}
+
+.job-card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.job-card .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.job-card .badge i {
+    font-size: 0.7rem;
+}
+
+.badge-remote {
+    background: rgba(34, 197, 94, 0.12);
+    color: #22c55e;
+}
+
+.badge-hybrid {
+    background: rgba(168, 85, 247, 0.12);
+    color: #a855f7;
+}
+
+.badge-onsite {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3b82f6;
+}
+
+.badge-employment {
+    background: rgba(107, 114, 128, 0.12);
+    color: var(--text-secondary);
+}
+
+/* Card Body */
+.job-card-body {
+    flex: 1;
+}
+
+.job-card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.job-card-department {
+    font-size: var(--font-size-sm);
+    color: var(--accent-primary);
+    margin-bottom: var(--space-3);
+    font-weight: 500;
+}
+
+.job-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+}
+
+.job-card-meta .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+.job-card-meta .meta-item i {
+    color: var(--text-tertiary);
+    font-size: 0.75rem;
+}
+
+.job-card-salary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: rgba(34, 197, 94, 0.08);
+    border-radius: var(--radius-md);
+    font-size: 0.8125rem;
+    color: #22c55e;
+    font-weight: 500;
+}
+
+.job-card-salary i {
+    font-size: 0.75rem;
+}
+
+/* Card Footer */
+.job-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--space-3);
+    margin-top: var(--space-3);
+    border-top: 1px solid var(--border-primary);
+}
+
+.posted-date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+.posted-date i {
+    font-size: 0.7rem;
+}
+
+.view-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8125rem;
+    color: var(--accent-primary);
+    font-weight: 500;
+    transition: gap 0.2s ease;
+}
+
+.job-card:hover .view-link {
+    gap: 10px;
+}
+
+.view-link i {
+    font-size: 0.7rem;
+    transition: transform 0.2s ease;
+}
+
+.job-card:hover .view-link i {
+    transform: translateX(2px);
+}
+</style>

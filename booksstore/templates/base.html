@@ -3,11 +3,35 @@
   {% load static %}
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{{ template_data.title|default:"TechBookHub - Technical Books for Developers" }}</title>
     
     <!-- CSRF Token for AJAX requests -->
     <meta name="csrf-token" content="{{ csrf_token }}">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="application-name" content="TechBookHub">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TechBookHub">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-TileColor" content="#0f1419">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- Theme color -->
+    <meta name="theme-color" content="#4a9eff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#4a9eff" media="(prefers-color-scheme: dark)">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/pwa/icon-96x96.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/pwa/icon-72x72.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'img/pwa/icon-192x192.png' %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'img/pwa/icon-152x152.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/pwa/icon-192x192.png' %}">
+    <link rel="apple-touch-icon" sizes="167x167" href="{% static 'img/pwa/icon-192x192.png' %}">
     
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,6 +59,9 @@
     <!-- Responsive Enhancements - Mobile First -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/responsive-enhancements.css' %}?v=20260112-responsive">
     
+    <!-- PWA Styles -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/pwa.css' %}?v=20260113-pwa">
+    
     <!-- Shared Library Management -->
     <script src="{% static 'js/library-manager.js' %}" defer></script>
     
@@ -51,9 +78,6 @@
     <!-- Security headers -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
-    
-    <!-- Theme color -->
-    <meta name="theme-color" content="#4a9eff">
   </head>
 
   <body>
@@ -72,6 +96,12 @@
           
           <!-- Roadmap -->
           <li><a href="{% url 'roadmap:home' %}" class="nav-link {% if request.resolver_match.namespace == 'roadmap' %}active{% endif %}">Roadmap</a></li>
+          
+          <!-- Careers -->
+          <li><a href="{% url 'careers:careers_home' %}" class="nav-link {% if request.resolver_match.namespace == 'careers' %}active{% endif %}">Careers</a></li>
+          
+          <!-- Get App -->
+          <li><a href="{% url 'home.app' %}" class="nav-link nav-link-app {% if request.resolver_match.url_name == 'home.app' %}active{% endif %}"><i class="fas fa-mobile-alt"></i> Get App</a></li>
           
           <li><a href="{% url 'home.about' %}" class="nav-link {% if request.resolver_match.url_name == 'home.about' %}active{% endif %}">About</a></li>
         </ul>
@@ -139,6 +169,20 @@
                     <i class="fas fa-user-shield"></i>
                     <span>Access & Permissions</span>
                   </a>
+                  <a href="{% url 'careers:my_applications' %}" class="profile-action-item">
+                    <i class="fas fa-briefcase"></i>
+                    <span>My Applications</span>
+                  </a>
+                  {% if user.is_superuser %}
+                  <a href="{% url 'careers:admin_jobs_dashboard' %}" class="profile-action-item">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Manage Jobs</span>
+                  </a>
+                  <a href="{% url 'careers:admin_applications_dashboard' %}" class="profile-action-item">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Review Applications</span>
+                  </a>
+                  {% endif %}
                 </div>
                 
                 <!-- Sign Out Section -->
@@ -214,6 +258,14 @@
           <i class="fas fa-route"></i>
           <span>Roadmap</span>
         </a>
+        <a href="{% url 'careers:careers_home' %}" class="mobile-nav-link {% if request.resolver_match.namespace == 'careers' %}active{% endif %}">
+          <i class="fas fa-briefcase"></i>
+          <span>Careers</span>
+        </a>
+        <a href="{% url 'home.app' %}" class="mobile-nav-link mobile-nav-app {% if request.resolver_match.url_name == 'home.app' %}active{% endif %}">
+          <i class="fas fa-mobile-alt"></i>
+          <span>Get App</span>
+        </a>
         <a href="{% url 'home.about' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'home.about' %}active{% endif %}">
           <i class="fas fa-info-circle"></i>
           <span>About</span>
@@ -238,6 +290,20 @@
           <i class="fas fa-user-shield"></i>
           <span>Access & Permissions</span>
         </a>
+        <a href="{% url 'careers:my_applications' %}" class="mobile-nav-link">
+          <i class="fas fa-briefcase"></i>
+          <span>My Applications</span>
+        </a>
+        {% if user.is_superuser %}
+        <a href="{% url 'careers:admin_jobs_dashboard' %}" class="mobile-nav-link">
+          <i class="fas fa-user-tie"></i>
+          <span>Manage Jobs</span>
+        </a>
+        <a href="{% url 'careers:admin_applications_dashboard' %}" class="mobile-nav-link">
+          <i class="fas fa-clipboard-list"></i>
+          <span>Review Applications</span>
+        </a>
+        {% endif %}
         <a href="{% url 'accounts.logout' %}" class="mobile-auth-btn secondary" style="margin-top: 0.5rem;">
           <i class="fas fa-sign-out-alt"></i>
           <span>Sign Out</span>
@@ -412,6 +478,8 @@
     {% block extra_js %}
     {% endblock extra_js %}
     
+    <!-- PWA Service Worker Registration -->
+    <script src="{% static 'js/pwa.js' %}" defer></script>
 
   </body>
 </html>

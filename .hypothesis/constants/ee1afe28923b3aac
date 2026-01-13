@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/resume_builder/migrations/0007_add_photo_options.py
+# hypothesis_version: 6.150.0
+
+['circle', 'medium', 'photo_position', 'photo_shape', 'photo_size', 'resume', 'resume_builder', 'top']

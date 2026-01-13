@@ -1,0 +1,384 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="max-width: 900px; margin: 0 auto; padding: var(--space-6) var(--space-4);">
+    
+    <!-- Back Link -->
+    <a href="{% url 'careers:admin_jobs_dashboard' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        Back to Jobs
+    </a>
+    
+    <!-- Header -->
+    <h1 class="page-title">
+        {% if job %}Edit Job: {{ job.title }}{% else %}Create New Job{% endif %}
+    </h1>
+    
+    <!-- Form -->
+    <div class="card">
+        <div class="card-body" style="padding: var(--space-6);">
+            <form method="post" action="">
+                {% csrf_token %}
+                
+                <!-- Basic Info -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-info-circle"></i>
+                        Basic Information
+                    </h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                Job Title <span class="required">*</span>
+                            </label>
+                            <input type="text" name="title" value="{{ job.title|default:'' }}" required
+                                   placeholder="e.g., Senior Software Engineer"
+                                   class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                Department <span class="required">*</span>
+                            </label>
+                            <input type="text" name="department" value="{{ job.department|default:'' }}" required
+                                   placeholder="e.g., Platform Engineering"
+                                   class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                Location <span class="required">*</span>
+                            </label>
+                            <input type="text" name="location" value="{{ job.location|default:'' }}" required
+                                   placeholder="e.g., San Francisco, CA or Remote (US)"
+                                   class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                Location Type <span class="required">*</span>
+                            </label>
+                            <select name="location_type" required class="form-select">
+                                {% for value, label in location_types %}
+                                <option value="{{ value }}" {% if job.location_type == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                Employment Type <span class="required">*</span>
+                            </label>
+                            <select name="employment_type" required class="form-select">
+                                {% for value, label in employment_types %}
+                                <option value="{{ value }}" {% if job.employment_type == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                Experience Range <span class="optional">(Optional)</span>
+                            </label>
+                            <input type="text" name="experience_range" value="{{ job.experience_range|default:'' }}"
+                                   placeholder="e.g., 3-5 years"
+                                   class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                Salary Range <span class="optional">(Optional)</span>
+                            </label>
+                            <input type="text" name="salary_range" value="{{ job.salary_range|default:'' }}"
+                                   placeholder="e.g., $120,000 - $180,000"
+                                   class="form-input">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Job Content -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-file-alt"></i>
+                        Job Content
+                    </h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                About the Role <span class="required">*</span>
+                            </label>
+                            <p class="form-hint">Describe what the role is about, why it exists, and what impact the candidate will have.</p>
+                            <textarea name="description" rows="5" required
+                                      placeholder="We're looking for a talented engineer to join our team..."
+                                      class="form-textarea">{{ job.description|default:'' }}</textarea>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                Responsibilities <span class="required">*</span>
+                                <span class="optional">(One per line)</span>
+                            </label>
+                            <p class="form-hint">List the key responsibilities and day-to-day tasks.</p>
+                            <textarea name="responsibilities" rows="8" required
+                                      placeholder="Design and implement scalable systems&#10;Collaborate with cross-functional teams&#10;Mentor junior engineers&#10;Participate in code reviews"
+                                      class="form-textarea">{{ job.responsibilities|default:'' }}</textarea>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                Required Skills <span class="required">*</span>
+                                <span class="optional">(One per line)</span>
+                            </label>
+                            <p class="form-hint">List the must-have skills and qualifications.</p>
+                            <textarea name="requirements" rows="8" required
+                                      placeholder="5+ years of software development experience&#10;Strong knowledge of Python and Django&#10;Experience with cloud platforms (AWS, GCP)&#10;Excellent communication skills"
+                                      class="form-textarea">{{ job.requirements|default:'' }}</textarea>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                Nice to Have <span class="optional">(One per line)</span>
+                            </label>
+                            <p class="form-hint">List optional skills that would be a bonus.</p>
+                            <textarea name="nice_to_have" rows="5"
+                                      placeholder="Experience with Kubernetes&#10;Knowledge of machine learning&#10;Open source contributions"
+                                      class="form-textarea">{{ job.nice_to_have|default:'' }}</textarea>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                Tech Stack <span class="optional">(Comma-separated)</span>
+                            </label>
+                            <input type="text" name="tech_stack" value="{% if job.tech_stack %}{{ job.tech_stack|join:', ' }}{% endif %}"
+                                   placeholder="Python, Django, PostgreSQL, AWS, Docker, Kubernetes"
+                                   class="form-input">
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                What We Offer <span class="optional">(One per line)</span>
+                            </label>
+                            <p class="form-hint">List benefits, perks, and what makes working here great.</p>
+                            <textarea name="benefits" rows="6"
+                                      placeholder="Competitive salary with equity&#10;Flexible remote work&#10;Health, dental, and vision insurance&#10;401(k) with company match&#10;Learning and development budget"
+                                      class="form-textarea">{{ job.benefits|default:'' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Status -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-toggle-on"></i>
+                        Status & Visibility
+                    </h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="is_active" {% if job.is_active or not job %}checked{% endif %}>
+                                <span class="checkbox-text">Active (accepting applications)</span>
+                            </label>
+                            <p class="form-hint">Uncheck to hide this job from the careers page.</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                Closes At <span class="optional">(Optional)</span>
+                            </label>
+                            <input type="datetime-local" name="closes_at" 
+                                   value="{% if job.closes_at %}{{ job.closes_at|date:'Y-m-d\TH:i' }}{% endif %}"
+                                   class="form-input">
+                            <p class="form-hint">Leave empty for no deadline.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Submit -->
+                <div class="form-actions">
+                    <a href="{% url 'careers:admin_jobs_dashboard' %}" class="btn btn-ghost">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> {% if job %}Update Job{% else %}Create Job{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+</div>
+
+<style>
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin-bottom: var(--space-4);
+    font-size: var(--font-size-sm);
+    transition: color 0.2s ease;
+}
+
+.back-link:hover {
+    color: var(--accent-primary);
+}
+
+.page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-6);
+}
+
+/* Form Sections */
+.form-section {
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: var(--space-4);
+    padding-bottom: 0;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-4);
+}
+
+.section-title i {
+    color: var(--accent-primary);
+    font-size: 0.875rem;
+}
+
+/* Form Grid */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group.full-width {
+    grid-column: span 2;
+}
+
+.form-label {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.required {
+    color: var(--error);
+}
+
+.optional {
+    color: var(--text-tertiary);
+    font-weight: 400;
+}
+
+.form-hint {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    margin: 0;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    transition: border-color 0.2s ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: var(--text-tertiary);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+    line-height: 1.5;
+}
+
+/* Checkbox */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent-primary);
+}
+
+.checkbox-text {
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: flex-end;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-group.full-width {
+        grid-column: span 1;
+    }
+    
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock content %}

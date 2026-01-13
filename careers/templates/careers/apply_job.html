@@ -1,0 +1,1167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="apply-page">
+    <div class="container" style="max-width: 720px; margin: 0 auto; padding: var(--space-6) var(--space-4);">
+        
+        <!-- Back Link -->
+        <a href="{% url 'careers:job_detail' slug=job.slug %}" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+            Back to Job Details
+        </a>
+        
+        <!-- Job Header Card -->
+        <div class="job-summary-card">
+            <div class="job-summary-icon">
+                <i class="fas fa-briefcase"></i>
+            </div>
+            <div class="job-summary-content">
+                <span class="applying-label">Applying for</span>
+                <h1 class="job-summary-title">{{ job.title }}</h1>
+                <p class="job-summary-meta">
+                    <span><i class="fas fa-building"></i> {{ job.department }}</span>
+                    <span><i class="fas fa-map-marker-alt"></i> {{ job.location }}</span>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Application Form -->
+        <div class="application-form-card">
+            <form id="applicationForm" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="job_id" value="{{ job.id }}">
+                
+                <!-- Step 1: Personal Info -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-number">1</div>
+                        <div class="section-title-group">
+                            <h2 class="section-title">Personal Information</h2>
+                            <p class="section-subtitle">Auto-filled from your account</p>
+                        </div>
+                        <i class="fas fa-check-circle section-check"></i>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <div class="readonly-field">
+                                <i class="fas fa-user"></i>
+                                <span>{{ user_name }}</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <div class="readonly-field">
+                                <i class="fas fa-envelope"></i>
+                                <span>{{ user_email }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Resume (Required) -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-number">2</div>
+                        <div class="section-title-group">
+                            <h2 class="section-title">Resume <span class="required-badge">Required</span></h2>
+                            <p class="section-subtitle">Select from your documents or upload a PDF</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Resume Source Toggle -->
+                    <div class="source-toggle">
+                        <button type="button" class="source-btn active" data-source="existing" data-target="resume">
+                            <i class="fas fa-folder-open"></i> My Documents
+                        </button>
+                        <button type="button" class="source-btn" data-source="upload" data-target="resume">
+                            <i class="fas fa-upload"></i> Upload PDF
+                        </button>
+                    </div>
+                    
+                    <!-- Existing Resumes -->
+                    <div class="source-content" id="resume-existing">
+                        {% if resumes %}
+                        <div class="document-selector" id="resumeSelector">
+                            {% for resume in resumes %}
+                            <label class="document-option">
+                                <input type="radio" name="resume_id" value="{{ resume.id }}">
+                                <div class="document-option-content">
+                                    <div class="document-icon resume-icon">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                    <div class="document-info">
+                                        <span class="document-name">{{ resume.title }}</span>
+                                        <span class="document-meta">{{ resume.template.name }} · Updated {{ resume.updated_at|date:"M d, Y" }}</span>
+                                    </div>
+                                    <div class="document-check">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                </div>
+                            </label>
+                            {% endfor %}
+                        </div>
+                        <div class="document-actions">
+                            <a href="{% url 'resume_builder:resume_templates' %}" target="_blank" class="create-doc-link">
+                                <i class="fas fa-plus"></i> Create New Resume
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="no-documents-hint">
+                            <p>No resumes in your documents. <a href="{% url 'resume_builder:resume_templates' %}" target="_blank">Create one</a> or upload a PDF below.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Upload Resume -->
+                    <div class="source-content hidden" id="resume-upload">
+                        <div class="file-upload-zone" id="resumeUploadZone">
+                            <input type="file" name="uploaded_resume" id="resumeFileInput" accept=".pdf" class="file-input">
+                            <div class="upload-placeholder">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Drag & drop your resume here or <span class="browse-link">browse</span></p>
+                                <span class="upload-hint">PDF only, max 5MB</span>
+                            </div>
+                            <div class="upload-preview hidden">
+                                <i class="fas fa-file-pdf"></i>
+                                <span class="file-name"></span>
+                                <button type="button" class="remove-file"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Cover Letter (Optional) -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-number">3</div>
+                        <div class="section-title-group">
+                            <h2 class="section-title">Cover Letter <span class="optional-badge">Optional</span></h2>
+                            <p class="section-subtitle">Add a cover letter to strengthen your application</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Cover Letter Source Toggle -->
+                    <div class="source-toggle">
+                        <button type="button" class="source-btn active" data-source="skip" data-target="coverletter">
+                            <i class="fas fa-forward"></i> Skip
+                        </button>
+                        <button type="button" class="source-btn" data-source="existing" data-target="coverletter">
+                            <i class="fas fa-folder-open"></i> My Documents
+                        </button>
+                        <button type="button" class="source-btn" data-source="upload" data-target="coverletter">
+                            <i class="fas fa-upload"></i> Upload PDF
+                        </button>
+                    </div>
+                    
+                    <!-- Skip Cover Letter -->
+                    <div class="source-content" id="coverletter-skip">
+                        <div class="skip-message">
+                            <i class="fas fa-info-circle"></i>
+                            <span>You can continue without a cover letter. Adding one is recommended for better chances.</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Existing Cover Letters -->
+                    <div class="source-content hidden" id="coverletter-existing">
+                        {% if cover_letters %}
+                        <div class="document-selector" id="coverLetterSelector">
+                            {% for cl in cover_letters %}
+                            <label class="document-option">
+                                <input type="radio" name="cover_letter_id" value="{{ cl.id }}">
+                                <div class="document-option-content">
+                                    <div class="document-icon letter-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="document-info">
+                                        <span class="document-name">{{ cl.title }}</span>
+                                        <span class="document-meta">{{ cl.company_name }} · Updated {{ cl.updated_at|date:"M d, Y" }}</span>
+                                    </div>
+                                    <div class="document-check">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                </div>
+                            </label>
+                            {% endfor %}
+                        </div>
+                        <div class="document-actions">
+                            <a href="{% url 'resume_builder:cover_letter_templates' %}" target="_blank" class="create-doc-link">
+                                <i class="fas fa-plus"></i> Create New Cover Letter
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="no-documents-hint">
+                            <p>No cover letters in your documents. <a href="{% url 'resume_builder:cover_letter_templates' %}" target="_blank">Create one</a> or upload a PDF.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Upload Cover Letter -->
+                    <div class="source-content hidden" id="coverletter-upload">
+                        <div class="file-upload-zone" id="coverLetterUploadZone">
+                            <input type="file" name="uploaded_cover_letter" id="coverLetterFileInput" accept=".pdf" class="file-input">
+                            <div class="upload-placeholder">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Drag & drop your cover letter here or <span class="browse-link">browse</span></p>
+                                <span class="upload-hint">PDF only, max 5MB</span>
+                            </div>
+                            <div class="upload-preview hidden">
+                                <i class="fas fa-file-pdf"></i>
+                                <span class="file-name"></span>
+                                <button type="button" class="remove-file"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 4: Additional Info (Optional) -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-number">4</div>
+                        <div class="section-title-group">
+                            <h2 class="section-title">Additional Information <span class="optional-badge">Optional</span></h2>
+                            <p class="section-subtitle">Links and notes to support your application</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row three-col">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-globe"></i> Portfolio
+                            </label>
+                            <input type="url" name="portfolio_url" placeholder="https://yourportfolio.com" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fab fa-linkedin"></i> LinkedIn
+                            </label>
+                            <input type="url" name="linkedin_url" placeholder="https://linkedin.com/in/you" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fab fa-github"></i> GitHub
+                            </label>
+                            <input type="url" name="github_url" placeholder="https://github.com/you" class="form-input">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Additional Notes</label>
+                        <textarea name="additional_notes" rows="3" placeholder="Anything else you'd like us to know about your application..." class="form-textarea"></textarea>
+                    </div>
+                </div>
+                
+                <!-- Submit Section -->
+                <div class="submit-section">
+                    <div class="submit-info">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Your information is secure and will only be shared with the hiring team.</span>
+                    </div>
+                    <div class="submit-actions">
+                        <a href="{% url 'careers:job_detail' slug=job.slug %}" class="btn btn-ghost">Cancel</a>
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                            <i class="fas fa-paper-plane"></i> Submit Application
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div id="successModal" class="modal-overlay">
+    <div class="modal-content success-modal">
+        <div class="success-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <h2>Application Submitted!</h2>
+        <p id="successMessage">Your application has been submitted successfully.</p>
+        <div class="success-actions">
+            <a href="{% url 'careers:my_applications' %}" class="btn btn-primary">
+                <i class="fas fa-list"></i> View My Applications
+            </a>
+            <a href="{% url 'careers:careers_home' %}" class="btn btn-ghost">
+                Browse More Jobs
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.apply-page {
+    min-height: calc(100vh - 64px);
+    background: var(--bg-primary);
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin-bottom: var(--space-4);
+    font-size: var(--font-size-sm);
+    transition: color 0.2s ease;
+}
+
+.back-link:hover {
+    color: var(--accent-primary);
+}
+
+/* Job Summary Card */
+.job-summary-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    background: linear-gradient(135deg, rgba(74, 158, 255, 0.1), rgba(139, 92, 246, 0.1));
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-4);
+}
+
+.job-summary-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--accent-primary);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.job-summary-icon i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.job-summary-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.applying-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-tertiary);
+}
+
+.job-summary-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 4px 0 8px;
+    line-height: 1.2;
+}
+
+.job-summary-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.job-summary-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.job-summary-meta i {
+    color: var(--text-tertiary);
+}
+
+/* Application Form Card */
+.application-form-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+/* Form Sections */
+.form-section {
+    padding: var(--space-5);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+}
+
+.section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.section-number {
+    width: 28px;
+    height: 28px;
+    background: var(--accent-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.section-title-group {
+    flex: 1;
+}
+
+.section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.section-subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+    margin: 0;
+}
+
+.section-check {
+    color: #22c55e;
+    font-size: 1.125rem;
+}
+
+.required-badge {
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border-radius: var(--radius-full);
+}
+
+.optional-badge {
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    background: rgba(107, 114, 128, 0.15);
+    color: var(--text-tertiary);
+    border-radius: var(--radius-full);
+}
+
+/* Source Toggle */
+.source-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: var(--space-4);
+    padding: 4px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+}
+
+.source-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.source-btn:hover {
+    color: var(--text-primary);
+}
+
+.source-btn.active {
+    background: var(--bg-surface);
+    color: var(--accent-primary);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.source-content {
+    animation: fadeIn 0.2s ease;
+}
+
+.source-content.hidden {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Form Elements */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+}
+
+.form-row.three-col {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: var(--space-4);
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-label {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.form-label i {
+    color: var(--text-tertiary);
+}
+
+.readonly-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+}
+
+.readonly-field i {
+    color: var(--text-tertiary);
+}
+
+.form-input,
+.form-textarea {
+    padding: 12px 14px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    transition: border-color 0.2s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: var(--text-tertiary);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+}
+
+/* Document Selector */
+.document-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.document-option {
+    cursor: pointer;
+}
+
+.document-option input {
+    display: none;
+}
+
+.document-option-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-primary);
+    border: 2px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+.document-option:hover .document-option-content {
+    border-color: var(--accent-primary);
+    background: rgba(74, 158, 255, 0.05);
+}
+
+.document-option input:checked + .document-option-content {
+    border-color: var(--accent-primary);
+    background: rgba(74, 158, 255, 0.1);
+}
+
+.document-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.document-icon.resume-icon {
+    background: rgba(74, 158, 255, 0.15);
+    color: #4a9eff;
+}
+
+.document-icon.letter-icon {
+    background: rgba(139, 92, 246, 0.15);
+    color: #8b5cf6;
+}
+
+.document-icon i {
+    font-size: 1.125rem;
+}
+
+.document-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.document-name {
+    display: block;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.document-meta {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+.document-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.document-check i {
+    font-size: 0.75rem;
+    color: white;
+}
+
+.document-option input:checked + .document-option-content .document-check {
+    opacity: 1;
+    background: var(--accent-primary);
+}
+
+.document-actions {
+    margin-top: var(--space-3);
+}
+
+.create-doc-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--font-size-sm);
+    color: var(--accent-primary);
+    text-decoration: none;
+}
+
+.create-doc-link:hover {
+    text-decoration: underline;
+}
+
+.no-documents-hint {
+    padding: var(--space-3);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+}
+
+.no-documents-hint p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+}
+
+.no-documents-hint a {
+    color: var(--accent-primary);
+}
+
+.skip-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: var(--space-3);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+}
+
+.skip-message i {
+    color: var(--accent-primary);
+}
+
+/* File Upload Zone */
+.file-upload-zone {
+    position: relative;
+    border: 2px dashed var(--border-primary);
+    border-radius: var(--radius-md);
+    padding: var(--space-6);
+    text-align: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.file-upload-zone:hover,
+.file-upload-zone.dragover {
+    border-color: var(--accent-primary);
+    background: rgba(74, 158, 255, 0.05);
+}
+
+.file-upload-zone.has-file {
+    border-style: solid;
+    border-color: #22c55e;
+    background: rgba(34, 197, 94, 0.05);
+}
+
+.file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.upload-placeholder i {
+    font-size: 2.5rem;
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-3);
+}
+
+.upload-placeholder p {
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.upload-placeholder .browse-link {
+    color: var(--accent-primary);
+    font-weight: 500;
+}
+
+.upload-hint {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+.upload-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+}
+
+.upload-preview.hidden {
+    display: none;
+}
+
+.upload-preview i {
+    font-size: 2rem;
+    color: #ef4444;
+}
+
+.upload-preview .file-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.upload-preview .remove-file {
+    background: rgba(239, 68, 68, 0.15);
+    border: none;
+    color: #ef4444;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.upload-preview .remove-file:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* Submit Section */
+.submit-section {
+    padding: var(--space-5);
+    background: var(--bg-tertiary);
+    border-top: 1px solid var(--border-primary);
+}
+
+.submit-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-4);
+}
+
+.submit-info i {
+    color: #22c55e;
+}
+
+.submit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+}
+
+/* Modal */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 80px;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    max-width: 440px;
+    width: 90%;
+    animation: slideDown 0.3s ease;
+}
+
+.success-modal {
+    text-align: center;
+    padding: var(--space-6);
+}
+
+.success-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto var(--space-4);
+    background: rgba(34, 197, 94, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.success-icon i {
+    font-size: 2rem;
+    color: #22c55e;
+}
+
+.success-modal h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.success-modal p {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-5);
+}
+
+.success-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .job-summary-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .job-summary-meta {
+        justify-content: center;
+    }
+    
+    .form-row,
+    .form-row.three-col {
+        grid-template-columns: 1fr;
+    }
+    
+    .source-toggle {
+        flex-direction: column;
+    }
+    
+    .submit-actions {
+        flex-direction: column-reverse;
+    }
+    
+    .submit-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('applicationForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const successModal = document.getElementById('successModal');
+    const successMessage = document.getElementById('successMessage');
+    
+    // Source toggle functionality
+    document.querySelectorAll('.source-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const source = this.dataset.source;
+            const target = this.dataset.target;
+            
+            // Update active button
+            this.closest('.source-toggle').querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Show/hide content
+            document.querySelectorAll(`[id^="${target}-"]`).forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(`${target}-${source}`).classList.remove('hidden');
+            
+            // Clear selections when switching
+            if (target === 'resume') {
+                if (source !== 'existing') {
+                    document.querySelectorAll('input[name="resume_id"]').forEach(r => r.checked = false);
+                }
+                if (source !== 'upload') {
+                    clearFileInput('resumeFileInput', 'resumeUploadZone');
+                }
+            } else if (target === 'coverletter') {
+                if (source !== 'existing') {
+                    document.querySelectorAll('input[name="cover_letter_id"]').forEach(r => r.checked = false);
+                }
+                if (source !== 'upload') {
+                    clearFileInput('coverLetterFileInput', 'coverLetterUploadZone');
+                }
+            }
+        });
+    });
+    
+    // File upload handling
+    function setupFileUpload(inputId, zoneId) {
+        const input = document.getElementById(inputId);
+        const zone = document.getElementById(zoneId);
+        if (!input || !zone) return;
+        
+        const placeholder = zone.querySelector('.upload-placeholder');
+        const preview = zone.querySelector('.upload-preview');
+        const fileName = zone.querySelector('.file-name');
+        const removeBtn = zone.querySelector('.remove-file');
+        
+        // Drag and drop
+        zone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            zone.classList.add('dragover');
+        });
+        
+        zone.addEventListener('dragleave', () => {
+            zone.classList.remove('dragover');
+        });
+        
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                input.files = files;
+                handleFileSelect(input, zone, placeholder, preview, fileName);
+            }
+        });
+        
+        // File input change
+        input.addEventListener('change', () => {
+            handleFileSelect(input, zone, placeholder, preview, fileName);
+        });
+        
+        // Remove file
+        if (removeBtn) {
+            removeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                clearFileInput(inputId, zoneId);
+            });
+        }
+    }
+    
+    function handleFileSelect(input, zone, placeholder, preview, fileName) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            
+            // Validate file type
+            if (!file.name.toLowerCase().endsWith('.pdf')) {
+                alert('Please upload a PDF file.');
+                input.value = '';
+                return;
+            }
+            
+            // Validate file size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size must be less than 5MB.');
+                input.value = '';
+                return;
+            }
+            
+            // Show preview
+            placeholder.classList.add('hidden');
+            preview.classList.remove('hidden');
+            fileName.textContent = file.name;
+            zone.classList.add('has-file');
+        }
+    }
+    
+    function clearFileInput(inputId, zoneId) {
+        const input = document.getElementById(inputId);
+        const zone = document.getElementById(zoneId);
+        if (!input || !zone) return;
+        
+        input.value = '';
+        const placeholder = zone.querySelector('.upload-placeholder');
+        const preview = zone.querySelector('.upload-preview');
+        
+        placeholder.classList.remove('hidden');
+        preview.classList.add('hidden');
+        zone.classList.remove('has-file');
+    }
+    
+    // Initialize file uploads
+    setupFileUpload('resumeFileInput', 'resumeUploadZone');
+    setupFileUpload('coverLetterFileInput', 'coverLetterUploadZone');
+    
+    // Form submission
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Determine resume source
+        const resumeExistingActive = document.querySelector('.source-btn[data-target="resume"][data-source="existing"].active');
+        const resumeUploadActive = document.querySelector('.source-btn[data-target="resume"][data-source="upload"].active');
+        
+        const resumeSelected = document.querySelector('input[name="resume_id"]:checked');
+        const resumeFile = document.getElementById('resumeFileInput').files[0];
+        
+        // Validate resume
+        if (resumeExistingActive && !resumeSelected) {
+            alert('Please select a resume from your documents.');
+            return;
+        }
+        if (resumeUploadActive && !resumeFile) {
+            alert('Please upload a resume PDF.');
+            return;
+        }
+        if (!resumeExistingActive && !resumeUploadActive) {
+            // Check if any resume is provided
+            if (!resumeSelected && !resumeFile) {
+                alert('Please select or upload a resume.');
+                return;
+            }
+        }
+        
+        // Disable submit button
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        
+        // Use FormData for file uploads
+        const formData = new FormData(form);
+        
+        // Remove empty file inputs
+        if (!resumeFile) {
+            formData.delete('uploaded_resume');
+        }
+        const coverLetterFile = document.getElementById('coverLetterFileInput').files[0];
+        if (!coverLetterFile) {
+            formData.delete('uploaded_cover_letter');
+        }
+        
+        try {
+            const response = await fetch('{% url "careers:api_submit_application" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: formData,
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                successMessage.innerHTML = `Your application for <strong>${result.job_title}</strong> has been submitted successfully on ${result.applied_at}.`;
+                successModal.classList.add('show');
+            } else {
+                alert(result.error || 'An error occurred. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Application';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Application';
+        }
+    });
+});
+</script>
+{% endblock content %}

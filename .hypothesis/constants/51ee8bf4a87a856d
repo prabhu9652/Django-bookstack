@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/library/views.py
+# hypothesis_version: 6.150.0
+
+['-added_date', '-book__name', 'Added to library', 'Already in library', 'Book ID is required', 'Invalid request data', 'My Library', 'Removed from library', 'access_context', 'added_date', 'author', 'book', 'book__author', 'book__category', 'book__name', 'book_id', 'books__userlibrary', 'categories', 'category', 'content_accessed', 'current_category', 'data_received', 'filtered_count', 'library/index.html', 'library_add', 'library_books', 'library_remove', 'message', 'name', 'oldest', 'q', 'recent', 'search_query', 'sort', 'sort_by', 'success', 'template_data', 'title', 'title-desc', 'total_books', 'uncategorized', 'uncategorized_count', 'user']

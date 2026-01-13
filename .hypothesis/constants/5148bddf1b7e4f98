@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/careers/admin.py
+# hypothesis_version: 6.150.0
+
+['-applied_at', '-created_at', '...', 'Additional Info', 'Applicant Info', 'Applications', 'Content', 'Job & Documents', 'Job Details', 'Links', 'Statistics', 'Status', 'additional_notes', 'applicant_email', 'applicant_name', 'application', 'application_count', 'applied_at', 'author', 'classes', 'closes_at', 'collapse', 'content', 'cover_letter', 'created_at', 'department', 'description', 'employment_type', 'fields', 'github_url', 'is_active', 'job', 'job__title', 'linkedin_url', 'location', 'location_type', 'portfolio_url', 'requirements', 'responsibilities', 'resume', 'salary_range', 'short_content', 'slug', 'status', 'tech_stack', 'title', 'updated_at', 'user', 'view_count']

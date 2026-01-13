@@ -18,3 +18,16 @@ def about(request):
     template_data = {}
     template_data['title'] = 'About - Digital Library'
     return render(request, 'home/about.html', {'template_data': template_data})
+
+
+def offline(request):
+    """Offline fallback page for PWA"""
+    return render(request, 'offline.html')
+
+
+def app(request):
+    """PWA App download/install page"""
+    template_data = {
+        'title': 'Get the App - TechBookHub'
+    }
+    return render(request, 'home/app.html', {'template_data': template_data})

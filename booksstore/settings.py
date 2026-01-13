@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'library',
     'resume_builder',
     'roadmap',
+    'careers',
 ]
 
 MIDDLEWARE = [

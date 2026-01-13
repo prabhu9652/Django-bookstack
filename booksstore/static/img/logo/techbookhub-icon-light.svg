@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- TechBookHub Icon - Light Mode Version -->
+  <!-- For use on light/white backgrounds -->
+  
+  <defs>
+    <linearGradient id="bookGradientLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4f46e5;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Book Base - Left Page -->
+  <path d="M128 96 L128 416 L256 384 L256 64 L128 96 Z" 
+        fill="url(#bookGradientLight)" 
+        opacity="1"/>
+  
+  <!-- Book Base - Right Page -->
+  <path d="M384 96 L384 416 L256 384 L256 64 L384 96 Z" 
+        fill="url(#bookGradientLight)" 
+        opacity="0.7"/>
+  
+  <!-- Circuit Lines on Right Page -->
+  <g stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.95">
+    <path d="M280 160 L360 160"/>
+    <path d="M320 160 L320 220"/>
+    <circle cx="280" cy="160" r="6" fill="#ffffff"/>
+    <circle cx="360" cy="160" r="6" fill="#ffffff"/>
+    <circle cx="320" cy="220" r="6" fill="#ffffff"/>
+    <path d="M290 260 L350 260 L350 300"/>
+    <circle cx="290" cy="260" r="5" fill="#ffffff"/>
+    <circle cx="350" cy="300" r="5" fill="#ffffff"/>
+  </g>
+  
+  <!-- Text Lines on Left Page -->
+  <g fill="#ffffff" opacity="0.9">
+    <rect x="152" y="150" width="80" height="6" rx="3"/>
+    <rect x="152" y="175" width="60" height="6" rx="3"/>
+    <rect x="152" y="200" width="70" height="6" rx="3"/>
+    <rect x="152" y="240" width="75" height="6" rx="3"/>
+    <rect x="152" y="265" width="55" height="6" rx="3"/>
+    <rect x="152" y="290" width="65" height="6" rx="3"/>
+  </g>
+  
+  <!-- Book Spine -->
+  <path d="M256 64 L256 384" stroke="#ffffff" stroke-width="2" opacity="0.3"/>
+</svg>

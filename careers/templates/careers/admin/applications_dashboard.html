@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="max-width: 1200px; margin: 0 auto; padding: var(--space-6) var(--space-4);">
+    
+    <!-- Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-4); margin-bottom: var(--space-6);">
+        <div>
+            <h1 style="font-size: 1.75rem; font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-2);">
+                <i class="fas fa-users" style="margin-right: var(--space-2); color: var(--accent-primary);"></i>
+                Applications
+            </h1>
+            <p style="color: var(--text-secondary);">
+                Review and manage job applications
+            </p>
+        </div>
+        <a href="{% url 'careers:admin_jobs_dashboard' %}" class="btn btn-ghost">
+            <i class="fas fa-briefcase"></i> Manage Jobs
+        </a>
+    </div>
+    
+    <!-- Filters -->
+    <div class="card" style="margin-bottom: var(--space-4);">
+        <div class="card-body" style="padding: var(--space-3) var(--space-4);">
+            <form method="get" action="{% url 'careers:admin_applications_dashboard' %}" style="display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap;">
+                <!-- Search -->
+                <div style="flex: 1; min-width: 200px;">
+                    <div style="position: relative;">
+                        <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary);"></i>
+                        <input type="text" name="search" value="{{ current_filters.search }}" placeholder="Search by name or email..."
+                               style="width: 100%; padding: var(--space-2) var(--space-3) var(--space-2) 36px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+                    </div>
+                </div>
+                
+                <!-- Job Filter -->
+                <div style="display: flex; align-items: center; gap: var(--space-2);">
+                    <label style="font-size: var(--font-size-sm); color: var(--text-secondary);">Job:</label>
+                    <select name="job" onchange="this.form.submit()" style="padding: var(--space-2) var(--space-3); background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+                        <option value="">All Jobs</option>
+                        {% for j in jobs %}
+                        <option value="{{ j.id }}" {% if current_filters.job == j.id|stringformat:"s" %}selected{% endif %}>{{ j.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Status Filter -->
+                <div style="display: flex; align-items: center; gap: var(--space-2);">
+                    <label style="font-size: var(--font-size-sm); color: var(--text-secondary);">Status:</label>
+                    <select name="status" onchange="this.form.submit()" style="padding: var(--space-2) var(--space-3); background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+                        <option value="">All Statuses</option>
+                        {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if current_filters.status == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-ghost btn-sm">
+                    <i class="fas fa-filter"></i> Filter
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Applications Table -->
+    {% if applications %}
+    <div class="card">
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: var(--bg-tertiary); border-bottom: 1px solid var(--border-primary);">
+                        <th style="padding: var(--space-3) var(--space-4); text-align: left; font-weight: 600; color: var(--text-secondary); font-size: var(--font-size-sm);">Candidate</th>
+                        <th style="padding: var(--space-3) var(--space-4); text-align: left; font-weight: 600; color: var(--text-secondary); font-size: var(--font-size-sm);">Job</th>
+                        <th style="padding: var(--space-3) var(--space-4); text-align: center; font-weight: 600; color: var(--text-secondary); font-size: var(--font-size-sm);">Status</th>
+                        <th style="padding: var(--space-3) var(--space-4); text-align: left; font-weight: 600; color: var(--text-secondary); font-size: var(--font-size-sm);">Applied</th>
+                        <th style="padding: var(--space-3) var(--space-4); text-align: right; font-weight: 600; color: var(--text-secondary); font-size: var(--font-size-sm);">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr style="border-bottom: 1px solid var(--border-primary);">
+                        <td style="padding: var(--space-3) var(--space-4);">
+                            <div style="font-weight: 500; color: var(--text-primary);">{{ app.applicant_name }}</div>
+                            <div style="font-size: var(--font-size-sm); color: var(--text-tertiary);">{{ app.applicant_email }}</div>
+                        </td>
+                        <td style="padding: var(--space-3) var(--space-4);">
+                            <a href="{% url 'careers:job_detail' slug=app.job.slug %}" style="color: var(--text-primary); text-decoration: none;">
+                                {{ app.job.title }}
+                            </a>
+                            <div style="font-size: var(--font-size-sm); color: var(--text-tertiary);">{{ app.job.department }}</div>
+                        </td>
+                        <td style="padding: var(--space-3) var(--space-4); text-align: center;">
+                            {% include 'careers/partials/status_badge.html' with status=app.status %}
+                        </td>
+                        <td style="padding: var(--space-3) var(--space-4); color: var(--text-tertiary); font-size: var(--font-size-sm);">
+                            {{ app.applied_at|date:"M d, Y" }}
+                            <div style="font-size: 0.7rem;">{{ app.applied_at|time:"g:i A" }}</div>
+                        </td>
+                        <td style="padding: var(--space-3) var(--space-4); text-align: right;">
+                            <a href="{% url 'careers:admin_application_detail' application_id=app.id %}" class="btn btn-ghost btn-sm">
+                                View <i class="fas fa-arrow-right" style="margin-left: 4px;"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="card" style="text-align: center; padding: var(--space-8);">
+        <i class="fas fa-inbox" style="font-size: 3rem; color: var(--text-tertiary); margin-bottom: var(--space-4);"></i>
+        <h3 style="color: var(--text-primary); margin-bottom: var(--space-2);">No applications found</h3>
+        <p style="color: var(--text-secondary);">
+            {% if current_filters.search or current_filters.job or current_filters.status %}
+            Try adjusting your filters.
+            {% else %}
+            Applications will appear here when candidates apply for jobs.
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+    
+</div>
+{% endblock content %}

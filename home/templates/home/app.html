@@ -1,0 +1,966 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="app-page">
+  <!-- Hero Section -->
+  <div class="app-hero">
+    <div class="container">
+      <div class="app-hero-content">
+        <div class="app-hero-text">
+          <div class="app-badge"><i class="fas fa-mobile-alt"></i> Progressive Web App</div>
+          <h1>Get the <span class="gradient-text">TechBookHub App</span></h1>
+          <p>Install our app for a faster, native-like experience. Access books, roadmaps, and career tools even when you're offline.</p>
+          <div class="app-hero-actions">
+            <button type="button" class="btn-app-install" id="heroInstallBtn">
+              <i class="fas fa-download"></i> Install App
+            </button>
+            <span class="install-status" id="installStatus">Available on all devices</span>
+          </div>
+        </div>
+        <div class="app-hero-visual">
+          <div class="device-showcase">
+            <div class="device phone">
+              <div class="device-frame">
+                <div class="device-notch"></div>
+                <div class="device-screen">
+                  <div class="app-icon-large">
+                    <img src="{% static 'img/pwa/icon-192x192.png' %}" alt="TechBookHub">
+                  </div>
+                  <span class="app-label">TechBookHub</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features Section -->
+  <div class="app-section">
+    <div class="container">
+      <div class="section-header-centered">
+        <h2>Why Install the App?</h2>
+        <p>Experience TechBookHub like never before</p>
+      </div>
+      <div class="app-features-grid">
+        <div class="app-feature-card">
+          <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+          <h3>Lightning Fast</h3>
+          <p>Instant loading with cached resources. No more waiting for pages to load.</p>
+        </div>
+        <div class="app-feature-card">
+          <div class="feature-icon"><i class="fas fa-wifi-slash"></i></div>
+          <h3>Works Offline</h3>
+          <p>Access your saved content even without internet. Perfect for commutes.</p>
+        </div>
+        <div class="app-feature-card">
+          <div class="feature-icon"><i class="fas fa-th-large"></i></div>
+          <h3>Home Screen Access</h3>
+          <p>Launch directly from your home screen or dock. One tap to open.</p>
+        </div>
+        <div class="app-feature-card">
+          <div class="feature-icon"><i class="fas fa-expand"></i></div>
+          <h3>Full Screen Mode</h3>
+          <p>Immersive experience without browser chrome. Focus on what matters.</p>
+        </div>
+        <div class="app-feature-card">
+          <div class="feature-icon"><i class="fas fa-sync-alt"></i></div>
+          <h3>Auto Updates</h3>
+          <p>Always get the latest features automatically. No manual updates needed.</p>
+        </div>
+        <div class="app-feature-card">
+          <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+          <h3>Secure & Private</h3>
+          <p>Same security as the website. Your data stays protected.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Platform Support Section -->
+  <div class="app-section platforms-section">
+    <div class="container">
+      <div class="section-header-centered">
+        <h2>Available Everywhere</h2>
+        <p>Install on any device, any platform</p>
+      </div>
+      <div class="platforms-grid">
+        <div class="platform-card">
+          <div class="platform-icon"><i class="fab fa-android"></i></div>
+          <h3>Android</h3>
+          <p>Chrome, Edge, Samsung Internet</p>
+          <span class="platform-status supported"><i class="fas fa-check"></i> Full Support</span>
+        </div>
+        <div class="platform-card">
+          <div class="platform-icon"><i class="fab fa-apple"></i></div>
+          <h3>iOS</h3>
+          <p>Safari (Add to Home Screen)</p>
+          <span class="platform-status supported"><i class="fas fa-check"></i> Supported</span>
+        </div>
+        <div class="platform-card">
+          <div class="platform-icon"><i class="fab fa-windows"></i></div>
+          <h3>Windows</h3>
+          <p>Chrome, Edge</p>
+          <span class="platform-status supported"><i class="fas fa-check"></i> Full Support</span>
+        </div>
+        <div class="platform-card">
+          <div class="platform-icon"><i class="fab fa-apple"></i></div>
+          <h3>macOS</h3>
+          <p>Chrome, Edge, Safari (Sonoma+)</p>
+          <span class="platform-status supported"><i class="fas fa-check"></i> Supported</span>
+        </div>
+        <div class="platform-card">
+          <div class="platform-icon"><i class="fab fa-linux"></i></div>
+          <h3>Linux</h3>
+          <p>Chrome, Edge, Chromium</p>
+          <span class="platform-status supported"><i class="fas fa-check"></i> Full Support</span>
+        </div>
+        <div class="platform-card">
+          <div class="platform-icon"><i class="fab fa-chrome"></i></div>
+          <h3>ChromeOS</h3>
+          <p>Chrome Browser</p>
+          <span class="platform-status supported"><i class="fas fa-check"></i> Full Support</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Installation Instructions Section -->
+  <div class="app-section install-section">
+    <div class="container">
+      <div class="section-header-centered">
+        <h2>How to Install</h2>
+        <p>Choose your browser below</p>
+      </div>
+      <div class="install-tabs">
+        <button class="install-tab active" data-tab="chrome">
+          <i class="fab fa-chrome"></i> Chrome / Edge
+        </button>
+        <button class="install-tab" data-tab="safari-ios">
+          <i class="fab fa-safari"></i> Safari (iOS)
+        </button>
+        <button class="install-tab" data-tab="safari-mac">
+          <i class="fab fa-apple"></i> Safari (macOS)
+        </button>
+      </div>
+      <div class="install-content">
+        <div class="install-panel active" id="panel-chrome">
+          <div class="install-steps">
+            <div class="install-step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h4>Look for the install icon</h4>
+                <p>In the address bar, you'll see an install icon <i class="fas fa-plus-square"></i> or in the menu <i class="fas fa-ellipsis-v"></i></p>
+              </div>
+            </div>
+            <div class="install-step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h4>Click "Install" or "Install App"</h4>
+                <p>A prompt will appear asking to install TechBookHub</p>
+              </div>
+            </div>
+            <div class="install-step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h4>Confirm installation</h4>
+                <p>Click "Install" and the app will be added to your device</p>
+              </div>
+            </div>
+          </div>
+          <div class="install-cta">
+            <button type="button" class="btn-install-now" id="chromeInstallBtn">
+              <i class="fas fa-download"></i> Install Now
+            </button>
+          </div>
+        </div>
+
+        <div class="install-panel" id="panel-safari-ios">
+          <div class="install-steps">
+            <div class="install-step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h4>Tap the Share button</h4>
+                <p>At the bottom of Safari, tap <i class="fas fa-share-square"></i> Share</p>
+              </div>
+            </div>
+            <div class="install-step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h4>Find "Add to Home Screen"</h4>
+                <p>Scroll down and tap "Add to Home Screen"</p>
+              </div>
+            </div>
+            <div class="install-step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h4>Tap "Add"</h4>
+                <p>Confirm by tapping "Add" in the top right corner</p>
+              </div>
+            </div>
+          </div>
+          <div class="install-note">
+            <i class="fas fa-info-circle"></i>
+            <span>iOS requires Safari browser for PWA installation</span>
+          </div>
+        </div>
+        <div class="install-panel" id="panel-safari-mac">
+          <div class="install-steps">
+            <div class="install-step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h4>Open Safari menu</h4>
+                <p>Click "File" in the menu bar</p>
+              </div>
+            </div>
+            <div class="install-step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h4>Select "Add to Dock"</h4>
+                <p>Click "Add to Dock..." option (requires macOS Sonoma or later)</p>
+              </div>
+            </div>
+            <div class="install-step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h4>Confirm</h4>
+                <p>Click "Add" to add the app to your Dock</p>
+              </div>
+            </div>
+          </div>
+          <div class="install-note">
+            <i class="fas fa-lightbulb"></i>
+            <span>For older macOS versions, use Chrome or Edge for full PWA support</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="app-section faq-section">
+    <div class="container">
+      <div class="section-header-centered">
+        <h2>Frequently Asked Questions</h2>
+      </div>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <h4><i class="fas fa-question-circle"></i> What is a PWA?</h4>
+          <p>A Progressive Web App (PWA) is a website that can be installed on your device and works like a native app, with offline support and fast loading.</p>
+        </div>
+        <div class="faq-item">
+          <h4><i class="fas fa-question-circle"></i> Is it free?</h4>
+          <p>Yes! The app is completely free. No app store, no downloads, no charges.</p>
+        </div>
+        <div class="faq-item">
+          <h4><i class="fas fa-question-circle"></i> Does it take storage space?</h4>
+          <p>Very minimal. PWAs are lightweight compared to native apps, typically using only a few MB.</p>
+        </div>
+        <div class="faq-item">
+          <h4><i class="fas fa-question-circle"></i> Can I uninstall it?</h4>
+          <p>Yes, just like any other app. Right-click the icon and select uninstall/remove.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Final CTA -->
+  <div class="app-section cta-section">
+    <div class="container">
+      <div class="app-cta-card">
+        <div class="cta-icon"><i class="fas fa-rocket"></i></div>
+        <h3>Ready to Get Started?</h3>
+        <p>Install TechBookHub now and enjoy a better experience</p>
+        <button type="button" class="btn-cta-install" id="ctaInstallBtn">
+          <i class="fas fa-download"></i> Install TechBookHub
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* App Page Styles */
+.app-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+}
+
+/* Hero Section */
+.app-hero {
+  padding: 4rem 0;
+  background: linear-gradient(180deg, rgba(74, 158, 255, 0.05) 0%, transparent 100%);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.app-hero-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.app-hero-text {
+  flex: 1;
+}
+
+.app-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.875rem;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #22c55e;
+  margin-bottom: 1.25rem;
+}
+
+.app-hero-text h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin: 0 0 1rem;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #4a9eff 0%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.app-hero-text > p {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 0 1.75rem;
+}
+
+.app-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-app-install {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+}
+
+.btn-app-install:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+}
+
+.btn-app-install.installed {
+  background: linear-gradient(135deg, #4a9eff 0%, #6366f1 100%);
+}
+
+.install-status {
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+}
+
+/* Device Showcase */
+.app-hero-visual {
+  flex-shrink: 0;
+}
+
+.device-showcase {
+  position: relative;
+}
+
+.device.phone .device-frame {
+  width: 180px;
+  height: 360px;
+  background: #1a1f26;
+  border-radius: 36px;
+  padding: 16px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3), inset 0 0 0 2px #2f3640;
+}
+
+.device-notch {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 24px;
+  background: #0f1419;
+  border-radius: 0 0 16px 16px;
+  z-index: 2;
+}
+
+.device-screen {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #0f1419 0%, #1a1f26 100%);
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.app-icon-large {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.app-icon-large img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.app-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Sections */
+.app-section {
+  padding: 4rem 0;
+}
+
+.section-header-centered {
+  text-align: center;
+  max-width: 500px;
+  margin: 0 auto 2.5rem;
+}
+
+.section-header-centered h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.section-header-centered p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Features Grid */
+.app-features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.app-feature-card {
+  padding: 1.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  text-align: center;
+  transition: all 0.25s ease;
+}
+
+.app-feature-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(74, 158, 255, 0.3);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+  width: 52px;
+  height: 52px;
+  background: rgba(74, 158, 255, 0.1);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.feature-icon i {
+  font-size: 1.25rem;
+  color: #4a9eff;
+}
+
+.app-feature-card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.app-feature-card p {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Platforms Section */
+.platforms-section {
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-default);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.platforms-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.platform-card {
+  padding: 1.25rem 1rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.platform-card:hover {
+  border-color: rgba(74, 158, 255, 0.3);
+}
+
+.platform-icon {
+  font-size: 2rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.platform-card h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.platform-card p {
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
+  margin: 0 0 0.75rem;
+}
+
+.platform-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.platform-status.supported {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+/* Install Section */
+.install-section {
+  background: linear-gradient(180deg, transparent 0%, rgba(74, 158, 255, 0.03) 100%);
+}
+
+.install-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.install-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.install-tab:hover {
+  border-color: rgba(74, 158, 255, 0.3);
+  color: var(--text-primary);
+}
+
+.install-tab.active {
+  background: rgba(74, 158, 255, 0.1);
+  border-color: #4a9eff;
+  color: #4a9eff;
+}
+
+.install-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.install-panel {
+  display: none;
+  padding: 2rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+}
+
+.install-panel.active {
+  display: block;
+}
+
+.install-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.install-step {
+  display: flex;
+  gap: 1rem;
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  background: rgba(74, 158, 255, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #4a9eff;
+  flex-shrink: 0;
+}
+
+.step-content h4 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.step-content p {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.step-content i {
+  color: #4a9eff;
+}
+
+.install-cta {
+  text-align: center;
+}
+
+.btn-install-now {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  background: linear-gradient(135deg, #4a9eff 0%, #6366f1 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-install-now:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(74, 158, 255, 0.3);
+}
+
+.install-note {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(245, 158, 11, 0.1);
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  color: #f59e0b;
+}
+
+/* FAQ Section */
+.faq-section {
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-default);
+}
+
+.faq-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  padding: 1.25rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+}
+
+.faq-item h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.faq-item h4 i {
+  color: #4a9eff;
+}
+
+.faq-item p {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* CTA Section */
+.cta-section {
+  padding: 4rem 0 5rem;
+}
+
+.app-cta-card {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2.5rem;
+  background: linear-gradient(135deg, rgba(74, 158, 255, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%);
+  border: 1px solid rgba(74, 158, 255, 0.2);
+  border-radius: 20px;
+  text-align: center;
+}
+
+.cta-icon {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #4a9eff, #6366f1);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+}
+
+.cta-icon i {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.app-cta-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.app-cta-card p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0 0 1.5rem;
+}
+
+.btn-cta-install {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+}
+
+.btn-cta-install:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .platforms-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .app-hero-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 2.5rem;
+  }
+  
+  .app-hero-actions {
+    justify-content: center;
+  }
+  
+  .app-features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .platforms-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .faq-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .app-hero-text h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-hero {
+    padding: 3rem 0;
+  }
+  
+  .app-features-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .platforms-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .install-tabs {
+    flex-direction: column;
+  }
+  
+  .install-tab {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .device.phone .device-frame {
+    width: 150px;
+    height: 300px;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Tab switching
+  const tabs = document.querySelectorAll('.install-tab');
+  const panels = document.querySelectorAll('.install-panel');
+  
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      const targetTab = this.dataset.tab;
+      
+      tabs.forEach(t => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      
+      this.classList.add('active');
+      document.getElementById('panel-' + targetTab).classList.add('active');
+    });
+  });
+  
+  // Install button handlers
+  const installButtons = [
+    document.getElementById('heroInstallBtn'),
+    document.getElementById('chromeInstallBtn'),
+    document.getElementById('ctaInstallBtn')
+  ];
+  
+  const installStatus = document.getElementById('installStatus');
+  
+  // Check if already installed
+  const isInstalled = window.matchMedia('(display-mode: standalone)').matches || 
+                      window.navigator.standalone === true;
+  
+  if (isInstalled) {
+    installButtons.forEach(btn => {
+      if (btn) {
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> App Installed';
+        btn.classList.add('installed');
+        btn.disabled = true;
+      }
+    });
+    if (installStatus) {
+      installStatus.textContent = 'You\'re using the app!';
+    }
+  } else {
+    installButtons.forEach(btn => {
+      if (btn) {
+        btn.addEventListener('click', function() {
+          if (window.TechBookHubPWA && window.TechBookHubPWA.deferredPrompt) {
+            window.TechBookHubPWA.promptInstall();
+          } else {
+            // Scroll to install instructions
+            document.querySelector('.install-section').scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'start' 
+            });
+          }
+        });
+      }
+    });
+  }
+  
+  // Listen for app installed
+  window.addEventListener('appinstalled', function() {
+    installButtons.forEach(btn => {
+      if (btn) {
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> App Installed';
+        btn.classList.add('installed');
+        btn.disabled = true;
+      }
+    });
+    if (installStatus) {
+      installStatus.textContent = 'You\'re using the app!';
+    }
+  });
+});
+</script>
+{% endblock %}
