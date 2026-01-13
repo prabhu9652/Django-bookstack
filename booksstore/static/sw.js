@@ -10,12 +10,19 @@
  * - Forms/POST: Network-only
  */
 
-const CACHE_VERSION = 'v1.1.0';
+const CACHE_VERSION = 'v1.2.0';
 const CACHE_NAMES = {
   static: `techbookhub-static-${CACHE_VERSION}`,
   pages: `techbookhub-pages-${CACHE_VERSION}`,
   images: `techbookhub-images-${CACHE_VERSION}`,
   fonts: `techbookhub-fonts-${CACHE_VERSION}`,
+};
+
+// Maximum cache sizes (prevent unbounded growth)
+const CACHE_LIMITS = {
+  pages: 50,
+  images: 100,
+  fonts: 20,
 };
 
 // App Shell - Critical resources for offline functionality
@@ -27,13 +34,14 @@ const APP_SHELL = [
   '/static/css/auth-enterprise.css',
   '/static/css/image-optimization.css',
   '/static/css/responsive-enhancements.css',
+  '/static/css/pwa.css',
   '/static/js/library-manager.js',
   '/static/js/image-loader.js',
   '/static/js/auth-enterprise.js',
   '/static/js/minimal-interactions.js',
   '/static/js/page-transitions.js',
   '/static/js/pwa.js',
-  '/static/img/logo.png',
+  '/static/img/pwa/icon-192x192.png',
 ];
 
 // Routes that should NEVER be cached (auth, forms, admin)
@@ -530,6 +538,32 @@ async function cacheUrls(urls) {
   await Promise.allSettled(
     urls.map(url => cache.add(url).catch(err => console.warn(`[SW] Failed to cache: ${url}`)))
   );
+}
+
+/**
+ * Trim cache to prevent unbounded growth
+ */
+async function trimCache(cacheName, maxItems) {
+  const cache = await caches.open(cacheName);
+  const keys = await cache.keys();
+  
+  if (keys.length > maxItems) {
+    // Delete oldest entries (FIFO)
+    const deleteCount = keys.length - maxItems;
+    for (let i = 0; i < deleteCount; i++) {
+      await cache.delete(keys[i]);
+    }
+    console.log(`[SW] Trimmed ${deleteCount} items from ${cacheName}`);
+  }
+}
+
+/**
+ * Periodic cache maintenance
+ */
+async function performCacheMaintenance() {
+  await trimCache(CACHE_NAMES.pages, CACHE_LIMITS.pages);
+  await trimCache(CACHE_NAMES.images, CACHE_LIMITS.images);
+  await trimCache(CACHE_NAMES.fonts, CACHE_LIMITS.fonts);
 }
 
 console.log('[SW] Service worker loaded');
