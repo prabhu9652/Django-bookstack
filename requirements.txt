@@ -9,40 +9,8 @@ whitenoise>=6.6.0
 # Database
 psycopg2-binary>=2.9.0
 
-# PDF Generation - Playwright (Primary - Pixel-perfect browser-based rendering)
+# PDF Generation - Playwright (Chromium-based, pixel-perfect rendering)
 playwright>=1.40.0
-
-# PDF Generation - WeasyPrint (Fallback, requires system libs)
-weasyprint>=60.0
-
-# PDF Generation - xhtml2pdf (Last resort fallback, pure Python)
-xhtml2pdf>=0.2.17
-reportlab>=4.0.0
 
 # Additional utilities
 python-dateutil>=2.8.0
-
-# =============================================================================
-# IMPORTANT: WeasyPrint System Dependencies
-# =============================================================================
-# WeasyPrint requires system-level libraries that CANNOT be installed via pip.
-# These must be installed on the server/container OS.
-#
-# For Docker (Debian/Ubuntu-based images):
-#   apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 \
-#     libharfbuzz0b libfribidi0 libgdk-pixbuf2.0-0 libffi8 libcairo2 \
-#     libgirepository-1.0-1 gir1.2-pango-1.0 shared-mime-info \
-#     fonts-liberation fonts-dejavu-core
-#
-# For Ubuntu/Debian servers:
-#   sudo apt-get install libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 \
-#     libffi-dev shared-mime-info
-#
-# For macOS:
-#   brew install pango libffi cairo gdk-pixbuf
-#
-# For Alpine Linux:
-#   apk add pango cairo gdk-pixbuf font-noto
-#
-# See: https://doc.courtbouillon.org/weasyprint/stable/first_steps.html
-# =============================================================================

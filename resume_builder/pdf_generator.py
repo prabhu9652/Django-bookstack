@@ -3,7 +3,7 @@ Production-Grade PDF Generator using Browser-Based Rendering
 ============================================================
 
 ARCHITECTURE:
-- Uses Playwright (Chromium) for PDF generation - PRIMARY
+- Uses Playwright (Chromium) for PDF generation
 - Same rendering engine as browser preview = pixel-perfect match
 - Single source of truth: the preview HTML/CSS
 
@@ -11,10 +11,6 @@ WHY THIS WORKS:
 - Browser preview uses Chromium to render HTML/CSS
 - Playwright uses the SAME Chromium engine
 - Result: Preview = PDF (guaranteed)
-
-FALLBACK:
-- WeasyPrint only used if Playwright unavailable
-- WeasyPrint requires system libraries (pango, cairo)
 """
 
 import io
@@ -25,7 +21,7 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-# Lazy detection of PDF engines - don't import WeasyPrint unless needed
+# Check Playwright availability at import time
 PLAYWRIGHT_AVAILABLE = False
 
 try:
@@ -33,17 +29,7 @@ try:
     PLAYWRIGHT_AVAILABLE = True
     logger.info("Playwright available - using browser-based PDF generation")
 except ImportError:
-    logger.warning("Playwright not available")
-
-
-def _check_weasyprint() -> bool:
-    """Lazy check for WeasyPrint availability."""
-    try:
-        from weasyprint import HTML
-        return True
-    except (ImportError, OSError) as e:
-        logger.warning(f"WeasyPrint not available: {e}")
-        return False
+    logger.warning("Playwright not available - PDF generation will fail")
 
 
 # =============================================================================
@@ -52,61 +38,28 @@ def _check_weasyprint() -> bool:
 
 def generate_resume_pdf(resume, request=None) -> bytes:
     """
-    Generate pixel-perfect PDF from resume.
-    
-    Uses Playwright (Chromium) to render HTML exactly like the browser preview.
-    Falls back to WeasyPrint only if Playwright unavailable.
+    Generate pixel-perfect PDF from resume using Playwright (Chromium).
     """
-    # Build the complete HTML document (same as preview)
-    html_content = build_resume_html(resume)
-    
-    # Try Playwright first (primary - pixel perfect)
-    if PLAYWRIGHT_AVAILABLE:
-        try:
-            return _generate_pdf_with_playwright(html_content)
-        except Exception as e:
-            logger.error(f"Playwright PDF generation failed: {e}")
-            # Fall through to WeasyPrint
-    
-    # Fallback to WeasyPrint (only if Playwright failed or unavailable)
-    if _check_weasyprint():
-        return _generate_pdf_with_weasyprint(html_content)
-    
-    raise RuntimeError(
-        "No PDF engine available.\n"
-        "Install Playwright: pip install playwright && playwright install chromium\n"
-        "Or install WeasyPrint system dependencies: brew install pango cairo gdk-pixbuf"
-    )
-    
-    if PLAYWRIGHT_AVAILABLE:
-        return _generate_pdf_with_playwright(html_content)
-    elif WEASYPRINT_AVAILABLE:
-        return _generate_pdf_with_weasyprint(html_content)
-    else:
+    if not PLAYWRIGHT_AVAILABLE:
         raise RuntimeError(
-            "No PDF engine available. Install: pip install playwright && playwright install chromium"
+            "Playwright not available.\n"
+            "Install: pip install playwright && playwright install chromium"
         )
+    
+    html_content = build_resume_html(resume)
+    return _generate_pdf_with_playwright(html_content)
 
 
 def generate_cover_letter_pdf(cover_letter) -> bytes:
-    """Generate pixel-perfect PDF from cover letter."""
+    """Generate pixel-perfect PDF from cover letter using Playwright."""
+    if not PLAYWRIGHT_AVAILABLE:
+        raise RuntimeError(
+            "Playwright not available.\n"
+            "Install: pip install playwright && playwright install chromium"
+        )
+    
     html_content = build_cover_letter_html(cover_letter)
-    
-    # Try Playwright first (primary - pixel perfect)
-    if PLAYWRIGHT_AVAILABLE:
-        try:
-            return _generate_pdf_with_playwright(html_content)
-        except Exception as e:
-            logger.error(f"Playwright PDF generation failed: {e}")
-    
-    # Fallback to WeasyPrint
-    if _check_weasyprint():
-        return _generate_pdf_with_weasyprint(html_content)
-    
-    raise RuntimeError(
-        "No PDF engine available.\n"
-        "Install Playwright: pip install playwright && playwright install chromium"
-    )
+    return _generate_pdf_with_playwright(html_content)
 
 
 # =============================================================================
@@ -165,12 +118,6 @@ def _generate_pdf_with_playwright(html_content: str) -> bytes:
             return loop.run_until_complete(_async_generate())
     except RuntimeError:
         return asyncio.run(_async_generate())
-
-
-def _generate_pdf_with_weasyprint(html_content: str) -> bytes:
-    """Fallback: Generate PDF using WeasyPrint (less accurate)."""
-    from weasyprint import HTML
-    return HTML(string=html_content).write_pdf()
 
 
 # =============================================================================
