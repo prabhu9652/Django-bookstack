@@ -1,9 +1,13 @@
-# =========================
-# Stage 1: Builder (compile dependencies)
-# =========================
+# =============================================================================
+# Multi-Stage Dockerfile for Django + Playwright PDF Generation
+# Optimized for minimal image size
+# =============================================================================
+
+# =============================================================================
+# Stage 1: Builder - Compile Python wheels
+# =============================================================================
 FROM python:3.12-slim-bookworm AS builder
 
-# Install only build-time dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libjpeg-dev \
@@ -12,38 +16,31 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build
-
-# Copy and build wheels
 COPY requirements.txt .
+
 RUN pip install --upgrade pip && \
     pip wheel --no-cache-dir -r requirements.txt -w /wheels
 
 
-# =========================
-# Stage 2: Playwright (browser installation)
-# =========================
-FROM python:3.12-slim-bookworm AS playwright-stage
+# =============================================================================
+# Stage 2: Playwright - Download Chromium browser
+# =============================================================================
+FROM python:3.12-slim-bookworm AS playwright-builder
 
-# Install playwright and download browser
 RUN pip install --no-cache-dir playwright && \
     playwright install chromium
 
-# Browser is stored in /root/.cache/ms-playwright
 
-
-# =========================
-# Stage 3: Runtime (minimal final image)
-# =========================
+# =============================================================================
+# Stage 3: Runtime - Minimal production image
+# =============================================================================
 FROM python:3.12-slim-bookworm AS runtime
 
-# Install minimal runtime dependencies
-# Playwright install-deps handles Chromium libs automatically
+# Runtime dependencies (minimal)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    # Core runtime libs
     libjpeg62-turbo \
     zlib1g \
     libffi8 \
-    # Fonts for PDF rendering
     fonts-liberation \
     fonts-dejavu-core \
     fontconfig \
@@ -56,34 +53,32 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PLAYWRIGHT_BROWSERS_PATH=/opt/playwright
 
-# Install Python packages from wheels
+# Install Python packages
 COPY --from=builder /wheels /tmp/wheels
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir /tmp/wheels/*.whl && \
     rm -rf /tmp/wheels
 
-# Copy pre-installed Playwright browser
-COPY --from=playwright-stage /root/.cache/ms-playwright /opt/playwright
+# Copy Playwright browser from builder
+COPY --from=playwright-builder /root/.cache/ms-playwright /opt/playwright
 
-# Install Playwright Chromium system dependencies
-# This command auto-detects the distro and installs correct packages
+# Install Chromium system dependencies (auto-detects distro)
 RUN playwright install-deps chromium && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Rebuild font cache
 RUN fc-cache -f -v
 
-# Copy application code
+# Copy application
 COPY . .
-
-# Setup entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Cleanup unnecessary files to reduce size
+# Cleanup to reduce size
 RUN find /app -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true && \
     find /app -type f -name "*.pyc" -delete 2>/dev/null || true && \
-    rm -rf /app/.git /app/venv /app/env /app/.hypothesis 2>/dev/null || true
+    rm -rf /app/.git /app/venv /app/env /app/.hypothesis /app/.vscode /app/.kiro 2>/dev/null || true
 
 EXPOSE 8000
 
