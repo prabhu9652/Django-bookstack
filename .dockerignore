@@ -1,7 +1,56 @@
+# Version control
 .git
+.gitignore
+
+# Python
 __pycache__
 *.pyc
 *.pyo
 *.pyd
+.Python
+venv/
+env/
+.venv/
+*.egg-info/
+.eggs/
+
+# Environment
 .env
-node_modules
+.env.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+.hypothesis/
+.pytest_cache/
+.coverage
+htmlcov/
+test_*.py
+*_test.py
+
+# Build artifacts
+*.log
+*.sqlite3
+*.sqlite3.bak
+*.tar.gz
+
+# Documentation (not needed in container)
+*.md
+!README.md
+
+# Local directories
+node_modules/
+media/uploads/
+staticfiles/
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.docker/
+
+# Kiro
+.kiro/
