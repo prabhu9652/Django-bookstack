@@ -1103,8 +1103,8 @@ function createCoverLetter() {
     return;
   }
   
-  // Redirect to draft editor (NO auto-save to My Documents)
-  window.location.href = `/resume-builder/draft-cover-letter/${templateId}/?role=${role}`;
+  // Redirect to LIVE editor (split-screen with real-time preview)
+  window.location.href = `/resume-builder/live-cover-letter/${templateId}/?role=${role}`;
 }
 </script>
 {% endblock %}

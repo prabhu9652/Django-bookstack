@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/resume_builder/migrations/0008_template_system_redesign.py
+# hypothesis_version: 6.150.0
+
+['Creative', 'Executive', 'Formal', 'Minimal', 'Modern', 'Professional', 'category', 'coverlettertemplate', 'creative', 'display_order', 'executive', 'formal', 'is_ats_safe', 'minimal', 'modern', 'name', 'ordering', 'paired_cover_letters', 'preview_image', 'professional', 'recommended_roles', 'resume_builder', 'resumetemplate', 'tone']

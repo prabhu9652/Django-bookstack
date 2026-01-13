@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/careers/urls.py
+# hypothesis_version: 6.150.0
+
+['admin/applications/', 'admin/jobs/', 'admin/jobs/create/', 'admin_create_job', 'admin_edit_job', 'admin_jobs_dashboard', 'api/apply/', 'application_detail', 'apply_job', 'careers', 'careers_home', 'job/<slug:slug>/', 'job_detail', 'my-applications/', 'my_applications']

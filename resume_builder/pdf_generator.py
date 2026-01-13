@@ -141,6 +141,12 @@ def build_resume_html(resume) -> str:
         body_html = _build_modern_template(resume, primary_color)
     elif template_slug == 'executive':
         body_html = _build_executive_template(resume, primary_color)
+    elif template_slug == 'minimal':
+        body_html = _build_minimal_template(resume, primary_color)
+    elif template_slug == 'creative':
+        body_html = _build_creative_template(resume, primary_color)
+    elif template_slug == 'technical':
+        body_html = _build_technical_template(resume, primary_color)
     else:
         body_html = _build_professional_template(resume, primary_color)
     
@@ -958,6 +964,932 @@ def _get_professional_styles(primary_color: str) -> str:
 
 
 # =============================================================================
+# MINIMAL CLEAN TEMPLATE - Single column, maximum whitespace, subtle accents
+# =============================================================================
+
+def _build_minimal_template(resume, primary_color: str) -> str:
+    """
+    Build Minimal Clean template HTML.
+    
+    Features:
+    - Single column layout
+    - Maximum whitespace
+    - Centered header
+    - Inline skills with bullet separators
+    - Clean typography hierarchy
+    """
+    # Contact line with bullet separators
+    contact_parts = []
+    if resume.email:
+        contact_parts.append(_escape(resume.email))
+    if resume.phone:
+        contact_parts.append(_escape(resume.phone))
+    if resume.location or resume.address:
+        loc = resume.location or (resume.address.split('\n')[0] if resume.address else '')
+        contact_parts.append(_escape(loc))
+    if resume.linkedin:
+        contact_parts.append(_escape(resume.linkedin))
+    if resume.github:
+        contact_parts.append(_escape(resume.github))
+    
+    contact_html = ' <span class="separator">•</span> '.join(contact_parts)
+    
+    # Summary
+    summary_html = ''
+    if resume.summary:
+        summary_html = f'''
+        <section class="section">
+            <p class="summary-text">{_escape(resume.summary)}</p>
+        </section>'''
+    
+    # Experience
+    experience_html = _build_minimal_experience(resume.experience, primary_color)
+    
+    # Education
+    education_html = _build_minimal_education(resume.education, primary_color)
+    
+    # Skills (inline with bullet separators)
+    skills_html = ''
+    if resume.skills:
+        skills_inline = ' <span class="separator">•</span> '.join([_escape(s) for s in resume.skills])
+        skills_html = f'''
+        <section class="section">
+            <h2 class="section-title">Skills</h2>
+            <p class="skills-inline">{skills_inline}</p>
+        </section>'''
+    
+    # Languages (inline)
+    languages_html = ''
+    if resume.languages:
+        langs_inline = ' <span class="separator">•</span> '.join([_escape(l) for l in resume.languages])
+        languages_html = f'''
+        <section class="section">
+            <h2 class="section-title">Languages</h2>
+            <p class="skills-inline">{langs_inline}</p>
+        </section>'''
+    
+    return f'''
+    <header class="header">
+        <h1 class="name">{_escape(resume.full_name)}</h1>
+        <p class="role">{_escape(resume.role_title or '')}</p>
+        <p class="contact">{contact_html}</p>
+    </header>
+    
+    <main class="content">
+        {summary_html}
+        {experience_html}
+        {education_html}
+        {skills_html}
+        {languages_html}
+    </main>'''
+
+
+def _build_minimal_experience(experience: list, primary_color: str) -> str:
+    """Build experience section for Minimal template."""
+    if not experience:
+        return ''
+    
+    entries = ''
+    for exp in experience:
+        role = _escape(exp.get('role', ''))
+        company = _escape(exp.get('company', ''))
+        start = _escape(exp.get('start_date', ''))
+        end = _escape(exp.get('end_date', ''))
+        date_str = f"{start} – {end}" if start else end
+        
+        bullets_html = ''
+        if exp.get('bullets'):
+            items = ''.join([f'<li>{_format_bullet(b)}</li>' for b in exp['bullets']])
+            bullets_html = f'<ul class="entry-bullets">{items}</ul>'
+        
+        entries += f'''
+        <div class="entry">
+            <div class="entry-header">
+                <div class="entry-left">
+                    <span class="entry-title">{role}</span>
+                    <span class="entry-company">{company}</span>
+                </div>
+                <span class="entry-date">{date_str}</span>
+            </div>
+            {bullets_html}
+        </div>'''
+    
+    return f'''
+    <section class="section">
+        <h2 class="section-title">Experience</h2>
+        {entries}
+    </section>'''
+
+
+def _build_minimal_education(education: list, primary_color: str) -> str:
+    """Build education section for Minimal template."""
+    if not education:
+        return ''
+    
+    entries = ''
+    for edu in education:
+        degree = _escape(edu.get('degree', ''))
+        field = _escape(edu.get('field', ''))
+        school = _escape(edu.get('school', ''))
+        year = _escape(edu.get('graduation_date', ''))
+        
+        title = f"{degree} in {field}" if field else degree
+        
+        entries += f'''
+        <div class="entry">
+            <div class="entry-header">
+                <div class="entry-left">
+                    <span class="entry-title">{title}</span>
+                    <span class="entry-company">{school}</span>
+                </div>
+                <span class="entry-date">{year}</span>
+            </div>
+        </div>'''
+    
+    return f'''
+    <section class="section">
+        <h2 class="section-title">Education</h2>
+        {entries}
+    </section>'''
+
+
+def _get_minimal_styles(primary_color: str) -> str:
+    """CSS for Minimal Clean template."""
+    return f'''
+/* Minimal Header - Centered */
+.header {{
+    text-align: center;
+    padding: 40px 50px 30px;
+    border-bottom: 1px solid #e5e7eb;
+}}
+
+.header .name {{
+    font-size: 28pt;
+    font-weight: 300;
+    color: #1a1a1a;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+}}
+
+.header .role {{
+    font-size: 11pt;
+    font-weight: 400;
+    color: {primary_color};
+    margin-bottom: 12px;
+}}
+
+.header .contact {{
+    font-size: 9pt;
+    color: #666;
+    line-height: 1.6;
+}}
+
+.header .separator {{
+    color: #ccc;
+    margin: 0 2px;
+}}
+
+/* Content - Single Column */
+.content {{
+    padding: 30px 50px;
+    max-width: 100%;
+}}
+
+/* Sections */
+.section {{
+    margin-bottom: 28px;
+}}
+
+.section-title {{
+    font-size: 11pt;
+    font-weight: 600;
+    color: #1a1a1a;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid {primary_color};
+}}
+
+.summary-text {{
+    font-size: 10pt;
+    color: #444;
+    line-height: 1.7;
+    text-align: justify;
+}}
+
+.skills-inline {{
+    font-size: 10pt;
+    color: #444;
+    line-height: 1.8;
+}}
+
+.skills-inline .separator {{
+    color: #ccc;
+    margin: 0 4px;
+}}
+
+/* Entries */
+.entry {{
+    margin-bottom: 18px;
+}}
+
+.entry-header {{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+}}
+
+.entry-left {{
+    display: flex;
+    flex-direction: column;
+}}
+
+.entry-title {{
+    font-weight: 600;
+    font-size: 10.5pt;
+    color: #1a1a1a;
+}}
+
+.entry-company {{
+    font-size: 9.5pt;
+    color: {primary_color};
+    margin-top: 2px;
+}}
+
+.entry-date {{
+    font-size: 9pt;
+    color: #888;
+    white-space: nowrap;
+}}
+
+.entry-bullets {{
+    margin: 8px 0 0 0;
+    padding-left: 18px;
+    list-style-type: disc;
+}}
+
+.entry-bullets li {{
+    font-size: 9.5pt;
+    color: #444;
+    margin-bottom: 4px;
+    line-height: 1.5;
+}}
+
+.entry-bullets li strong {{
+    font-weight: 600;
+    color: #1a1a1a;
+}}
+'''
+
+
+# =============================================================================
+# CREATIVE BOLD TEMPLATE - Asymmetric two-column, bold name block, visual skills
+# =============================================================================
+
+def _build_creative_template(resume, primary_color: str) -> str:
+    """
+    Build Creative Bold template HTML.
+    
+    Features:
+    - Asymmetric two-column layout (narrow left sidebar, wide right main)
+    - Bold name block with color background
+    - Skills with visual dot indicators
+    - Modern, eye-catching design for creative roles
+    """
+    # Contact info for sidebar
+    contact_items = []
+    if resume.email:
+        contact_items.append(f'<div class="contact-item">{_escape(resume.email)}</div>')
+    if resume.phone:
+        contact_items.append(f'<div class="contact-item">{_escape(resume.phone)}</div>')
+    if resume.location or resume.address:
+        loc = resume.location or (resume.address.split('\n')[0] if resume.address else '')
+        contact_items.append(f'<div class="contact-item">{_escape(loc)}</div>')
+    if resume.linkedin:
+        contact_items.append(f'<div class="contact-item">{_escape(resume.linkedin)}</div>')
+    if resume.github:
+        contact_items.append(f'<div class="contact-item">{_escape(resume.github)}</div>')
+    
+    # Skills with dot indicators
+    skills_html = ''
+    if resume.skills:
+        items = ''.join([f'<li><span class="skill-dot"></span>{_escape(s)}</li>' for s in resume.skills])
+        skills_html = f'''
+        <div class="sidebar-section">
+            <h3 class="sidebar-title">SKILLS</h3>
+            <ul class="creative-skills">{items}</ul>
+        </div>'''
+    
+    # Languages
+    languages_html = ''
+    if resume.languages:
+        items = ''.join([f'<li><span class="skill-dot"></span>{_escape(l)}</li>' for l in resume.languages])
+        languages_html = f'''
+        <div class="sidebar-section">
+            <h3 class="sidebar-title">LANGUAGES</h3>
+            <ul class="creative-skills">{items}</ul>
+        </div>'''
+    
+    # Summary
+    summary_html = ''
+    if resume.summary:
+        summary_html = f'''
+        <section class="section">
+            <h2 class="section-title">About Me</h2>
+            <p class="section-text">{_escape(resume.summary)}</p>
+        </section>'''
+    
+    # Experience
+    experience_html = _build_creative_experience(resume.experience, primary_color)
+    
+    # Education
+    education_html = _build_creative_education(resume.education, primary_color)
+    
+    return f'''
+    <header class="header">
+        <div class="name-block">
+            <h1 class="name">{_escape(resume.full_name)}</h1>
+            <p class="role">{_escape(resume.role_title or '')}</p>
+        </div>
+    </header>
+    
+    <div class="body-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">CONTACT</h3>
+                {''.join(contact_items)}
+            </div>
+            {skills_html}
+            {languages_html}
+        </aside>
+        
+        <main class="main-content">
+            {summary_html}
+            {experience_html}
+            {education_html}
+        </main>
+    </div>'''
+
+
+def _build_creative_experience(experience: list, primary_color: str) -> str:
+    """Build experience section for Creative template."""
+    if not experience:
+        return ''
+    
+    entries = ''
+    for exp in experience:
+        role = _escape(exp.get('role', ''))
+        company = _escape(exp.get('company', ''))
+        start = _escape(exp.get('start_date', ''))
+        end = _escape(exp.get('end_date', ''))
+        date_str = f"{start} – {end}" if start else end
+        
+        bullets_html = ''
+        if exp.get('bullets'):
+            items = ''.join([f'<li>{_format_bullet(b)}</li>' for b in exp['bullets']])
+            bullets_html = f'<ul class="entry-bullets">{items}</ul>'
+        
+        entries += f'''
+        <div class="entry">
+            <div class="entry-header">
+                <span class="entry-title">{role}</span>
+                <span class="entry-date">{date_str}</span>
+            </div>
+            <div class="entry-subtitle">{company}</div>
+            {bullets_html}
+        </div>'''
+    
+    return f'''
+    <section class="section">
+        <h2 class="section-title">Experience</h2>
+        {entries}
+    </section>'''
+
+
+def _build_creative_education(education: list, primary_color: str) -> str:
+    """Build education section for Creative template."""
+    if not education:
+        return ''
+    
+    entries = ''
+    for edu in education:
+        degree = _escape(edu.get('degree', ''))
+        field = _escape(edu.get('field', ''))
+        school = _escape(edu.get('school', ''))
+        year = _escape(edu.get('graduation_date', ''))
+        
+        title = f"{degree} in {field}" if field else degree
+        
+        entries += f'''
+        <div class="entry">
+            <div class="entry-header">
+                <span class="entry-title">{title}</span>
+                <span class="entry-date">{year}</span>
+            </div>
+            <div class="entry-subtitle">{school}</div>
+        </div>'''
+    
+    return f'''
+    <section class="section">
+        <h2 class="section-title">Education</h2>
+        {entries}
+    </section>'''
+
+
+def _get_creative_styles(primary_color: str) -> str:
+    """CSS for Creative Bold template."""
+    return f'''
+/* Creative Header - Bold name block */
+.header {{
+    background: #fff;
+    padding: 0;
+}}
+
+.name-block {{
+    background: {primary_color};
+    color: #fff;
+    padding: 35px 40px;
+    margin: 20px 20px 0 20px;
+}}
+
+.header .name {{
+    font-size: 32pt;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}}
+
+.header .role {{
+    font-size: 13pt;
+    font-weight: 400;
+    color: rgba(255,255,255,0.9);
+}}
+
+/* Body - Asymmetric two-column */
+.body-container {{
+    display: flex;
+    min-height: calc(297mm - 140px);
+    padding: 0 20px 20px 20px;
+}}
+
+.sidebar {{
+    width: 160px;
+    background: #f5f5f5;
+    padding: 25px 18px;
+    flex-shrink: 0;
+}}
+
+.main-content {{
+    flex: 1;
+    padding: 25px 28px;
+}}
+
+/* Sidebar */
+.sidebar-section {{
+    margin-bottom: 22px;
+}}
+
+.sidebar-title {{
+    font-size: 9pt;
+    font-weight: 700;
+    color: {primary_color};
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid {primary_color};
+}}
+
+.contact-item {{
+    font-size: 8.5pt;
+    color: #333;
+    margin-bottom: 8px;
+    word-break: break-all;
+    line-height: 1.4;
+}}
+
+.creative-skills {{
+    list-style: none;
+}}
+
+.creative-skills li {{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 9pt;
+    color: #333;
+    margin-bottom: 7px;
+}}
+
+.skill-dot {{
+    width: 6px;
+    height: 6px;
+    background: {primary_color};
+    border-radius: 50%;
+    flex-shrink: 0;
+}}
+
+/* Sections */
+.section {{
+    margin-bottom: 22px;
+}}
+
+.section-title {{
+    font-size: 12pt;
+    font-weight: 700;
+    color: {primary_color};
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #e5e7eb;
+}}
+
+.section-text {{
+    font-size: 10pt;
+    color: #444;
+    line-height: 1.6;
+    text-align: justify;
+}}
+
+/* Entries */
+.entry {{
+    margin-bottom: 16px;
+}}
+
+.entry-header {{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2px;
+}}
+
+.entry-title {{
+    font-weight: 700;
+    font-size: 10.5pt;
+    color: #1a1a1a;
+}}
+
+.entry-date {{
+    font-size: 9pt;
+    color: #666;
+    white-space: nowrap;
+}}
+
+.entry-subtitle {{
+    font-size: 9.5pt;
+    color: {primary_color};
+    margin-bottom: 8px;
+}}
+
+.entry-bullets {{
+    margin: 6px 0 0 0;
+    padding-left: 16px;
+    list-style-type: disc;
+}}
+
+.entry-bullets li {{
+    font-size: 9.5pt;
+    color: #444;
+    margin-bottom: 4px;
+    line-height: 1.5;
+}}
+
+.entry-bullets li strong {{
+    font-weight: 600;
+    color: #1a1a1a;
+}}
+'''
+
+
+# =============================================================================
+# TECHNICAL TEMPLATE - Skills sidebar, projects emphasis, GitHub/LinkedIn header
+# =============================================================================
+
+def _build_technical_template(resume, primary_color: str) -> str:
+    """
+    Build Technical template HTML.
+    
+    Features:
+    - Skills prominently displayed in sidebar
+    - Clean, scannable layout
+    - GitHub/LinkedIn in header contact area
+    - Monospace accents for technical feel
+    - Optimized for software engineers, DevOps, SRE roles
+    """
+    # Header contact - include GitHub and LinkedIn prominently
+    contact_parts = []
+    if resume.email:
+        contact_parts.append(f'<span class="contact-item">✉ {_escape(resume.email)}</span>')
+    if resume.phone:
+        contact_parts.append(f'<span class="contact-item">✆ {_escape(resume.phone)}</span>')
+    if resume.location or resume.address:
+        loc = resume.location or (resume.address.split('\n')[0] if resume.address else '')
+        contact_parts.append(f'<span class="contact-item">⌂ {_escape(loc)}</span>')
+    if resume.github:
+        contact_parts.append(f'<span class="contact-item github">⌘ {_escape(resume.github)}</span>')
+    if resume.linkedin:
+        contact_parts.append(f'<span class="contact-item linkedin">in {_escape(resume.linkedin)}</span>')
+    
+    # Skills in sidebar with categories
+    skills_html = ''
+    if resume.skills:
+        items = ''.join([f'<li>{_escape(s)}</li>' for s in resume.skills])
+        skills_html = f'''
+        <div class="sidebar-section">
+            <h3 class="sidebar-title">TECHNICAL SKILLS</h3>
+            <ul class="tech-skills">{items}</ul>
+        </div>'''
+    
+    # Languages
+    languages_html = ''
+    if resume.languages:
+        items = ''.join([f'<li>{_escape(l)}</li>' for l in resume.languages])
+        languages_html = f'''
+        <div class="sidebar-section">
+            <h3 class="sidebar-title">LANGUAGES</h3>
+            <ul class="tech-skills">{items}</ul>
+        </div>'''
+    
+    # Summary
+    summary_html = ''
+    if resume.summary:
+        summary_html = f'''
+        <section class="section">
+            <h2 class="section-title">Summary</h2>
+            <p class="section-text">{_escape(resume.summary)}</p>
+        </section>'''
+    
+    # Experience
+    experience_html = _build_technical_experience(resume.experience, primary_color)
+    
+    # Education
+    education_html = _build_technical_education(resume.education, primary_color)
+    
+    return f'''
+    <header class="header">
+        <div class="header-main">
+            <h1 class="name">{_escape(resume.full_name)}</h1>
+            <p class="role">{_escape(resume.role_title or '')}</p>
+        </div>
+        <div class="header-contact">{''.join(contact_parts)}</div>
+    </header>
+    
+    <div class="body-container">
+        <aside class="sidebar">
+            {skills_html}
+            {languages_html}
+        </aside>
+        
+        <main class="main-content">
+            {summary_html}
+            {experience_html}
+            {education_html}
+        </main>
+    </div>'''
+
+
+def _build_technical_experience(experience: list, primary_color: str) -> str:
+    """Build experience section for Technical template."""
+    if not experience:
+        return ''
+    
+    entries = ''
+    for exp in experience:
+        role = _escape(exp.get('role', ''))
+        company = _escape(exp.get('company', ''))
+        start = _escape(exp.get('start_date', ''))
+        end = _escape(exp.get('end_date', ''))
+        date_str = f"{start} – {end}" if start else end
+        
+        bullets_html = ''
+        if exp.get('bullets'):
+            items = ''.join([f'<li>{_format_bullet(b)}</li>' for b in exp['bullets']])
+            bullets_html = f'<ul class="entry-bullets">{items}</ul>'
+        
+        entries += f'''
+        <div class="entry">
+            <div class="entry-header">
+                <div class="entry-left">
+                    <span class="entry-title">{role}</span>
+                    <span class="entry-company">{company}</span>
+                </div>
+                <span class="entry-date">{date_str}</span>
+            </div>
+            {bullets_html}
+        </div>'''
+    
+    return f'''
+    <section class="section">
+        <h2 class="section-title">Experience</h2>
+        {entries}
+    </section>'''
+
+
+def _build_technical_education(education: list, primary_color: str) -> str:
+    """Build education section for Technical template."""
+    if not education:
+        return ''
+    
+    entries = ''
+    for edu in education:
+        degree = _escape(edu.get('degree', ''))
+        field = _escape(edu.get('field', ''))
+        school = _escape(edu.get('school', ''))
+        year = _escape(edu.get('graduation_date', ''))
+        
+        title = f"{degree} in {field}" if field else degree
+        
+        entries += f'''
+        <div class="entry">
+            <div class="entry-header">
+                <div class="entry-left">
+                    <span class="entry-title">{title}</span>
+                    <span class="entry-company">{school}</span>
+                </div>
+                <span class="entry-date">{year}</span>
+            </div>
+        </div>'''
+    
+    return f'''
+    <section class="section">
+        <h2 class="section-title">Education</h2>
+        {entries}
+    </section>'''
+
+
+def _get_technical_styles(primary_color: str) -> str:
+    """CSS for Technical template."""
+    return f'''
+/* Technical Header - Clean with prominent contact */
+.header {{
+    background: #1a1a1a;
+    color: #fff;
+    padding: 28px 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}}
+
+.header-main {{
+    flex: 1;
+}}
+
+.header .name {{
+    font-size: 26pt;
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}}
+
+.header .role {{
+    font-size: 12pt;
+    font-weight: 400;
+    color: {primary_color};
+}}
+
+.header-contact {{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    font-size: 9pt;
+    color: rgba(255,255,255,0.85);
+}}
+
+.header-contact .contact-item {{
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}}
+
+.header-contact .github,
+.header-contact .linkedin {{
+    color: {primary_color};
+}}
+
+/* Body - Two column layout */
+.body-container {{
+    display: flex;
+    min-height: calc(297mm - 100px);
+}}
+
+.sidebar {{
+    width: 175px;
+    background: #f8f9fa;
+    padding: 28px 18px;
+    border-right: 3px solid {primary_color};
+}}
+
+.main-content {{
+    flex: 1;
+    padding: 28px 30px;
+}}
+
+/* Sidebar */
+.sidebar-section {{
+    margin-bottom: 24px;
+}}
+
+.sidebar-title {{
+    font-size: 9pt;
+    font-weight: 700;
+    color: #1a1a1a;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid {primary_color};
+}}
+
+.tech-skills {{
+    list-style: none;
+}}
+
+.tech-skills li {{
+    font-size: 9pt;
+    color: #333;
+    padding: 5px 8px;
+    margin-bottom: 4px;
+    background: #fff;
+    border-left: 2px solid {primary_color};
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}}
+
+/* Sections */
+.section {{
+    margin-bottom: 24px;
+}}
+
+.section-title {{
+    font-size: 12pt;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid {primary_color};
+}}
+
+.section-text {{
+    font-size: 10pt;
+    color: #444;
+    line-height: 1.6;
+    text-align: justify;
+}}
+
+/* Entries */
+.entry {{
+    margin-bottom: 18px;
+}}
+
+.entry-header {{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+}}
+
+.entry-left {{
+    display: flex;
+    flex-direction: column;
+}}
+
+.entry-title {{
+    font-weight: 600;
+    font-size: 10.5pt;
+    color: #1a1a1a;
+}}
+
+.entry-company {{
+    font-size: 9.5pt;
+    color: {primary_color};
+    margin-top: 2px;
+}}
+
+.entry-date {{
+    font-size: 9pt;
+    color: #666;
+    white-space: nowrap;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}}
+
+.entry-bullets {{
+    margin: 8px 0 0 0;
+    padding-left: 18px;
+    list-style-type: disc;
+}}
+
+.entry-bullets li {{
+    font-size: 9.5pt;
+    color: #444;
+    margin-bottom: 5px;
+    line-height: 1.5;
+}}
+
+.entry-bullets li strong {{
+    font-weight: 600;
+    color: #1a1a1a;
+}}
+'''
+
+
+# =============================================================================
 # HELPER FUNCTIONS
 # =============================================================================
 
@@ -967,6 +1899,12 @@ def _get_template_styles(template_slug: str, primary_color: str) -> str:
         return _get_modern_styles(primary_color)
     elif template_slug == 'executive':
         return _get_executive_styles(primary_color)
+    elif template_slug == 'minimal':
+        return _get_minimal_styles(primary_color)
+    elif template_slug == 'creative':
+        return _get_creative_styles(primary_color)
+    elif template_slug == 'technical':
+        return _get_technical_styles(primary_color)
     else:
         return _get_professional_styles(primary_color)
 

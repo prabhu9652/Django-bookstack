@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Cover Letter Editor - {{ template.name }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0f1419;
+            --bg-surface: #1a1f26;
+            --bg-elevated: #242b33;
+            --text-primary: #e7e9ea;
+            --text-secondary: #8b98a5;
+            --text-muted: #6e7681;
+            --border-default: #2f3336;
+            --primary: #4a9eff;
+            --success: #22c55e;
+            --error: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-default);
+            height: 60px;
+        }
+        .top-bar-left { display: flex; align-items: center; gap: 1rem; }
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+        .back-btn:hover { background: var(--bg-elevated); color: var(--text-primary); }
+        .doc-title input {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 0.375rem 0.5rem;
+            border-radius: 6px;
+            min-width: 200px;
+        }
+        .doc-title input:focus { outline: none; border-color: var(--primary); background: var(--bg-surface); }
+        .save-status { display: flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; color: var(--text-muted); }
+        .save-status.saved { color: var(--success); }
+        .top-bar-right { display: flex; align-items: center; gap: 0.75rem; }
+        .template-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        .template-btn:hover { border-color: var(--primary); color: var(--text-primary); }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-secondary { background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border-default); }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn:hover { opacity: 0.9; }
+        .split-container { display: flex; height: calc(100vh - 60px); overflow: hidden; }
+        .editor-panel {
+            width: 420px;
+            min-width: 380px;
+            max-width: 500px;
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border-default);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .editor-scroll { flex: 1; overflow-y: auto; padding: 1.25rem; }
+        .preview-panel { flex: 1; background: #374151; display: flex; flex-direction: column; overflow: hidden; }
+        .preview-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-default);
+        }
+        .preview-label { font-size: 0.8125rem; font-weight: 600; color: var(--text-secondary); }
+        .zoom-controls { display: flex; align-items: center; gap: 0.5rem; }
+        .zoom-btn {
+            padding: 0.375rem 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .zoom-level { font-size: 0.75rem; color: var(--text-muted); min-width: 40px; text-align: center; }
+        .preview-scroll { flex: 1; overflow: auto; padding: 2rem; display: flex; justify-content: center; align-items: flex-start; }
+        .preview-paper { width: 210mm; min-height: 297mm; background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.3); transform-origin: top center; }
+        .preview-paper iframe { width: 100%; height: 100%; min-height: 297mm; border: none; display: block; }
+        .preview-loading { position: absolute; inset: 0; background: rgba(55, 65, 81, 0.9); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; z-index: 10; }
+        .preview-loading.hidden { display: none; }
+        .preview-loading i { font-size: 2rem; color: var(--primary); animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .form-section { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: 12px; margin-bottom: 1rem; overflow: hidden; }
+        .section-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; background: var(--bg-elevated); cursor: pointer; user-select: none; }
+        .section-header h3 { display: flex; align-items: center; gap: 0.75rem; font-size: 0.9375rem; font-weight: 600; color: var(--text-primary); margin: 0; }
+        .section-header h3 i { color: var(--primary); }
+        .section-toggle { color: var(--text-muted); transition: transform 0.2s; }
+        .section-header.collapsed .section-toggle { transform: rotate(-90deg); }
+        .section-content { padding: 1.25rem; border-top: 1px solid var(--border-default); }
+        .section-content.collapsed { display: none; }
+        .field-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem; }
+        .field-row.single { grid-template-columns: 1fr; }
+        .field-row:last-child { margin-bottom: 0; }
+        .field-group { display: flex; flex-direction: column; gap: 0.375rem; }
+        .field-group label { font-size: 0.8125rem; font-weight: 500; color: var(--text-secondary); }
+        .field-group input, .field-group textarea { padding: 0.625rem 0.875rem; font-size: 0.875rem; color: var(--text-primary); background: var(--bg-primary); border: 1px solid var(--border-default); border-radius: 8px; }
+        .field-group input:focus, .field-group textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1); }
+        .field-group textarea { resize: vertical; min-height: 80px; font-family: inherit; }
+        .color-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .color-swatch { width: 32px; height: 32px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; }
+        .color-swatch.active { border-color: var(--text-primary); }
+        .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal.hidden { display: none; }
+        .modal-content { background: var(--bg-surface); border-radius: 16px; padding: 1.5rem; max-width: 600px; width: 90%; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-header h3 { font-size: 1.125rem; font-weight: 600; margin: 0; }
+        .close-btn { padding: 0.5rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer; }
+        .template-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .template-card { background: var(--bg-primary); border: 2px solid var(--border-default); border-radius: 12px; padding: 1rem; cursor: pointer; text-align: center; }
+        .template-card:hover { border-color: var(--primary); }
+        .template-card.active { border-color: var(--primary); background: rgba(74, 158, 255, 0.05); }
+        .template-icon { height: 60px; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 0.75rem; }
+        .template-card h4 { font-size: 0.875rem; font-weight: 600; margin: 0 0 0.25rem; }
+        .template-card p { font-size: 0.75rem; color: var(--text-muted); margin: 0; }
+        .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: var(--bg-surface); border: 1px solid var(--success); border-radius: 10px; padding: 0.75rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); z-index: 1000; }
+        .toast.hidden { display: none; }
+        .toast i { color: var(--success); }
+        .save-modal-content { max-width: 440px; }
+        .save-modal-content h3 { font-size: 1.25rem; font-weight: 600; margin: 0 0 0.5rem; text-align: center; }
+        .save-modal-content > p { font-size: 0.875rem; color: var(--text-secondary); margin: 0 0 1.5rem; text-align: center; }
+        .save-input-group { margin-bottom: 1.5rem; }
+        .save-input-group label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .save-input-group input { width: 100%; padding: 0.75rem 1rem; font-size: 1rem; border: 2px solid var(--border-default); border-radius: 8px; background: var(--bg-primary); color: var(--text-primary); }
+        .save-input-group input:focus { outline: none; border-color: var(--primary); }
+        .save-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
+        .btn-ghost { background: transparent; color: var(--text-secondary); border: 1px solid var(--border-default); }
+        @media (max-width: 1024px) { .split-container { flex-direction: column; } .editor-panel { width: 100%; max-width: none; height: 50vh; } .preview-panel { height: 50vh; } .template-grid { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+</head>
+<body>
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <a href="{% url 'resume_builder:cover_letter_templates' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <div class="doc-title">
+                <input type="text" id="documentTitle" value="My Cover Letter">
+                <span class="save-status" id="saveStatus"><i class="fas fa-circle"></i> Draft</span>
+            </div>
+        </div>
+        <div class="top-bar-right">
+            <button type="button" class="template-btn" onclick="openTemplateModal()">
+                <i class="fas fa-palette"></i>
+                <span id="currentTemplateName">{{ template.name }}</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="saveToMyDocuments()">
+                <i class="fas fa-save"></i> Save
+            </button>
+            <button type="button" class="btn btn-primary" onclick="downloadPDF()">
+                <i class="fas fa-download"></i> Download
+            </button>
+        </div>
+    </div>
+
+    <!-- SPLIT VIEW -->
+    <div class="split-container">
+        <!-- LEFT: EDITOR PANEL -->
+        <div class="editor-panel">
+            <div class="editor-scroll">
+                <form id="coverLetterForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="templateId" value="{{ template.id }}">
+                    <input type="hidden" id="templateSlug" value="{{ template.slug }}">
+
+                    <!-- Personal Details -->
+                    <div class="form-section">
+                        <div class="section-header" onclick="toggleSection(this)">
+                            <h3><i class="fas fa-user"></i> Your Details</h3>
+                            <i class="fas fa-chevron-down section-toggle"></i>
+                        </div>
+                        <div class="section-content">
+                            <div class="field-row">
+                                <div class="field-group">
+                                    <label>Full Name</label>
+                                    <input type="text" id="fullName">
+                                </div>
+                                <div class="field-group">
+                                    <label>Email</label>
+                                    <input type="email" id="email">
+                                </div>
+                            </div>
+                            <div class="field-row">
+                                <div class="field-group">
+                                    <label>Phone</label>
+                                    <input type="tel" id="phone">
+                                </div>
+                                <div class="field-group">
+                                    <label>LinkedIn</label>
+                                    <input type="text" id="linkedin">
+                                </div>
+                            </div>
+                            <div class="field-row single">
+                                <div class="field-group">
+                                    <label>Address</label>
+                                    <input type="text" id="address">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Company Details -->
+                    <div class="form-section">
+                        <div class="section-header" onclick="toggleSection(this)">
+                            <h3><i class="fas fa-building"></i> Company Details</h3>
+                            <i class="fas fa-chevron-down section-toggle"></i>
+                        </div>
+                        <div class="section-content">
+                            <div class="field-row">
+                                <div class="field-group">
+                                    <label>Company Name</label>
+                                    <input type="text" id="companyName">
+                                </div>
+                                <div class="field-group">
+                                    <label>Hiring Manager</label>
+                                    <input type="text" id="hiringManager" placeholder="e.g., Mr. John Smith">
+                                </div>
+                            </div>
+                            <div class="field-row single">
+                                <div class="field-group">
+                                    <label>Company Address</label>
+                                    <input type="text" id="companyAddress">
+                                </div>
+                            </div>
+                            <div class="field-row single">
+                                <div class="field-group">
+                                    <label>Position Title</label>
+                                    <input type="text" id="positionTitle" placeholder="e.g., Senior Software Engineer">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Theme -->
+                    <div class="form-section">
+                        <div class="section-header" onclick="toggleSection(this)">
+                            <h3><i class="fas fa-palette"></i> Theme</h3>
+                            <i class="fas fa-chevron-down section-toggle"></i>
+                        </div>
+                        <div class="section-content">
+                            <div class="field-group">
+                                <label>Color Theme</label>
+                                <div class="color-row">
+                                    <div class="color-swatch active" style="background:#4a9d9a" data-color="#4a9d9a" onclick="selectColor(this)"></div>
+                                    <div class="color-swatch" style="background:#1e3a5f" data-color="#1e3a5f" onclick="selectColor(this)"></div>
+                                    <div class="color-swatch" style="background:#2d5a3d" data-color="#2d5a3d" onclick="selectColor(this)"></div>
+                                    <div class="color-swatch" style="background:#722f37" data-color="#722f37" onclick="selectColor(this)"></div>
+                                    <div class="color-swatch" style="background:#475569" data-color="#475569" onclick="selectColor(this)"></div>
+                                    <div class="color-swatch" style="background:#5b21b6" data-color="#5b21b6" onclick="selectColor(this)"></div>
+                                    <input type="color" id="customColor" value="#4a9d9a" style="width:32px;height:32px;border:none;border-radius:8px;cursor:pointer" onchange="selectCustomColor(this)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Letter Content -->
+                    <div class="form-section">
+                        <div class="section-header" onclick="toggleSection(this)">
+                            <h3><i class="fas fa-file-alt"></i> Letter Content</h3>
+                            <i class="fas fa-chevron-down section-toggle"></i>
+                        </div>
+                        <div class="section-content">
+                            <div class="field-group" style="margin-bottom: 1rem;">
+                                <label>Opening Paragraph</label>
+                                <textarea id="openingParagraph" rows="4" placeholder="Introduce yourself and state the position you're applying for..."></textarea>
+                            </div>
+                            <div class="field-group" style="margin-bottom: 1rem;">
+                                <label>Body Paragraph</label>
+                                <textarea id="bodyParagraph" rows="8" placeholder="Highlight your relevant experience, skills, and achievements..."></textarea>
+                            </div>
+                            <div class="field-group">
+                                <label>Closing Paragraph</label>
+                                <textarea id="closingParagraph" rows="4" placeholder="Express enthusiasm and include a call to action..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- RIGHT: PREVIEW PANEL -->
+        <div class="preview-panel">
+            <div class="preview-toolbar">
+                <div class="preview-label"><i class="fas fa-eye"></i> Live Preview</div>
+                <div class="zoom-controls">
+                    <button class="zoom-btn" onclick="zoomOut()"><i class="fas fa-minus"></i></button>
+                    <span class="zoom-level" id="zoomLevel">100%</span>
+                    <button class="zoom-btn" onclick="zoomIn()"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            <div class="preview-scroll">
+                <div class="preview-paper" id="previewPaper">
+                    <iframe id="previewFrame"></iframe>
+                </div>
+            </div>
+            <div class="preview-loading hidden" id="previewLoading">
+                <i class="fas fa-spinner"></i>
+                <span style="color: var(--text-primary);">Updating...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEMPLATE MODAL -->
+    <div class="modal hidden" id="templateModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Choose Template</h3>
+                <button class="close-btn" onclick="closeTemplateModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="template-grid">
+                <div class="template-card active" data-template="classic" data-id="1" onclick="selectTemplate(this)">
+                    <div class="template-icon">📜</div>
+                    <h4>Classic</h4>
+                    <p>Traditional</p>
+                </div>
+                <div class="template-card" data-template="modern" data-id="2" onclick="selectTemplate(this)">
+                    <div class="template-icon">📋</div>
+                    <h4>Modern</h4>
+                    <p>Clean minimal</p>
+                </div>
+                <div class="template-card" data-template="creative" data-id="3" onclick="selectTemplate(this)">
+                    <div class="template-icon">🎨</div>
+                    <h4>Creative</h4>
+                    <p>Colorful</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SAVE MODAL -->
+    <div class="modal hidden" id="saveModal">
+        <div class="modal-content save-modal-content">
+            <h3>Save to My Documents</h3>
+            <p>Give your cover letter a name.</p>
+            <div class="save-input-group">
+                <label>Document Name</label>
+                <input type="text" id="saveDocumentName" placeholder="e.g., Google Application Cover Letter">
+            </div>
+            <div class="save-actions">
+                <button class="btn btn-ghost" onclick="closeSaveModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmSave()"><i class="fas fa-save"></i> Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast hidden" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Saved!</span>
+    </div>
+    <script>
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const draftData = {{ draft_data|safe }};
+        let currentZoom = 1;
+        let savedCoverLetterId = null;
+        let previewDebounceTimer = null;
+        let currentColor = '#4a9d9a';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            populateForm(draftData);
+            setupLivePreview();
+            updatePreview();
+        });
+
+        function populateForm(d) {
+            document.getElementById('fullName').value = d.full_name || '';
+            document.getElementById('email').value = d.email || '';
+            document.getElementById('phone').value = d.phone || '';
+            document.getElementById('address').value = d.address || d.location || '';
+            document.getElementById('linkedin').value = d.linkedin || '';
+            document.getElementById('companyName').value = d.company_name || '';
+            document.getElementById('companyAddress').value = d.company_address || '';
+            document.getElementById('hiringManager').value = d.hiring_manager || '';
+            document.getElementById('positionTitle').value = d.position_title || '';
+            document.getElementById('openingParagraph').value = d.opening_paragraph || '';
+            document.getElementById('bodyParagraph').value = d.body_paragraph || '';
+            document.getElementById('closingParagraph').value = d.closing_paragraph || '';
+            
+            if (d.primary_color) {
+                currentColor = d.primary_color;
+                document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                const match = document.querySelector('.color-swatch[data-color="' + d.primary_color + '"]');
+                if (match) match.classList.add('active');
+            }
+        }
+
+        function setupLivePreview() {
+            document.getElementById('coverLetterForm').addEventListener('input', () => {
+                clearTimeout(previewDebounceTimer);
+                previewDebounceTimer = setTimeout(updatePreview, 300);
+            });
+        }
+
+        function collectFormData() {
+            return {
+                template_id: parseInt(document.getElementById('templateId').value),
+                template_slug: document.getElementById('templateSlug').value,
+                title: document.getElementById('documentTitle').value || 'My Cover Letter',
+                full_name: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                location: document.getElementById('address').value,
+                linkedin: document.getElementById('linkedin').value,
+                company_name: document.getElementById('companyName').value,
+                company_address: document.getElementById('companyAddress').value,
+                hiring_manager: document.getElementById('hiringManager').value,
+                position_title: document.getElementById('positionTitle').value,
+                opening_paragraph: document.getElementById('openingParagraph').value,
+                body_paragraph: document.getElementById('bodyParagraph').value,
+                closing_paragraph: document.getElementById('closingParagraph').value,
+                primary_color: currentColor
+            };
+        }
+
+        async function updatePreview() {
+            const loading = document.getElementById('previewLoading');
+            loading.classList.remove('hidden');
+            
+            try {
+                const data = collectFormData();
+                const response = await fetch('/resume-builder/api/preview/cover-letter/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('previewFrame').srcdoc = result.html;
+                }
+            } catch (error) {
+                console.error('Preview error:', error);
+            } finally {
+                loading.classList.add('hidden');
+            }
+        }
+
+        function toggleSection(header) {
+            header.classList.toggle('collapsed');
+            header.nextElementSibling.classList.toggle('collapsed');
+        }
+
+        function selectColor(el) {
+            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+            el.classList.add('active');
+            currentColor = el.dataset.color;
+            updatePreview();
+        }
+
+        function selectCustomColor(input) {
+            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+            currentColor = input.value;
+            updatePreview();
+        }
+
+        function zoomIn() { if (currentZoom < 1.5) { currentZoom += 0.1; applyZoom(); } }
+        function zoomOut() { if (currentZoom > 0.5) { currentZoom -= 0.1; applyZoom(); } }
+        function applyZoom() {
+            document.getElementById('previewPaper').style.transform = 'scale(' + currentZoom + ')';
+            document.getElementById('zoomLevel').textContent = Math.round(currentZoom * 100) + '%';
+        }
+
+        function openTemplateModal() { document.getElementById('templateModal').classList.remove('hidden'); }
+        function closeTemplateModal() { document.getElementById('templateModal').classList.add('hidden'); }
+
+        function selectTemplate(card) {
+            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            document.getElementById('templateSlug').value = card.dataset.template;
+            document.getElementById('templateId').value = card.dataset.id;
+            document.getElementById('currentTemplateName').textContent = card.querySelector('h4').textContent;
+            closeTemplateModal();
+            updatePreview();
+        }
+
+        function saveToMyDocuments() {
+            if (savedCoverLetterId) { performSave(); return; }
+            const posTitle = document.getElementById('positionTitle').value;
+            document.getElementById('saveDocumentName').value = posTitle ? posTitle + ' Cover Letter' : 'My Cover Letter';
+            document.getElementById('saveModal').classList.remove('hidden');
+        }
+
+        function closeSaveModal() { document.getElementById('saveModal').classList.add('hidden'); }
+
+        async function confirmSave() {
+            const name = document.getElementById('saveDocumentName').value.trim();
+            if (!name) return;
+            document.getElementById('documentTitle').value = name;
+            closeSaveModal();
+            await performSave(name);
+        }
+
+        async function performSave(documentName) {
+            const status = document.getElementById('saveStatus');
+            status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
+            try {
+                const data = collectFormData();
+                if (documentName) data.title = documentName;
+                
+                const url = savedCoverLetterId 
+                    ? '/resume-builder/api/save-cover-letter/' + savedCoverLetterId + '/'
+                    : '/resume-builder/api/save-draft-cover-letter/';
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    if (!savedCoverLetterId && result.cover_letter_id) {
+                        savedCoverLetterId = result.cover_letter_id;
+                        history.replaceState(null, '', result.redirect_url);
+                    }
+                    status.innerHTML = '<i class="fas fa-check-circle"></i> Saved';
+                    status.className = 'save-status saved';
+                    showToast('Saved to My Documents!');
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                status.innerHTML = '<i class="fas fa-circle"></i> Draft';
+                status.className = 'save-status';
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function downloadPDF() {
+            showToast('Generating PDF...');
+            if (!savedCoverLetterId) {
+                const name = document.getElementById('documentTitle').value || 'My Cover Letter';
+                await performSave(name);
+            }
+            if (savedCoverLetterId) {
+                window.location.href = '/resume-builder/download-cover-letter/' + savedCoverLetterId + '/';
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+    </script>
+</body>
+</html>

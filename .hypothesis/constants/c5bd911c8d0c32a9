@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/resume_builder/migrations/0011_add_technical_template.py
+# hypothesis_version: 6.150.0
+
+['#2ecc71', 'ResumeTemplate', 'Technical', 'backend_developer', 'data_scientist', 'devops_sre', 'full_stack_developer', 'modern', 'resume_builder', 'software_engineer', 'technical']

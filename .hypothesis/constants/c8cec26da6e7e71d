@@ -1,0 +1,4 @@
+# file: /Users/karniprabhu/Documents/transferge/Django/Django-bookstack/roadmap/urls.py
+# hypothesis_version: 6.150.0
+
+['api_path_detail', 'home', 'path/<slug:slug>/', 'path_detail', 'reset_progress', 'roadmap', 'update_progress']

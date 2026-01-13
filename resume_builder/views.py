@@ -125,6 +125,56 @@ def draft_resume_editor(request, template_id):
 
 
 @login_required
+def live_resume_editor(request, template_id):
+    """
+    Premium split-screen live resume editor with real-time preview.
+    Left panel: Form editor, Right panel: Live preview that updates on every keystroke.
+    """
+    template = get_object_or_404(ResumeTemplate, id=template_id, is_active=True)
+    role = request.GET.get('role', 'devops_sre')
+    
+    # Prepare default data based on role (NOT saved to database)
+    draft_data = {
+        'template_id': template.id,
+        'template_name': template.name,
+        'template_slug': template.slug,
+        'role': role,
+        'title': 'My Resume',
+        'full_name': f'{request.user.first_name} {request.user.last_name}'.strip() or request.user.username,
+        'role_title': get_default_role_title(role),
+        'email': request.user.email or '',
+        'phone': '',
+        'address': '',
+        'location': '',
+        'linkedin': '',
+        'github': '',
+        'website': '',
+        'summary': get_default_summary_for_role(role),
+        'skills': get_default_skills_for_role(role),
+        'experience': [get_default_experience_for_role(role)],
+        'education': [{
+            'degree': 'Bachelor of Technology',
+            'field': 'Computer Science',
+            'school': 'University Name',
+            'location': 'City, Country',
+            'graduation_date': '2020'
+        }],
+        'projects': [],
+        'languages': ['English'],
+        'certifications': [],
+        'primary_color': template.primary_color,
+    }
+    
+    context = {
+        'title': f'Live Editor - {template.name}',
+        'template': template,
+        'draft_data': json.dumps(draft_data),
+    }
+    
+    return render(request, 'resume_builder/live_resume_editor.html', context)
+
+
+@login_required
 def draft_cover_letter_editor(request, template_id):
     """
     Open cover letter editor in DRAFT mode - nothing saved to My Documents yet.
@@ -181,6 +231,49 @@ def draft_cover_letter_editor(request, template_id):
     }
     
     return render(request, 'resume_builder/draft_cover_letter_editor.html', context)
+
+
+@login_required
+def live_cover_letter_editor(request, template_id):
+    """
+    Premium split-screen live cover letter editor with real-time preview.
+    Left panel: Form editor, Right panel: Live preview that updates on every keystroke.
+    """
+    template = get_object_or_404(CoverLetterTemplate, id=template_id, is_active=True)
+    role = request.GET.get('role', 'devops_sre')
+    
+    # Get role-specific content
+    cover_letter_content = get_default_cover_letter_content(role)
+    
+    # Prepare default data based on role (NOT saved to database)
+    draft_data = {
+        'template_id': template.id,
+        'template_name': template.name,
+        'template_slug': template.slug,
+        'title': 'My Cover Letter',
+        'full_name': f'{request.user.first_name} {request.user.last_name}'.strip() or request.user.username,
+        'email': request.user.email or '',
+        'phone': '',
+        'address': '',
+        'location': '',
+        'linkedin': '',
+        'company_name': 'Company Name',
+        'company_address': '',
+        'position_title': cover_letter_content['position_title'],
+        'hiring_manager': '',
+        'opening_paragraph': cover_letter_content['opening_paragraph'],
+        'body_paragraph': cover_letter_content['body_paragraph'],
+        'closing_paragraph': cover_letter_content['closing_paragraph'],
+        'primary_color': template.primary_color,
+    }
+    
+    context = {
+        'title': f'Live Editor - {template.name}',
+        'template': template,
+        'draft_data': json.dumps(draft_data),
+    }
+    
+    return render(request, 'resume_builder/live_cover_letter_editor.html', context)
 
 
 @login_required
@@ -1453,6 +1546,179 @@ def api_get_recommended_themes(request, template_slug, role):
         
     except Exception as e:
         logger.error(f"Error getting recommended themes: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+# ============================================
+# LIVE PREVIEW API - Single Source of Truth
+# ============================================
+
+@login_required
+@require_POST
+def api_generate_preview_html(request):
+    """
+    API endpoint to generate preview HTML using the SAME code as PDF generation.
+    
+    This ensures pixel-perfect preview → PDF match by using a single source of truth.
+    The HTML returned here is identical to what Playwright renders for PDF.
+    """
+    try:
+        from .pdf_generator import build_resume_html
+        
+        data = json.loads(request.body)
+        
+        # Create a mock resume object from the form data
+        class MockResume:
+            pass
+        
+        resume = MockResume()
+        resume.full_name = data.get('full_name', '')
+        resume.role_title = data.get('role_title', '')
+        resume.email = data.get('email', '')
+        resume.phone = data.get('phone', '')
+        resume.address = data.get('address', '')
+        resume.location = data.get('location', '')
+        resume.linkedin = data.get('linkedin', '')
+        resume.github = data.get('github', '')
+        resume.website = data.get('website', '')
+        resume.summary = data.get('summary', '')
+        resume.skills = data.get('skills', [])
+        resume.languages = data.get('languages', [])
+        resume.experience = data.get('experience', [])
+        resume.education = data.get('education', [])
+        resume.projects = data.get('projects', [])
+        resume.certifications = data.get('certifications', [])
+        resume.primary_color = data.get('primary_color', '#4a9d9a')
+        resume.profile_photo = None  # Handle separately for preview
+        
+        # Create mock template
+        class MockTemplate:
+            pass
+        
+        template = MockTemplate()
+        template.slug = data.get('template_slug', 'professional')
+        template.primary_color = data.get('primary_color', '#4a9d9a')
+        resume.template = template
+        
+        # Generate HTML using the same function as PDF generation
+        html_content = build_resume_html(resume)
+        
+        return JsonResponse({
+            'success': True,
+            'html': html_content
+        })
+        
+    except Exception as e:
+        logger.error(f"Error generating preview HTML: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+@login_required
+@require_POST
+def api_generate_cover_letter_preview_html(request):
+    """
+    API endpoint to generate cover letter preview HTML using the SAME code as PDF generation.
+    """
+    try:
+        from .pdf_generator import build_cover_letter_html
+        
+        data = json.loads(request.body)
+        
+        # Create a mock cover letter object from the form data
+        class MockCoverLetter:
+            pass
+        
+        cover_letter = MockCoverLetter()
+        cover_letter.full_name = data.get('full_name', '')
+        cover_letter.email = data.get('email', '')
+        cover_letter.phone = data.get('phone', '')
+        cover_letter.address = data.get('address', '')
+        cover_letter.location = data.get('location', '')
+        cover_letter.linkedin = data.get('linkedin', '')
+        cover_letter.company_name = data.get('company_name', '')
+        cover_letter.company_address = data.get('company_address', '')
+        cover_letter.position_title = data.get('position_title', '')
+        cover_letter.hiring_manager = data.get('hiring_manager', '')
+        cover_letter.opening_paragraph = data.get('opening_paragraph', '')
+        cover_letter.body_paragraph = data.get('body_paragraph', '')
+        cover_letter.closing_paragraph = data.get('closing_paragraph', '')
+        cover_letter.primary_color = data.get('primary_color', '#4a9d9a')
+        
+        # Create mock template
+        class MockTemplate:
+            pass
+        
+        template = MockTemplate()
+        template.slug = data.get('template_slug', 'classic')
+        template.primary_color = data.get('primary_color', '#4a9d9a')
+        cover_letter.template = template
+        
+        # Generate HTML using the same function as PDF generation
+        html_content = build_cover_letter_html(cover_letter)
+        
+        return JsonResponse({
+            'success': True,
+            'html': html_content
+        })
+        
+    except Exception as e:
+        logger.error(f"Error generating cover letter preview HTML: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+@login_required
+def api_get_resume_preview_html(request, resume_id):
+    """
+    API endpoint to get preview HTML for an existing saved resume.
+    Uses the same HTML generation as PDF for pixel-perfect match.
+    """
+    try:
+        from .pdf_generator import build_resume_html
+        
+        resume = get_object_or_404(Resume, id=resume_id, user=request.user)
+        html_content = build_resume_html(resume)
+        
+        return JsonResponse({
+            'success': True,
+            'html': html_content
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting resume preview HTML: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+@login_required
+def api_get_cover_letter_preview_html(request, cover_letter_id):
+    """
+    API endpoint to get preview HTML for an existing saved cover letter.
+    Uses the same HTML generation as PDF for pixel-perfect match.
+    """
+    try:
+        from .pdf_generator import build_cover_letter_html
+        
+        cover_letter = get_object_or_404(CoverLetter, id=cover_letter_id, user=request.user)
+        html_content = build_cover_letter_html(cover_letter)
+        
+        return JsonResponse({
+            'success': True,
+            'html': html_content
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting cover letter preview HTML: {str(e)}")
         return JsonResponse({
             'success': False,
             'error': str(e)
